@@ -38,10 +38,26 @@
           </router-link>
         </li>
         <li>
+          <router-link to='/team'>
+            <div class="sidebar-list-content">
+            <i class="material-icons">people</i>
+            Team
+          </div>
+          </router-link>
+        </li>
+        <li>
           <router-link to='/report'>
             <div class="sidebar-list-content">
               <i class="material-icons">&#xe6c4;</i>
               Report
+            </div>
+          </router-link>
+        </li>
+        <li>
+          <router-link to='/location'>
+            <div class="sidebar-list-content">
+              <i class="material-icons">location_on</i>
+              Location
             </div>
           </router-link>
         </li>
