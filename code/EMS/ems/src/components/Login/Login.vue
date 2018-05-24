@@ -43,8 +43,8 @@
 </template>
 
 <script>
-import Server from '../config/config.js'
-import Utils from '../utils.js'
+import Server from '@/config/config.js'
+import Utils from '@/utils.js'
 export default {
     name: 'login',
     data: function() {
