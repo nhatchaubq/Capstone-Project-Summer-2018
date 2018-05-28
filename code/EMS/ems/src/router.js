@@ -26,7 +26,7 @@ export default new Router({
             component: EquipmentComponent,
         },
         {
-            path: '/order',
+            path: '/work_order',
             component: OrderComponent,
         },
         {

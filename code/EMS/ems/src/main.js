@@ -9,7 +9,7 @@ import router from './router'
  
 Vue.use(Vuetify)
 
-// require('./styles/style.scss')
+require('./styles/style.scss')
 Vue.config.productionTip = false
 
 new Vue({
