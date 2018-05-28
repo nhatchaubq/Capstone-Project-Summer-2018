@@ -40,25 +40,7 @@
           </router-link>
         </li>
         <div class="divider"></div>
-        
-        <li>
-          <router-link to='/equipment'>
-            <div class="sidebar-list-content">
-            <i class="material-icons">build</i>
-            Equipment
-          </div>
-          </router-link>
-        </li>
-        <li>
-          <router-link to='/equipment'>
-            <div class="sidebar-list-content">
-            <i class="material-icons">location_on</i>
-            Location
-          </div>
-          </router-link>
-        </li>
-        <div class="divider"></div>
-        
+            
         <li>
           <router-link to='/equipment'>
             <div class="sidebar-list-content">
@@ -68,14 +50,22 @@
           </router-link>
         </li>
         <li>
-          <router-link to='/equipment'>
+          <router-link to='/team'>
             <div class="sidebar-list-content">
             <i class="material-icons">people</i>
-            Team & People
+            Team
           </div>
           </router-link>
         </li>
-
+        <li>
+        <li>
+          <router-link to='/location'>
+            <div class="sidebar-list-content">
+              <i class="material-icons">location_on</i>
+              Location
+            </div>
+          </router-link>
+        </li>
       </ul>
     </div>
     <div class="sidebar-end">

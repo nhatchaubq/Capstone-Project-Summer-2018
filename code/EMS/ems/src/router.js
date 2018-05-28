@@ -7,7 +7,8 @@ import EquipmentComponent from './components/Equipment/Equipment.vue';
 import OrderComponent from './components/Order/Order.vue';
 import CalendarComponent from './components/Calendar/Calendar.vue';
 import ReportComponent from './components/Report/Report.vue';
-
+import TeamComponent from './components/Team/Team.vue';
+import LocationComponent from './components/Location/Location.vue';
 Vue.use(Router)
 
 export default new Router({
@@ -36,6 +37,14 @@ export default new Router({
         {
             path: '/report',
             component: ReportComponent,
+        },
+        {
+            path: '/team',
+            component: TeamComponent,
+        },
+        {
+            path: '/location',
+            component: LocationComponent,
         }
     ]
 });
