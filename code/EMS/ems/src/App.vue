@@ -19,7 +19,7 @@ import HeaderBar from './components/HeaderBar/HeaderBar';
 export default {
   name: 'app',
   components: {
-    Sidebar, HeaderBar
+    Sidebar, HeaderBar,
   }
 }
 </script>
@@ -27,7 +27,8 @@ export default {
 <style>
 :root {
   --primary-color: #26a69a;
-  --light-background: #f5f5f5;
+  /* --light-background: #e0f2f1; */
+  --light-background: #fafafa;
   --dark-background: #263238;
   --danger-color: #f44336;
 }
@@ -39,11 +40,16 @@ button:focus {
     outline: none;
 }
 
+html, body {
+  width: 100%;
+  height: 100%;
+  /* background-color: var(--light-background);   */
+}
+
 #app {
   font-family: 'Roboto';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--light-background);
   height: 100%;
 }
 
@@ -68,6 +74,23 @@ button:focus {
 }
 
 .router-view {
-  padding: 1rem 2rem 0 2rem;
+  padding: 1rem 2.5rem;
 }
+
+.material-box {
+  background-color: white;
+  border-radius: 3px;
+  /* border-left: 4px solid #f44336; */
+  border: 1px solid #eeeeee;
+  padding: .3rem .6rem;
+  box-shadow: 2px 2px 3px #bdbdbd;
+  /* margin: 0 5rem .5rem 5rem; */
+  transition: all .25s ease-in-out;
+}
+
+.material-box:hover {
+    box-shadow: 4px 4px 8px #9e9e9e;    
+    cursor: pointer;    
+}
+
 </style>

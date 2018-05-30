@@ -28,24 +28,24 @@
 </template>
 
 <script>
+import { sync, } from 'vuex-pathify';
 export default {
     name: 'header-bar',
-    data() {
-        return {
-            title: 'Title',
-        }
+    computed: {
+        title: sync('title')
     }
 }
 </script>
 
-<style>
+<style scoped>
     .headerbar {
         /* display: grid;
         grid-template-columns: 20% 40% 40%; */
         height: 5rem;
         /* background-color: var(--light-background); */
-        background-color: #b0bec5;
-        border-bottom: 2px solid var(--dark-background);
+        /* background-color: #b0bec5; */
+        background-color: #eeeeee;
+        /* border-bottom: 2px solid var(--dark-background); */
     }
 
     .headerbar-title {
@@ -78,10 +78,11 @@ export default {
         margin-left: -40px;
         /* border: 1px solid #bdbdbd; */
         background-color: var(--light-background);
-        border: 1px solid var(--light-background);
+        /* border: 1px solid var(--light-background); */
+        border: 1px solid #e0e0e0;
         border-radius: 5px;
         padding: 5px 10px 5px 40px;
-        box-shadow: 0px 0px 0px #e0e0e0;
+        box-shadow: 2px 2px 3px #e0e0e0;
         transition: all 0.25s ease-in;
         font-style: italic;
         width: 100%;
@@ -96,8 +97,8 @@ export default {
     }
 
     .searchbar:hover, .searchbar-wrapper input:focus {
-        /* border: 1px solid #eeeeee;
-        box-shadow: 3px 3px 5px #9e9e9e;   */
+        /* border: 1px solid #eeeeee; */
+        box-shadow: 4px 4px 5px #bdbdbd;  
     }
 
     .headerbar-button {

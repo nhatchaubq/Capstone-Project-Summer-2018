@@ -1,41 +1,53 @@
 <template>
-    <div>
-        <div class="order-navigator-buttons">
-            <button class="is-active">All</button>
-            <button class="">Open</button>
-            <button class="">Upcoming</button>
-            <button class="">Checked</button>
-            <button class="">Overdue</button>
-        </div>
+    <div>        
         <div class="order-content">
-            <div class="order-block">
-                <div class="order-block-title">Hammer - Vinhomes</div>
-                <div class="order-block-info">
-                    <div class="badge">High</div>
+            <div id="orders-view">
+                <div class="order-navigator-buttons">
+                    <button class="is-active">All</button>
+                    <button class="">Open</button>
+                    <button class="">Upcoming</button>
+                    <button class="">Checked</button>
+                    <button class="">Overdue</button>
                 </div>
-                <div class="order-block-location">a</div>
+                <order-block v-bind:key="order.id" v-bind:order="order" v-for="order in orders" v-on:click.native="setSelectedOrder(order)"></order-block>
+            </div>
+            <div id="order-detail-view">
+                <order-detail id="order-detail" v-bind:order="selectedOrder"></order-detail>
             </div>
         </div>
-        <button id="btn-add-work-order">Add Work Order</button>
+        <router-link to="/work_order/create" tag="button" id="btn-add-work-order">Add Work Order</router-link>
     </div>
 </template>
 
 <script>
-export default {
-    name: 'work-order',
+import data from '@/models/work_orders.js';
+import OrderBlock from './OrderBlock/OrderBlock';
+import OrderDetail from './OrderDetailComponent/OrderDetail';
+
+export default {    
+    components: {
+        OrderDetail, OrderBlock
+    },
     data() {
         return {
-
+            orders: data,
+            selectedOrder: null,
+        }
+    },
+    methods: {
+        setSelectedOrder(order) {
+            this.selectedOrder = order;
         }
     }
 }
 </script>
 
-<style>
+<style scoped>
     .order-navigator-buttons {
         display: flex;
         justify-content: center;
         align-content: center;
+        margin-bottom: 20px;
     }
 
     .order-navigator-buttons > button {
@@ -68,53 +80,14 @@ export default {
     }
 
     .order-content {
-        margin-top: 3rem;
-    }
-
-    .order-block {
+        /* margin-top: 3rem; */
         display: grid;
-        grid-template-columns: 80% 20%;
-        grid-template-rows: 1 1 1;
-        background-color: #fafafa;
-        border-radius: 3px;
-        border-left: 4px solid #f44336;
-        padding: .3rem 1rem;
-        box-shadow: 3px 3px 5px #bdbdbd;
-        margin: 0 5rem;
-    }
-
-    .order-block > div {
-        margin-bottom: 10px;
-    }
-
-    .order-block-title {
-        grid-column: 1;
-        grid-row: 1;
-        font-size: 25px;
-        font-weight: 500;
-    }
-
-    .order-block-info {
-        grid-column: 1;
-        grid-row: 2;
-        font-size: 13px;
-    }
-
-
-    .order-block-info div {
-        padding: .1rem .3rem;
-    }
-
-    .badge {
-        border: 1px solid var(--danger-color);
-        background-color: var(--danger-color);
-        color: white;
-        border-radius: 5px;
-    }
-
-    .order-block-location {
-        grid-column: 1;
-        grid-row: 3;
-    }
+        grid-template-columns: 50% 50%;
+    }   
     
+    #order-detail {
+        position: sticky;
+        top: 10rem;
+        margin-left: 2rem;
+    }
 </style>

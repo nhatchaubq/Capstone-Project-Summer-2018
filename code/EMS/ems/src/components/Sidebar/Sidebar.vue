@@ -7,7 +7,7 @@
       <ul>
         <li>
           <router-link to='/'>
-            <div class="sidebar-list-content">
+            <div class="sidebar-list-content" v-bind:class="isActive('Dashboard')">
               <i class="material-icons">dashboard</i>
               Dashboard
             </div>
@@ -17,15 +17,15 @@
         
         <li>
           <router-link to='/work_order'>
-            <div class="sidebar-list-content">
-            <i class="material-icons">assignment</i>
-            Work Orders
-          </div>
+            <div class="sidebar-list-content" v-bind:class="isActive('Work Order')">
+              <i class="material-icons">assignment</i>
+              Work Orders
+            </div>
           </router-link>
         </li>
         <li>
           <router-link to='/calendar'>
-            <div class="sidebar-list-content">
+            <div class="sidebar-list-content" v-bind:class="isActive('Calendar')">
             <i class="material-icons">event</i>            
             Calendar
           </div>
@@ -33,7 +33,7 @@
         </li>
         <li>
           <router-link to='/report'>
-            <div class="sidebar-list-content">
+            <div class="sidebar-list-content" v-bind:class="isActive('Report')">
               <i class="material-icons">poll</i>
               Report
             </div>
@@ -43,42 +43,62 @@
             
         <li>
           <router-link to='/equipment'>
-            <div class="sidebar-list-content">
+            <div class="sidebar-list-content" v-bind:class="isActive('Equipment')">
+            <i class="material-icons">domain</i>
+            Equipment
+          </div>
+          </router-link>
+        </li>
+        <li>
+          <router-link to='/location'>
+            <div class="sidebar-list-content" v-bind:class="isActive('Location')">
+              <i class="material-icons">location_on</i>
+              Location
+            </div>
+          </router-link>
+        </li>
+        <div class="divider"></div>
+        
+        <li>
+          <router-link to='/vendors'>
+            <div class="sidebar-list-content" v-bind:class="isActive('Vendors')">
             <i class="material-icons">domain</i>
             Vendors
           </div>
           </router-link>
         </li>
         <li>
-          <router-link to='/team'>
-            <div class="sidebar-list-content">
+          <router-link to='/teams'>
+            <div class="sidebar-list-content" v-bind:class="isActive('Teams')">
             <i class="material-icons">people</i>
-            Team
+            Teams & People
           </div>
           </router-link>
         </li>
-        <li>
-        <li>
-          <router-link to='/location'>
-            <div class="sidebar-list-content">
-              <i class="material-icons">location_on</i>
-              Location
-            </div>
-          </router-link>
-        </li>
+        
       </ul>
     </div>
     <div class="sidebar-end">
-      <div class="container">
         <img class="circle-avatar" src="@/assets/man-avatar.png"/>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { sync } from 'vuex-pathify';
 export default {
   name: 'sidebar',
+  computed: {
+      currentSelected: sync('title'),    
+  },
+  methods: {
+    isActive(title) {
+      if (title === this.currentSelected) {
+        return 'is-active';
+      }
+      return '';
+    }
+  }
 }
 </script>
 
@@ -125,6 +145,9 @@ export default {
     color: #26a69a;
   }
 
+  .is-active {
+    color: #26a69a;    
+  }
   .sidebar-list-content {   
     padding-left: 20px;
   }
@@ -142,6 +165,8 @@ export default {
   }
 
   .circle-avatar {
+    position: relative;
+    left: 5rem;
     border-radius: 50%;
     width: 50px;
     height: 50px;
