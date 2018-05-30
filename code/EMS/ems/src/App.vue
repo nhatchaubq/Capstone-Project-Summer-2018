@@ -70,11 +70,14 @@ html, body {
 }
 
 #main {
-  margin-left: 13rem;
+  margin-left: 13.78rem;
 }
 
 .router-view {
-  padding: 1rem 2.5rem;
+  padding: 3rem 1.5rem 0 1.5rem;
+  position: relative;
+  top: 3rem;
+  z-index: 1;
 }
 
 .material-box {
