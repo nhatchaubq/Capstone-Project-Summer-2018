@@ -1,0 +1,103 @@
+<template>
+    <div class="material-box order-block">
+        <div class="order-block-title">{{ order.name }}</div>
+        <div class="order-status">
+            <i class="material-icons">lock_open</i>
+            {{ order.status }}
+        </div>
+        <div class="order-block-info">
+            <div class="badge">{{ order.priority }}</div>
+            <div>#{{ order.orderNumber }}</div>
+            <div>
+                <i class="fa fa-user"></i>
+                {{ order.createdBy }}
+            </div>
+            <div>
+                <i class="fa fa-rocket"></i>
+                {{ order.status }}
+            </div>
+        </div>
+        <div class="order-block-location">
+            <i class="material-icons">location_on</i>
+            {{ order.location }}
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    name: 'order-block',
+    props: {
+        order: null,
+    }
+}
+</script>
+
+<style>
+    .order-block {
+        display: grid;
+        grid-template-columns: 80% 20%;
+        grid-template-rows: 1 1 1;        
+        margin-bottom: 1rem;
+    }
+
+    .order-block-title {
+        grid-column: 1;
+        grid-row: 1;
+        font-size: 25px;
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .order-status {
+        line-height: 2.5rem;
+        font-size: 15px;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+    }
+
+    .order-status i {
+        position: relative;
+        top: .4rem;
+    }
+
+    .order-block-info {
+        grid-column: 1;
+        grid-row: 2;
+        font-size: 14px;
+        width: 100%;
+        display: flex;
+        align-content: center;
+        color: #9e9e9e;
+        margin-bottom: 10px;        
+    }
+
+
+    .order-block-info div {
+        padding: .1rem .4rem;
+        margin-right: 10px;
+    }
+
+    .badge {
+        border: 1px solid var(--danger-color);
+        background-color: var(--danger-color);
+        color: white;
+        border-radius: 6px;
+        font-size: 12px;
+        padding: .2rem .3rem 0 .3rem !important;  
+    }
+
+    .order-block-location {
+        grid-column: 1;
+        grid-row: 3;        
+        display: flex;
+        align-content: center;
+        font-size: 14px;        
+        color: #9e9e9e;        
+    }
+
+    .order-block-location i {
+        font-size: 20px;
+    }
+</style>
