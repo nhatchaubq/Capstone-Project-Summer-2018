@@ -21,7 +21,7 @@
       <th> <strong> Date added </strong> </th>
  
     </tr>
-    <tr>
+    <tr class="tr1">
       <td>1</td>
       <td>Crane</td>
       <td>Phu Dong Thien Vuong</td>
@@ -263,4 +263,8 @@ td {
 }
 tr:nth-child(odd){background-color: white; color: #263238}
 tr:nth-child(even){background-color: #ECEFF1; color: #263238}
+#th1:curve{
+  text-align: left;
+  background-color: #B0BEC5;
+}
 </style>
