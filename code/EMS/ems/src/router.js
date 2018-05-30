@@ -10,6 +10,7 @@ import CalendarComponent from './components/Calendar/Calendar.vue';
 import ReportComponent from './components/Report/Report.vue';
 import TeamComponent from './components/Team/Team.vue';
 import LocationComponent from './components/Location/Location.vue';
+import EquipmentCardComponent from './components/Equipment/EquipmentCard.vue';
 Vue.use(Router)
 
 import store from './store';
@@ -32,6 +33,14 @@ export default new Router({
         {
             path: '/equipment',
             component: EquipmentComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Equipment');
+                next();
+            }
+        },
+        {
+            path: '/equipment/card',
+            component: EquipmentCardComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment');
                 next();

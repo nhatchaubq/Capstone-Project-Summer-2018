@@ -27,7 +27,7 @@ export default {
 <style>
 :root {
   --primary-color: #26a69a;
-  /* --light-background: #e0f2f1; */
+  --secondary-color: #80DEEA;
   --light-background: #fafafa;
   --dark-background: #263238;
   --danger-color: #f44336;
