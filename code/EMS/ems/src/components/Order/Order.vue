@@ -1,7 +1,7 @@
 <template>
     <div>        
         <div class="order-content">
-            <div id="orders-view">
+            <div class="orders-view">
                 <div class="order-navigator-buttons">
                     <button class="is-active">All</button>
                     <button class="">Open</button>
@@ -84,10 +84,20 @@ export default {
         display: grid;
         grid-template-columns: 50% 50%;
     }   
+
+    .orders-view {        
+        position: fixed;
+        overflow-y: scroll;
+        height: 100%;
+        width: 30rem;
+        padding-right: .5rem;
+        z-index: 2;
+    }
     
     #order-detail {
-        position: sticky;
-        top: 10rem;
-        margin-left: 2rem;
+        position: fixed;        
+        overflow-y: scroll;
+        height: 100%;     
+        z-index: 2;
     }
 </style>
