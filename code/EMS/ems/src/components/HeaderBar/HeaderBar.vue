@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="column"></div>
-        <div class="column is-4">
+        <div class="column is-7">
             <div class="headerbar-end">
                 <div class="searchbar-wrapper">
                     <i class="fa fa-search"></i>
@@ -41,16 +41,19 @@ export default {
     .headerbar {
         /* display: grid;
         grid-template-columns: 20% 40% 40%; */
-        height: 5rem;
+        height: 4.6rem;
         /* background-color: var(--light-background); */
         /* background-color: #b0bec5; */
         background-color: #eeeeee;
+        position: fixed;
+        z-index: 2;
+        width: 100%;
         /* border-bottom: 2px solid var(--dark-background); */
     }
 
     .headerbar-title {
-        padding: 0.5rem 0 0 2rem;
-        font-size: 40px;
+        padding: 0.5rem 0 0 1rem;
+        font-size: 2rem;
         color: var(--dark-background);
         /* font-weight: bold; */
     }
@@ -59,7 +62,7 @@ export default {
         display: flex;
         justify-content: center;
         align-content: center;
-        padding-top: .3rem;
+        padding-top: .2rem;
         /* display: grid;
         grid-template-columns: 70% 15% 15%; */
         /* grid-column-gap: 10px; */
