@@ -74,7 +74,7 @@ html, body {
 }
 
 .router-view {
-  padding: 3rem 1.5rem 0 1.5rem;
+  padding: 3rem 1.5rem;
   position: relative;
   top: 3rem;
   z-index: 1;
@@ -86,7 +86,7 @@ html, body {
   /* border-left: 4px solid #f44336; */
   border: 1px solid #eeeeee;
   padding: .3rem .6rem;
-  box-shadow: 2px 2px 3px #bdbdbd;
+  box-shadow: 2px 2px 4px #bdbdbd;
   /* margin: 0 5rem .5rem 5rem; */
   transition: all .25s ease-in-out;
 }
