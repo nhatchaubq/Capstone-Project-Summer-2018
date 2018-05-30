@@ -27,7 +27,7 @@ export default {
 <style>
 :root {
   --primary-color: #26a69a;
-  /* --light-background: #e0f2f1; */
+  --secondary-color: #80DEEA;
   --light-background: #fafafa;
   --dark-background: #263238;
   --danger-color: #f44336;
@@ -70,11 +70,14 @@ html, body {
 }
 
 #main {
-  margin-left: 13rem;
+  margin-left: 13.78rem;
 }
 
 .router-view {
-  padding: 1rem 2.5rem;
+  padding: 3rem 1.5rem;
+  position: relative;
+  top: 3rem;
+  z-index: 1;
 }
 
 .material-box {
@@ -83,7 +86,7 @@ html, body {
   /* border-left: 4px solid #f44336; */
   border: 1px solid #eeeeee;
   padding: .3rem .6rem;
-  box-shadow: 2px 2px 3px #bdbdbd;
+  box-shadow: 2px 2px 4px #bdbdbd;
   /* margin: 0 5rem .5rem 5rem; */
   transition: all .25s ease-in-out;
 }
