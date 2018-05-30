@@ -39,8 +39,8 @@ export default {
 
 <style scoped>
     .headerbar {
-        /* display: grid;
-        grid-template-columns: 20% 40% 40%; */
+        display: grid;
+        grid-template-columns: auto auto auto;
         height: 4.6rem;
         /* background-color: var(--light-background); */
         /* background-color: #b0bec5; */
@@ -55,6 +55,7 @@ export default {
         padding: 0.5rem 0 0 1rem;
         font-size: 2rem;
         color: var(--dark-background);
+        width: 30rem;
         /* font-weight: bold; */
     }
     
@@ -95,7 +96,7 @@ export default {
         position: relative;
         padding: 10px;
         color: #9e9e9e;
-        z-index: 1;
+        /* z-index: 1; */
         /* transition: all 0.25s ease-in-out; */
     }
 
