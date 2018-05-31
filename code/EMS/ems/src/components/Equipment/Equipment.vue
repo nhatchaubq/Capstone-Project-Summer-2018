@@ -11,108 +11,126 @@
     <tr>
       <th> <strong> ID </strong> </th>
       <th> <strong> Name </strong> </th>
-      <th> <strong> Location </strong> </th>
-      <th> <strong> Model </strong> </th>
-      <th> <strong> Barcode </strong> </th>
-      <th> <strong> Area </strong> </th>
-      <th> <strong> Asset category </strong> </th>
+      <th> <strong> Vendor's name </strong> </th>
+      <th> <strong> Import's date </strong> </th>
+      <th> <strong> Price </strong> </th>
       <th> <strong> Description </strong> </th>
-      <th> <strong> Parent asset </strong> </th>
-      <th> <strong> Date added </strong> </th>
+      <th> <strong> Category </strong> </th>
+      <th> <strong> In department </strong> </th>
  
     </tr>
     <tr class="tr1">
       <td>1</td>
-      <td>Crane</td>
-      <td>Phu Dong Thien Vuong</td>
-      <td>CRA5273</td>
-      <td>1234789657821</td>
-      <td>3</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
+      <td>Truck 2753</td>
+      <td>Toyota</td>
       <td>22/03/2015</td>
+      <td>750 000 000</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
      
     </tr>
- <tr>
+    <tr >
       <td>2</td>
-      <td>Truck</td>
-      <td>01 Tan thoi Hiep,Q12</td>
-      <td>CRA5273</td>
-      <td>1234789657231</td>
-      <td>6</td>
+      <td>Crane 8751</td>
+      <td>Yamaha</td>
+      <td>22/04/2015</td>
+      <td>950 000 000</td>
       <td>N/A</td>
       <td>N/A</td>
       <td>N/A</td>
-      <td>22/03/2015</td>
      
     </tr>
-    <tr>
+      <tr >
       <td>3</td>
-      <td>Truck</td>
-      <td>81 Tan thoi Hiep,Q12</td>
-      <td>TRU5273</td>
-      <td>1234789655398</td>
-      <td>7</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
+      <td>Crane</td>
+      <td>Toyota</td>
       <td>22/03/2015</td>
-      
+      <td>750 000 000</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+     
     </tr>
-    <tr class="is-selected">
+      <tr >
       <td>4</td>
       <td>Crane</td>
-      <td>Phu Dong Thien Vuong</td>
-      <td>CRA5273</td>
-      <td>1234789657821</td>
-      <td>3</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
+      <td>Toyota</td>
       <td>22/03/2015</td>
-    
+      <td>750 000 000</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+     
     </tr>
-    <tr>
+      <tr >
       <td>5</td>
       <td>Crane</td>
-      <td>Phu Dong Thien Vuong</td>
-      <td>CRA5273</td>
-      <td>1234789657821</td>
-      <td>3</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
+      <td>Toyota</td>
       <td>22/03/2015</td>
-    
+      <td>750 000 000</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+     
     </tr>
-    <tr>
+      <tr >
       <td>6</td>
       <td>Crane</td>
-      <td>Phu Dong Thien Vuong</td>
-      <td>CRA5273</td>
-      <td>1234789657821</td>
-      <td>3</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
+      <td>Toyota</td>
       <td>22/03/2015</td>
+      <td>750 000 000</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
      
     </tr>
-    <tr>
-      <td>1</td>
-     <td>Crane</td>
-      <td>Phu Dong Thien Vuong</td>
-      <td>CRA5273</td>
-      <td>1234789657821</td>
-      <td>3</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
+      <tr >
+      <td>7</td>
+      <td>Crane</td>
+      <td>Toyota</td>
       <td>22/03/2015</td>
+      <td>750 000 000</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
      
     </tr>
-    <tr>
+      <tr >
+      <td>8</td>
+      <td>Crane</td>
+      <td>Toyota</td>
+      <td>22/03/2015</td>
+      <td>750 000 000</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+     
+    </tr>
+      <tr >
+      <td>9</td>
+      <td>Crane</td>
+      <td>Toyota</td>
+      <td>22/03/2015</td>
+      <td>750 000 000</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+     
+    </tr>
+      <tr >
+      <td>10</td>
+      <td>Crane</td>
+      <td>Toyota</td>
+      <td>22/03/2015</td>
+      <td>750 000 000</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+     
+    </tr>
+   
+    <!-- <tr>
       <td>1</td>
       <td>Crane</td>
       <td>Phu Dong Thien Vuong</td>
@@ -124,33 +142,7 @@
       <td>N/A</td>
       <td>22/03/2015</td>
 
-    </tr>
-    <tr>
-      <td>1</td>
-     <td>Crane</td>
-      <td>Phu Dong Thien Vuong</td>
-      <td>CRA5273</td>
-      <td>1234789657821</td>
-      <td>3</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>22/03/2015</td>
-
-    </tr>
-    <tr>
-      <td>1</td>
-      <td>Crane</td>
-      <td>Phu Dong Thien Vuong</td>
-      <td>CRA5273</td>
-      <td>1234789657821</td>
-      <td>3</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>22/03/2015</td>
-
-    </tr>
+    </tr> -->
   </table>
 </div>
         <button id="btn-add-equipment">Add Equipment</button>
@@ -256,10 +248,12 @@ table {
 th{
   text-align: left;
   background-color: #CFD8DC;
+
 }
 td {
     text-align: left;
-    padding: 12px;
+    padding-top: 15px;
+  
 }
 tr:nth-child(odd){background-color: white; color: #263238}
 tr:nth-child(even){background-color: #ECEFF1; color: #263238}
