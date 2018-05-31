@@ -2,8 +2,19 @@
     <div>
       <div class="equipment-block">
        <div class="field is-grouped" >
-            <button id="btn-table-view" disabled="disabled">Table view</button>
-            <a href="/equipment/card"><button id="btn-card-view" >Card view</button></a>
+
+
+          <router-link to='/equipment'>
+            <button id="btn-table-view" disabled="disabled">Table view  
+            </button>
+          </router-link>
+
+          <router-link to='/equipment/card'>
+            <button id="btn-table-view" >Card view  
+            </button>
+          </router-link>
+
+            <!-- <a href="/equipment/card"><button id="btn-card-view" >Card view</button></a> -->
         </div>
       </div>
       <div style="overflow-x:auto;overflow-y:auto">

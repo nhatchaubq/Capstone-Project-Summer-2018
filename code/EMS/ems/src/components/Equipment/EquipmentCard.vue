@@ -2,10 +2,15 @@
      <div>
          <div class="equipment-block">
        <div class="field is-grouped" >
-           <a href="/equipment"><button id="btn-table-view" >Table view</button></a>
-            <a href="/equipment/card"><button id="btn-card-view" disabled="disabled">Card view</button></a>
+            <router-link to='/equipment'>
+            <button id="btn-table-view" >Table view  
+            </button>
+          </router-link>
 
-
+          <router-link to='/equipment/card'>
+            <button id="btn-table-view" disabled="disabled">Card view  
+            </button>
+          </router-link>
         </div>
         
         </div>
