@@ -43,10 +43,45 @@ let location = [
     },
     {
         id: 7,
-        name: 'kim chi beer club',
+        name: 'Home Pub',
         address: '221 tan tao phuong 15 quan binh tan',
         siteManager: 'Trinh Thang Binh',
         equipmentQuantity: 29, 
+    },
+    {
+        id: 8,
+        name: 'sai gon square',
+        address: '65 tran hung dao 10 quan 1',
+        siteManager: 'Trinh Cong Son',
+        equipmentQuantity: 292, 
+    },
+    {
+        id: 9,
+        name: 'Thanh Thanh cinema',
+        address: '65 tao lao phuong 1 quan binh tan',
+        siteManager: 'Tap Can Binh',
+        equipmentQuantity: 30, 
+    },
+    {
+        id: 10,
+        name: 'SuperMarket',
+        address: '23 tan van vo phuong 15 quan 3',
+        siteManager: 'Luu Ba On',
+        equipmentQuantity: 292, 
+    },
+    {
+        id: 11,
+        name: 'Thanh Thien Temple',
+        address: '2212 Kim Chung phuong 2 quan tan phu',
+        siteManager: 'Nguyen Phi Hung',
+        equipmentQuantity: 293, 
+    },
+    {
+        id: 12,
+        name: 'Can Tho Center',
+        address: '23 Alexander phuong 7 quan tan binh',
+        siteManager: 'Hoai Linh',
+        equipmentQuantity: 39, 
     },
 ]
 export default location;
