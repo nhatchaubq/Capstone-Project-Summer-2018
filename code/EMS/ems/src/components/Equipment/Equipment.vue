@@ -180,7 +180,7 @@
       <td>22/03/2015</td>
 
     </tr>
-<button id="btn-add-equipment">Add Equipment</button>
+<a href="/equipment/add"><button id="btn-add-equipment">Add Equipment</button></a>
   </tbody>
 </table>
 

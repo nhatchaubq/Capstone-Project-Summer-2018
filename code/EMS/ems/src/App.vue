@@ -71,7 +71,7 @@ html, body {
 
 #main {
   margin-left: 13.78rem;
-  xzcvxzcvklj
+  
 }
 
 .router-view {
