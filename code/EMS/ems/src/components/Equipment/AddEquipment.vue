@@ -27,7 +27,7 @@
                 </div>
                 <label class="file-select">
                     <div class="select-button">
-                    <span v-if="value">Choose a pciture aaaa: {{value.name}}</span>
+                    <span v-if="value">Selected File: {{value.name}}</span>
                     <span v-else>Choose a picture</span>
                     </div>
                     <input type="file" @change="handleFileChange"/>
