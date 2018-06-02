@@ -4,14 +4,15 @@ import App from './App.vue'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import VueBar from 'vuebar'
 
 import router from './router'
 import store from './store'
- 
-window.EventBus = new Vue();
-Vue.use(Vuetify)
+import "./styles/style.scss";
 
-require('./styles/style.scss')
+Vue.use(Vuetify)
+Vue.use(VueBar)
+
 Vue.config.productionTip = false
 
 new Vue({

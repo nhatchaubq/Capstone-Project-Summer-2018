@@ -33,11 +33,8 @@ export default {
   --danger-color: #f44336;
 }
 
-input:focus,
-select:focus,
-textarea:focus,
-button:focus {
-    outline: none;
+:focus {
+  outline: 0;
 }
 
 html, body {
@@ -74,9 +71,10 @@ html, body {
 }
 
 .router-view {
-  padding: 3rem 1.5rem;
-  position: relative;
-  top: 3rem;
+  padding: 1rem 1.5rem;
+  height: 100%;
+  /* position: relative;
+  top: 3rem; */
   z-index: 1;
 }
 
@@ -86,14 +84,28 @@ html, body {
   /* border-left: 4px solid #f44336; */
   border: 1px solid #eeeeee;
   padding: .3rem .6rem;
-  box-shadow: 2px 2px 4px #bdbdbd;
   /* margin: 0 5rem .5rem 5rem; */
-  transition: all .25s ease-in-out;
 }
 
-.material-box:hover {
-    box-shadow: 4px 4px 8px #9e9e9e;    
-    cursor: pointer;    
+.material-shadow {
+  box-shadow: 2px 2px 4px #bdbdbd;  
 }
+
+.material-shadow-animate {
+  box-shadow: 2px 2px 4px #bdbdbd;  
+  transition: all .25s ease-in-out;  
+}
+
+.material-shadow-animate:hover {
+    box-shadow: 4px 4px 8px #9e9e9e;    
+}
+
+.badge {
+    color: white;
+    border-radius: 5px;
+    font-size: 12px;
+    padding: .2rem .3rem 0 .3rem !important;  
+}
+
 
 </style>
