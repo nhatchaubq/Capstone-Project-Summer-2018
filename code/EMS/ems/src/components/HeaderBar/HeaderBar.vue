@@ -39,13 +39,12 @@ export default {
 
 <style scoped>
     .headerbar {
-        /* display: grid;
-        grid-template-columns: 20% 40% 40%; */
+        display: grid;
+        grid-template-columns: auto auto auto;
         height: 4.6rem;
         /* background-color: var(--light-background); */
         /* background-color: #b0bec5; */
         background-color: #eeeeee;
-        position: fixed;
         z-index: 2;
         width: 100%;
         /* border-bottom: 2px solid var(--dark-background); */
@@ -55,6 +54,7 @@ export default {
         padding: 0.5rem 0 0 1rem;
         font-size: 2rem;
         color: var(--dark-background);
+        width: 30rem;
         /* font-weight: bold; */
     }
     
@@ -85,7 +85,7 @@ export default {
         border: 1px solid #e0e0e0;
         border-radius: 5px;
         padding: 5px 10px 5px 40px;
-        box-shadow: 2px 2px 3px #e0e0e0;
+        box-shadow: 1px 1px 2px #e0e0e0;
         transition: all 0.25s ease-in;
         font-style: italic;
         width: 100%;
@@ -95,13 +95,13 @@ export default {
         position: relative;
         padding: 10px;
         color: #9e9e9e;
-        z-index: 1;
+        /* z-index: 1; */
         /* transition: all 0.25s ease-in-out; */
     }
 
     .searchbar:hover, .searchbar-wrapper input:focus {
         /* border: 1px solid #eeeeee; */
-        box-shadow: 4px 4px 5px #bdbdbd;  
+        box-shadow: 4px 4px 8px #9e9e9e;  
     }
 
     .headerbar-button {
