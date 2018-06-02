@@ -68,6 +68,7 @@ html, body {
 
 #main {
   margin-left: 13.78rem;
+  
 }
 
 .router-view {

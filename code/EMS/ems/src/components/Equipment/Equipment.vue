@@ -142,10 +142,12 @@
       <td>N/A</td>
       <td>22/03/2015</td>
 
-    </tr> -->
-  </table>
-</div>
-        <button id="btn-add-equipment">Add Equipment</button>
+
+    </tr>
+<a href="/equipment/add"><button id="btn-add-equipment">Add Equipment</button></a>
+  </tbody>
+</table>
+
     </div>
 </template>
 
