@@ -6,8 +6,8 @@
             </div>
             <div></div>
             <div class="form-title-end">
-                <button id="" class="button is-rounded" style="margin-right: .6rem">Cancel</button>
-                <button id="" class="button is-rounded is-primary">Create Work Order</button>
+                <button id="btn-cancel" class="button" style="" v-on:click="cancel">Cancel</button>
+                <button id="btn-add" class="button">Create Work Order</button>
             </div>
         </div>
         <div>
@@ -36,11 +36,24 @@
                 </div>
             </div>
             <div class="form-field">
-                <div class="form-field-title">
-                    Title This Work Order (required)
-                </div>
-                <div class="form-field-input">
-                    <input type="text" class="input">
+                <div class="file is-boxed has-name">
+                    <label class="file-label" style="width: 100% !important">
+                        <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange" multiple />
+                        <span class="file-cta">
+                            <span class="file-icon">
+                                <i class="fa fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                                Choose images...
+                            </span>
+                        </span>
+                        <div v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
+                            {{ file.name }}
+                            <div>
+                                <img v-bind:src="getFilePath(file)"/>
+                            </div>
+                        </div>
+                    </label>
                 </div>
             </div>
         </div>
@@ -49,14 +62,28 @@
 
 <script>
 export default {
-
+    data() {
+        return {
+            files: [],
+        }
+    },
+    methods: {
+        cancel() {
+            this.$router.push('/work_order');
+        },
+        inputFileChange() {
+            this.files = this.$refs.fileInput.files;
+        },
+        getFilePath(file) {
+            return window.URL.createObjectURL(file);
+        }
+    }
 }
 </script>
 
 <style scoped>
     .form {
         background-color: white;
-        margin: 0 1.5rem;
         padding: 0 !important;
     }
     .form-title {
@@ -91,10 +118,13 @@ export default {
 
     #btn-cancel {
         background-color: #bdbdbd;
+        color: white;
+        margin-right: .6rem
     }
 
     #btn-add {
         background-color: var(--primary-color);
+        color: white;
     }
 
     .form-field {
