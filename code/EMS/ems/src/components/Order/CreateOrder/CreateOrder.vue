@@ -36,11 +36,21 @@
                 </div>
             </div>
             <div class="form-field">
-                <div class="form-field-title">
-                    Title This Work Order (required)
-                </div>
-                <div class="form-field-input">
-                    <input type="text" class="input">
+                <div class="file is-boxed has-name">
+                    <label class="file-label" style="width: 100% !important">
+                        <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange" multiple>
+                        <span class="file-cta">
+                            <span class="file-icon">
+                                <i class="fa fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                                Choose images...
+                            </span>
+                        </span>
+                        <div v-bind:key="file.name" v-for="file in files" class="file-name" style="width: 100% !important;">
+                            {{ file.name }}
+                        </div>
+                    </label>
                 </div>
             </div>
         </div>
@@ -49,9 +59,17 @@
 
 <script>
 export default {
+    data() {
+        return {
+            files: [],
+        }
+    },
     methods: {
         cancel() {
             this.$router.push('/work_order');
+        },
+        inputFileChange() {
+            this.files = this.$refs.fileInput.files;
         }
     }
 }
