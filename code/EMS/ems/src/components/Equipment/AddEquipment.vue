@@ -10,30 +10,35 @@
                 <button id="" class="button is-rounded is-primary">Create New Equipment</button>
             </div>
         </div>
-        <div>
-            
+        <div>           
             <div class="form-field-picture">
                 <div class="form-field-title">
                     Picture
                 </div>
                 <div class="input_picture">
-                    <form class="box" method="post" action="" enctype="multipart/form-data">
-                        <div class="box__input">
-                            <input class="box__file" ref="myFile" @change="fileChange" name="file" type="file" id="file"  data-multiple-caption="{count} files selected" multiple />
-                            <label for="box__file"><strong>Choose a picture</strong></label>
-                           
+                    
+                        <label class="file-label" style="width: 100% !important">
+                    
+                    <span class="file-cta">
+                        <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange" multiple />
+                        <span class="file-icon">
+                            <i class="fa fa-upload"></i>
+                        </span>
+                        <span class="file-label">
+                            Choose images...
+                        </span>
+                    </span>
+                        <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
+                            {{ file.name }}
+                        <div>
+                            <img class="file-upload" v-bind:src="getFilePath(file)"/>
                         </div>
-                    </form>
-                </div>
-                <label class="file-select">
-                    <div class="select-button">
-                    <span v-if="value">Selected File: {{value.name}}</span>
-                    <span v-else>Choose a picture</span>
                     </div>
-                    <input type="file" @change="handleFileChange"/>
-                </label>
+                        </label>
+                   
+                </div> 
             </div>
-
+             
             <div class="form-field">
                 <div class="form-field-title">
                     Asset Name
@@ -89,24 +94,29 @@
 <script>
 
 import AddEquipment from "./AddEquipment";
+
 export default {
+
   components: {
     AddEquipment
   },
-  props: {
-    value: File
-  },
+  data() {
+      return {
+            files: [],       
+      }
+    },
   methods: {
      
       handleFileChange(e) {
       this.$emit('input', e.target.files[0])
+    },
+        inputFileChange() {
+            this.files = this.$refs.fileInput.files;
+        },
+        getFilePath(file) {
+            return window.URL.createObjectURL(file);
+        }
     }
-  },
-  watch: {
-      file: function() {
-          alert(this.file);
-      }
-  }
 }
 </script>
 
@@ -168,63 +178,29 @@ export default {
     }
 
     .form-field-title {
-        font-size: 13px;
+        font-size: 15px;
     }
-    .box__dragndrop,
-    .box__uploading,
-    .box__success,
-    .box__error {
-         display: none;
-    }
+
     .input_picture{
-        border-style: dashed;
-        color: #bdbdbd;
+        padding: 1rem 3rem 1rem 3rem;
+        outline: 2px dashed #a8a8a8fb;
+        background-color:#f0efeffb;
+        display: flex;
     }
-    .box__file {
-        width: 0.1px;
-        height: 0.1px;
-        opacity: 0;
-        overflow: hidden;
-        position: absolute;
-        z-index: -1;
-    }
-    .box__file + label {
-        font-size: 1.25em;
-        font-weight: 700;
-        color: white;
-        background-color: black;
-        display: inline-block;
-    }
-
-    .box__file:focus + label,
-    .box__file + label:hover {
-        background-color: red;
-    }
-    .box__file + label {
-	    cursor: pointer; /* "hand" cursor */
-    }
-    .box__file:focus + label {
-        outline: 1px dotted #000;
-        outline: -webkit-focus-ring-color auto 5px;
-    }
-    .box__file + label * {
-	    pointer-events: none;
-    }   
-
-    .file-select > .select-button {
-        padding: 1rem;
-
-        color: white;
-        background-color:lightslategray;
-
-        border-radius: .3rem;
-
-        text-align: center;
-        font-weight: bold;
+   .file-cta{
+       border: none;
+       background-color: #a8a8a8fb;
+       margin: auto;
+   }
+   .file-upload{
+       padding-left: 2rem;
+   }
+    .box{
+        height: 5rem;
+        outline: none;
+        border-style: none; 
+        background-color: aliceblue;
+        align-items: center;
     }
 
-/* Don't forget to hide the original file input! */
-    .file-select > input[type="file"] {
-        display: none;
-    }
 </style>

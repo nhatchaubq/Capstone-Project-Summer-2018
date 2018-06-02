@@ -6,7 +6,7 @@
             <a href="/equipment/card"><button id="btn-card-view" >Card view</button></a>
         </div>
       </div>
-      <div style="overflow-x:auto;overflow-y:auto">
+      <div style="overflow-x:auto;overflow-y:auto"></div>
   <table>
     <tr>
       <th> <strong> ID </strong> </th>
@@ -130,7 +130,7 @@
      
     </tr>
    
-    <!-- <tr>
+     <tr>
       <td>1</td>
       <td>Crane</td>
       <td>Phu Dong Thien Vuong</td>
@@ -144,9 +144,9 @@
 
 
     </tr>
-<a href="/equipment/add"><button id="btn-add-equipment">Add Equipment</button></a>
-  </tbody>
-</table>
+    <a href="/equipment/add"><button id="btn-add-equipment">Add Equipment</button></a>
+      
+    </table>
 
     </div>
 </template>
