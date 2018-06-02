@@ -6,8 +6,8 @@
             </div>
             <div></div>
             <div class="form-title-end">
-                <button id="" class="button is-rounded" style="margin-right: .6rem">Cancel</button>
-                <button id="" class="button is-rounded is-primary">Create Work Order</button>
+                <button id="btn-cancel" class="button" style="" v-on:click="cancel">Cancel</button>
+                <button id="btn-add" class="button">Create Work Order</button>
             </div>
         </div>
         <div>
@@ -49,14 +49,17 @@
 
 <script>
 export default {
-
+    methods: {
+        cancel() {
+            this.$router.push('/work_order');
+        }
+    }
 }
 </script>
 
 <style scoped>
     .form {
         background-color: white;
-        margin: 0 1.5rem;
         padding: 0 !important;
     }
     .form-title {
@@ -91,10 +94,13 @@ export default {
 
     #btn-cancel {
         background-color: #bdbdbd;
+        color: white;
+        margin-right: .6rem
     }
 
     #btn-add {
         background-color: var(--primary-color);
+        color: white;
     }
 
     .form-field {
