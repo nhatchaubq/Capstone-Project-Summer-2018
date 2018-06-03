@@ -67,7 +67,7 @@ html, body {
 }
 
 #main {
-  margin-left: 13.78rem;
+  margin-left: 13rem;
 }
 
 .router-view {
@@ -107,5 +107,9 @@ html, body {
     padding: .2rem .3rem 0 .3rem !important;  
 }
 
-
+.emtpy-text {
+  font-size: 1.1em;
+  color: #9e9e9e;
+  /* font-style: italic; */
+}
 </style>
