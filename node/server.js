@@ -14,7 +14,7 @@ var connection = {
     options : {
         // instanceName : "SQLEXPRESS",
         encrypt : true,
-        database : "DemoVueJS"
+        database : "EquipmentManageSystem"
     }
 };
  

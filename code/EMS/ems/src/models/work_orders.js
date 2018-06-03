@@ -66,7 +66,7 @@ let orders = [
     },
     {
         id: 6,
-        title: 'Cement - Vinhomes',        
+        name: 'Cement - Vinhomes',        
         priority: 'Low',
         tagColor: '#00c853',
         createdBy: 'Minh Tien',

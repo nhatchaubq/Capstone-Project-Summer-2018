@@ -204,7 +204,7 @@ export default {
 
     .order-blocks {
         position: fixed;   
-        height: 80vh;          
+        height: 80%;          
         padding-right: .5rem;
         width: 40%;
         overflow-y: auto;
@@ -218,7 +218,7 @@ export default {
     
     .order-detail {
         position: fixed;    
-        left: 48rem;    
+        left: 59%;    
         /* height: 100%;  */
         overflow-y: auto;
         width: 39%;    
