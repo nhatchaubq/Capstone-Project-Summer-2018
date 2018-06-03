@@ -43,10 +43,47 @@
                 <div class="column">
                     <v-card class="dashboard-tile" style="border: none !important;">
                         <div class="dashboard-tile-title">
-                            Reservation
+                            <img src="../../assets/image/truck.jpg"  alt="Truck">
+
+                        </div>
+                        <div class="dashboard-tile-content">
+                            <h2><strong>Truck 2753</strong></h2>
+                            <div><span>ID: </span>1</div>
+                            <div><span>Vendor's name: </span>Toyota</div>
+                            <div><span>Import's date: </span>22/03/2015</div>
+                            <div><span>Price: </span>750 000 000</div>
+                            <div><span>Description: </span>N/A</div>
+                            <div><span>Category: </span>N/A</div>
+                            <div><span>In department: </span>N/A</div>
+       
+                        </div>
+                    </v-card>
+
+                    <v-card class="dashboard-tile" style="border: none !important;">
+                        <div class="dashboard-tile-title">
+                            test5
+                            
                         </div>
                         <div class="dashboard-tile-content">
                             Alo
+                        </div>
+                </v-card> 
+                </div>
+                 <div class="column">
+                    <v-card class="dashboard-tile" style="border: none !important;">
+                        <div class="dashboard-tile-title">
+                            <img src="../../assets/image/Crane 1.jpg" alt="Crane">
+                        </div>
+                        <div class="dashboard-tile-content">
+                            <h2><strong>Crane 8751</strong></h2>
+                            <div><span>ID: </span>2</div>
+                            <div><span>Vendor's name: </span>Yamaha</div>
+                            <div><span>Import's date: </span>22/04/2015</div>
+                            <div><span>Price: </span>950 000 000</div>
+                            <div><span>Description: </span>N/A</div>
+                            <div><span>Category: </span>N/A</div>
+                            <div><span>In department: </span>N/A</div>
+       
                         </div>
                     </v-card>
 
@@ -62,29 +99,18 @@
                  <div class="column">
                     <v-card class="dashboard-tile" style="border: none !important;">
                         <div class="dashboard-tile-title">
-                            Reservation
+                            <img src="../../assets/image/Crane 1.jpg" alt="Crane">
                         </div>
                         <div class="dashboard-tile-content">
-                            Alo
-                        </div>
-                    </v-card>
-
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            Reservation
-                        </div>
-                        <div class="dashboard-tile-content">
-                            Alo
-                        </div>
-                </v-card> 
-                </div>
-                 <div class="column">
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            Reservation
-                        </div>
-                        <div class="dashboard-tile-content">
-                            Alo
+                            <h2><strong>Crane 5749</strong></h2>
+                            <div><span>ID: </span>3</div>
+                            <div><span>Vendor's name: </span>Yamaha</div>
+                            <div><span>Import's date: </span>22/04/2015</div>
+                            <div><span>Price: </span>920 000 000</div>
+                            <div><span>Description: </span>N/A</div>
+                            <div><span>Category: </span>N/A</div>
+                            <div><span>In department: </span>N/A</div>
+       
                         </div>
                     </v-card>
 
@@ -100,10 +126,18 @@
                 <div class="column">
                     <v-card class="dashboard-tile" style="border: none !important;">
                         <div class="dashboard-tile-title">
-                            Check-outs
+                            <img src="../../assets/image/Crane 1.jpg" alt="Crane">
                         </div>
                         <div class="dashboard-tile-content">
-                            Alo
+                            <h2><strong>Crane 1357</strong></h2>
+                            <div><span>ID: </span>4</div>
+                            <div><span>Vendor's name: </span>Yamaha</div>
+                            <div><span>Import's date: </span>22/04/2015</div>
+                            <div><span>Price: </span>830 000 000</div>
+                            <div><span>Description: </span>N/A</div>
+                            <div><span>Category: </span>N/A</div>
+                            <div><span>In department: </span>N/A</div>
+       
                         </div>
                     </v-card>
 
@@ -167,5 +201,9 @@ export default {
         text-align: center;
         position: relative;
         top: 65px;
+    }
+    img{
+        height: 287px;
+    width: 175px;
     }
 </style>

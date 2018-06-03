@@ -194,7 +194,13 @@ export default {
     }
 
     .order-content {
+
+        //margin-top: 3rem;
+        /* display: grid;
+        grid-template-columns: 50% 50%; */
+
         
+
     }   
 
     .orders-view {        

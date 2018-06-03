@@ -47,9 +47,12 @@
                                 Choose images...
                             </span>
                         </span>
-                        <div v-bind:key="file.name" v-for="file in files"  style="width: 100% !important;">
+
+                        <div v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
                             {{ file.name }}
-                            <img v-bind:src="getPath(file)" style="width: 15rem; height: 15rem"/>
+                            <div>
+                                <img v-bind:src="getFilePath(file)"/>
+                            </div>
                         </div>
                     </label>
                 </div>
@@ -72,7 +75,7 @@ export default {
         inputFileChange() {
             this.files = this.$refs.fileInput.files;
         },
-        getPath(file) {
+        getFilePath(file) {
             return window.URL.createObjectURL(file);
         }
     }
