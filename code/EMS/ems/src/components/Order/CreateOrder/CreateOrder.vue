@@ -38,7 +38,7 @@
             <div class="form-field">
                 <div class="file is-boxed has-name">
                     <label class="file-label" style="width: 100% !important">
-                        <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange" multiple />
+                        <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange" multiple accept=".jpg, .jpeg, .png" />
                         <span class="file-cta">
                             <span class="file-icon">
                                 <i class="fa fa-upload"></i>
@@ -47,6 +47,7 @@
                                 Choose images...
                             </span>
                         </span>
+
                         <div v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
                             {{ file.name }}
                             <div>

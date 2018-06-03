@@ -1,12 +1,12 @@
 <template>
-    <div class="headerbar columns">
-        <div class="column">
+    <div class="headerbar">
+        <div class="">
             <div class="headerbar-title">
                 {{ title }}
             </div>
         </div>
-        <div class="column"></div>
-        <div class="column is-7">
+        <div class=""></div>
+        <div class="">
             <div class="headerbar-end">
                 <div class="searchbar-wrapper">
                     <i class="fa fa-search"></i>
@@ -40,8 +40,8 @@ export default {
 <style scoped>
     .headerbar {
         display: grid;
-        grid-template-columns: auto auto auto;
-        height: 4.6rem;
+        grid-template-columns: auto 50% auto;
+        height: 4rem;
         /* background-color: var(--light-background); */
         /* background-color: #b0bec5; */
         background-color: #eeeeee;
@@ -51,18 +51,19 @@ export default {
     }
 
     .headerbar-title {
-        padding: 0.5rem 0 0 1rem;
+        padding-top: 0.6rem;
+        padding-left: 1.5rem;
         font-size: 2rem;
         color: var(--dark-background);
-        width: 30rem;
+        height: 100%;
+        /* width: 30rem; */
         /* font-weight: bold; */
     }
     
     .headerbar-end {
         display: flex;
-        justify-content: center;
-        align-content: center;
-        padding-top: .2rem;
+        justify-content: flex-end;
+        padding: .9rem 0;
         /* display: grid;
         grid-template-columns: 70% 15% 15%; */
         /* grid-column-gap: 10px; */
@@ -71,7 +72,7 @@ export default {
     }
 
     .searchbar-wrapper {
-        margin-top: 0.7rem;
+        /* margin-top: 0.7rem; */
         margin-right: 20px;
     }
 
@@ -105,7 +106,7 @@ export default {
     }
 
     .headerbar-button {
-        margin-top: 0.7rem;
+        /* margin-top: 0.7rem; */
         user-select: none;
         color: #424242;
         border: 1px solid black;

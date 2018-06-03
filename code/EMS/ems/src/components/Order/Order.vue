@@ -1,7 +1,7 @@
 <template>
     <div>        
         <div class="order-content">
-            <div class="orders-view">
+            <div class="orders-view">                
                 <div class="filter">
                     <div style="width: 100%; position: relative; top: .4rem; margin-right: 1rem;">
                         Add filter:
@@ -36,8 +36,13 @@
                         </span>
                     </div>
                 </div>
-                <div class="order-blocks">
-                    <order-block v-bind:key="order.id" v-bind:order="order" v-bind:class="isActive(order.id)" v-for="order in orders" v-on:click.native="setSelectedOrder(order)"></order-block>
+                <div class="order-blocks" v-bar>
+                    <div>
+                        <div class="emtpy-text" v-if="orders.length == 0">
+                            There is no orders to display.
+                        </div>
+                        <order-block v-bind:key="order.id" v-bind:order="order" v-bind:class="isActive(order.id)" v-for="order in orders" v-on:click.native="setSelectedOrder(order)"></order-block>
+                    </div>
                 </div>
             </div>
             <div id="order-detail-view">
@@ -57,6 +62,9 @@ import OrderDetail from './OrderDetailComponent/OrderDetail';
 export default {    
     components: {
         OrderDetail, OrderBlock,
+    },    
+    created() {
+        this.sortOrdersByDate(this.orders);
     },
     data() {
         return {
@@ -202,9 +210,9 @@ export default {
 
     .order-blocks {
         position: fixed;   
-        height: 34rem;          
-        padding-right: 1rem;
-        width: 30rem;
+        height: 80%;          
+        padding-right: .5rem;
+        width: 40%;
         overflow-y: auto;
     }
 
@@ -216,10 +224,10 @@ export default {
     
     .order-detail {
         position: fixed;    
-        left: 48rem;    
+        left: 59%;    
         /* height: 100%;  */
         overflow-y: auto;
-        width: 30rem;    
+        width: 39%;    
         z-index: 2;
     }
 </style>
