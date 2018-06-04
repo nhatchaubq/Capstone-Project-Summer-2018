@@ -67,6 +67,15 @@
           </div>
           </router-link>
         </li>
+          <li>
+          <router-link to='/accounts'>
+            <div class="sidebar-list-content" v-bind:class="isActive('Accounts')">
+            <i class="material-icons">account_box</i>
+            Accounts
+          </div>
+          </router-link>
+        </li>
+
         <li>
           <router-link to='/teams'>
             <div class="sidebar-list-content" v-bind:class="isActive('Teams')">
@@ -75,14 +84,7 @@
           </div>
           </router-link>
         </li>
-        <li>
-          <router-link to='/accounts'>
-            <div class="sidebar-list-content" v-bind:class="isActive('Accounts')">
-            <i class="material-icons">account_box</i>
-            Accounts
-          </div>
-          </router-link>
-        </li>
+        
         
       </ul>
     </div>

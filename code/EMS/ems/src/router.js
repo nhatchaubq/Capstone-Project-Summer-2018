@@ -14,7 +14,8 @@ import EquipmentCardComponent from './components/Equipment/EquipmentCard.vue';
 
 import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
-import AccountComponent from'./components/Account/Account.vue'
+import AccountComponent from'./components/Account/Account.vue';
+import AddAccountComponent from './components/Account/AddAccount.vue'
 Vue.use(Router)
 
 import store from './store';
@@ -46,7 +47,7 @@ export default new Router({
             path: '/equipment/add',
             component: AddEquipmentComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Add equipment');
+                store.set('title', 'Equipment');
                 next();
             }
         },
@@ -117,6 +118,14 @@ export default new Router({
         {
             path: '/accounts',
             component: AccountComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Accounts');
+                next();
+            }
+        },
+        {
+            path: '/accounts/add',
+            component: AddAccountComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Account');
                 next();
