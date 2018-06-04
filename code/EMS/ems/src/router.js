@@ -12,9 +12,9 @@ import TeamComponent from './components/Team/Team.vue';
 import LocationComponent from './components/Location/Location.vue';
 import EquipmentCardComponent from './components/Equipment/EquipmentCard.vue';
 
-import EquipmentDetails from './components/Equipment/EquipmentDetails.vue';
-import AddEquipment from './components/Equipment/AddEquipment.vue';
+import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
+import AccountComponent from'./components/Account/Account.vue'
 Vue.use(Router)
 
 import store from './store';
@@ -60,7 +60,7 @@ export default new Router({
         },
         {
             path: '/equipment/details',
-            component: EquipmentDetails,
+            component: EquipmentDetailsComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment details');
                 next();
@@ -68,7 +68,7 @@ export default new Router({
         },
         {
             path: '/equipment/add',
-            component: AddEquipment,
+            component: AddEquipmentComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Add new equipment ');
                 next();
@@ -111,6 +111,14 @@ export default new Router({
             component: TeamComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Teams & People');
+                next();
+            }
+        },
+        {
+            path: '/accounts',
+            component: AccountComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Account');
                 next();
             }
         },
