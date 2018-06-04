@@ -46,7 +46,11 @@
 </table>
 
 <!-- /table -->
-        <button id="btn-add-equipment">Add Equipment</button>
+        
+          <router-link to='/equipment/add'>
+<button id="btn-add-equipment">Add Equipment</button>
+          </router-link>
+
     </div>
 </template>
 

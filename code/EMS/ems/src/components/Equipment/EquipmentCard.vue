@@ -15,51 +15,46 @@
         
         </div>
 
-       <div class="columns">
-                <div class="column is-narrow">
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            <img src="../../assets/image/Crane 1.jpg" alt="Crane">
+       <div class="columns" >
+            <div class="column is-one-quarter" v-bind:key="equipment.id" v-for="equipment in equipmentpool">
+                <v-card class="dashboard-tile" style="border: none !important;" >
+                    <!-- <div class="dashboard-tile-title">
+                        <div v-bind:key="equipment.id" v-for="equipment in equipmentpools">
+                        <img src="{{equipment.thumbnail}}" alt="Crane">
                         </div>
-                        <div class="dashboard-tile-content">
-                            <h2><strong>Crane 1357</strong></h2>
-                            <div><span>ID: </span>1</div>
-                            <div><span>Vendor's name: </span>Yamaha</div>
-                            <div><span>Import's date: </span>22/04/2015</div>
-                            <div><span>Price: </span>830 000 000</div>
-                            <div><span>Description: </span>N/A</div>
-                            <div><span>Category: </span>N/A</div>
-                            <div><span>In department: </span>N/A</div>
-       
-                        </div>
-                    </v-card>
-                </div>
+                    </div> -->
+                    <div class="dashboard-tile-content" >
 
+                        <!-- <img src="{{equipment.thumbnail}}" alt="Crane"> -->
+                        <h2><strong>{{equipment.equipmentName}}</strong></h2>
+                        <div><span>ID: </span>{{equipment.id}}</div>
+                        <div><span>Vendor's name: </span>{{equipment.vendorName}}</div>
+                        <div><span>Import's date: </span>{{equipment.importDate}}</div>
+                        <div><span>Price: </span>{{equipment.price}}</div>
+                        <div><span>Description: </span>{{equipment.description}}</div>
+                        <div><span>Category: </span>{{equipment.category}}</div>
+                        <div><span>In department: </span>{{equipment.department}}</div>
 
-
-
-               
-
-                
+                    </div>
+                </v-card>
             </div>
-
-
-
-
+        </div>
         <button id="btn-add-equipment">Add Equipment</button>
     </div>
 </template>
 
 <script>
+import data from "@/models/equipment_tb.js";
+
+
 export default {
   name: "equipmentCard",
   data() {
     return {
-      props: {
-        name: null,
-        imageUrl: null,
-        status: null
-      }
+     
+        equipmentpool: data,
+
+      
     };
   }
 };

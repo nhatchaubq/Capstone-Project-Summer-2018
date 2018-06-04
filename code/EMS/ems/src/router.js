@@ -11,6 +11,8 @@ import ReportComponent from './components/Report/Report.vue';
 import TeamComponent from './components/Team/Team.vue';
 import LocationComponent from './components/Location/Location.vue';
 import EquipmentCardComponent from './components/Equipment/EquipmentCard.vue';
+import EquipmentDetails from './components/Equipment/EquipmentDetails.vue';
+import AddEquipment from './components/Equipment/AddEquipment.vue';
 Vue.use(Router)
 
 import store from './store';
@@ -43,6 +45,22 @@ export default new Router({
             component: EquipmentCardComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment');
+                next();
+            }
+        },
+        {
+            path: '/equipment/details',
+            component: EquipmentDetails,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Equipment details');
+                next();
+            }
+        },
+        {
+            path: '/equipment/add',
+            component: AddEquipment,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Add new equipment ');
                 next();
             }
         },
