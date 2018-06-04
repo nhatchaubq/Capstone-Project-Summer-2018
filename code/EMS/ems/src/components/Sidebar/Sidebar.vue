@@ -89,7 +89,9 @@
       </ul>
     </div>
     <div class="sidebar-end">
-        <img class="circle-avatar" src="@/assets/man-avatar.png"/>
+      <div class="circle-avatar-container" v-on:click="logout()">
+        <img class="circle-avatar" v-bind:src="getUserAvatar()"/>
+      </div>
     </div>
   </div>
 </template>
@@ -107,6 +109,20 @@ export default {
         return 'is-active';
       }
       return '';
+    },
+    getUserAvatar() {
+      const authUser = JSON.parse(window.localStorage.getItem('user'));
+      if (authUser && authUser.AvatarImage) {
+        return authUser.AvatarImage;
+      } else {
+        return require('@/assets/avatar-user.png');
+      }
+    },
+    logout() {
+      this.$store.state.isLoggedIn = false;
+      window.localStorage.removeItem('user');
+      // this.$router.push('/');
+      vm.$forceUpdate();
     }
   }
 }
@@ -174,11 +190,24 @@ export default {
     width: 100%;
   }
 
-  .circle-avatar {
+  .circle-avatar-container {
     position: relative;
     left: 5rem;
+    bottom: .8rem;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    border: 1px solid var(--primary-color);
+    width: 2.7rem;
+    height: 2.7rem;
+  }
+
+  .circle-avatar-container:hover {
+    cursor: pointer;
+  }
+
+  .circle-avatar {
+    position: relative;
+    border-radius: 50%;    
+    /* left: 5rem;
+    bottom: .8rem; */
   }
 </style>

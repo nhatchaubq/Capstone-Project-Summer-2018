@@ -1,25 +1,33 @@
 <template>
-  <div id="app">
-    <v-app>
-      <div>
-        <sidebar id="sidebar"></sidebar>
-        <div id="main">
-          <header-bar></header-bar>
-          <router-view class="router-view"></router-view>
+  <div id="app" class="has-background-white-ter">
+    <login v-if="!isLoggedIn"></login>
+    <div v-else>
+      <v-app>
+        <div>
+          <sidebar id="sidebar"></sidebar>
+          <div id="main">
+            <header-bar></header-bar>
+            <router-view class="router-view"></router-view>
+          </div>
         </div>
-      </div>
-    </v-app>
+      </v-app>
+    </div>
   </div>
 </template>
 
 <script>
+import { sync } from 'vuex-pathify';
+import Login from './components/Login/Login'
 import Sidebar from './components/Sidebar/Sidebar.vue';
 import HeaderBar from './components/HeaderBar/HeaderBar';
 
 export default {
   name: 'app',
   components: {
-    Sidebar, HeaderBar,
+    Sidebar, HeaderBar, Login,
+  },
+  computed: {
+    isLoggedIn: sync('isLoggedIn'),
   }
 }
 </script>
@@ -71,7 +79,7 @@ html, body {
 }
 
 .router-view {
-  padding: 1rem 1.5rem;
+  padding: 1rem 2rem;
   height: 100%;
   /* position: relative;
   top: 3rem; */
@@ -88,16 +96,16 @@ html, body {
 }
 
 .material-shadow {
-  box-shadow: 2px 2px 4px #bdbdbd;  
+  box-shadow: 2px 2px 4px #bdbdbd !important;  
 }
 
 .material-shadow-animate {
-  box-shadow: 2px 2px 4px #bdbdbd;  
+  box-shadow: 2px 2px 4px #bdbdbd !important;  
   transition: all .25s ease-in-out;  
 }
 
 .material-shadow-animate:hover {
-    box-shadow: 4px 4px 8px #9e9e9e;    
+    box-shadow: 4px 4px 8px #bdbdbd !important;    
 }
 
 .badge {

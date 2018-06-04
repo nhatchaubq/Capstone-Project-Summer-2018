@@ -1,6 +1,6 @@
 <template>
     <div>
-        <vue-full-calendar v-bind:events="calendarEvents" locale="en"></vue-full-calendar>
+        <vue-full-calendar class="material-box material-shadow" :events="calendarEvents" locale="en"></vue-full-calendar>
     </div>
 </template>
 
@@ -12,17 +12,27 @@ export default {
     components: {
         VueFullCalendar
     },
-    beforeCreate() {
+    created() {
         for (var i = 0; i < data.length; i++) {
-            let event = {
+            var event = {
                 title: data[i].name,
-                startDate: data[i].startDate,
-                endDate: data[i].endDate,
-            };
+                start: data[i].endDate,
+                end: data[i].endDate,
+            }
             this.calendarEvents.push(event);
         }
     },
-    // cr
+    data() {
+        return {
+            calendarEvents: [],
+        }
+    }
+}
+</script>
+
+<style scoped>
+
+</style>
 
 
 
