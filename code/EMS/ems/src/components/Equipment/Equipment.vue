@@ -18,6 +18,7 @@
         </div>
       </div>
 
+
 <!-- table -->
 <table class="table">
   <thead>
@@ -31,6 +32,7 @@
       <th><strong>Category</strong></th>
 
     </tr>
+
 
   </thead>
   
@@ -46,6 +48,11 @@
       </tr>
   </tbody>
 </table>
+
+    <a href="/equipment/add"><button id="btn-add-equipment">Add Equipment</button></a>
+      
+    </table>
+
 
 <!-- /table -->
         
