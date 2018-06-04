@@ -49,9 +49,9 @@
 
 <!-- /table -->
         
-          <router-link to='/equipment/add'>
-<button id="btn-add-equipment">Add Equipment</button>
-          </router-link>
+  <router-link to='/equipment/add/'>
+    <button id="btn-add-equipment">Add Equipment</button>
+  </router-link>
 
 
     </div>

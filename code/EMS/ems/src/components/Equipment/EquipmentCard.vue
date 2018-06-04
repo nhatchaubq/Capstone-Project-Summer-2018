@@ -39,22 +39,20 @@
                 </v-card>
             </div>
         </div>
-        <button id="btn-add-equipment">Add Equipment</button>
+          <router-link to='/equipment/add/'>
+    <button id="btn-add-equipment">Add Equipment</button>
+  </router-link>
     </div>
 </template>
 
 <script>
 import data from "@/models/equipment_tb.js";
 
-
 export default {
   name: "equipmentCard",
   data() {
     return {
-     
-        equipmentpool: data,
-
-      
+      equipmentpool: data
     };
   }
 };
