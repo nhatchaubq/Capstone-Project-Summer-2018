@@ -1,18 +1,19 @@
-import Vue from 'vue'
-import App from './App.vue'
+import Vue from 'vue';
+import App from './App.vue';
 // import 'bulma/css/bulma.css'
-import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.min.css';
+import 'material-design-icons-iconfont/dist/material-design-icons.css';
+import VueBar from 'vuebar';
 
-import router from './router'
-import store from './store'
- 
-window.EventBus = new Vue();
-Vue.use(Vuetify)
+import router from './router';
+import store from './store';
+import "./styles/style.scss";
 
-require('./styles/style.scss')
-Vue.config.productionTip = false
+Vue.use(Vuetify);
+Vue.component('v-bar', VueBar);
+
+Vue.config.productionTip = false;
 
 new Vue({
   router,

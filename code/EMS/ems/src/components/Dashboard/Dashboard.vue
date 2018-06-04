@@ -2,7 +2,7 @@
     <div>
         <div class="columns">
             <div class="column">
-                <v-card class="dashboard-tile" style="border: none !important;">
+                <div class="material-box dashboard-tile" style="border: none !important;">
                     <div class="dashboard-tile-title">
                         Items by status
                     </div>
@@ -14,7 +14,7 @@
                             </div>
                         </div>
                     </div>
-                </v-card>
+                </div>
 
                 <v-card class="dashboard-tile" style="border: none !important;">
                     <div class="dashboard-tile-title">
