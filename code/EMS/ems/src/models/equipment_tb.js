@@ -1,0 +1,58 @@
+let equipmnetstb = [
+    {
+        id: 1,
+        equipmentName: 'Hammer',
+        vendorName: 'Vinhomes',
+        importDate: '22/12/2017',
+        price: '100 000',
+        description: 'A hammer',
+        category: 'tools',
+    },
+    {
+        id: 2,
+        equipmentName: 'Saw',
+        vendorName: 'Vinhomes',
+        importDate: '25/12/2017',
+        price: '1300 000',
+        description: 'A saw',
+        category: 'tools',
+        
+    },
+    {
+        id: 3,
+        equipmentName: 'Axe',
+        vendorName: 'Vinhouse',
+        importDate: '25/02/2017',
+        price: '300 000',
+        description: 'An axe',
+        category: 'tools',
+    },
+    {
+        id: 4,
+        equipmentName: 'Axe',
+        vendorName: 'Vinhouse',
+        importDate: '25/02/2017',
+        price: '300 000',
+        description: 'An axe',
+        category: 'tools',
+    },
+    {
+        id: 5,
+        equipmentName: 'Axe',
+        vendorName: 'Vinhouse',
+        importDate: '25/02/2017',
+        price: '300 000',
+        description: 'An axe',
+        category: 'tools',
+    },
+    {
+        id: 6,
+        equipmentName: 'Axe',
+        vendorName: 'Vinhouse',
+        importDate: '25/02/2017',
+        price: '300 000',
+        description: 'An axe',
+        category: 'tools',
+    },
+]
+export default equipmnetstb;
