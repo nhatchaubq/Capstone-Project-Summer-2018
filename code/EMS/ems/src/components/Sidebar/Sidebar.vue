@@ -122,7 +122,6 @@ export default {
       this.$store.state.isLoggedIn = false;
       window.localStorage.removeItem("user");
       // this.$router.push('/');
-      vm.$forceUpdate();
     }
   }
 };

@@ -17,7 +17,7 @@
           <div><span>Vendor: </span>{{equipment.Vendor.Name}}</div>
           <div><span>Import date: </span>{{equipment.ImportDate}}</div>
           <div><span>Price: </span>{{equipment.Price ? equipment.Price : 'n/a'}}</div>
-          <div><span>Description: </span>{{equipment.Description}}</div>
+          <div><span>Description: </span>{{equipment.Description ? equipment.Description : 'n/a'}}</div>
         <!-- <div><span>In department: </span>{{equipment.department}}</div> -->
       </div>
     </div>
