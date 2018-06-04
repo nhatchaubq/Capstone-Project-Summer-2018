@@ -11,9 +11,10 @@ import TeamComponent from './components/Team/Team.vue';
 import LocationComponent from './components/Location/Location.vue';
 import EquipmentCardComponent from './components/Equipment/EquipmentCard.vue';
 
-import EquipmentDetails from './components/Equipment/EquipmentDetails.vue';
-import AddEquipment from './components/Equipment/AddEquipment.vue';
+import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
+import AccountComponent from'./components/Account/Account.vue';
+import AddAccountComponent from './components/Account/AddAccount.vue'
 Vue.use(Router)
 
 import store from './store';
@@ -52,7 +53,7 @@ let router = new Router({
             path: '/equipment/add',
             component: AddEquipmentComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Add equipment');
+                store.set('title', 'Equipment');
                 next();
             },
             meta: {
@@ -72,7 +73,7 @@ let router = new Router({
         },
         {
             path: '/equipment/details',
-            component: EquipmentDetails,
+            component: EquipmentDetailsComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment details');
                 next();
@@ -80,7 +81,7 @@ let router = new Router({
         },
         {
             path: '/equipment/add',
-            component: AddEquipment,
+            component: AddEquipmentComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Add new equipment ');
                 next();
@@ -139,6 +140,22 @@ let router = new Router({
             },
             meta: {
                 showSearchBar: true,
+            }
+        },
+        {
+            path: '/accounts',
+            component: AccountComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Accounts');
+                next();
+            }
+        },
+        {
+            path: '/accounts/add',
+            component: AddAccountComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Account');
+                next();
             }
         },
         {
