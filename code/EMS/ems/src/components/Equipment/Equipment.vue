@@ -17,6 +17,7 @@
             <!-- <a href="/equipment/card"><button id="btn-card-view" >Card view</button></a> -->
         </div>
       </div>
+
 <!-- table -->
 <table class="table">
   <thead>
@@ -30,6 +31,7 @@
       <th><strong>Category</strong></th>
 
     </tr>
+
   </thead>
   
   <tbody>
@@ -50,6 +52,7 @@
           <router-link to='/equipment/add'>
 <button id="btn-add-equipment">Add Equipment</button>
           </router-link>
+
 
     </div>
 </template>

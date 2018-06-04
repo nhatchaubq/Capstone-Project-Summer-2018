@@ -1,20 +1,20 @@
 <template>
-    <div class="material-box order-block">
+    <div class="material-box material-shadow-animate order-block">
         <div class="order-block-title">{{ order.name }}</div>
         <div class="order-status">
             <i class="material-icons">lock_open</i>
             {{ order.status }}
         </div>
         <div class="order-block-info">
-            <div class="badge">{{ order.priority }}</div>
+            <div v-bind:style="priorityBadgeColor(order)" class="badge">{{ order.priority }}</div>
             <div>#{{ order.orderNumber }}</div>
             <div>
                 <i class="fa fa-user"></i>
                 {{ order.createdBy }}
             </div>
             <div>
-                <i class="fa fa-rocket"></i>
-                {{ order.status }}
+                <i class="fa fa-calendar"></i>
+                {{ order.requestDate }}
             </div>
         </div>
         <div class="order-block-location">
@@ -29,6 +29,12 @@ export default {
     name: 'order-block',
     props: {
         order: null,
+    },
+    methods: {
+        priorityBadgeColor(order) {
+            let tagColor = order.tagColor;
+            return `border: 1px solid ${tagColor}; background-color: ${tagColor}`;
+        }
     }
 }
 </script>
@@ -39,6 +45,10 @@ export default {
         grid-template-columns: 80% 20%;
         grid-template-rows: 1 1 1;        
         margin-bottom: 1rem;
+    }
+
+    .order-block:hover {
+        cursor: pointer;
     }
 
     .order-block-title {
@@ -55,6 +65,7 @@ export default {
         display: flex;
         justify-content: center;
         align-content: center;
+        user-select: none;
     }
 
     .order-status i {
@@ -73,19 +84,13 @@ export default {
         margin-bottom: 10px;        
     }
 
+    .order-block-info .badge {
+        user-select: none;
+    }
 
     .order-block-info div {
         padding: .1rem .4rem;
         margin-right: 10px;
-    }
-
-    .badge {
-        border: 1px solid var(--danger-color);
-        background-color: var(--danger-color);
-        color: white;
-        border-radius: 6px;
-        font-size: 12px;
-        padding: .2rem .3rem 0 .3rem !important;  
     }
 
     .order-block-location {
@@ -98,6 +103,8 @@ export default {
     }
 
     .order-block-location i {
-        font-size: 20px;
+        font-size: 1.2rem;
+        position: relative;
+        top: .1rem;
     }
 </style>
