@@ -48,20 +48,12 @@
       </tr>
   </tbody>
 </table>
-
-    <a href="/equipment/add"><button id="btn-add-equipment">Add Equipment</button></a>
-      
-    </table>
-
-
-<!-- /table -->
-        
-  <router-link to='/equipment/add/'>
-    <button id="btn-add-equipment">Add Equipment</button>
-  </router-link>
+    <router-link to='/equipment/add/'>
+      <button id="btn-add-equipment">Add Equipment</button>
+    </router-link>
 
 
-    </div>
+  </div>
 </template>
 
 <script>
