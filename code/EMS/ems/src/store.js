@@ -6,7 +6,9 @@ import { make } from 'vuex-pathify';
 Vue.use(Vuex);
 
 const state = {
+    isLoggedIn: !!localStorage.getItem('user'),
     title: '',
+    showSearchBar: true,
 }
 
 const mutations = make.mutations(state);
