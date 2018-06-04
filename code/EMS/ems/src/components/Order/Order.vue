@@ -20,7 +20,6 @@
                                     <option value="Cancel">Cancel</option>
                                 </optgroup>
                                 <optgroup label="Priorities">
-                                    <option value="Urgent">Urgent</option>
                                     <option value="High">High</option>
                                     <option value="Medium">Medium</option>
                                     <option value="Low">Low</option>
@@ -36,7 +35,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="order-blocks" v-bar>
+                <div class="order-blocks">
                     <div>
                         <div class="emtpy-text" v-if="orders.length == 0">
                             There is no orders to display.
@@ -49,7 +48,7 @@
                 <order-detail class="order-detail" v-bind:order="selectedOrder"></order-detail>
             </div>
         </div>
-        <router-link to="/work_order/create" tag="button" id="btn-add-work-order">Add Work Order</router-link>
+        <router-link to="/work_order/create" tag="button" id="btn-add-work-order" class="button is-primary material-shadow-animate">Add Work Order</router-link>
     </div>
 </template>
 
@@ -181,11 +180,10 @@ export default {
         position: fixed;
         right: 3rem;
         bottom: 2rem;
-        background-color: var(--primary-color);
+        /* background-color: var(--primary-color);
         padding: 13px;
         color: white;
-        border-radius: 10px;
-        box-shadow: 4px 4px 5px #bdbdbd;
+        border-radius: 10px; */
         z-index: 99;
     }
 
@@ -195,7 +193,7 @@ export default {
 
     .order-content {
 
-        //margin-top: 3rem;
+        /* margin-top: 3rem; */
         /* display: grid;
         grid-template-columns: 50% 50%; */
 
@@ -217,9 +215,9 @@ export default {
     }
 
     .is-active-block {
-        background-color: #e0e0e0;
-        border: 1px solid #e0e0e0;
-        box-shadow: 1px 1px 1px #bdbdbd;        
+        background-color: #e0e0e0 !important;
+        border: 1px solid #e0e0e0 !important;
+        box-shadow: 1px 1px 1px #bdbdbd !important;        
     }
     
     .order-detail {

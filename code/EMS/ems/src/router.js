@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import LoginComponent from './components/Login/Login.vue'
 import DashboardComponent from './components/Dashboard/Dashboard.vue';
 import EquipmentComponent from './components/Equipment/Equipment.vue';
 import OrderComponent from './components/Order/Order.vue';
@@ -19,7 +18,7 @@ Vue.use(Router)
 
 import store from './store';
 
-export default new Router({
+let router = new Router({
     mode: 'history',
     routes: [
         {
@@ -28,18 +27,25 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Dashboard');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
-        {
-            path: '/login',
-            component: LoginComponent,
-        },
+        // {
+        //     path: '/login',
+        //     name: 'login',
+        //     component: LoginComponent,
+        // },
         {
             path: '/equipment',
             component: EquipmentComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         },
         {
@@ -48,6 +54,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Add equipment');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
         {
@@ -56,6 +65,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         },
         {
@@ -80,6 +92,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Work Order');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         },
         {
@@ -88,6 +103,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Work Order');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
         {
@@ -96,6 +114,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Calendar');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
         {
@@ -104,6 +125,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Report');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
         {
@@ -112,6 +136,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Teams & People');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         },
         {
@@ -120,6 +147,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Location');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         },
         {
@@ -128,7 +158,12 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Vendors');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         }
     ]
 });
+
+export default router;
