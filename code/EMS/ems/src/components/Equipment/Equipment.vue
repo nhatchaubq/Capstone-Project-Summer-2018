@@ -2,162 +2,89 @@
     <div>
       <div class="equipment-block">
        <div class="field is-grouped" >
-            <button id="btn-table-view" disabled="disabled">Table view</button>
-            <a href="/equipment/card"><button id="btn-card-view" >Card view</button></a>
+
+
+          <router-link to='/equipment'>
+            <button id="btn-table-view" disabled="disabled">Table view  
+            </button>
+          </router-link>
+
+          <router-link to='/equipment/card'>
+            <button id="btn-table-view" >Card view  
+            </button>
+          </router-link>
+
+            <!-- <a href="/equipment/card"><button id="btn-card-view" >Card view</button></a> -->
         </div>
       </div>
-      <div style="overflow-x:auto;overflow-y:auto"></div>
-  <table>
-    <tr>
-      <th> <strong> ID </strong> </th>
-      <th> <strong> Name </strong> </th>
-      <th> <strong> Vendor's name </strong> </th>
-      <th> <strong> Import's date </strong> </th>
-      <th> <strong> Price </strong> </th>
-      <th> <strong> Description </strong> </th>
-      <th> <strong> Category </strong> </th>
-      <th> <strong> In department </strong> </th>
- 
-    </tr>
-    <tr class="tr1">
-      <td>1</td>
-      <td>Truck 2753</td>
-      <td>Toyota</td>
-      <td>22/03/2015</td>
-      <td>750 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
+
+
+<!-- table -->
+<table class="table">
+  <thead>
     <tr >
-      <td>2</td>
-      <td>Crane 8751</td>
-      <td>Yamaha</td>
-      <td>22/04/2015</td>
-      <td>950 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
-      <tr >
-      <td>3</td>
-      <td>Crane</td>
-      <td>Toyota</td>
-      <td>22/03/2015</td>
-      <td>750 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
-      <tr >
-      <td>4</td>
-      <td>Crane</td>
-      <td>Toyota</td>
-      <td>22/03/2015</td>
-      <td>750 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
-      <tr >
-      <td>5</td>
-      <td>Crane</td>
-      <td>Toyota</td>
-      <td>22/03/2015</td>
-      <td>750 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
-      <tr >
-      <td>6</td>
-      <td>Crane</td>
-      <td>Toyota</td>
-      <td>22/03/2015</td>
-      <td>750 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
-      <tr >
-      <td>7</td>
-      <td>Crane</td>
-      <td>Toyota</td>
-      <td>22/03/2015</td>
-      <td>750 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
-      <tr >
-      <td>8</td>
-      <td>Crane</td>
-      <td>Toyota</td>
-      <td>22/03/2015</td>
-      <td>750 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
-      <tr >
-      <td>9</td>
-      <td>Crane</td>
-      <td>Toyota</td>
-      <td>22/03/2015</td>
-      <td>750 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
-      <tr >
-      <td>10</td>
-      <td>Crane</td>
-      <td>Toyota</td>
-      <td>22/03/2015</td>
-      <td>750 000 000</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-     
-    </tr>
-   
-     <tr>
-      <td>1</td>
-      <td>Crane</td>
-      <td>Phu Dong Thien Vuong</td>
-      <td>CRA5273</td>
-      <td>1234789657821</td>
-      <td>3</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>22/03/2015</td>
-
+      <th><strong>ID</strong> </th>
+      <th><strong>Equipment name</strong></th>
+      <th><strong>Vendor name</strong></th>
+      <th><strong>Import date</strong></th>
+      <th><strong>Price</strong></th>
+      <th><strong>Description</strong></th>
+      <th><strong>Category</strong></th>
 
     </tr>
+
+
+  </thead>
+  
+  <tbody>
+      <tr v-bind:key="equipment.id" v-for="equipment in equipmentlist">
+        <td>{{equipment.id}}</td>    
+        <td>{{equipment.equipmentName}}</td>
+        <td>{{equipment.vendorName}}</td>
+        <td>{{equipment.importDate}}</td>
+        <td>{{equipment.price}}</td>
+        <td>{{equipment.description}}</td>
+        <td>{{equipment.category}}</td>
+      </tr>
+  </tbody>
+</table>
+
     <a href="/equipment/add"><button id="btn-add-equipment">Add Equipment</button></a>
       
     </table>
+
+
+<!-- /table -->
+        
+  <router-link to='/equipment/add/'>
+    <button id="btn-add-equipment">Add Equipment</button>
+  </router-link>
+
 
     </div>
 </template>
 
 <script>
 import EquipmentCard from "./EquipmentCard";
+import data from "@/models/equipment_tb.js";
+// import equipmentstb from "./EquipmentTableBlock/EquipmentBlock";
 
 export default {
   components: {
     EquipmentCard
-  }
+  },
+      data() {
+        return {
+            equipmentlist: data,
+            selectedequipment: null,
+        }
+    },
+    methods: {
+        setSelectedEquipment(equipment) {
+            this.selectedequipment = equipment;
+        },
+        
+    }
 };
 </script>
 
@@ -246,6 +173,7 @@ export default {
 table {
     /* border: 1px solid black; */
     width: 100%;
+    text-align: right;
 }
 th{
   text-align: left;
@@ -253,14 +181,15 @@ th{
 
 }
 td {
-    text-align: left;
+    text-align: justify;
     padding-top: 15px;
   
 }
 tr:nth-child(odd){background-color: white; color: #263238}
 tr:nth-child(even){background-color: #ECEFF1; color: #263238}
 #th1:curve{
-  text-align: left;
+  text-align: justify;
   background-color: #B0BEC5;
 }
+
 </style>

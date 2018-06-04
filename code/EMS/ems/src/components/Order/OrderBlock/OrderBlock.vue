@@ -13,8 +13,8 @@
                 {{ order.createdBy }}
             </div>
             <div>
-                <i class="fa fa-rocket"></i>
-                {{ order.status }}
+                <i class="fa fa-calendar"></i>
+                {{ order.requestDate }}
             </div>
         </div>
         <div class="order-block-location">
@@ -103,6 +103,8 @@ export default {
     }
 
     .order-block-location i {
-        font-size: 20px;
+        font-size: 1.2rem;
+        position: relative;
+        top: .1rem;
     }
 </style>

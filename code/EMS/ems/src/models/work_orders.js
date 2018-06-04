@@ -9,6 +9,8 @@ let orders = [
         status: 'Open',
         location: '27 Truong Chinh, phuong Tan Thoi Nhat, quan 12, tp. Ho Chi Minh',
         requestDate: '2017-12-11',
+        startDate: '2018-6-7',
+        endDate: '2018-6-9',        
     },
     {
         id: 2,
@@ -20,6 +22,8 @@ let orders = [
         status: 'Open',
         location: '27 Truong Chinh, phuong Tan Thoi Nhat, quan 12, tp. Ho Chi Minh',
         requestDate: '2017-12-10',
+        startDate: '2018-6-10',
+        endDate: '2018-6-19',
     },
     {
         id: 3,
@@ -31,6 +35,8 @@ let orders = [
         status: 'Open',
         location: '27 Truong Chinh, phuong Tan Thoi Nhat, quan 12, tp. Ho Chi Minh',
         requestDate: '2017-12-10',
+        startDate: '2018-6-11',
+        endDate: '2018-6-15',
     },
     {
         id: 4,
@@ -39,9 +45,11 @@ let orders = [
         tagColor: '#00c853',
         orderNumber: '001',
         createdBy: 'Minh Tien',
-        status: 'Open',
+        status: 'Request',
         location: '27 Truong Chinh, phuong Tan Thoi Nhat, quan 12, tp. Ho Chi Minh',
         requestDate: '2017-12-10',
+        startDate: '2018-6-10',
+        endDate: '2018-6-11',
     },
     {
         id: 5,
@@ -53,6 +61,8 @@ let orders = [
         status: 'Open',
         location: '27 Truong Chinh, phuong Tan Thoi Nhat, quan 12, tp. Ho Chi Minh',
         requestDate: '2017-12-10',
+        startDate: '2018-6-1',
+        endDate: '2018-6-31',
     },
     {
         id: 6,
@@ -63,6 +73,8 @@ let orders = [
         status: 'Open',
         location: '27 Truong Chinh, phuong Tan Thoi Nhat, quan 12, tp. Ho Chi Minh',
         requestDate: '2017-12-13',
+        startDate: '2018-6-1',
+        endDate: '2018-6-31',
     },
     // {
     //     id: 7,

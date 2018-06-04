@@ -1,24 +1,27 @@
 <template>
+
     <div class="form">
+
         <div class="form-title">
             <div class="form-title-start">
                 Add New Equipment
-            </div>
-            <div></div>
+            </div>            
             <div class="form-title-end">
                 <button id="" class="button is-rounded" style="margin-right: .6rem">Cancel</button>
                 <button id="" class="button is-rounded is-primary">Create New Equipment</button>
             </div>
         </div>
+
         <div>           
+
             <div class="form-field-picture">
                 <div class="form-field-title">
                     Picture
                 </div>
-                <div class="input_picture">
-                    
-                        <label class="file-label" style="width: 100% !important">
-                    
+
+                <div class="input_picture">                    
+                    <label class="file-label" style="width: 100% !important"> 
+
                     <span class="file-cta">
                         <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange" multiple />
                         <span class="file-icon">
@@ -33,12 +36,13 @@
                         <div>
                             <img class="file-upload" v-bind:src="getFilePath(file)"/>
                         </div>
+
                     </div>
                         </label>
                    
                 </div> 
             </div>
-             
+
             <div class="form-field">
                 <div class="form-field-title">
                     Asset Name
@@ -100,11 +104,13 @@ export default {
   components: {
     AddEquipment
   },
+
   data() {
       return {
             files: [],       
       }
     },
+
   methods: {
      
       handleFileChange(e) {
@@ -117,7 +123,9 @@ export default {
             return window.URL.createObjectURL(file);
         }
     }
-}
+
+  };
+
 </script>
 
 <style scoped>
@@ -148,13 +156,6 @@ export default {
         /* align-content: center; */
     }
 
-    .form-title-end button {
-        /* font-weight: bold;
-        color: white;
-        border: 1px solid transparent;
-        border-radius: 10px;
-        padding: .6rem 1.5rem; */
-    }
 
     #btn-cancel {
         background-color: #bdbdbd;
@@ -201,6 +202,28 @@ export default {
         border-style: none; 
         background-color: aliceblue;
         align-items: center;
+
+        font-size: 13px;
     }
+
+    .input_picture{
+        border-style: dashed;
+        color: #bdbdbd;
+    }
+    /* .box__file {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+    }
+    .box__file + label {
+        font-size: 1.25em;
+        font-weight: 700;
+        color: white;
+        background-color: black;
+        display: inline-block;
+    } */
 
 </style>
