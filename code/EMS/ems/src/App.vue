@@ -16,43 +16,47 @@
 </template>
 
 <script>
-import { sync } from 'vuex-pathify';
-import Login from './components/Login/Login'
-import Sidebar from './components/Sidebar/Sidebar.vue';
-import HeaderBar from './components/HeaderBar/HeaderBar';
+import { sync } from "vuex-pathify";
+import Login from "./components/Login/Login";
+import Sidebar from "./components/Sidebar/Sidebar.vue";
+import HeaderBar from "./components/HeaderBar/HeaderBar";
 
 export default {
-  name: 'app',
+  name: "app",
   components: {
-    Sidebar, HeaderBar, Login,
+    Sidebar,
+    HeaderBar,
+    Login
   },
   computed: {
-    isLoggedIn: sync('isLoggedIn'),
+    isLoggedIn: sync("isLoggedIn")
   }
-}
+};
 </script>
 
 <style>
 :root {
   --primary-color: #26a69a;
-  --secondary-color: #80DEEA;
+  --secondary-color: #80deea;
   --light-background: #fafafa;
   --dark-background: #263238;
   --danger-color: #f44336;
+  --shadow: #9e9e9e;
 }
 
 :focus {
   outline: 0;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   /* background-color: var(--light-background);   */
 }
 
 #app {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
@@ -91,28 +95,28 @@ html, body {
   border-radius: 3px;
   /* border-left: 4px solid #f44336; */
   border: 1px solid #eeeeee;
-  padding: .3rem .6rem;
+  padding: 0.3rem 0.6rem;
   /* margin: 0 5rem .5rem 5rem; */
 }
 
 .material-shadow {
-  box-shadow: 2px 2px 4px #bdbdbd !important;  
+  box-shadow: 2px 2px 4px var(--shadow) !important;
 }
 
 .material-shadow-animate {
-  box-shadow: 2px 2px 4px #bdbdbd !important;  
-  transition: all .25s ease-in-out;  
+  box-shadow: 2px 2px 4px var(--shadow) !important;
+  transition: all 0.2s ease-in-out;
 }
 
 .material-shadow-animate:hover {
-    box-shadow: 4px 4px 8px #bdbdbd !important;    
+  box-shadow: 4px 4px 8px var(--shadow) !important;
 }
 
 .badge {
-    color: white;
-    border-radius: 5px;
-    font-size: 12px;
-    padding: .2rem .3rem 0 .3rem !important;  
+  color: white;
+  border-radius: 5px;
+  font-size: 12px;
+  padding: 0.2rem 0.3rem 0 0.3rem !important;
 }
 
 .emtpy-text {
