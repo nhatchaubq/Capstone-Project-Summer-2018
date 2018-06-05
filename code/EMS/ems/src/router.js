@@ -1,22 +1,23 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from "vue";
+import Router from "vue-router";
 
-import LoginComponent from './components/Login/Login.vue'
-import DashboardComponent from './components/Dashboard/Dashboard.vue';
-import EquipmentComponent from './components/Equipment/Equipment.vue';
-import OrderComponent from './components/Order/Order.vue';
-import CreateOrderComponent from './components/Order/CreateOrder/CreateOrder.vue'
-import CalendarComponent from './components/Calendar/Calendar.vue';
-import ReportComponent from './components/Report/Report.vue';
-import TeamComponent from './components/Team/Team.vue';
-import LocationComponent from './components/Location/Location.vue';
-import EquipmentCardComponent from './components/Equipment/EquipmentCard.vue';
+import DashboardComponent from "./components/Dashboard/Dashboard.vue";
+import EquipmentComponent from "./components/Equipment/Equipment.vue";
+import OrderComponent from "./components/Order/Order.vue";
+import CreateOrderComponent from "./components/Order/CreateOrder/CreateOrder.vue";
+import CalendarComponent from "./components/Calendar/Calendar.vue";
+import ReportComponent from "./components/Report/Report.vue";
+import TeamComponent from "./components/Team/Team.vue";
+import LocationComponent from "./components/Location/Location.vue";
+import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
+import AccountComponent from'./components/Account/Account.vue';
+import AddAccountComponent from './components/Account/AddAccount.vue'
 Vue.use(Router)
 
 import store from './store';
 
-export default new Router({
+let router = new Router({
     mode: 'history',
     routes: [
         {
@@ -25,33 +26,43 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Dashboard');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
-        {
-            path: '/login',
-            component: LoginComponent,
-        },
+        // {
+        //     path: '/login',
+        //     name: 'login',
+        //     component: LoginComponent,
+        // },
         {
             path: '/equipment',
             component: EquipmentComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         },
         {
-            path: '/equipment/add',
+            path: '/equipment/create',
             component: AddEquipmentComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Add equipment');
+                store.set('title', 'Equipment');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
         {
-            path: '/equipment/card',
-            component: EquipmentCardComponent,
+            path: '/equipment/details',
+            component: EquipmentDetailsComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Equipment');
+                store.set('title', 'Equipment details');
                 next();
             }
         },
@@ -61,6 +72,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Work Order');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         },
         {
@@ -69,6 +83,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Work Order');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
         {
@@ -77,6 +94,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Calendar');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
         {
@@ -85,6 +105,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Report');
                 next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         },
         {
@@ -92,6 +115,25 @@ export default new Router({
             component: TeamComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Teams & People');
+                next();
+            },
+            meta: {
+                showSearchBar: true,
+            }
+        },
+        {
+            path: '/accounts',
+            component: AccountComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Accounts');
+                next();
+            }
+        },
+        {
+            path: '/accounts/add',
+            component: AddAccountComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Account');
                 next();
             }
         },
@@ -101,6 +143,9 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Location');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         },
         {
@@ -109,7 +154,12 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Vendors');
                 next();
+            },
+            meta: {
+                showSearchBar: true,
             }
         }
     ]
 });
+
+export default router;

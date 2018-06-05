@@ -1,209 +1,78 @@
 <template>
-     <div>
-         <div class="equipment-block">
-       <div class="field is-grouped" >
-           <a href="/equipment"><button id="btn-table-view" >Table view</button></a>
-            <a href="/equipment/card"><button id="btn-card-view" disabled="disabled">Card view</button></a>
-
-
+  <div class="grid-wrapper" v-if="equipments">
+    <div class="equipment-card material-box material-shadow-animate" style="border: none !important;" v-bind:key="equipment.id" v-for="equipment in equipments">
+      <!-- <div class="equipment-card-title">
+        <div v-bind:key="equipment.id" v-for="equipment in equipmentpools">
+        <img src="{{equipment.thumbnail}}" alt="Crane">
         </div>
-        
+      </div> -->
+        <div class="equipment-image-preview">
+          <img :src="equipment.Image" :alt="equipment.Name" style="width: 100%; height: 12rem;">
         </div>
-        <div class="columns">
-            <!-- <div class="column">
-                <v-card class="dashboard-tile" style="border: none !important;">
-                    <div class="dashboard-tile-title">
-                        Items by status
-                    </div>
-                    <div class="dashboard-tile-content">
-                        <div style="padding: 20px;">
-                            <div class="circle-progress">
-                                <p>2</p>
-                                <p>Total</p>
-                            </div>
-                        </div>
-                    </div>
-                </v-card>
-
-                <v-card class="dashboard-tile" style="border: none !important;">
-                    <div class="dashboard-tile-title">
-                        Items by status
-                    </div>
-                    <div class="dashboard-tile-content">
-                        <div style="padding: 20px;">
-                            <div class="circle-progress">
-                                <p>2</p>
-                                <p>Total</p>
-                            </div>
-                        </div>
-                    </div>
-                </v-card>
-            </div> -->
-            <div class="column columns">
-                <div class="column">
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            <img src="../../assets/image/truck.jpg"  alt="Truck">
-
-                        </div>
-                        <div class="dashboard-tile-content">
-                            <h2><strong>Truck 2753</strong></h2>
-                            <div><span>ID: </span>1</div>
-                            <div><span>Vendor's name: </span>Toyota</div>
-                            <div><span>Import's date: </span>22/03/2015</div>
-                            <div><span>Price: </span>750 000 000</div>
-                            <div><span>Description: </span>N/A</div>
-                            <div><span>Category: </span>N/A</div>
-                            <div><span>In department: </span>N/A</div>
-       
-                        </div>
-                    </v-card>
-
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            test5
-                            
-                        </div>
-                        <div class="dashboard-tile-content">
-                            Alo
-                        </div>
-                </v-card> 
-                </div>
-                 <div class="column">
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            <img src="../../assets/image/Crane 1.jpg" alt="Crane">
-                        </div>
-                        <div class="dashboard-tile-content">
-                            <h2><strong>Crane 8751</strong></h2>
-                            <div><span>ID: </span>2</div>
-                            <div><span>Vendor's name: </span>Yamaha</div>
-                            <div><span>Import's date: </span>22/04/2015</div>
-                            <div><span>Price: </span>950 000 000</div>
-                            <div><span>Description: </span>N/A</div>
-                            <div><span>Category: </span>N/A</div>
-                            <div><span>In department: </span>N/A</div>
-       
-                        </div>
-                    </v-card>
-
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            Reservation
-                        </div>
-                        <div class="dashboard-tile-content">
-                            Alo
-                        </div>
-                </v-card> 
-                </div>
-                 <div class="column">
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            <img src="../../assets/image/Crane 1.jpg" alt="Crane">
-                        </div>
-                        <div class="dashboard-tile-content">
-                            <h2><strong>Crane 5749</strong></h2>
-                            <div><span>ID: </span>3</div>
-                            <div><span>Vendor's name: </span>Yamaha</div>
-                            <div><span>Import's date: </span>22/04/2015</div>
-                            <div><span>Price: </span>920 000 000</div>
-                            <div><span>Description: </span>N/A</div>
-                            <div><span>Category: </span>N/A</div>
-                            <div><span>In department: </span>N/A</div>
-       
-                        </div>
-                    </v-card>
-
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            Reservation
-                        </div>
-                        <div class="dashboard-tile-content">
-                            Alo
-                        </div>
-                </v-card> 
-                </div>
-                <div class="column">
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            <img src="../../assets/image/Crane 1.jpg" alt="Crane">
-                        </div>
-                        <div class="dashboard-tile-content">
-                            <h2><strong>Crane 1357</strong></h2>
-                            <div><span>ID: </span>4</div>
-                            <div><span>Vendor's name: </span>Yamaha</div>
-                            <div><span>Import's date: </span>22/04/2015</div>
-                            <div><span>Price: </span>830 000 000</div>
-                            <div><span>Description: </span>N/A</div>
-                            <div><span>Category: </span>N/A</div>
-                            <div><span>In department: </span>N/A</div>
-       
-                        </div>
-                    </v-card>
-
-                    <v-card class="dashboard-tile" style="border: none !important;">
-                        <div class="dashboard-tile-title">
-                            Check-outs
-                        </div>
-                        <div class="dashboard-tile-content">
-                            Alo
-                        </div>
-                    </v-card>
-                </div>
-                
-            </div>
-        </div>
+        <div class="equipment-card-content" >
+        <!-- <img src="{{equipment.thumbnail}}" alt="Crane"> -->
+          <h2><strong>{{equipment.Name}}</strong></h2>
+          <!-- <div><span>ID: </span>{{equipment.Id}}</div> -->
+          <div><span>Category: </span>{{equipment.Category.Name}}</div>
+          <div><span>Vendor: </span>{{equipment.Vendor.Name}}</div>
+          <div><span>Import date: </span>{{equipment.ImportDate}}</div>
+          <div><span>Price: </span>{{equipment.Price ? equipment.Price : 'n/a'}}</div>
+          <div><span>Description: </span>{{equipment.Description ? equipment.Description : 'n/a'}}</div>
+        <!-- <div><span>In department: </span>{{equipment.department}}</div> -->
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 export default {
-  name: "equipmentCard",
-  data() {
-    return {
-      props: {
-        name: null,
-        imageUrl: null,
-        status: null
-      }
-    };
+  name: "equipment-card",
+  props: {
+    equipments: null
   }
 };
 </script>
 
 <style>
- .dashboard-tile {
-        /* border: 1px solid #bdbdbd; */
-        height: 200px;
-        width: 100%;
-        margin-bottom: 20px;
-    }
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  grid-column-gap: 1rem;
+  grid-row-gap: 2rem;
+}
+.equipment-card {
+  /* border: 1px solid #bdbdbd; */
+  /* height: 200px; */
+  width: 100%;
+  /* height: 15.5rem; */
+  /* border-bottom: 1px solid #e0e0e0; */
+  padding: 0 !important;
+}
 
-    .dashboard-tile-title {
-        border-bottom: 1px solid #e0e0e0;
-        padding: 10px 15px 10px 15px;
-    }
+.equipment-card:hover {
+  cursor: pointer;
+}
 
-    .dashboard-tile-content {
-        padding: 10px 15px 10px 15px;
-    }
+.equipment-card-content {
+  padding: 0.6rem;
+}
 
-    .circle-progress {
-        border: 10px solid #bdbdbd;
-        border-top: 10px solid green;
-        border-right: 10px solid green;
-        border-radius:  50%;
-        width: 200px;
-        height: 200px;
-    }
+.circle-progress {
+  border: 10px solid #bdbdbd;
+  border-top: 10px solid green;
+  border-right: 10px solid green;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+}
 
-    .circle-progress p {
-        text-align: center;
-        position: relative;
-        top: 65px;
-    }
-    img{
-        height: 287px;
-    width: 175px;
-    }
+.circle-progress p {
+  text-align: center;
+  position: relative;
+  top: 65px;
+}
+
+.equipment-image-preview img {
+  border-radius: 3px 3px 0 0;
+}
 </style>
