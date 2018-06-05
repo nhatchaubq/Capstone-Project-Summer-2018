@@ -45,79 +45,84 @@
 </template>
 
 <script>
-import Server from '@/config/config.js'
-import Utils from '@/utils.js'
+import Server from "@/config/config.js";
+import Utils from "@/utils.js";
 export default {
-    name: 'login',
-    data: function() {
-        return {
-            form: {
-                username: null,
-                password: null,
-            },
-            sending: false,
-            showNotification: false,
-            message: null,
-            error: false,
-        }
-    },
-    computed: {
-        status() {
-            if (!this.error) {
-                return 'is-success';
-            } else {
-                return 'is-danger';
-            }
-        }
-    },
-    methods: {
-        closeNotification: function() {
-            this.showNotification = !this.showNotification;
-        },
-        login: async function() {
-            this.sending = true;
-            this.showNotification = false;
-            await Utils.sleep(1000);
-            let uri = Server.LOGIN_API_PATH + this.form.username + '/' + this.form.password;
-            this.axios.get(uri)
-                .then(response => {
-                    if (response.data.Username) {
-                        const authUser = response.data;
-                        window.localStorage.setItem('user', JSON.stringify(authUser));
-                        this.$store.state.isLoggedIn = true;
-                        this.$router.push('/');
-                        this.error = false;
-                    } else {
-                        this.message = 'Username or password is incorrect!';
-                        this.error = true;
-
-                        this.form.password = null;
-                        this.showNotification = true;
-                    }
-                    this.sending = false;
-                })
-                .catch (error => {
-                    this.message = error.response.data;
-                    this.sending = false;
-                    this.showNotification = true;
-                    this.error = true;
-
-                });
-        }
+  name: "login",
+  data: function() {
+    return {
+      form: {
+        username: null,
+        password: null
+      },
+      sending: false,
+      showNotification: false,
+      message: null,
+      error: false
+    };
+  },
+  computed: {
+    status() {
+      if (!this.error) {
+        return "is-success";
+      } else {
+        return "is-danger";
+      }
     }
-}
+  },
+  methods: {
+    closeNotification: function() {
+      this.showNotification = !this.showNotification;
+    },
+    login: async function() {
+      this.sending = true;
+      this.showNotification = false;
+      await Utils.sleep(1000);
+      let uri =
+        Server.LOGIN_API_PATH +
+        "/" +
+        this.form.username +
+        "/" +
+        this.form.password;
+      this.axios
+        .get(uri)
+        .then(response => {
+          if (response.data.Username) {
+            const authUser = response.data;
+            window.localStorage.setItem("user", JSON.stringify(authUser));
+            this.$store.state.isLoggedIn = true;
+            this.$router.push("/");
+            this.error = false;
+          } else {
+            this.message = "Username or password is incorrect!";
+            this.error = true;
+
+            this.form.password = null;
+            this.showNotification = true;
+          }
+          this.sending = false;
+        })
+        .catch(error => {
+          this.message = error.response.data;
+          this.sending = false;
+          this.showNotification = true;
+          this.error = true;
+        });
+    }
+  }
+};
 </script>
 
 <style scoped>
-    .login-container {
-        height: 100% !important;
-    }
+.login-container {
+  height: 100% !important;
+}
 
-    .login-form {
-        margin-top: -3rem;
-        padding: 2rem 2rem;
-        position: relative;
-        /* top: 50%; */
-        transform: perspective(1px) translateY(50%);
-    }
+.login-form {
+  margin-top: -3rem;
+  padding: 2rem 2rem;
+  position: relative;
+  /* top: 50%; */
+  transform: perspective(1px) translateY(50%);
+}
 </style>

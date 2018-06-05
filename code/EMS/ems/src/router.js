@@ -1,16 +1,14 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from "vue";
+import Router from "vue-router";
 
-import DashboardComponent from './components/Dashboard/Dashboard.vue';
-import EquipmentComponent from './components/Equipment/Equipment.vue';
-import OrderComponent from './components/Order/Order.vue';
-import CreateOrderComponent from './components/Order/CreateOrder/CreateOrder.vue'
-import CalendarComponent from './components/Calendar/Calendar.vue';
-import ReportComponent from './components/Report/Report.vue';
-import TeamComponent from './components/Team/Team.vue';
-import LocationComponent from './components/Location/Location.vue';
-import EquipmentCardComponent from './components/Equipment/EquipmentCard.vue';
-
+import DashboardComponent from "./components/Dashboard/Dashboard.vue";
+import EquipmentComponent from "./components/Equipment/Equipment.vue";
+import OrderComponent from "./components/Order/Order.vue";
+import CreateOrderComponent from "./components/Order/CreateOrder/CreateOrder.vue";
+import CalendarComponent from "./components/Calendar/Calendar.vue";
+import ReportComponent from "./components/Report/Report.vue";
+import TeamComponent from "./components/Team/Team.vue";
+import LocationComponent from "./components/Location/Location.vue";
 import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
 import AccountComponent from'./components/Account/Account.vue';
@@ -50,7 +48,7 @@ let router = new Router({
             }
         },
         {
-            path: '/equipment/add',
+            path: '/equipment/create',
             component: AddEquipmentComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment');
@@ -61,29 +59,10 @@ let router = new Router({
             }
         },
         {
-            path: '/equipment/card',
-            component: EquipmentCardComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', 'Equipment');
-                next();
-            },
-            meta: {
-                showSearchBar: true,
-            }
-        },
-        {
             path: '/equipment/details',
             component: EquipmentDetailsComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment details');
-                next();
-            }
-        },
-        {
-            path: '/equipment/add',
-            component: AddEquipmentComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', 'Add new equipment ');
                 next();
             }
         },
