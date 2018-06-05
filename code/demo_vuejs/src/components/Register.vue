@@ -8,7 +8,7 @@
           <div class="column"></div>
           <div class="column is-half register-form">
               <h2 class="title is-2">Register</h2>
-              <form>
+              <form @submit.prevent="register">
                   <div class="field">
                     <label class="label">Email</label>
                     <div class="control">
@@ -54,7 +54,7 @@
                   </div>
                   <div class="field">
                       <div class="control">
-                          <button class="button is-primary is-rounded" v-on:click="register">
+                          <button class="button is-primary is-rounded">
                             Submit
                             <i v-show="sending" class="fa fa-circle-o-notch fa-spin"  style="margin-left: 5px;"></i>
                           </button>

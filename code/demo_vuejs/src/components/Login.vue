@@ -8,7 +8,7 @@
         <div class="column"></div>
         <div class="column is-one-quarter login-form">
             <h2 class="title is-2">Login</h2>
-            <!-- <form> -->
+            <form @submit.prevent="login">
                 <div class="field">
                     <label class="label">Username</label>
                     <div class="control">
@@ -29,13 +29,13 @@
                 </div>
                 <div class="field">
                     <div class="control">
-                        <button class="button is-primary is-rounded" v-on:click="login">
+                        <button class="button is-primary is-rounded">
                             Login
                             <i v-show="sending" class="fa fa-circle-o-notch fa-spin" style="margin-left: 5px;"></i>
                         </button>
                     </div>
                 </div>
-            <!-- </form> -->
+            </form>
         </div>
         <div class="column"></div>
       </div>
@@ -50,6 +50,10 @@ export default {
     data: function() {
         return {
             form: {
+                username: null,
+                password: null,
+            },
+            result: {
                 username: null,
                 password: null,
             },
@@ -80,6 +84,8 @@ export default {
                 .then(response => {
                     if (response.data.Username) {
                         this.message = response.data;
+                        this.result.username = response.data.Username;
+                        this.result.password = response.data.Password;
                         this.error = false;
                     } else {
                         this.message = 'Username or password is incorrect!';
