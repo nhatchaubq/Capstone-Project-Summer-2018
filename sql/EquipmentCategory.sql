@@ -1,3 +1,3 @@
-INSERT INTO [EquipmentCategory]([Id], [Name], [Description]) VALUES (1, N'Crane', NULL); GO
-INSERT INTO [EquipmentCategory]([Id], [Name], [Description]) VALUES (2, N'Excavator', NULL); GO
-INSERT INTO [EquipmentCategory]([Id], [Name], [Description]) VALUES (3, N'Forklift', NULL); GO
+INSERT INTO [EquipmentCategory](  [Name], [Description]) VALUES ( N'Crane', NULL); 
+INSERT INTO [EquipmentCategory](  [Name], [Description]) VALUES ( N'Excavator', NULL); 
+INSERT INTO [EquipmentCategory](  [Name], [Description]) VALUES ( N'Forklift', NULL); 

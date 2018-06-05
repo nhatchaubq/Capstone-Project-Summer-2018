@@ -1,3 +1,3 @@
-INSERT INTO [Department]([Id], [Name]) VALUES (1, N'Administrator'); GO
-INSERT INTO [Department]([Id], [Name]) VALUES (2, N'Construction'); GO
-INSERT INTO [Department]([Id], [Name]) VALUES (3, N'Office'); GO
+INSERT INTO [Department]( [Name]) VALUES ( N'Administrator');
+INSERT INTO [Department]( [Name]) VALUES ( N'Construction'); 
+INSERT INTO [Department]( [Name]) VALUES ( N'Office'); 
