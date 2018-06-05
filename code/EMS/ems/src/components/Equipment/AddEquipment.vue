@@ -206,10 +206,7 @@ export default {
         font-size: 13px;
     }
 
-    .input_picture{
-        border-style: dashed;
-        color: #bdbdbd;
-    }
+    
     /* .box__file {
         width: 0.1px;
         height: 0.1px;
