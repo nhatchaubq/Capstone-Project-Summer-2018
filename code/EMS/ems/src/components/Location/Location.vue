@@ -120,7 +120,7 @@ export default {
 
 .location-detail {
   position: fixed;    
-  left: 53rem; top: 5.6rem;
+  left: 53rem; top: 5.1rem;
   height: 39.5rem;
   overflow-y: auto;
   width: 40rem;    
