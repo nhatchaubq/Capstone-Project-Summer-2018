@@ -8,7 +8,7 @@
         <div class=""></div>
         <div class="">
             <div class="headerbar-end">
-                <div class="searchbar-wrapper">
+                <div class="searchbar-wrapper" v-show="showSearchBar">
                     <i class="fa fa-search"></i>
                     <input type="text" class="searchbar" placeholder="Search"/>
                 </div>
@@ -31,8 +31,13 @@
 import { sync, } from 'vuex-pathify';
 export default {
     name: 'header-bar',
+    data() {
+        return {
+        }
+    },
     computed: {
-        title: sync('title')
+        title: sync('title'),
+        showSearchBar: sync('showSearchBar'),
     }
 }
 </script>
@@ -52,7 +57,7 @@ export default {
 
     .headerbar-title {
         padding-top: 0.6rem;
-        padding-left: 1.5rem;
+        padding-left: 2rem;
         font-size: 2rem;
         color: var(--dark-background);
         height: 100%;
@@ -63,7 +68,7 @@ export default {
     .headerbar-end {
         display: flex;
         justify-content: flex-end;
-        padding: .9rem 0;
+        padding: .9rem 1.3rem .9rem 0;
         /* display: grid;
         grid-template-columns: 70% 15% 15%; */
         /* grid-column-gap: 10px; */
@@ -86,7 +91,7 @@ export default {
         border: 1px solid #e0e0e0;
         border-radius: 5px;
         padding: 5px 10px 5px 40px;
-        box-shadow: 1px 1px 2px #e0e0e0;
+        box-shadow: 1px 1px 2px #bdbdbd;
         transition: all 0.25s ease-in;
         font-style: italic;
         width: 100%;
@@ -102,7 +107,7 @@ export default {
 
     .searchbar:hover, .searchbar-wrapper input:focus {
         /* border: 1px solid #eeeeee; */
-        box-shadow: 4px 4px 8px #9e9e9e;  
+        box-shadow: 4px 4px 8px #bdbdbd;  
     }
 
     .headerbar-button {
