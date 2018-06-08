@@ -2,7 +2,7 @@
     <div v-if="order != null" class="material-box material-shadow">
         <div class="detail">
             <div>
-                <span class="detail-title">{{ order.name }}</span>
+                <span class="detail-title">{{ order.ProjectName }}</span>
             </div>
             <div>
                 <div>
