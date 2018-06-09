@@ -21,8 +21,8 @@
                     </div>
                     <div style="width: 100%"></div>
                     <div class="filters-bar">
-                        <span class="tag is-light" style="user-select: none; margin-right: .3rem; cursor: pointer;" v-bind:key="filter.id" v-on:click="removeFilter(filter)" v-for="filter in filterValues">
-                            {{ filter.name }}
+                        <span class="tag is-light" style="user-select: none; margin-right: .3rem; cursor: pointer;" :key="filter.id" v-on:click="removeFilter(filter)" v-for="filter in filterValues">
+                            {{ filter.type == optionTypes.STATUS ? 'Status: ' : 'Priority: ' }} {{ filter.name }}
                             <i class="fa fa-times-circle"></i>
                         </span>
                     </div>
@@ -33,13 +33,13 @@
                             There is no orders to display.
                         </div>
                         <div v-else>
-                            <order-block v-bind:key="order.Id" v-bind:order="order" v-bind:class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
+                            <order-block :key="order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
                         </div>
                     </div>
                 </div>
             </div>
             <div id="order-detail-view">
-                <order-detail class="order-detail" v-bind:order="selectedOrder"></order-detail>
+                <order-detail class="order-detail" :order="selectedOrder" :statusList="options.status"></order-detail>
             </div>
         </div>
         <router-link to="/work_order/create" tag="button" id="btn-add-work-order" class="button is-primary material-shadow-animate">Add Work Order</router-link>
@@ -153,10 +153,13 @@ export default {
         filterOrders() {
             this.workOrders = []; // reset orders before applying new filters
             this.selectedOrder = null;
-
-            this.filterOptionsValues.status.forEach(status => {
-                this.workOrders = this.workOrders.concat(this.tempValues.filter(order => order.WorkOrderStatus == status.name));
-            });
+            if (this.filterOptionsValues.status.length > 0) {
+                this.filterOptionsValues.status.forEach(status => {
+                    this.workOrders = this.workOrders.concat(this.tempValues.filter(order => order.WorkOrderStatus == status.name));
+                });
+            } else {
+                this.workOrders = this.tempValues;
+            }
             if (this.filterOptionsValues.priorities.length > 0) {
                 var tempValues = [];
                 this.filterOptionsValues.priorities.forEach(priority => {
