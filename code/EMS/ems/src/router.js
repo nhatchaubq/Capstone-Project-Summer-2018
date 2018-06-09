@@ -17,7 +17,7 @@ import DepartmentComponent from './components/Department/Department.vue';
 import ProjectComponent from './components/Project/Project.vue'
 Vue.use(Router)
 
-import store from './store';
+import store from "./store";
 
 let router = new Router({
     mode: 'history',
