@@ -15,9 +15,10 @@ import AccountComponent from'./components/Account/Account.vue';
 import AddAccountComponent from './components/Account/AddAccount.vue';
 import DepartmentComponent from './components/Department/Department.vue';
 import ProjectComponent from './components/Project/Project.vue'
+import CreateLocation from './components/Location/CreateLocation.vue';
 Vue.use(Router)
 
-import store from './store';
+import store from "./store";
 
 let router = new Router({
     mode: 'history',
@@ -174,6 +175,17 @@ let router = new Router({
             component: LocationComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Vendors');
+                next();
+            },
+            meta: {
+                showSearchBar: true,
+            }
+        },
+        {
+            path: '/location/create-location',
+            component: CreateLocation,
+            beforeEnter: (to,from,next) => {
+                store.set('title','Location');
                 next();
             },
             meta: {
