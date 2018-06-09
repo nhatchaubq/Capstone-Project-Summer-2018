@@ -6,11 +6,11 @@
             </div>
             <div></div>
             <div class="form-title-end">
-                <router-link to='/accounts'>
+                <router-link to='/account'>
                     <button id="btn-cancel" class="button" >Cancel</button>
                 </router-link>
 
-                <button id="btn-add" class="button">Create Work Order</button>
+                <button id="btn-add" class="button">Create Account</button>
             </div>
         </div>
         <div>
@@ -196,6 +196,11 @@ export default {
 
     #btn-add {
         background-color: var(--primary-color);
+        color: white;
+    }
+        #btn-add:hover {
+        cursor: pointer;
+        background-color: #009688;
         color: white;
     }
 
