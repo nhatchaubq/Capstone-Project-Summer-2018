@@ -12,6 +12,20 @@ router.get('/', (request, response) => {
         + "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id "
         + "ORDER BY e.ImportDate DESC for json path")
         .into(response);
-})
+}),
+/* POST request, for insert */
+router.post('/', (request, response) => {
+    request.sql("INSERT INTO Equipment (Name, VendorID, ImportDate, Image, Price, Description, CategoryID)" +
+        " VALUES (@name, @vendorID, @importDate, @image, @price, @description, @categoryID)")
+        .param('name', request.body.name, TYPES.NVarChar)
+        .param('vendorID', request.body.vendorID, TYPES.Int)
+        .param('importDate', request.body.importDate, TYPES.DateTime)
+        .param('image', request.body.image, TYPES.NVarChar)
+        .param('price', request.body.price, TYPES.Float)
+        .param('description', request.body.description, TYPES.NVarChar)
+        .param('categoryID', request.body.categoryID, TYPES.Int)
+        .exec(response);
+});
+
 
 module.exports = router;
