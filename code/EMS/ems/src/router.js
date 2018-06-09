@@ -62,7 +62,7 @@ let router = new Router({
             }
         },
         {
-            path: '/equipment/details',
+            path: '/equipment/:id',
             component: EquipmentDetailsComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment details');
