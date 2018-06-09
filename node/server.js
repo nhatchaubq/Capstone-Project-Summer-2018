@@ -30,6 +30,8 @@ server.use(bodyParser.json());
 server.use('/api/login', require('./routes/login'));
 server.use('/api/account', require('./routes/account'));
 server.use('/api/equipment', require('./routes/equipment'));
+server.use('/api/work_order', require('./routes/work_order'));
+server.use('/api/location',require('./routes/location'));
 
 // catch 404 and forward to error handler
 server.use(function (req, res, next) {
