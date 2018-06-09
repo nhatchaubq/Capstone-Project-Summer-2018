@@ -19,6 +19,10 @@ const WORKORDER_STATUS_API_PATH = WORKORDER_API_PATH + '/status';
 const WORKORDER_PRIORITIES_API_PATH = WORKORDER_API_PATH + '/priorities';
 // work order api section - end
 
+//location api section - start
+const LOCATION_API_PATH = SERVER_DEFAULT + "/location";
+//location api section - end
+
 export default {
   LOGIN_API_PATH,
   ACCOUNT_API_PATH,
@@ -26,5 +30,6 @@ export default {
   EQUIPMENT_API_PATH,
   WORKORDER_API_PATH,
   WORKORDER_STATUS_API_PATH,
-  WORKORDER_PRIORITIES_API_PATH
+  WORKORDER_PRIORITIES_API_PATH,
+  LOCATION_API_PATH
 };

@@ -49,11 +49,12 @@
 
 <script>
 import data from "@/models/location.js";
+import Server from '@/config/config.js';
 
 export default {
   data() {
     return {
-      locations: data,
+      locations: [],
       selectedLocation: null,
     };
   },
@@ -62,20 +63,29 @@ export default {
       this.selectedLocation = location;
       // alert(this.selectedLocation);
     }
+  },
+  created( ){
+    this.axios.get(Server.LOCATION_API_PATH)
+      .then((response) => {
+        let data = response.data.locations;
+        data.forEach(location =>{
+          this.locations.push(location);
+        })
+      }).catch((error) => {
+      console.log(error);
+    });
   }
 };
 </script>
 
 <style scoped>
-#edit-text{
-  
+#edit-text {
   font-size: 1.3rem;
   cursor: pointer;
   text-indent: 1px;
-  color:teal;
+  color: teal;
 }
-.location-page{
-  
+.location-page {
 }
 .location-list {
   width: 36rem;
@@ -85,7 +95,7 @@ export default {
   height: 2.6rem;
   line-height: 2.6rem;
   /* text-justify:  */
-  width: 36rem;  
+  width: 36rem;
   background-color: lightgrey;
   text-align: center;
   font-size: 1.4rem;
@@ -93,8 +103,8 @@ export default {
 .location-blocks {
   /* display: grid;
   grid-gap: 10px; */
-  position: fixed;   
-  height: 37.5rem;          
+  position: fixed;
+  height: 37.5rem;
   padding-right: 1rem;
   width: 36rem;
   overflow-y: auto;
@@ -119,36 +129,33 @@ export default {
 }
 
 .location-detail {
-  position: fixed;    
-  left: 53rem; top: 5.1rem;
+  position: fixed;
+  left: 53rem;
+  top: 5.1rem;
   height: 39.5rem;
   overflow-y: auto;
-  width: 40rem;    
+  width: 40rem;
   z-index: 2;
-  
 }
-.type-bar{
+.type-bar {
   border: 0.5px solid;
   border-radius: 5px;
   display: grid;
-  grid-template-columns: auto auto auto auto; 
+  grid-template-columns: auto auto auto auto;
   color: var(--primary-color);
   border-color: var(--primary-color);
 }
-.type-bar div{
-  
+.type-bar div {
   border-right: 1px solid;
   border-color: var(--primary-color);
-  text-align: center; 
-  
+  text-align: center;
 }
-.type-bar div:last-child{
-  border-right: 0px; 
+.type-bar div:last-child {
+  border-right: 0px;
 }
-.type-bar div:hover{
+.type-bar div:hover {
   cursor: pointer;
   color: white;
   background-color: var(--primary-color);
 }
-
 </style>
