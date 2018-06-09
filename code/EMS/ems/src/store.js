@@ -11,6 +11,9 @@ const state = {
   showSearchBar: true,
   equipmentPage: {
     isTableMode: true
+  },
+  accountPage:{
+    isTableMode: true
   }
 };
 
