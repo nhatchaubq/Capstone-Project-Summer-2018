@@ -25,7 +25,7 @@ server.use(function (request, respones, next) {
     next();
 });
 
-server.use(bodyParser.text());
+// server.use(bodyParser.text());
 server.use(bodyParser.json());
 server.use('/api/login', require('./routes/login'));
 server.use('/api/account', require('./routes/account'));
