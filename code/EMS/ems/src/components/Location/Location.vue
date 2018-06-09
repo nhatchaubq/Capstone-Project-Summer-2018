@@ -5,27 +5,29 @@
           <b>Sort By</b>
         </div>
         <div class="location-blocks">
-          <div class="material-box material-shadow-animate"  v-bind:key='location.id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
+          <div class="material-box material-shadow-animate"  v-bind:key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
             <div class="location-name" >
-              {{location.name}}
+              {{location.Name}}
             </div>
             <div class="location-address">
               <i class="material-icons">place</i>
-              {{location.address}}
+              {{location.Name}}
             </div>
           </div>         
         </div>
+        <router-link to="/location/create-location" class="btn-add-location material-shadow-animate" >Add Location</router-link>
+      
       </div>
    
       <div v-if="selectedLocation != null" class="location-detail material-box material-shadow">  
           <div style="display: grid; grid-template-columns: 94% auto">
-            <div style="font-size: 1.8rem;" >{{selectedLocation.name}}</div>
+            <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>
             <div id="edit-text">Edit</div>
             <div class="location-address">
-              {{selectedLocation.address}}
+              {{selectedLocation.Description}}
             </div><br/>
             <div>
-              Site Manager: {{selectedLocation.siteManager}}            
+              Site Manager: {{selectedLocation.Description}}            
             </div>
             <br/> <br/>
             
@@ -40,7 +42,10 @@
             
 
           </div>
-          
+          <div class="btn-add">
+        
+
+      </div>
       </div>
       
 
@@ -48,7 +53,6 @@
 </template>
 
 <script>
-import data from "@/models/location.js";
 import Server from '@/config/config.js';
 
 export default {
@@ -67,10 +71,11 @@ export default {
   created( ){
     this.axios.get(Server.LOCATION_API_PATH)
       .then((response) => {
-        let data = response.data.locations;
+        let data = response.data;
         data.forEach(location =>{
           this.locations.push(location);
         })
+        this.selectedLocation = this.locations[0];
       }).catch((error) => {
       console.log(error);
     });
@@ -104,7 +109,7 @@ export default {
   /* display: grid;
   grid-gap: 10px; */
   position: fixed;
-  height: 37.5rem;
+  height: 38.3rem;
   padding-right: 1rem;
   width: 36rem;
   overflow-y: auto;
@@ -132,7 +137,7 @@ export default {
   position: fixed;
   left: 53rem;
   top: 5.1rem;
-  height: 39.5rem;
+  height: 40.8rem;
   overflow-y: auto;
   width: 40rem;
   z-index: 2;
@@ -157,5 +162,20 @@ export default {
   cursor: pointer;
   color: white;
   background-color: var(--primary-color);
+}
+.btn-add-location{
+   position: fixed;
+  right: 2.5rem;
+  bottom: 2rem;
+  background-color: var(--primary-color);
+  padding: 13px;
+  color: white;
+  border-radius: 5px;
+  z-index: 10;
+  font-size: 1.3rem;
+}
+.btn-add-location:hover{
+  cursor: pointer;
+  background-color: #009688;
 }
 </style>
