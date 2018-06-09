@@ -5,6 +5,7 @@
         <button class="btn-view-mode" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
       </div>
+
     </div>
     <div v-if="!equipments">
       There is no equipment yet.
@@ -17,6 +18,7 @@
     <router-link to='/equipment/create/'>
       <button id="btn-add-equipment" class="material-shadow-animate">Add Equipment</button>
     </router-link>
+
   </div>
 </template>
 
