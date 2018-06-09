@@ -1,25 +1,25 @@
 <template>
     <div class="material-box material-shadow-animate order-block">
-        <div class="order-block-title">{{ order.name }}</div>
+        <div class="order-block-title">{{ order.ProjectName }}</div>
         <div class="order-status">
-            <i class="material-icons">lock_open</i>
-            {{ order.status }}
+            <!-- <i class="material-icons">lock_open</i> -->
+            {{ order.WorkOrderStatus }}
         </div>
         <div class="order-block-info">
-            <div v-bind:style="priorityBadgeColor(order)" class="badge">{{ order.priority }}</div>
-            <div>#{{ order.orderNumber }}</div>
+            <div v-bind:style="priorityBadgeColor(order)" class="badge">{{ order.Priority }}</div>
+            <div>#{{ order.Id }}</div>
             <div>
                 <i class="fa fa-user"></i>
-                {{ order.createdBy }}
+                {{ order.RequestFullname }}
             </div>
             <div>
                 <i class="fa fa-calendar"></i>
-                {{ order.requestDate }}
+                {{ order.CreateDate }}
             </div>
         </div>
         <div class="order-block-location">
             <i class="material-icons">location_on</i>
-            {{ order.location }}
+            {{ order.LocationAddress }}
         </div>
     </div>
 </template>
@@ -32,7 +32,7 @@ export default {
     },
     methods: {
         priorityBadgeColor(order) {
-            let tagColor = order.tagColor;
+            let tagColor = order.PriorityColor;
             return `border: 1px solid ${tagColor}; background-color: ${tagColor}`;
         }
     }
