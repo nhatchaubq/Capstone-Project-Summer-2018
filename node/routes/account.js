@@ -34,10 +34,10 @@ router.post('/', (request, response) => {
 
 /* PUT request, for update */
 router.put('/:id', function (request, response) {
-    request.sql('update [Account] set Password = @password, Fullname = @fullname, Birthday = @birthday where Id = @id')
-        .param('password', request.params.id, TYPES.NVarChar)
+    request.sql('update [Account] set Password = @password, Fullname = @fullname where Id = @id')
+        .param('id', request.params.id, TYPES.Int)
+        .param('password', request.body.password, TYPES.NVarChar)
         .param('fullname', request.body.email, TYPES.NVarChar)
-        .param('birthday', request.body.fullname, TYPES.NVarChar)
         .exec(response);
 });
 
