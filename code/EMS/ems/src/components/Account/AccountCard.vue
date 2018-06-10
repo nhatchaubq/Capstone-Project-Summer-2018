@@ -3,7 +3,7 @@
     <div class="account-card material-box material-shadow-animate" style="border: none !important;" v-bind:key="account.id" v-for="account in accounts">
 
         <div class="account-image-preview">
-          <img :src="account.AvatarImage" :alt="account.Username" style="width: 16rem; height: 12rem;">
+          <img :src="getAccountAvatar(account)" :alt="account.Username" style="width: 100%; height: 12rem;">
         </div>
         <div class="account-card-content" >
         <!-- <img src="{{equipment.thumbnail}}" alt="Crane"> -->
@@ -26,6 +26,11 @@ export default {
     name: "account-card",
   props: {
     accounts: null
+  },
+  methods: {
+    getAccountAvatar(acc) {
+      return acc.AvatarImage ? acc.AvatarImage : "http://citizen.edisha.gov.in/Content/assets/stylesheet/img/placeholder-user.png";
+    }
   }
 }
 </script>
@@ -33,7 +38,7 @@ export default {
 <style>
 .grid-wrapper {
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: auto auto auto auto auto;
   grid-column-gap: 1rem;
   grid-row-gap: 2rem;
 }
