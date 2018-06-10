@@ -3,7 +3,7 @@ const TYPES = require('tedious').TYPES;
 
 router.get('/', (request, response) => {
     request.sql("select (select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], "
-		        + "     pr.[Name] as [ProjectName], lo.[Name] as [LocationAddress], (json_query((select wod.*, json_query((select * from EquipmentItem as ei where ei.Id = wod.EquipmentItemId for json path, without_array_wrapper)) as [EquipmentItem] "
+		        + "     pr.[Name] as [ProjectName], lo.[Name] as [LocationAddress], (json_query((select wod.*, json_query((select * from EquipmentItem as ei where ei.Id = wod.EquipmentItemId for json path, without_array_wrapper)) as [EquipmentItem], "
 				+ "			                                                                    from WorkOrderDetail as wod "
 				+ "			                                                                    where wod.WorkOrderID = wo.Id "
                 + "			                                                         for json path))) as [WorkOrderDetails] "
