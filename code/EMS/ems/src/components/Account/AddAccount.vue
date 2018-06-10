@@ -5,32 +5,45 @@
                 Add New Account
             </div>
             <div></div>
-            <div class="form-title-end">
-                <router-link to='/accounts'>
+            <!-- <div class="form-title-end">
+                <router-link to='/account'>
                     <button id="btn-cancel" class="button" >Cancel</button>
                 </router-link>
 
-                <button id="btn-add" class="button">Create Work Order</button>
-            </div>
+                <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
+            </div> -->
         </div>
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Username <strong><span style="color:red;">*</span></strong>
+                  <strong>  Username <span style="color:red;">*</span></strong>
                 </div>
-                <div class="form-field-input">
-                    <input type="text" class="input">
+                <div class="control has-icons-left has-icons-right" style="padding:8px">
+                    <input class="input " type="text" placeholder="Text input" >
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                        </span>
+                        <!-- <span class="icon is-small is-right">
+                        <i class="fa fa-check"></i>
+                        </span> -->
+                    </div>
                 </div>
-            </div>
             
         </div>
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Password <strong><span style="color:red;">*</span></strong>
+                 <strong>   Password <span style="color:red;">*</span></strong>
+              <div class="control has-icons-left has-icons-right" style="padding:8px">
+                    <input class="input " type="text" placeholder="Text input" >
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-expeditedssl"></i>
+                        </span>
+                        <!-- <span class="icon is-small is-right">
+                        <i class="fa fa-check"></i>
+                        </span> -->
+                    </div>
                 </div>
-                    
-                    <button id="btn-table-view">change random password</button>
 
             </div>
             
@@ -41,8 +54,17 @@
                     Fullname <strong><span style="color:red;">*</span></strong>
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input">
+                 <div class="control has-icons-left has-icons-right" style="padding:8px">
+                    <input class="input " type="text" placeholder="Text input" >
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                        </span>
+                        <!-- <span class="icon is-small is-right">
+                        <i class="fa fa-check"></i>
+                        </span> -->
+                    </div>
                 </div>
+
             </div>
             
         </div>
@@ -52,8 +74,17 @@
                     Phone <strong><span style="color:red;">*</span></strong>
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input">
+                  <div class="control has-icons-left has-icons-right" style="padding:8px">
+                    <input class="input " type="text" placeholder="Text input" >
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-mobile"></i>
+                        </span>
+                        <!-- <span class="icon is-small is-right">
+                        <i class="fa fa-check"></i>
+                        </span> -->
+                    </div>
                 </div>
+
             </div>
             
         </div>
@@ -63,28 +94,32 @@
                     Email 
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input">
+                 <div class="control has-icons-left has-icons-right" style="padding:8px">
+                    <input class="input " type="text" placeholder="Text input" >
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-envelope"></i>
+                        </span>
+                        <!-- <span class="icon is-small is-right">
+                        <i class="fa fa-check"></i>
+                        </span> -->
+                    </div>
                 </div>
+
             </div>
             
         </div>
          <div>
-            <div class="form-field">
+            <!-- <div class="form-field">
                 <div class="form-field-title">
                     Status <strong><span style="color:red;">*</span></strong>
                 </div>
                 
                  <div class="field">
   <input class="is-checkradio" id="exampleCheckbox" type="checkbox" name="exampleCheckbox" checked="checked">
-  <label for="exampleCheckbox">Check me</label>
+  <label for="exampleCheckbox">Active</label>
 </div>
-<div class="field">
-  <input class="is-checkradio" id="exampleRadioInline1" type="radio" name="exampleRadioInline" checked="checked">
-  <label for="exampleRadioInline1">Option 1</label>
-  <input class="is-checkradio" id="exampleRadioInline2" type="radio" name="exampleRadioInline">
-  <label for="exampleRadioInline2">Option 2</label>
-</div>
-            </div>
+
+            </div> -->
             
         </div>
          <div>
@@ -93,63 +128,170 @@
                     Start date <strong><span style="color:red;">*</span></strong>
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input">
+                    <div class="control has-icons-left has-icons-right" style="padding:8px">
+                    <input class="input " type="date" placeholder="Text input" >
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-calendar"></i>
+                        </span>
+                        <!-- <span class="icon is-small is-right">
+                        <i class="fa fa-check"></i>
+                        </span> -->
+                    </div>
                 </div>
+
             </div>
             
         </div>
-         <div>
-            <div class="form-field">
-                <div class="form-field-title">
-                    End date <strong><span style="color:red;">*</span></strong>
-                </div>
-                <div class="form-field-input">
-                    <input type="text" class="input">
-                </div>
-            </div>
-            
-        </div>
+ 
          <div>
             <div class="form-field">
                 <div class="form-field-title">
                     Role <strong><span style="color:red;">*</span></strong>
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input">
+                   <div class="control has-icons-left has-icons-right" style="padding:8px">
+                    <input class="input " type="text" placeholder="Text input" >
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-user-md"></i>
+                        </span>
+                        
+                    </div>
                 </div>
+
             </div>
             
         </div>
-         <div>
-            <div class="form-field">
-                <div class="form-field-title">
-                    Team name <strong><span style="color:red;">*</span></strong>
-                </div>
-                <div class="form-field-input">
-                    <input type="text" class="input">
-                </div>
-            </div>
-            
-        </div>
-         <div>
-            <div class="form-field">
-                <div class="form-field-title">
-                    Department name <strong><span style="color:red;">*</span></strong>
-                </div>
-                <div class="form-field-input">
-                    <input type="text" class="input">
-                </div>
-            </div>
-            
-        </div>
+
         
+        <!-- <div><strong style="color:red">/none</strong></div>
+        <div class="field">
+  <label class="label">Name</label>
+  <div class="control">
+    <div class="control has-icons-left has-icons-right" style="padding:8px">
+                    <input class="input " type="text" placeholder="Text input" >
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-expeditedssl"></i>
+                        </span>
+
+                    </div>
+                </div>
+
+</div>
+
+<div class="field">
+  <label class="label">Username</label>
+  <div class="control has-icons-left has-icons-right" style="padding:8px">
+    <input class="input is-success" type="text" placeholder="Text input" value="bulma">
+    <span class="icon is-small is-left">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="icon is-small is-right">
+      <i class="fa fa-check"></i>
+    </span>
+  </div>
+  <p class="help is-success">This username is available</p>
+</div>
+
+<div class="field">
+  <label class="label">Email</label>
+  <div class="control has-icons-left has-icons-right">
+    <input class="input is-danger" type="email" placeholder="Email input" value="hello@">
+    <span class="icon is-small is-left">
+      <i class="fas fa-envelope"></i>
+    </span>
+    <span class="icon is-small is-right">
+      <i class="fas fa-exclamation-triangle"></i>
+    </span>
+  </div>
+  <p class="help is-danger">This email is invalid</p>
+</div>
+
+<div class="field">
+  <label class="label">Subject</label>
+  <div class="control">
+    <div class="select">
+      <select>
+        <option>Select dropdown</option>
+        <option>With options</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="field">
+  <label class="label">Message</label>
+  <div class="control">
+    <textarea class="textarea" placeholder="Textarea"></textarea>
+  </div>
+</div>
+
+<div class="field">
+  <div class="control">
+    <label class="checkbox">
+      <input type="checkbox">
+      I agree to the <a href="#">terms and conditions</a>
+    </label>
+  </div>
+</div>
+
+<div class="field">
+  <div class="control">
+    <label class="radio">
+      <input type="radio" name="question">
+      Yes
+    </label>
+    <label class="radio">
+      <input type="radio" name="question">
+      No
+    </label>
+  </div>
+</div> 
+
+<div class="field is-grouped">
+  <div class="control">
+    <button class="button is-link">Submit</button>
+  </div>
+  <div class="control">
+    <button class="button is-text">Cancel</button>
+  </div>
+</div> -->
+<div class="form-title-end">
+                <router-link to='/account'>
+                    <button id="btn-cancel" class="button" >Cancel</button>
+                </router-link>
+
+                <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
+                <button id="btn-add" class="button" v-on:click="createAccountTrueEnd()">Create Account true end</button>
+            </div>
+        <div>&nbsp</div>
     </div>
 </template>
 
 <script>
 
 export default {
-
+    methods: {
+        createAccount() {
+            this.axios.put("http://localhost:3000/api/account/6", {
+                password: "abc",                
+            });
+        },
+        createAccountTrueEnd(){
+            this.axios.post("http://localhost:3000/api/account",{
+                username: "Dien159",
+                password: 123456,
+                email: "abc@abc",
+                fullname: "Doan Dien",
+                phone: 12345678910,
+                isactive: "True",
+                startdate: "2018/03/02",
+                enddate: "2018/04/04",
+                roleid: 1,
+                avatarimage: "https://www.ebay.co.uk/p/Watchmen-Smiley-Face-25mm-1-Pin-Badge-Button-DC-Comics/1588249551",
+                teamid: 1,
+            });
+        },
+    }
 }
 </script>
 
@@ -175,18 +317,12 @@ export default {
 
     .form-title-end {
         width: 100%;
-        display: flex;
-        justify-content: flex-end;
+        /* float: left; */
         /* align-content: center; */
+        margin-left: 25rem;
     }
 
-    .form-title-end button {
-        /* font-weight: bold;
-        color: white;
-        border: 1px solid transparent;
-        border-radius: 10px;
-        padding: .6rem 1.5rem; */
-    }
+
 
     #btn-cancel {
         background-color: #bdbdbd;
@@ -198,6 +334,11 @@ export default {
         background-color: var(--primary-color);
         color: white;
     }
+        #btn-add:hover {
+        cursor: pointer;
+        background-color: #009688;
+        color: white;
+    }
 
     .form-field {
         /* margin-bottom: 5px; */
@@ -207,4 +348,19 @@ export default {
     .form-field-title {
         font-size: 13px;
     }
+  
+#btn-change-pass {
+
+  background-color: var(--primary-color);
+  padding: 13px;
+  color: white;
+  border-radius: 5px;
+  z-index: 1;
+}
+
+#btn-change-pass:hover {
+  cursor: pointer;
+  background-color: #009688;
+  color: white;
+}
 </style>

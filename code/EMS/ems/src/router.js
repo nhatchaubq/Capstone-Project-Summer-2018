@@ -12,10 +12,13 @@ import LocationComponent from "./components/Location/Location.vue";
 import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
 import AccountComponent from'./components/Account/Account.vue';
-import AddAccountComponent from './components/Account/AddAccount.vue'
+import AddAccountComponent from './components/Account/AddAccount.vue';
+import DepartmentComponent from './components/Department/Department.vue';
+import ProjectComponent from './components/Project/Project.vue'
+import CreateLocation from './components/Location/CreateLocation.vue';
 Vue.use(Router)
 
-import store from './store';
+import store from "./store";
 
 let router = new Router({
     mode: 'history',
@@ -59,7 +62,7 @@ let router = new Router({
             }
         },
         {
-            path: '/equipment/details',
+            path: '/equipment/:id',
             component: EquipmentDetailsComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Equipment details');
@@ -111,10 +114,10 @@ let router = new Router({
             }
         },
         {
-            path: '/teams',
+            path: '/team',
             component: TeamComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Teams & People');
+                store.set('title', 'Teams ');
                 next();
             },
             meta: {
@@ -122,18 +125,26 @@ let router = new Router({
             }
         },
         {
-            path: '/accounts',
+            path: '/account',
             component: AccountComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Accounts');
+                store.set('title', 'Account');
                 next();
             }
         },
         {
-            path: '/accounts/add',
+            path: '/account/add',
             component: AddAccountComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Account');
+                next();
+            }
+        },
+        {
+            path: '/department',
+            component: DepartmentComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Department');
                 next();
             }
         },
@@ -149,10 +160,32 @@ let router = new Router({
             }
         },
         {
+            path: '/project',
+            component: ProjectComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Project');
+                next();
+            },
+            meta: {
+                showSearchBar: true,
+            }
+        },
+        {
             path: '/vendors',
             component: LocationComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', 'Vendors');
+                next();
+            },
+            meta: {
+                showSearchBar: true,
+            }
+        },
+        {
+            path: '/location/create-location',
+            component: CreateLocation,
+            beforeEnter: (to,from,next) => {
+                store.set('title','Location');
                 next();
             },
             meta: {

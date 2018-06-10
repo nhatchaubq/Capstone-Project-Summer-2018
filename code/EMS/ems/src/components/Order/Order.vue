@@ -11,41 +11,35 @@
                             <select v-model="selectedFilter">
                                 <option disabled :value=null>Choose a filter</option>
                                 <optgroup label="Status">
-                                    <option value="Open">Open</option>
-                                    <option value="Checked">Checked</option>
-                                    <option value="Approved">Approved</option>
-                                    <option value="Delivered">Delivered</option>
-                                    <option value="Returned">Returned</option>
-                                    <option value="Done">Done</option>
-                                    <option value="Cancel">Cancel</option>
+                                    <option :disabled="filterValues.includes(status)" :key="status.id" v-for="status in options.status" :value="status">{{ status.name }}</option>
                                 </optgroup>
                                 <optgroup label="Priorities">
-                                    <option value="High">High</option>
-                                    <option value="Medium">Medium</option>
-                                    <option value="Low">Low</option>
+                                    <option :disabled="filterValues.includes(priority)" :key="priority.id" v-for="priority in options.priorities" :value="priority">{{ priority.name }}</option>
                                 </optgroup>
                             </select>
                         </div>
                     </div>
                     <div style="width: 100%"></div>
                     <div class="filters-bar">
-                        <span class="tag is-light" style="user-select: none; margin-right: .3rem; cursor: pointer;" v-bind:key="filter" v-on:click="removeFilter(filter)" v-for="filter in filterValues">
-                            {{ filter }}
+                        <span class="tag is-light" style="user-select: none; margin-right: .3rem; cursor: pointer;" :key="filter.id" v-on:click="removeFilter(filter)" v-for="filter in filterValues">
+                            {{ filter.type == optionTypes.STATUS ? 'Status: ' : 'Priority: ' }} {{ filter.name }}
                             <i class="fa fa-times-circle"></i>
                         </span>
                     </div>
                 </div>
                 <div class="order-blocks">
                     <div>
-                        <div class="emtpy-text" v-if="orders.length == 0">
+                        <div class="emtpy-text" v-if="workOrders.length == 0">
                             There is no orders to display.
                         </div>
-                        <order-block v-bind:key="order.id" v-bind:order="order" v-bind:class="isActive(order.id)" v-for="order in orders" v-on:click.native="setSelectedOrder(order)"></order-block>
+                        <div v-else>
+                            <order-block :key="order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
+                        </div>
                     </div>
                 </div>
             </div>
             <div id="order-detail-view">
-                <order-detail class="order-detail" v-bind:order="selectedOrder"></order-detail>
+                <order-detail class="order-detail" :order="selectedOrder" :statusList="options.status"></order-detail>
             </div>
         </div>
         <router-link to="/work_order/create" tag="button" id="btn-add-work-order" class="button is-primary material-shadow-animate">Add Work Order</router-link>
@@ -54,7 +48,7 @@
 
 <script>
 import Vue from 'vue';
-import data from '@/models/work_orders.js';
+import Server from '@/config/config.js';
 import OrderBlock from './OrderBlock/OrderBlock';
 import OrderDetail from './OrderDetailComponent/OrderDetail';
 
@@ -63,15 +57,57 @@ export default {
         OrderDetail, OrderBlock,
     },    
     created() {
-        this.sortOrdersByDate(this.orders);
+        // this.sortOrdersByDate(this.orders);
+        this.axios.get(Server.WORKORDER_API_PATH)
+            .then((response) => {
+                let data = response.data.WorkOrders;
+                data.forEach(workOrder => {
+                    this.workOrders.push(workOrder);
+                });
+            });
+        this.axios.get(Server.WORKORDER_STATUS_API_PATH)
+            .then((response) => {
+                let data = response.data;
+                data.forEach(element => {
+                    let status = {
+                        id: element.Id,
+                        name: element.Name,
+                        type: this.optionTypes.STATUS,
+                    }
+                    this.options.status.push(status);
+                });
+            });
+        this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH)
+            .then((response) => {
+                let data = response.data;
+                data.forEach(element => {
+                    let priority = {
+                        id: element.Id,
+                        name: element.Name,
+                        type: this.optionTypes.PRIORITY,
+                    }
+                    this.options.priorities.push(priority);
+                });
+            });
     },
     data() {
         return {
             tempValues: null, // to hold the original orders when apply filters
-            orders: data, // orders data to display in orderblocks <order-block></order-block>
+            workOrders: [], // orders data to display in orderblocks <order-block></order-block>
             selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
             selectedFilter: null, // to hold the selected value when change in <select></select>
-            filterValues: [], 
+            options: {
+                priorities: [],
+                status: [],
+            },
+            filterValues: [],
+            filterOptionsValues: {
+                priorities: [],
+                status: [],
+            },
+            optionTypes: {
+                STATUS: 0, PRIORITY: 1,
+            }
         }
     },
     methods: {
@@ -80,7 +116,7 @@ export default {
         },
         // when click on an orderblock, add 'is-active-block' class to it
         isActive(orderId) {
-            if (this.selectedOrder != null && orderId === this.selectedOrder.id) {
+            if (this.selectedOrder != null && orderId === this.selectedOrder.Id) {
                 return 'is-active-block';
             }
             return '';
@@ -90,35 +126,75 @@ export default {
             // in this case it will find if any elements in filterValues match the filter we provided.
             // it is the same as we make a for loop then find the needed elements by using if, then return it as an array. all of those steps in one line of code if we use lamda.
             this.filterValues = this.filterValues.filter(value => value != filter);
+            switch(filter.type) {
+                case this.optionTypes.STATUS: {
+                    this.filterOptionsValues.status.pop(filter);
+                    break;
+                }
+                case this.optionTypes.PRIORITY: {
+                    this.filterOptionsValues.priorities.pop(filter);
+                    break;
+                }
+            }
             this.filterOrders();
             if (this.filterValues.length === 0) {
                 this.selectedFilter = null;
-                this.orders = this.tempValues;
+                this.workOrders = this.tempValues;
             }
         },
         filterOrders() {
-            this.orders = []; // reset orders before applying new filters
+            this.workOrders = []; // reset orders before applying new filters
             this.selectedOrder = null;
-            for (var i = 0; i < this.filterValues.length; i++) {
-                this.orders = this.orders.concat(this.tempValues.filter(order => (order.priority == this.filterValues[i])));
-                this.orders = this.sortOrdersByDate(this.orders);
+            if (this.filterOptionsValues.status.length > 0) {
+                this.filterOptionsValues.status.forEach(status => {
+                    this.workOrders = this.workOrders.concat(this.tempValues.filter(order => order.WorkOrderStatus == status.name));
+                });
+            } else {
+                this.workOrders = this.tempValues;
             }
+            if (this.filterOptionsValues.priorities.length > 0) {
+                var tempValues = [];
+                this.filterOptionsValues.priorities.forEach(priority => {
+                    tempValues = tempValues.concat(this.workOrders.filter(order => order.Priority == priority.name));
+                });
+                this.workOrders = tempValues;
+            }
+            this.workOrders = this.sortOrdersByDate(this.workOrders);
+            this.selectedFilter = null;
+            // for (var i = 0; i < this.filterValues.length; i++) {
+            //     this.orders = this.sortOrdersByDate(this.orders);
+            // }
         },
         sortOrdersByDate(orders) {
             return orders.sort((order1, order2) => {
-                return new Date(order2.requestDate) - new Date(order1.requestDate);
+                var date1 = parseInt(new Date(order1.CreateDate).getTime());
+                var date2 = parseInt(new Date(order2.CreateDate).getTime());
+                // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
+                var result = date2 - date1;
+                return (result > 0) ? 1 : (result < 0) ? -1 : (order2.PriorityID - order1.PriorityID);
             });
         }
     },
     watch: { // this 'watch' is used when we need to monitor changes of some variables, if they changes value then the function in this 'watch' will be triggered.
         'selectedFilter': function() {
             Vue.nextTick(() => {
-                if (this.selectedFilter != null && !this.filterValues.includes(this.selectedFilter)) {
+                if (this.selectedFilter != null && !this.filterValues.includes(this.selectedFilter)) {                    
                     this.filterValues.push(this.selectedFilter);
+                    switch (this.selectedFilter.type) {
+                        case this.optionTypes.STATUS: {
+                            this.filterOptionsValues.status.push(this.selectedFilter);
+                            break;
+                        }
+                        case this.optionTypes.PRIORITY: {
+                            this.filterOptionsValues.priorities.push(this.selectedFilter);
+                            break;
+                        }
+                    }
+                    // console.log(this.filterOptionsValues);
                     // this.selectedFilter = null;
                     // tempValues is null means that no filters yet.
                     if (this.tempValues == null) {
-                        this.tempValues = this.orders;
+                        this.tempValues = this.workOrders;
                     }     
                     this.filterOrders();                    
                 } else {
@@ -180,15 +256,22 @@ export default {
         position: fixed;
         right: 3rem;
         bottom: 2rem;
-        /* background-color: var(--primary-color);
-        padding: 13px;
+        background-color: var(--primary-color);
+        /* padding: 13px;
         color: white;
         border-radius: 10px; */
         z-index: 99;
+        transition: all .2s ease-in-out;
     }
 
     #btn-add-work-order:hover {
         cursor: pointer;
+        background-color: var(--lighten-primary-color);        
+    }
+
+    #btn-add-work-order:active {
+        background-color: var(--darken-primary-color);
+        box-shadow: 1px 1px 1px var(--shadow) !important;
     }
 
     .order-content {
@@ -208,7 +291,7 @@ export default {
 
     .order-blocks {
         position: fixed;   
-        height: 80%;          
+        height: 77%;          
         padding-right: .5rem;
         width: 40%;
         overflow-y: auto;
@@ -223,7 +306,7 @@ export default {
     .order-detail {
         position: fixed;    
         left: 59%;    
-        /* height: 100%;  */
+        max-height: 77%; 
         overflow-y: auto;
         width: 39%;    
         z-index: 2;

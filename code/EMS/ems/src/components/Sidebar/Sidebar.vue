@@ -68,24 +68,14 @@
           </router-link>
         </li>
           <li>
-          <router-link to='/accounts'>
+          <router-link to='/account'>
             <div class="sidebar-list-content" v-bind:class="isActive('Accounts')">
-            <i class="material-icons">account_box</i>
-            Accounts
+            <i class="material-icons">people</i>
+            Accounts & Teams 
           </div>
           </router-link>
         </li>
 
-        <li>
-          <router-link to='/teams'>
-            <div class="sidebar-list-content" v-bind:class="isActive('Teams')">
-            <i class="material-icons">people</i>
-            Teams 
-          </div>
-          </router-link>
-        </li>
-        
-        
       </ul>
     </div>
     <div class="sidebar-end">
