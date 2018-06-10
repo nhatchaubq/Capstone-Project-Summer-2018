@@ -64,8 +64,6 @@ export default {
                 data.forEach(workOrder => {
                     this.workOrders.push(workOrder);
                 });
-            }).catch((error) => {
-                console.log(error);
             });
         this.axios.get(Server.WORKORDER_STATUS_API_PATH)
             .then((response) => {
@@ -78,9 +76,6 @@ export default {
                     }
                     this.options.status.push(status);
                 });
-            })
-            .catch((error) => {
-                console.log(error);
             });
         this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH)
             .then((response) => {
@@ -93,9 +88,6 @@ export default {
                     }
                     this.options.priorities.push(priority);
                 });
-            })
-            .catch((error) => {
-                console.log(error);
             });
     },
     data() {
@@ -264,15 +256,22 @@ export default {
         position: fixed;
         right: 3rem;
         bottom: 2rem;
-        /* background-color: var(--primary-color);
-        padding: 13px;
+        background-color: var(--primary-color);
+        /* padding: 13px;
         color: white;
         border-radius: 10px; */
         z-index: 99;
+        transition: all .2s ease-in-out;
     }
 
     #btn-add-work-order:hover {
         cursor: pointer;
+        background-color: var(--lighten-primary-color);        
+    }
+
+    #btn-add-work-order:active {
+        background-color: var(--darken-primary-color);
+        box-shadow: 1px 1px 1px var(--shadow) !important;
     }
 
     .order-content {
@@ -292,7 +291,7 @@ export default {
 
     .order-blocks {
         position: fixed;   
-        height: 80%;          
+        height: 77%;          
         padding-right: .5rem;
         width: 40%;
         overflow-y: auto;
@@ -307,7 +306,7 @@ export default {
     .order-detail {
         position: fixed;    
         left: 59%;    
-        /* height: 100%;  */
+        max-height: 77%; 
         overflow-y: auto;
         width: 39%;    
         z-index: 2;

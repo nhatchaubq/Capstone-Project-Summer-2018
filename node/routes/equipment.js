@@ -1,11 +1,11 @@
 var router = require("express").Router();
 var TYPES = require("tedious").TYPES;
 
-
 router.get('/', (request, response) => {
     request.sql("exec GetEquipments")
         .into(response);
-}),
+});
+
 /* POST request, for insert */
 router.post('/', (request, response) => {
     request.sql("INSERT INTO Equipment (Name, VendorID, Image, Price, Description, CategoryID)" +
@@ -18,6 +18,5 @@ router.post('/', (request, response) => {
         .param('categoryID', request.body.categoryID, TYPES.Int)
         .exec(response);
 });
-
 
 module.exports = router;
