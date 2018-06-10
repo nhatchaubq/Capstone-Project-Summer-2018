@@ -16,6 +16,7 @@ const EQUIPMENT_API_PATH = SERVER_DEFAULT + "/equipment";
 
 // work order api section - start
 const WORKORDER_API_PATH = SERVER_DEFAULT + "/work_order";
+const WORKORDER_SEARCH_API_PATH = WORKORDER_API_PATH + '/search';
 const WORKORDER_STATUS_API_PATH = WORKORDER_API_PATH + '/status';
 const WORKORDER_PRIORITIES_API_PATH = WORKORDER_API_PATH + '/priorities';
 // work order api section - end
@@ -31,6 +32,7 @@ export default {
 
   EQUIPMENT_API_PATH,
   WORKORDER_API_PATH,
+  WORKORDER_SEARCH_API_PATH,
   WORKORDER_STATUS_API_PATH,
   WORKORDER_PRIORITIES_API_PATH,
   LOCATION_API_PATH,

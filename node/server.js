@@ -18,10 +18,12 @@ var connection = {
     }
 };
 
+server.use(bodyParser.json());
+
 server.use(function (request, respones, next) {
     request.sql = tediousExpress(connection);
-    respones.header('Access-Control-Allow-Origin', '*');
-    respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    // respones.header('Access-Control-Allow-Origin', '*');
+    // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
 
