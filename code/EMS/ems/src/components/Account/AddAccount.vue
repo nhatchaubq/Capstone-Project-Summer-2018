@@ -109,7 +109,7 @@
             
         </div>
          <div>
-            <div class="form-field">
+            <!-- <div class="form-field">
                 <div class="form-field-title">
                     Status <strong><span style="color:red;">*</span></strong>
                 </div>
@@ -118,13 +118,8 @@
   <input class="is-checkradio" id="exampleCheckbox" type="checkbox" name="exampleCheckbox" checked="checked">
   <label for="exampleCheckbox">Active</label>
 </div>
-<!-- <div class="field">
-  <input class="is-checkradio is-primary" id="exampleRadioInline1" type="radio" name="exampleRadioInline" checked="checked">
-  <label for="exampleRadioInline1">Option 1</label>
-  <input class="is-checkradio" id="exampleRadioInline2" type="radio" name="exampleRadioInline">
-  <label for="exampleRadioInline2">Option 2</label>
-</div> -->
-            </div>
+
+            </div> -->
             
         </div>
          <div>
@@ -178,9 +173,7 @@
                         <span class="icon is-small is-left">
                         <i class="fa fa-user-md"></i>
                         </span>
-                        <!-- <span class="icon is-small is-right">
-                        <i class="fa fa-check"></i>
-                        </span> -->
+                        
                     </div>
                 </div>
 
@@ -306,6 +299,7 @@
                 </router-link>
 
                 <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
+                <button id="btn-add" class="button" v-on:click="createAccountTrueEnd()">Create Account true end</button>
             </div>
         <div>&nbsp</div>
     </div>
@@ -319,7 +313,22 @@ export default {
             this.axios.put("http://localhost:3000/api/account/6", {
                 password: "abc",                
             });
-        }
+        },
+        createAccountTrueEnd(){
+            this.axios.post("http://localhost:3000/api/account",{
+                username: "Dien159",
+                password: 123456,
+                email: "abc@abc",
+                fullname: "Doan Dien",
+                phone: 12345678910,
+                isactive: "True",
+                startdate: "2018/03/02",
+                enddate: "2018/04/04",
+                roleid: 1,
+                avatarimage: "https://www.ebay.co.uk/p/Watchmen-Smiley-Face-25mm-1-Pin-Badge-Button-DC-Comics/1588249551",
+                teamid: 1,
+            });
+        },
     }
 }
 </script>
