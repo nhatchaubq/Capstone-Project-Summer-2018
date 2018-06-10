@@ -129,7 +129,7 @@
                 </div>
                 <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input class="input " type="text" placeholder="Text input" >
+                    <input class="input " type="date" placeholder="Text input" >
                         <span class="icon is-small is-left">
                         <i class="fa fa-calendar"></i>
                         </span>
@@ -142,26 +142,7 @@
             </div>
             
         </div>
-         <div>
-            <div class="form-field">
-                <div class="form-field-title">
-                    End date <strong><span style="color:red;">*</span></strong>
-                </div>
-                <div class="form-field-input">
-                   <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input class="input " type="text" placeholder="Text input" >
-                        <span class="icon is-small is-left">
-                        <i class="fa fa-calendar"></i>
-                        </span>
-                        <!-- <span class="icon is-small is-right">
-                        <i class="fa fa-check"></i>
-                        </span> -->
-                    </div>
-                </div>
-
-            </div>
-            
-        </div>
+ 
          <div>
             <div class="form-field">
                 <div class="form-field-title">
@@ -180,26 +161,7 @@
             </div>
             
         </div>
-         <div>
-            <div class="form-field">
-                <div class="form-field-title">
-                    Team name <strong><span style="color:red;">*</span></strong>
-                </div>
-                <div class="form-field-input">
-                    <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input class="input " type="text" placeholder="Text input" >
-                        <span class="icon is-small is-left">
-                        <i class="fa fa-users"></i>
-                        </span>
-                        <!-- <span class="icon is-small is-right">
-                        <i class="fa fa-check"></i>
-                        </span> -->
-                    </div>
-                </div>
 
-            </div>
-            
-        </div>
         
         <!-- <div><strong style="color:red">/none</strong></div>
         <div class="field">
