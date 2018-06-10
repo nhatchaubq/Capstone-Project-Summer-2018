@@ -50,6 +50,10 @@
 <script>
 export default {
     name: "equipment-details",
+    created() {
+        let equipmentItemId = this.$route.params.id
+        this.axios.get()
+    },
     props:{
         equipment: null,
     }
