@@ -1,13 +1,13 @@
 <template>
     <div class="material-box material-shadow-animate order-block">
-        <div class="order-block-title">{{ order.ProjectName }}</div>
+        <div class="order-block-title"><!-- {{ order.ProjectName }} --> #{{ order.Id }}</div>
         <div class="order-status">
             <!-- <i class="material-icons">lock_open</i> -->
             {{ order.WorkOrderStatus }}
         </div>
         <div class="order-block-info">
             <div v-bind:style="priorityBadgeColor(order)" class="badge">{{ order.Priority }}</div>
-            <div>#{{ order.Id }}</div>
+            <!-- <div>#{{ order.Id }}</div> -->
             <div>
                 <i class="fa fa-user"></i>
                 {{ order.RequestFullname }}
