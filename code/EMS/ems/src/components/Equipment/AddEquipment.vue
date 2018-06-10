@@ -48,21 +48,60 @@
                     Equipment Name
                 </div>
                 <div class="form-field-input" >
-                    <input type="text" class="input" placeholder="Asset Name" v-model="form.AssetName">
+                    <input type="text" class="input" placeholder="Equipment Name" v-model="form.AssetName">
                 </div>
             </div>
-            <div class="form-field">
-                <div class="form-field-title">
-                    Category
-                </div>
-                <div class="form-field-input"></div>
-                    <div class="select">
-                    <select v-model="form.Category" type="select">
-                        <option v-bind:key="category.id" v-for="category in categories" :value="category.Name">{{ category.Name }}</option>
-                    </select>  
+            <div class="field is-horizontal" style="margin-left: 3rem">
+                <div>
+                    <div class="form-field-title" >
+                        Category
+                    </div>
+                    <div class="field is-horizontal" style="margin-right:6rem">
+                        <div class="select" >
+                        <select v-model="form.Category">
+                            <option v-bind:key="category.id" v-for="category in categories" :value="category.Name">{{ category.Name }}</option>
+                        </select>  
+                        </div>
+                        <button class="btn-new" style="margin: 0rem 0.3rem" v-on:click= "showingAddCategory = true"><i class="fa fa-plus"></i></button>
+                    </div>
+                    <div class="" v-show = "showingAddCategory" style="margin-right:2rem">
+                    <div class="form-field-title">
+                       Name
+                    </div>
+                    <div class="field is-horizontal" >
+                        <input type="text" class="input-new-name" placeholder="Name">
+                        <button class="button is-rounded is-primary" style="margin-left: .6rem">Add</button>
+                        <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddCategory = false">Cancel</button>
+                    </div>
                     </div>
                 </div>
+                <div class="" style="margin-right: 1.1rem">
+                    <div class="form-field-title">
+                        Vendor
+                    </div>
+                    <div class="field is-horizontal" >
+                        <div class="select" >
+                        <select v-model="form.Vendor">
+                            <option v-bind:key="vendor.id" v-for="vendor in vendors" :value="vendor.BusinessName">{{ vendor.BusinessName }}</option>
+                        </select>  
+                        </div>
+                        <button class="btn-new" style="margin: 0rem 0.3rem" v-on:click= "showingAddVendor = true"><i class="fa fa-plus"></i></button>
+                    </div> 
+                    <div class="" v-show = "showingAddVendor" >
+                    <div class="">
+                       Name
+                    </div>
+                    <div class="field is-horizontal" >
+                        <input type="text" class="input-new-name" placeholder="Name">
+                        <button class="button is-rounded is-primary" style="margin-left: .6rem">Add</button>
+                        <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddVendor = false">Cancel</button>
+                    </div>
+                    </div>
+                </div>                  
             </div>
+
+            
+           
             <div class="form-field">
                 <div class="form-field-title">
                     Price
@@ -73,10 +112,19 @@
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Area
+                    Made In
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input" placeholder="Area">
+                    <input type="text" class="input" placeholder="Made In">
+                </div>
+            </div>
+            <div class="form-field">
+                <div class="form-field-title">
+                    Quantity
+                </div>
+                <div class="field is-horizontal">
+                    <input type="text" class="input" placeholder="Quantity" width="30rem">
+                    <button type="submit" class="btn-generateCode" name="GenerateBarcode">GenerateBarcode</button>
                 </div>
             </div>
             <div class="form-field">
@@ -85,14 +133,6 @@
                 </div>
                 <div class="form-field-input">
                     <input type="text" class="input" placeholder="Description">
-                </div>
-            </div>
-            <div class="form-field">
-                <div class="form-field-title">
-                    Asset Category
-                </div>
-                <div class="form-field-input">
-                    <input type="text" class="input" placeholder="Asset Category">
                 </div>
             </div>
         </div>
@@ -117,6 +157,18 @@ export default {
       .catch(error => {
         alert(error);
       });
+
+    this.axios
+      .get("http://localhost:3000/api/vendor")
+      .then(response => {
+        let data = response.data;
+        data.forEach(vendor => {
+          this.vendors.push(vendor);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
   },
 
   data() {
@@ -125,7 +177,10 @@ export default {
         EquipmentName: "",
         Category: ""
       },
+      showingAddCategory: false,
+      showingAddVendor: false,
       categories: [],
+      vendors: [],
       files: []
     };
   },
@@ -169,7 +224,6 @@ export default {
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem 2rem;
 }
-
 .form-title-start {
   position: relative;
   top: 10px;
@@ -233,20 +287,26 @@ export default {
 
   font-size: 13px;
 }
+.btn-new {
+  background-color: #26a69a;
+  border: none;
+  color: white;
+  align-content: center;
 
-/* .box__file {
-        width: 0.1px;
-        height: 0.1px;
-        opacity: 0;
-        overflow: hidden;
-        position: absolute;
-        z-index: -1;
-    }
-    .box__file + label {
-        font-size: 1.25em;
-        font-weight: 700;
-        color: white;
-        background-color: black;
-        display: inline-block;
-    } */
+  position: relative;
+  top: 0.3rem;
+
+  font-size: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.btn-new:hover {
+  color: #fafafa;
+  background-color: #80deea;
+}
+.input-new-name {
+  border: 1px solid black;
+}
 </style>
