@@ -40,13 +40,15 @@ router.post("/", (request, response) => {
 
 /* PUT request, for update */
 router.put("/:id", function(request, response) {
+  console.log(request.body);
   request
     .sql(
-      "update [Account] set Password = @password, Fullname = @fullname, Birthday = @birthday where Id = @id"
+      "update [Account] set Password = @password, Email = @email, Fullname = @fullname where Id = @id"
     )
-    .param("password", request.params.id, TYPES.NVarChar)
-    .param("fullname", request.body.email, TYPES.NVarChar)
-    .param("birthday", request.body.fullname, TYPES.NVarChar)
+    .param("id", request.params.id)
+    .param("password", request.body.password, TYPES.NVarChar)
+    .param("email", request.body.email, TYPES.NVarChar)
+    .param("fullname", request.body.fullname, TYPES.NVarChar)
     .exec(response);
 });
 

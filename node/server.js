@@ -18,15 +18,21 @@ var connection = {
     }
 };
 
+server.use(bodyParser.json());
+
 server.use(function (request, respones, next) {
     request.sql = tediousExpress(connection);
-    respones.header('Access-Control-Allow-Origin', '*');
-    respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    // respones.header('Access-Control-Allow-Origin', '*');
+    // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
 
-server.use(bodyParser.text());
-server.use(bodyParser.json());
+// server.use(bodyParser.text());
+// server.use(express.json());
+// server.use(bodyParser.urlencoded({
+//     extended: true
+//   }));
+// server.use(bodyParser.urlencoded({ extended: true }));
 server.use('/api/login', require('./routes/login'));
 server.use('/api/account', require('./routes/account'));
 server.use('/api/equipment', require('./routes/equipment'));
