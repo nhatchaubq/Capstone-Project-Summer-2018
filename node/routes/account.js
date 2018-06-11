@@ -20,6 +20,7 @@ router.get("/", function(request, response) {
 router.post("/", (request, response) => {
   request
     .sql(
+<<<<<<< HEAD
       "insert into [Account](Username, Password, Email, Fullname, Phone, isActive, StartDate, EndDate, RoleId, AvatarImage, TeamId, DepartmentId)" +
         " values(@username, @password, @email, @fullname, @phone, @isactive, @startdate, @enddate, @roleid, @avatarimage, @teamid, @departmentid)"
     )
@@ -35,6 +36,22 @@ router.post("/", (request, response) => {
     .param("avatarimage", request.body.avatarimage, TYPES.NVarChar)
     .param("teamid", request.body.teamid, TYPES.Int)
     .param("departmentid", request.body.departmentid, TYPES.Int)
+=======
+      "insert into [Account](Username, Password, Email, Fullname, Phone, IsActive, StartDate, EndDate, RoleId, AvatarImage)" +
+        " values(@username, @password, @email, @fullname, @phone, @isActive, @startdate, @enddate, @roleid, @avatarimage)"
+    )
+    .param("username", request.body.account.username, TYPES.NVarChar)
+    .param("password", request.body.account.password, TYPES.NVarChar)
+    .param("fullname", request.body.account.fullname, TYPES.NVarChar)
+    .param("phone", request.body.account.phone, TYPES.NVarChar)
+    .param("email", request.body.account.email, TYPES.NVarChar)
+    .param("isActive", request.body.account.isActive, TYPES.Bit)
+    .param("startdate", request.body.account.startdate, TYPES.NVarChar)
+    .param("roleid", request.body.account.roleid, TYPES.Int)
+    .param("enddate", request.body.account.enddate, TYPES.Int)
+    .param("avatarimage", request.body.avatarimage, TYPES.NVarChar)
+
+>>>>>>> d8a13d2bdb7b1a7194b80ca106a7fab1fb881f9b
     .exec(response);
 });
 
