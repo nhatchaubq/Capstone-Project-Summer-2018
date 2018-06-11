@@ -1,16 +1,13 @@
 var router = require("express").Router();
 var TYPES = require("tedious").TYPES;
 
-/* GET request, for select */
-router.get("/", (request, response) => {
-  request
+router.get("/", (request, respone) =>{
+    request
     .sql(
-      "SELECT team.Id as 'Team.Id', team.Name as 'Team.Name', team.CreatedDate as 'Team.CreatedDate' " +
-        "FROM [Team] as team " +  
-        "ORDER BY team.id DESC for json path"
+        "select * from [Team] for json path"
     )
-    .into(response);
-});
+    .into(respone);
+} );
 router.post("/", (request, response) => {
   request
     .sql(
@@ -21,5 +18,7 @@ router.post("/", (request, response) => {
     .param("createdDate", request.body.createdDate, TYPES.DateTime)
 
     .exec(response);
-});
+  });
 module.exports = router;
+
+

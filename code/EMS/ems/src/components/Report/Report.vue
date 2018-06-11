@@ -12,7 +12,7 @@
                         <option>All</option>
                         <option>Construction Equipment</option>
                         <option>Electricity Equipment</option>
-                        <option>Office Equipment</option>                            
+                        <option>Office Equipment</option>                           
                                 
                     </select>
                     </div>
