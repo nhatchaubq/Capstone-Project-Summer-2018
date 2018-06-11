@@ -7,10 +7,10 @@ router.get("/", function(request, response) {
     .sql(
       "SELECT acc.Id as 'Account.Id', acc.Username as 'Account.Username', acc.Password as 'Account.Password', acc.Email as 'Account.Email', " +
         "acc.Fullname as 'Account.Fullname', acc.Phone as 'Account.Phone', acc.IsActive as 'Account.IsActive', acc.StartDate as 'Account.StartDate', " +
-        "acc.EndDate as 'Account.EndDate', acc.AvatarImage as 'Account.AvatarImage', acc.RoleID as 'Account.RoleId', r.Name as 'Account.Role.Name' " +
-
+        "acc.EndDate as 'Account.EndDate', acc.AvatarImage as 'Account.AvatarImage', acc.RoleID as 'Account.RoleId', r.Name as 'Account.Role.Name', " +
+        "acc.DepartmentID as 'Account.DepartmentId', d.Name as 'Account.Department.Name' " +
         "FROM [Account] as acc JOIN [Role] as r ON acc.RoleID = r.Id " +
-        
+        "JOIN [Department] as d ON acc.DepartmentID = d.Id " +
         "ORDER BY acc.StartDate DESC for json path"
     )
     .into(response);
@@ -20,10 +20,10 @@ router.get("/", function(request, response) {
 router.post("/", (request, response) => {
   request
     .sql(
-      "insert into [Account](Username, Password, Email, Fullname, Phone, isActive, StartDate, EndDate, RoleId, AvatarImage, TeamId, )" +
-        " values(@username, @password, @email, @fullname, @phone, @isactive, @startdate, @enddate, @roleid, @avatarimage, @teamid, )"
+      "insert into [Account](Username, Password, Email, Fullname, Phone, isActive, StartDate, EndDate, RoleId, AvatarImage, TeamId, DepartmentId)" +
+        " values(@username, @password, @email, @fullname, @phone, @isactive, @startdate, @enddate, @roleid, @avatarimage, @teamid, @departmentid)"
     )
-    .param("username", request.body.username, TYPES.NVarChar)
+    .param("username", request  .body.username, TYPES.NVarChar)
     .param("password", request.body.password, TYPES.NVarChar)
     .param("email", request.body.email, TYPES.NVarChar)
     .param("fullname", request.body.fullname, TYPES.NVarChar)
@@ -34,17 +34,20 @@ router.post("/", (request, response) => {
     .param("roleid", request.body.roleid, TYPES.Int)
     .param("avatarimage", request.body.avatarimage, TYPES.NVarChar)
     .param("teamid", request.body.teamid, TYPES.Int)
-
+    .param("departmentid", request.body.departmentid, TYPES.Int)
     .exec(response);
 });
 
 /* PUT request, for update */
-router.put('/:id', function (request, response) {
-    request.sql('update [Account] set Password = @password, Fullname = @fullname where Id = @id')
-        .param('id', request.params.id, TYPES.Int)
-        .param('password', request.body.password, TYPES.NVarChar)
-        .param('fullname', request.body.email, TYPES.NVarChar)
-        .exec(response);
+router.put("/:id", function(request, response) {
+  request
+    .sql(
+      "update [Account] set Password = @password, Fullname = @fullname, Birthday = @birthday where Id = @id"
+    )
+    .param("password", request.params.id, TYPES.NVarChar)
+    .param("fullname", request.body.email, TYPES.NVarChar)
+    .param("birthday", request.body.fullname, TYPES.NVarChar)
+    .exec(response);
 });
 
 /* DELETE request, for delete */

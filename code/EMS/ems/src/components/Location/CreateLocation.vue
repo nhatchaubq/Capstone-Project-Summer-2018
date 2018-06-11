@@ -24,8 +24,9 @@
                 <div class="form-field-title">
                     Description
                 </div>
-                <div>
-                    <input type="text" class="input" >
+                <div >
+                    <!-- <input type="text" class="input" > -->
+                    <textarea id="text-descrip"  cols="80" rows="10"></textarea>
                 </div>
             </div>
             <div class="form-field" style=" display:grid ; grid-template-columns: 10% 10% 80%">
@@ -136,5 +137,14 @@ export default {
   color: white;
   font-size: 22px;
   font-weight: bold;
+}
+#text-descrip {
+  border: 0.5px solid lightgray;
+  border-radius: 5px;
+  padding: 0.3rem;
+  
+}
+#text-descrip:hover {
+  border: 1px solid grey;
 }
 </style>
