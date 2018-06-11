@@ -6,7 +6,7 @@
                     <th><strong>ID</strong></th>
                     <th><strong>Equipment name</strong></th>
                     <th><strong>Vendor name</strong></th>
-                    <th><strong>Import date</strong></th>
+                    <th><strong>Made In</strong></th>
                     <th><strong>Price</strong></th>
                     <th><strong>Description</strong></th>
                     <th><strong>Category</strong></th>
@@ -17,7 +17,7 @@
                     <td>{{equipment.Id}}</td>    
                     <td>{{equipment.Name}}</td>
                     <td>{{equipment.Vendor.Name}}</td>
-                    <td>{{equipment.ImportDate}}</td>
+                    <td>{{equipment.MadeIn}}</td>
                     <td>{{equipment.Price ? equipment.Price : 'n/a'}}</td>
                     <td>{{equipment.Description ? equipment.Description : 'n/a' }}</td>
                     <td>{{equipment.Category.Name}}</td>
