@@ -174,13 +174,13 @@ export default {
 }
 
 .sidebar-end {
-  position: fixed;
+  /* position: fixed;
   bottom: 0;
-  width: 100%;
+  width: 100%; */
 }
 
 .circle-avatar-container {
-  position: relative;
+  position: fixed;
   left: 5rem;
   bottom: 0.8rem;
   border-radius: 50%;
