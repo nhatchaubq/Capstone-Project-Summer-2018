@@ -9,7 +9,7 @@
                     <th><strong>Email </strong></th>
                     <th><strong>Phone</strong></th>
                     <th><strong>Role</strong></th>
-                    <th><strong>Department</strong></th>
+                    <!-- <th><strong>Department</strong></th> -->
                 </tr>
             </thead>  
             <tbody>
@@ -20,7 +20,7 @@
                     <td>{{account.Email}}</td>
                     <td>{{account.Phone}}</td>
                     <td>{{account.Role.Name}}</td>
-                    <td>{{account.Department.Name }}</td>
+                    <!-- <td>{{account.Department.Name }}</td> -->
                 </tr>
             </tbody>
         </table>

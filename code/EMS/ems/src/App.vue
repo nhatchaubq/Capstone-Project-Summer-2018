@@ -30,9 +30,8 @@ export default {
   },
   data() {
     return {
-    isLoggedIn: true,
-
-    }
+      isLoggedIn: true
+    };
   }
 };
 </script>
@@ -40,11 +39,18 @@ export default {
 <style>
 :root {
   --primary-color: #26a69a;
+  --darken-primary-color: #229488;
+  --lighten-primary-color: #2EBAAC;
   --secondary-color: #80deea;
   --light-background: #fafafa;
   --dark-background: #263238;
   --danger-color: #f44336;
   --shadow: #9e9e9e;
+  --status-request: #f44336;
+  --status-checked: #304ffe;
+  --status-approved: #00c853;
+  --status-delivered: #ab47bc;
+  --status-closed: #ffd600;
 }
 
 :focus {

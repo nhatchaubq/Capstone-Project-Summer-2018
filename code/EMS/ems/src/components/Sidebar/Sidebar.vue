@@ -71,7 +71,7 @@
           <router-link to='/account'>
             <div class="sidebar-list-content" v-bind:class="isActive('Accounts')">
             <i class="material-icons">people</i>
-            Accounts, teams and department
+            Accounts & Teams 
           </div>
           </router-link>
         </li>
