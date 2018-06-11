@@ -39,8 +39,6 @@ server.use('/api/work_order', require('./routes/work_order'));
 server.use('/api/location',require('./routes/location'));
 server.use('/api/team',require('./routes/team'));
 
-
-
 // catch 404 and forward to error handler
 server.use(function (req, res, next) {
     var err = new Error('Not Found: ' + req.method + ":" + req.originalUrl);

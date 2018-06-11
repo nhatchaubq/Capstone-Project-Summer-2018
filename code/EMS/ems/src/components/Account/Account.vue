@@ -14,10 +14,14 @@
     
     <div class="">
       <div class="field is-grouped view-mode">
-        <button class="btn-view-mode" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
-        <button class="btn-view-mode" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
-      </div>
+        <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
+        <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
 
+      <router-link to='/team/'>  
+        <button class="btn-view-mode" >Team view</button>
+      </router-link>
+      </div>
+      <button class="btn-view-mode"  v-on:click="addNew()">add new</button>
     </div>
         <div v-if="!accounts">
       There is no account yet.
@@ -74,7 +78,8 @@ export default {
     },
     setTableMode(value) {
       this.$store.state.accountPage.isTableMode = value;
-    }
+    },
+    
   }
 };
 </script>
@@ -85,6 +90,46 @@ export default {
   margin-bottom: 2rem;
 }
 
+.btn-view-mode-left {
+  background-color: white;
+  padding: 0.4rem 0.6rem;
+  /* height: 2rem; */
+  font-size: 15px;
+  /* line-height: 2rem; */
+  color: var(--primary-color);
+  border-radius: 5px 0 0 5px;
+  border: 1px solid #26a69a;
+  z-index: 1;
+  /* padding-right: 20px;
+      padding-left: 20px; */
+
+}
+
+.btn-view-mode-left:hover {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+}
+.btn-view-mode-right {
+  background-color: white;
+  padding: 0.4rem 0.6rem;
+  /* height: 2rem; */
+  font-size: 15px;
+  /* line-height: 2rem; */
+  color: var(--primary-color);
+  border-radius: 0 5px 5px 0;
+  border: 1px solid #26a69a;
+  z-index: 1;
+  /* padding-right: 20px;
+      padding-left: 20px; */
+  margin-right: 5px;
+}
+
+.btn-view-mode-right:hover {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+}
 .btn-view-mode {
   background-color: white;
   padding: 0.4rem 0.6rem;
@@ -105,6 +150,7 @@ export default {
   color: white;
   cursor: pointer;
 }
+
 
 .is-active {
   background-color: #26a69a;
