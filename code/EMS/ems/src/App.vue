@@ -21,7 +21,6 @@ import Login from "./components/Login/Login";
 import Sidebar from "./components/Sidebar/Sidebar.vue";
 import HeaderBar from "./components/HeaderBar/HeaderBar";
 
-
 export default {
   name: "app",
   components: {
@@ -31,8 +30,8 @@ export default {
   },
   data() {
     return {
-      isLoggedIn: sync('isLoggedIn'),
-    }
+      isLoggedIn: true
+    };
   }
 };
 </script>
@@ -47,6 +46,11 @@ export default {
   --dark-background: #263238;
   --danger-color: #f44336;
   --shadow: #9e9e9e;
+  --status-request: #f44336;
+  --status-checked: #304ffe;
+  --status-approved: #00c853;
+  --status-delivered: #ab47bc;
+  --status-closed: #ffd600;
 }
 
 :focus {

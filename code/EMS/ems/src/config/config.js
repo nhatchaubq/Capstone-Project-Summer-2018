@@ -6,7 +6,7 @@ const LOGIN_API_PATH = SERVER_DEFAULT + "/login";
 
 // account api section - start
 const ACCOUNT_API_PATH = SERVER_DEFAULT + "/account";
-const CREATE_ACCOUNT_API_PATH = ACCOUNT_API_PATH + "/create"; 
+const CREATE_ACCOUNT_API_PATH = ACCOUNT_API_PATH + "/create";
 const VIEW_ACCOUNT_DETAIL_API_PATH = ACCOUNT_API_PATH + "/1";
 // user api section - end
 
@@ -24,7 +24,13 @@ const WORKORDER_PRIORITIES_API_PATH = WORKORDER_API_PATH + '/priorities';
 
 //location api section - start
 const LOCATION_API_PATH = SERVER_DEFAULT + "/location";
+
+
 //location api section - end
+
+//team api section - start
+const TEAM_API_PATH = SERVER_DEFAULT + "/team";
+//team api section - end
 
 export default {
   LOGIN_API_PATH,
@@ -39,5 +45,8 @@ export default {
   WORKORDER_CATEGORIES_API_PATH,
   
   LOCATION_API_PATH,
+
+  TEAM_API_PATH,
   VIEW_ACCOUNT_DETAIL_API_PATH,
+  
 };
