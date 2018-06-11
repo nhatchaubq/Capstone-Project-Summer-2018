@@ -28,4 +28,9 @@ router.get('/search/:value', (req, res) => {
         .into(res);
 });
 
+router.get('/categories', (req, res) => {
+    req.sql("select * from WorkOrderCategory for json path")
+        .into(res);
+})
+
 module.exports = router;

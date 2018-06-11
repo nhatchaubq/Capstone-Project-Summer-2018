@@ -7,9 +7,9 @@
       <ul>
         <li>
           <router-link to='/'>
-            <div class="sidebar-list-content" :class="isActive('Dashboard')">
+            <div class="sidebar-list-content" :class="isActive(menu.Dashboard)">
               <i class="material-icons">dashboard</i>
-              Dashboard
+              {{ menu.Dashboard }}
             </div>
           </router-link>
         </li>
@@ -17,25 +17,25 @@
         
         <li>
           <router-link to='/work_order'>
-            <div class="sidebar-list-content" :class="isActive('Work Order')">
+            <div class="sidebar-list-content" :class="isActive(menu.WorkOrder)">
               <i class="material-icons">assignment</i>
-              Work Orders
+              {{ menu.WorkOrder }}
             </div>
           </router-link>
         </li>
         <li>
           <router-link to='/calendar'>
-            <div class="sidebar-list-content" :class="isActive('Calendar')">
+            <div class="sidebar-list-content" :class="isActive(menu.Calendar)">
             <i class="material-icons">event</i>            
-            Calendar
+            {{ menu.Calendar }}
           </div>
           </router-link>
         </li>
         <li>
           <router-link to='/report'>
-            <div class="sidebar-list-content" :class="isActive('Report')">
+            <div class="sidebar-list-content" :class="isActive(menu.Report)">
               <i class="material-icons">poll</i>
-              Report
+              {{ menu.Report }}
             </div>
           </router-link>
         </li>
@@ -43,17 +43,17 @@
             
         <li>
           <router-link to='/equipment'>
-            <div class="sidebar-list-content" :class="isActive('Equipment')">
+            <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
             <i class="material-icons">domain</i>
-            Equipment
+            {{ menu.Equipment }}
           </div>
           </router-link>
         </li>
         <li>
           <router-link to='/location'>
-            <div class="sidebar-list-content" :class="isActive('Location')">
+            <div class="sidebar-list-content" :class="isActive(menu.Location)">
               <i class="material-icons">location_on</i>
-              Location
+              {{ menu.Location }}
             </div>
           </router-link>
         </li>
@@ -61,17 +61,17 @@
         
         <li>
           <router-link to='/vendors'>
-            <div class="sidebar-list-content" :class="isActive('Vendors')">
+            <div class="sidebar-list-content" :class="isActive(menu.Vendors)">
             <i class="material-icons">domain</i>
-            Vendors
+            {{ menu.Vendors }}
           </div>
           </router-link>
         </li>
           <li>
           <router-link to='/account'>
-            <div class="sidebar-list-content" v-bind:class="isActive('Accounts')">
+            <div class="sidebar-list-content" v-bind:class="isActive(menu.Accounts)">
             <i class="material-icons">people</i>
-            Accounts & Teams 
+           {{ menu.AccountsTeams }}
           </div>
           </router-link>
         </li>
@@ -87,11 +87,17 @@
 </template>
 
 <script>
+import menuData from '@/models/menu.js';
 import { sync } from "vuex-pathify";
 export default {
   name: "sidebar",
   computed: {
     currentSelected: sync("title")
+  },
+  data() {
+    return {
+      menu: menuData,
+    }
   },
   methods: {
     isActive(title) {
