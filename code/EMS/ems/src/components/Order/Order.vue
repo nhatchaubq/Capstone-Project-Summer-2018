@@ -1,7 +1,7 @@
 <template>
     <div>        
         <div class="order-content">
-            <div class="orders-view">                
+            <!-- <div class="orders-view">                 -->
                 <div class="filter">
                     <div style="width: 100%; position: relative; top: .4rem; margin-right: 1rem;">
                         Add filter:
@@ -27,20 +27,23 @@
                         </span>
                     </div>
                 </div>
-                <div class="order-blocks">
-                    <div>
-                        <div class="emtpy-text" v-if="workOrders.length == 0">
-                            There is no orders to display.
-                        </div>
-                        <div v-else>
-                            <order-block :key="order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
-                        </div>
-                    </div>
+                <div v-show="searchMode" style="display: flex; justify-content: flex-end; align-content: center;">
+                    <span><a v-on:click="clearSearch()">Clear search result</a></span>  
+                </div>             
+            <!-- </div>             -->
+        </div>
+        <div class="order-blocks">
+            <div>
+                <div class="emtpy-text" v-if="workOrders.length == 0">
+                    There is no orders to display.
+                </div>
+                <div v-else>
+                    <order-block :key="order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
                 </div>
             </div>
-            <div id="order-detail-view">
-                <order-detail class="order-detail" :order="selectedOrder" :statusList="options.status"></order-detail>
-            </div>
+        </div>
+        <div id="order-detail-view">
+            <order-detail class="order-detail" :order="selectedOrder" :statusList="options.status"></order-detail>
         </div>
         <router-link to="/work_order/create" tag="button" id="btn-add-work-order" class="button is-primary material-shadow-animate">Add Work Order</router-link>
     </div>
@@ -48,6 +51,7 @@
 
 <script>
 import Vue from 'vue';
+import { sync, } from 'vuex-pathify';
 import Server from '@/config/config.js';
 import OrderBlock from './OrderBlock/OrderBlock';
 import OrderDetail from './OrderDetailComponent/OrderDetail';
@@ -58,13 +62,17 @@ export default {
     },    
     created() {
         // this.sortOrdersByDate(this.orders);
-        this.axios.get(Server.WORKORDER_API_PATH)
-            .then((response) => {
-                let data = response.data.WorkOrders;
-                data.forEach(workOrder => {
-                    this.workOrders.push(workOrder);
+        // alert(this.$store.state.workOrderPage.orders.length);
+        if (this.$store.state.workOrderPage.orders.length == 0) {
+            this.axios.get(Server.WORKORDER_API_PATH)
+                .then((response) => {
+                    let data = response.data.WorkOrders;
+                    this.$store.state.workOrderPage.orders = data;
+                    this.workOrders = data;
                 });
-            });
+        } else {
+            this.workOrders = this.$store.state.workOrderPage.orders;
+        }
         this.axios.get(Server.WORKORDER_STATUS_API_PATH)
             .then((response) => {
                 let data = response.data;
@@ -96,6 +104,7 @@ export default {
             workOrders: [], // orders data to display in orderblocks <order-block></order-block>
             selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
             selectedFilter: null, // to hold the selected value when change in <select></select>
+            searchMode: false,
             options: {
                 priorities: [],
                 status: [],
@@ -110,9 +119,16 @@ export default {
             }
         }
     },
+    computed: {
+        searchValues: sync('workOrderPage.searchValues'),    
+    },
     methods: {
         setSelectedOrder(order) {
-            this.selectedOrder = order;
+            if (this.selectedOrder == order) {
+                this.selectedOrder = null;
+            } else {
+                this.selectedOrder = order;
+            }
         },
         // when click on an orderblock, add 'is-active-block' class to it
         isActive(orderId) {
@@ -173,6 +189,16 @@ export default {
                 var result = date2 - date1;
                 return (result > 0) ? 1 : (result < 0) ? -1 : (order2.PriorityID - order1.PriorityID);
             });
+        },
+        reset() {
+            this.filterValues = [];
+            this.filterOptionsValues.status = [];
+            this.filterValues.priorities = [];
+            this.selectedOrder = null;
+        },
+        clearSearch() {
+            this.$store.state.searchValue = '';
+            this.$store.state.workOrderPage.searchValues = [];
         }
     },
     watch: { // this 'watch' is used when we need to monitor changes of some variables, if they changes value then the function in this 'watch' will be triggered.
@@ -190,8 +216,6 @@ export default {
                             break;
                         }
                     }
-                    // console.log(this.filterOptionsValues);
-                    // this.selectedFilter = null;
                     // tempValues is null means that no filters yet.
                     if (this.tempValues == null) {
                         this.tempValues = this.workOrders;
@@ -201,7 +225,17 @@ export default {
                     this.selectedFilter = null;
                 }
             });
-        }
+        },
+        'searchValues': function() {
+            if (this.searchValues.length == 0) {
+                this.workOrders = this.$store.state.workOrderPage.orders;
+                this.searchMode = false;
+            } else {
+                this.workOrders = this.searchValues;
+                this.searchMode = true;
+            }
+            this.reset();
+        }      
     }
 }
 </script>
@@ -275,12 +309,9 @@ export default {
     }
 
     .order-content {
-
-        /* margin-top: 3rem; */
-        /* display: grid;
-        grid-template-columns: 50% 50%; */
-
-        
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: 50% 50%;    
 
     }   
 
