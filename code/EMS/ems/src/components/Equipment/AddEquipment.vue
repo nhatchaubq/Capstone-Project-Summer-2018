@@ -13,7 +13,7 @@
         </div>
 
         <div>           
-
+            
             <div class="form-field-picture">
                 <div class="form-field-title">
                     Picture
@@ -37,9 +37,8 @@
                             <img class="file-upload" v-bind:src="getFilePath(file)"/>
                         </div>
 
-                    </div>
-                        </label>
-                   
+                        </div>
+                    </label>
                 </div> 
             </div>
 
@@ -48,31 +47,27 @@
                     Equipment Name
                 </div>
                 <div class="form-field-input" >
-                    <input type="text" class="input" placeholder="Equipment Name" v-model="form.AssetName">
+                    <model-select style="width: 100% !important" :options="equipmentOptions" v-model="form.EquipmentName" placeholder="Equipment Name"></model-select>  
                 </div>
             </div>
-            <div class="field is-horizontal" style="margin-left: 3rem">
+            <div class="field" style="margin-left: 3rem; display: grid; grid-template-columns: 50% 50%">
                 <div>
                     <div class="form-field-title" >
                         Category
                     </div>
                     <div class="field is-horizontal" style="margin-right:6rem">
-                        <div class="select" >
-                        <select v-model="form.Category">
-                            <option v-bind:key="category.id" v-for="category in categories" :value="category.Name">{{ category.Name }}</option>
-                        </select>  
-                        </div>
+                        <model-select style="width: 100% !important" :options="categoryOptions" v-model="form.Category" placeholder="Select a category"></model-select>  
                         <button class="btn-new" style="margin: 0rem 0.3rem" v-on:click= "showingAddCategory = true"><i class="fa fa-plus"></i></button>
                     </div>
                     <div class="" v-show = "showingAddCategory" style="margin-right:2rem">
-                    <div class="form-field-title">
-                       Name
-                    </div>
-                    <div class="field is-horizontal" >
-                        <input type="text" class="input-new-name" placeholder="Name">
-                        <button class="button is-rounded is-primary" style="margin-left: .6rem">Add</button>
-                        <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddCategory = false">Cancel</button>
-                    </div>
+                        <div class="form-field-title">
+                        Name
+                        </div>
+                        <div class="field is-horizontal" >
+                            <input type="text" class="input" placeholder="Name">
+                            <button class="button is-rounded is-primary" style="margin-left: .6rem">Add</button>
+                            <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddCategory = false">Cancel</button>
+                        </div>
                     </div>
                 </div>
                 <div class="" style="margin-right: 1.1rem">
@@ -80,11 +75,7 @@
                         Vendor
                     </div>
                     <div class="field is-horizontal" >
-                        <div class="select" >
-                        <select v-model="form.Vendor">
-                            <option v-bind:key="vendor.id" v-for="vendor in vendors" :value="vendor.BusinessName">{{ vendor.BusinessName }}</option>
-                        </select>  
-                        </div>
+                        <model-select style="width: 100% !important" :options="vendorOptions" v-model="form.Vendor" placeholder="Select a vendor"></model-select>  
                         <button class="btn-new" style="margin: 0rem 0.3rem" v-on:click= "showingAddVendor = true"><i class="fa fa-plus"></i></button>
                     </div> 
                     <div class="" v-show = "showingAddVendor" >
@@ -92,22 +83,19 @@
                        Name
                     </div>
                     <div class="field is-horizontal" >
-                        <input type="text" class="input-new-name" placeholder="Name">
+                        <input type="text" class="input" placeholder="Name">
                         <button class="button is-rounded is-primary" style="margin-left: .6rem">Add</button>
                         <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddVendor = false">Cancel</button>
                     </div>
                     </div>
                 </div>                  
-            </div>
-
-            
-           
+            </div>    
             <div class="form-field">
                 <div class="form-field-title">
                     Price
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input" placeholder="Price">
+                    <input type="text" class="input" placeholder="Price" v-model="form.Price">
                 </div>
             </div>
             <div class="form-field">
@@ -115,7 +103,7 @@
                     Made In
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input" placeholder="Made In">
+                    <input type="text" class="input" placeholder="Made In" v-model="form.MadeIn">
                 </div>
             </div>
             <div class="form-field">
@@ -123,8 +111,21 @@
                     Quantity
                 </div>
                 <div class="field is-horizontal">
-                    <input type="text" class="input" placeholder="Quantity" width="30rem">
-                    <button type="submit" class="btn-generateCode" name="GenerateBarcode">GenerateBarcode</button>
+                    <input type="number" min="1" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" >
+                    <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">Barcode</button>
+                </div>
+                <div v-show="showingBarcode">
+                    <ul>
+                        <li v-for="i in randomNumbers" :key="i">{{i}}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="form-field">
+                <div class="form-field-title">
+                    Warranty
+                </div>
+                <div class="field is-horizontal">
+                    <input type="number" class="input" placeholder="Warranty Months" v-model="form.Warranty">
                 </div>
             </div>
             <div class="form-field">
@@ -132,7 +133,7 @@
                     Description
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input" placeholder="Description">
+                    <input type="text" class="input" placeholder="Description" v-model="form.Description">
                 </div>
             </div>
         </div>
@@ -141,9 +142,13 @@
 
 <script>
 import AddEquipment from "./AddEquipment";
+import VueBase64FileUpload from "vue-base64-file-upload";
+import { ModelSelect } from "vue-search-select";
 export default {
   components: {
-    AddEquipment
+    AddEquipment,
+    VueBase64FileUpload,
+    ModelSelect
   },
   created() {
     this.axios
@@ -151,19 +156,41 @@ export default {
       .then(response => {
         let data = response.data;
         data.forEach(category => {
-          this.categories.push(category);
+          let option = {
+            text: category.Name,
+            value: category.Id
+          };
+          this.categoryOptions.push(option);
         });
       })
       .catch(error => {
         alert(error);
       });
-
     this.axios
       .get("http://localhost:3000/api/vendor")
       .then(response => {
         let data = response.data;
         data.forEach(vendor => {
-          this.vendors.push(vendor);
+          let option = {
+            text: vendor.BusinessName,
+            value: vendor.Id
+          };
+          this.vendorOptions.push(option);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
+    this.axios
+      .get("http://localhost:3000/api/equipment")
+      .then(response => {
+        let data = response.data;
+        data.forEach(element => {
+          let option = {
+            text: element.Equipment.Name,
+            value: element.Equipment.Id
+          };
+          this.equipmentOptions.push(option);
         });
       })
       .catch(error => {
@@ -175,13 +202,22 @@ export default {
     return {
       form: {
         EquipmentName: "",
-        Category: ""
+        Category: "",
+        Vendor: "",
+        Price: "",
+        MadeIn: "",
+        Description: ""
       },
       showingAddCategory: false,
       showingAddVendor: false,
-      categories: [],
-      vendors: [],
-      files: []
+      showingBarcode: false,
+      categoryOptions: [],
+      vendorOptions: [],
+      equipmentOptions: [],
+      files: [],
+      randomNumbers: [],
+      quantity: 1,
+      customImageMaxSize: 3
     };
   },
 
@@ -196,10 +232,14 @@ export default {
       return window.URL.createObjectURL(file);
     },
     createNewEquipment() {
-      alert(this.form.AssetName + " " + this.form.ModelName);
       this.axios
         .post("http://localhost:3000/api/equipment", {
-          name: this.form.AssetName
+          name: this.form.EquipmentName,
+          vendorID: this.form.Vendor,
+          price: this.form.Price,
+          madein: this.form.MadeIn,
+          description: this.form.description,
+          categoryID: this.form.Category
         })
         .then(function(respone) {
           // console.log(respone);
@@ -207,7 +247,36 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+    getRandomNumber() {
+      this.randomNumbers = [];
+      for (var i = 0; i < this.quantity; i++) {
+        var number = Math.floor(Math.random() * 9000000000000 + 1000000000000);
+        this.randomNumbers.push(number);
+      }
+      this.showingBarcode = true;
+    },
+    onFile(file) {
+      console.log(file); // file object
+    },
+
+    onLoad(dataUri) {
+      console.log(dataUri); // data-uri string
+    },
+
+    onSizeExceeded(size) {
+      alert(
+        `Image ${size}Mb size exceeds limits of ${this.customImageMaxSize}Mb!`
+      );
     }
+    // createBarcode(){
+    //     var barcode ="";
+    //     for (var i=0; i<13; i++){
+    //         var x = this.getRandomNumber();
+    //         barcode = barcode + x;
+    //     }
+    //     return barcode;
+    // }
   }
 };
 </script>
@@ -217,6 +286,7 @@ export default {
   background-color: white;
   margin: 0 1.5rem;
   padding: 0 !important;
+  z-index: 99;
 }
 .form-title {
   display: grid;

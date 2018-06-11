@@ -9,7 +9,7 @@ server.use(cors());
 var connection = {
     server: "localhost",
     userName: "sa",
-    password: "123456",
+    password: "tien1005",
     port: "1433",
     options: {
         // instanceName : "SQLEXPRESS",
@@ -36,7 +36,7 @@ server.use('/api/equipment', require('./routes/equipment'));
 server.use('/api/EquipmentCategory', require('./routes/EquipmentCategory'));
 server.use('/api/Vendor', require('./routes/Vendor'));
 server.use('/api/work_order', require('./routes/work_order'));
-server.use('/api/location',require('./routes/location'));
+server.use('/api/location', require('./routes/location'));
 
 
 // catch 404 and forward to error handler
