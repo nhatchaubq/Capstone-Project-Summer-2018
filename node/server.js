@@ -32,6 +32,8 @@ server.use('/api/account', require('./routes/account'));
 server.use('/api/equipment', require('./routes/equipment'));
 server.use('/api/work_order', require('./routes/work_order'));
 server.use('/api/location',require('./routes/location'));
+server.use('/api/team',require('./routes/team'));
+
 
 // catch 404 and forward to error handler
 server.use(function (req, res, next) {

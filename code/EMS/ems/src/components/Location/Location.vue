@@ -11,12 +11,11 @@
             </div>
             <div class="location-address">
               <i class="material-icons">place</i>
-              {{location.Name}}
+              {{location.Address}}
             </div>
           </div>         
         </div>
-        <router-link to="/location/create-location" class="btn-add-location material-shadow-animate" >Add Location</router-link>
-      
+        <router-link to="/location/create-location" class="btn-add-location material-shadow-animate" >Add Location</router-link> 
       </div>
    
       <div v-if="selectedLocation != null" class="location-detail material-box material-shadow">  
