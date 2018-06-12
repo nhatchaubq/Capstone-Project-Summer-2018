@@ -6,8 +6,8 @@ router.get("/", (request, response) => {
   request
     .sql(
       "SELECT team.Id as 'Team.Id', team.Name as 'Team.Name', team.CreatedDate as 'Team.CreatedDate' " +
-        "FROM [Team] as team " +  
-        "ORDER BY team.id DESC for json path"
+      "FROM [Team] as team " +
+      "ORDER BY team.id DESC for json path"
     )
     .into(response);
 });
@@ -15,10 +15,10 @@ router.post("/", (request, response) => {
   request
     .sql(
       "insert into [Team](Name, CreatedDate )" +
-        " values(@name, @createdDate )"
+      " values(@name, @createdDate )"
     )
-    .param("name", request.body.name, TYPES.NVarChar)
-    .param("createdDate", request.body.createdDate, TYPES.DateTime)
+    .param("name", request.body.team.name, TYPES.NVarChar)
+    .param("createdDate", request.body.team.createdDate, TYPES.NVarChar)
 
     .exec(response);
 });

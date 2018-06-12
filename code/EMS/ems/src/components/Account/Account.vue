@@ -21,7 +21,7 @@
         <button class="btn-view-mode" >Team view</button>
       </router-link>
       </div>
-      <button class="btn-view-mode"  v-on:click="addNew()">add new</button>
+
     </div>
         <div v-if="!accounts">
       There is no account yet.
@@ -42,30 +42,32 @@
 // import data from "@/models/accounts.js";
 import Server from "@/config/config.js";
 import { sync } from "vuex-pathify";
-import AccountCard from'./AccountCard';
-import AccountTable from'./AccountTable';
+import AccountCard from "./AccountCard";
+import AccountTable from "./AccountTable";
 
 export default {
-   components: {
+  components: {
     AccountCard,
     AccountTable
   },
   created() {
     let url = Server.ACCOUNT_API_PATH;
-    this.axios.get(url).then(response => {
-      let data = response.data;
-      data.forEach(element => {
-        let account = element.Account;
-        this.accounts.push(account);
-      });
-    })
+    this.axios
+      .get(url)
+      .then(response => {
+        let data = response.data;
+        data.forEach(element => {
+          let account = element.Account;
+          this.accounts.push(account);
+        });
+      })
       .catch(error => {
         alert(error);
       });
   },
-    computed: {
+  computed: {
     isTableMode: sync("accountPage.isTableMode")
-    },
+  },
   data() {
     return {
       accounts: [],
@@ -78,14 +80,12 @@ export default {
     },
     setTableMode(value) {
       this.$store.state.accountPage.isTableMode = value;
-    },
-    
+    }
   }
 };
 </script>
 
 <style scoped>
-
 .view-mode {
   margin-bottom: 2rem;
 }
@@ -102,7 +102,6 @@ export default {
   z-index: 1;
   /* padding-right: 20px;
       padding-left: 20px; */
-
 }
 
 .btn-view-mode-left:hover {
@@ -151,7 +150,6 @@ export default {
   cursor: pointer;
 }
 
-
 .is-active {
   background-color: #26a69a;
   color: white;
@@ -194,10 +192,9 @@ export default {
   background-color: var(--primary-color);
   color: white;
 }
-#btn-add-account1:disabled{
+#btn-add-account1:disabled {
   cursor: pointer;
   background-color: var(--primary-color);
   color: white;
 }
-
 </style>
