@@ -14,6 +14,7 @@ import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.v
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
 import AccountComponent from './components/Account/Account.vue';
 import AddAccountComponent from './components/Account/AddAccount.vue';
+import AccountDetailComponent from './components/Account/AccountDetail.vue';
 import DepartmentComponent from './components/Department/Department.vue';
 import ProjectComponent from './components/Project/Project.vue'
 import CreateLocation from './components/Location/CreateLocation.vue';
@@ -152,6 +153,14 @@ let router = new Router({
             }
         },
         {
+            path: '/account/detail',
+            component: AccountDetailComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', menu.Accounts);
+                next();
+            }
+        },
+        {
             path: '/department',
             component: DepartmentComponent,
             beforeEnter: (to, from, next) => {
@@ -196,7 +205,7 @@ let router = new Router({
             path: '/location/create-location',
             component: CreateLocation,
 
-            beforeEnter: (to,from,next) => {
+            beforeEnter: (to, from, next) => {
                 store.set('title', menu.Location);
 
                 next();
