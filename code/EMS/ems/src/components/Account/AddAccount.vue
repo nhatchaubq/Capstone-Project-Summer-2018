@@ -178,7 +178,10 @@
 
                     <!-- <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
                     <button id="btn-add" class="button" v-on:click="createAccountTrueEnd()">Create Account true end</button> -->
+                    <router-link to='/account/'>
                     <button id="btn-add" class="button">Create Account</button>
+                    </router-link>
+                    <!-- <button id="btn-add" class="button">Create Account</button> -->
                 </div>
             <div>&nbsp</div>
          </form>
@@ -187,113 +190,108 @@
 </template>
 
 <script>
-
 export default {
-    data() {
-        return {
-            account: {
-                username: '',
-                password: '',
-                fullname: '',
-                phone: null,
-                email: '',
-                startdate: '',
-                role: null,
-            }
-        }
+  data() {
+    return {
+      account: {
+        username: "",
+        password: "",
+        fullname: "",
+        phone: null,
+        email: "",
+        startdate: "",
+        role: null
+      }
+    };
   },
-    methods: {
-        createAccount() {
-            this.axios.put("http://localhost:3000/api/account/6", {
-                password: "abc",                
-            });
-        },
-        createAccountTrueEnd(){
-            this.axios.post("http://localhost:3000/api/account",{
-                username: "Dien159",
-                password: 123456,
-                fullname: "Doan Dien",
-                phone: 12345678910,
-                email: "abc@abc",
-                startdate: "2018/03/02",
-                roleid: 1,
-                // avatarimage: "https://www.ebay.co.uk/p/Watchmen-Smiley-Face-25mm-1-Pin-Badge-Button-DC-Comics/1588249551",
-                // teamid: 1,
-            });
-        },
-        createAccount1(){
-            this.axios.post("http://localhost:3000/api/account",{
-                // username: this.username,
-                // password: this.password,
-                // fullname: this.fullname,
-                // phone: this.phone,
-                // email: this.email,
-                // startdate: this.startdate,
-                // role: this.role,
-                account: this.account,
-            });
-        },
-        
+  methods: {
+    createAccount() {
+      this.axios.put("http://localhost:3000/api/account/6", {
+        password: "abc"
+      });
+    },
+    createAccountTrueEnd() {
+      this.axios.post("http://localhost:3000/api/account", {
+        username: "Dien159",
+        password: 123456,
+        fullname: "Doan Dien",
+        phone: 12345678910,
+        email: "abc@abc",
+        startdate: "2018/03/02",
+        roleid: 1
+        // avatarimage: "https://www.ebay.co.uk/p/Watchmen-Smiley-Face-25mm-1-Pin-Badge-Button-DC-Comics/1588249551",
+        // teamid: 1,
+      });
+    },
+    createAccount1() {
+      this.axios.post("http://localhost:3000/api/account", {
+        // username: this.username,
+        // password: this.password,
+        // fullname: this.fullname,
+        // phone: this.phone,
+        // email: this.email,
+        // startdate: this.startdate,
+        // role: this.role,
+        account: this.account
+      });
     }
-}
+  }
+};
 </script>
 
 <style scoped>
 .form {
-        background-color: white;
-        padding: 0 !important;
-    }
-    .form-title {
-        display: grid;
-        grid-template-columns: 25% 40% 35%;
-        border-bottom: 1px solid #e0e0e0;
-        padding: 1rem 2rem;
-    }
+  background-color: white;
+  padding: 0 !important;
+}
+.form-title {
+  display: grid;
+  grid-template-columns: 25% 40% 35%;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem 2rem;
+}
 
-    .form-title-start{
-        position: relative;
-        top: 10px;
-        font-weight: bold;
-        font-size: 20px;
-        color: #616161;
-    }
+.form-title-start {
+  position: relative;
+  top: 10px;
+  font-weight: bold;
+  font-size: 20px;
+  color: #616161;
+}
 
-    .form-title-end {
-        width: 100%;
-        /* float: left; */
-        /* align-content: center; */
-        margin-left: 25rem;
-    }
+.form-title-end {
+  width: 100%;
+  /* float: left; */
+  /* align-content: center; */
+  margin-left: 25rem;
+}
 
+#btn-cancel {
+  background-color: #bdbdbd;
+  color: white;
+  margin-right: 0.6rem;
+}
 
+#btn-add {
+  background-color: var(--primary-color);
+  color: white;
+}
+#btn-add:hover {
+  cursor: pointer;
+  background-color: #009688;
+  color: white;
+}
 
-    #btn-cancel {
-        background-color: #bdbdbd;
-        color: white;
-        margin-right: .6rem
-    }
+.form-field {
+  /* margin-bottom: 5px; */
+  padding: 1rem 3rem;
+}
 
-    #btn-add {
-        background-color: var(--primary-color);
-        color: white;
-    }
-        #btn-add:hover {
-        cursor: pointer;
-        background-color: #009688;
-        color: white;
-    }
+.form-field-title {
+  font-size: 13px;
+}
 
-    .form-field {
-        /* margin-bottom: 5px; */
-        padding: 1rem 3rem;
-    }
-
-    .form-field-title {
-        font-size: 13px;
-    }
-  
 #btn-change-pass {
-
   background-color: var(--primary-color);
   padding: 13px;
   color: white;

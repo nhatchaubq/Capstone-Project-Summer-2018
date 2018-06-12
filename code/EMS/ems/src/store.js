@@ -9,6 +9,11 @@ const state = {
   isLoggedIn: !!localStorage.getItem("user"),
   title: "",
   showSearchBar: true,
+  searchValue: '',
+  workOrderPage: {
+    orders: [],
+    searchValues: [],
+  },
   equipmentPage: {
     isTableMode: true
   },

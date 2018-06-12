@@ -46,7 +46,7 @@ export default {
         });
       })
       .catch(error => {
-        alert(error);
+        console.log(error);
       });
   },
   computed: {
