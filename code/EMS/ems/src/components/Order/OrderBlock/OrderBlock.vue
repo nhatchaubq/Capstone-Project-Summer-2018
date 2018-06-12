@@ -1,13 +1,13 @@
 <template>
     <div class="material-box material-shadow-animate order-block">
-        <div class="order-block-title"><!-- {{ order.ProjectName }} --> #{{ order.Id }}</div>
-        <div class="order-status">
+        <div class="order-block-title">{{ order.Name }}</div>
+        <div class="order-status-icon">
             <!-- <i class="material-icons">lock_open</i> -->
-            {{ order.WorkOrderStatus }}
+            <i class="fa" :class="makeStatusIcon(order)"></i>            
         </div>
         <div class="order-block-info">
             <div v-bind:style="priorityBadgeColor(order)" class="badge">{{ order.Priority }}</div>
-            <!-- <div>#{{ order.Id }}</div> -->
+            <div>#{{ order.Id }}</div>
             <div>
                 <i class="fa fa-user"></i>
                 {{ order.RequestFullname }}
@@ -16,6 +16,9 @@
                 <i class="fa fa-calendar"></i>
                 {{ order.CreateDate }}
             </div>
+        </div>
+        <div class="order-status">
+            {{ order.WorkOrderStatus }}            
         </div>
         <div class="order-block-location">
             <i class="material-icons">location_on</i>
@@ -34,6 +37,23 @@ export default {
         priorityBadgeColor(order) {
             let tagColor = order.PriorityColor;
             return `border: 1px solid ${tagColor}; background-color: ${tagColor}`;
+        },
+        makeStatusIcon(order) {
+            switch(order.StatusID) {
+                case 1: { // request
+                    return 'fa-level-up';
+                }
+                case 2: // checked
+                    return 'fa-check';
+                case 3: // approved
+                    return 'fa-approve';
+                case 4: // delivered
+                    return 'fa-handshake-o';
+                case 5: // return
+                    return 'fa-archive';
+                case 6: // done
+                    return 'fa-check-square-o';
+            }
         }
     }
 }
@@ -60,18 +80,31 @@ export default {
     }
 
     .order-status {
-        line-height: 2.5rem;
-        font-size: 15px;
+        /* line-height: 2.5rem; */
+        font-size: .9rem;
         display: flex;
         justify-content: center;
-        align-content: center;
+        align-content: flex-end;
         user-select: none;
     }
 
-    .order-status i {
+    .order-status-icon {
+        font-size: 1.5rem;
+        display: flex;
+        justify-content: center;
+        align-content: flex-start;
+        user-select: none;
+    }
+
+    .order-status-icon i {
+        position: relative;
+        top: .6rem;
+    }
+
+    /* .order-status i {
         position: relative;
         top: .4rem;
-    }
+    } */
 
     .order-block-info {
         grid-column: 1;
