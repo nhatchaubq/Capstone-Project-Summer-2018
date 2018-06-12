@@ -89,9 +89,13 @@ export default {
   },
   methods: {
     createTeam() {
-      this.axios.post("http://localhost:3000/api/team", {
-        team: this.team
-      });
+      this.axios
+        .post("http://localhost:3000/api/team", {
+          team: this.team
+        })
+        .then(res => {
+          this.$router.push("/team");
+        });
     }
   }
 };

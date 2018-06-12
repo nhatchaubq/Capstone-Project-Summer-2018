@@ -7,7 +7,9 @@
         </div>
         <div class="account-card-content" >
         <!-- <img src="{{equipment.thumbnail}}" alt="Crane"> -->
+        <router-link :to="`/account/${account.Id}`"> 
           <h2><strong>{{account.Username}}</strong></h2>
+        </router-link>
           <!-- <div><span>ID: </span>{{equipment.Id}}</div> -->
           <div><span>Full name: </span>{{account.Fullname ? account.Fullname : "N/A"}}</div>
           <div><span>Email: </span>{{account.Email ? account.Email : "N/A" }}</div>

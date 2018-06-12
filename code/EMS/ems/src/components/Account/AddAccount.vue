@@ -240,9 +240,13 @@ export default {
   },
   methods: {
     createAccount1() {
-      this.axios.post("http://localhost:3000/api/account", {
-        account: this.account
-      });
+      this.axios
+        .post("http://localhost:3000/api/account", {
+          account: this.account
+        })
+        .then(res => {
+          this.$router.push("/account");
+        });
     }
   }
 };

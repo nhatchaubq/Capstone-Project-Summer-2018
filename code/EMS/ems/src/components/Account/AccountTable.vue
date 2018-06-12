@@ -13,15 +13,18 @@
                 </tr>
             </thead>  
             <tbody>
-                <tr v-bind:key="account.id" v-for="account in accounts">
-                    <td>{{account.Id}}</td>    
-                    <td>{{account.Username  }}</td>
+                   <tr v-bind:key="account.id" v-for="account in accounts" >
+                    <td>{{account.Id}}</td> 
+
+                      <router-link :to="`/account/${account.Id}`">  <td>{{account.Username  }}</td>  </router-link>
+
                     <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
                     <td>{{account.Email ? account.Email : "N/A" }}</td>
                     <td>{{account.Phone ? account.Phone : NaN}}</td>
                     <td>{{account.Role.Name}}</td>
                     <!-- <td>{{account.Department.Name }}</td> -->
                 </tr>
+
             </tbody>
         </table>
     </div>

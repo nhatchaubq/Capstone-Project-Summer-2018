@@ -153,7 +153,7 @@ let router = new Router({
             }
         },
         {
-            path: '/account/detail',
+            path: '/account/:id',
             component: AccountDetailComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', menu.Accounts);
