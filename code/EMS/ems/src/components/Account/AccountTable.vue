@@ -15,10 +15,10 @@
             <tbody>
                 <tr v-bind:key="account.id" v-for="account in accounts">
                     <td>{{account.Id}}</td>    
-                    <td>{{account.Username}}</td>
-                    <td>{{account.Fullname}}</td>
-                    <td>{{account.Email}}</td>
-                    <td>{{account.Phone}}</td>
+                    <td>{{account.Username  }}</td>
+                    <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
+                    <td>{{account.Email ? account.Email : "N/A" }}</td>
+                    <td>{{account.Phone ? account.Phone : NaN}}</td>
                     <td>{{account.Role.Name}}</td>
                     <!-- <td>{{account.Department.Name }}</td> -->
                 </tr>
@@ -29,11 +29,11 @@
 
 <script>
 export default {
-    name: "account-table",
+  name: "account-table",
   props: {
     accounts: null
   }
-}
+};
 </script>
 
 <style>

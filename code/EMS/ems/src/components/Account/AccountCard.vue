@@ -9,10 +9,10 @@
         <!-- <img src="{{equipment.thumbnail}}" alt="Crane"> -->
           <h2><strong>{{account.Username}}</strong></h2>
           <!-- <div><span>ID: </span>{{equipment.Id}}</div> -->
-          <div><span>Full name: </span>{{account.Fullname}}</div>
-          <div><span>Email: </span>{{account.Email}}</div>
-          <div><span>Telephone number: </span>{{account.Phone}}</div>
-          <div><span>Role: </span>{{account.Role.Name}}</div>
+          <div><span>Full name: </span>{{account.Fullname ? account.Fullname : "N/A"}}</div>
+          <div><span>Email: </span>{{account.Email ? account.Email : "N/A" }}</div>
+          <div><span>Telephone number: </span>{{account.Phone ? account.Phone : NaN}}</div>
+          <div><span>Role: </span>{{account.Role.Name}}  </div>
           <div><span>Status: </span>{{account.IsActive ? 'Active': 'Inactive'}}</div>
         
         <!-- <div><span>In department: </span>{{equipment.department}}</div> -->
@@ -23,16 +23,18 @@
 
 <script>
 export default {
-    name: "account-card",
+  name: "account-card",
   props: {
     accounts: null
   },
   methods: {
     getAccountAvatar(acc) {
-      return acc.AvatarImage ? acc.AvatarImage : "http://citizen.edisha.gov.in/Content/assets/stylesheet/img/placeholder-user.png";
+      return acc.AvatarImage
+        ? acc.AvatarImage
+        : "http://citizen.edisha.gov.in/Content/assets/stylesheet/img/placeholder-user.png";
     }
   }
-}
+};
 </script>
 
 <style>
@@ -75,7 +77,6 @@ export default {
 }
 
 .account-image-preview img {
-
   border-radius: 3px 3px 0 0;
 }
 </style>
