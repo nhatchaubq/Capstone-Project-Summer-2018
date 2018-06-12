@@ -9,7 +9,7 @@
                     Name of location (required)
                 </div>
                 <div>
-                    <input type="text" class="input">
+                    <input v-model="newLocation.name" type="text" class="input">
                 </div>
             </div>
             <div class="form-field">
@@ -17,7 +17,7 @@
                     Address (required)
                 </div>
                 <div>
-                    <input type="text" class="input">
+                    <input v-model="newLocation.address" type="text" class="input">
                 </div>
             </div>
             <div class="form-field">
@@ -26,7 +26,7 @@
                 </div>
                 <div >
                     <!-- <input type="text" class="input" > -->
-                    <textarea id="text-descrip"  cols="80" rows="10"></textarea>
+                    <textarea id="text-descrip" v-model="newLocation.description"  cols="80" rows="10"></textarea>
                 </div>
             </div>
             <div class="form-field" style=" display:grid ; grid-template-columns: 10% 10% 80%">
@@ -44,7 +44,7 @@
         </div>
         <div class="form-button">
             <div style="text-align: right; padding-right: 2rem">
-                <button id="btn-create" class="button" v-on: click >
+                <button id="btn-create" class="button" v-on:click="createLocation()" >
                     Create
                 </button>
             </div>
@@ -64,7 +64,14 @@ export default {
   data() {
     return {
       teams: [],
-      selectedTeam: null
+      selectedTeam: null,
+      newLocation: {
+          name: '',
+          address:'',
+          description:'',
+          longtitude: 40.244228,
+          latitude: 109.998079
+      }
     };
   },
   methods: {
@@ -84,6 +91,13 @@ export default {
       .catch(error => {
         console.log(error);
       });
+  },
+  methods: {
+      createLocation(){
+      this.axios.post(Server.LOCATION_CREATE_API_PATH,{
+          newLocation: this.newLocation
+      });
+  }
   }
 };
 </script>

@@ -41,10 +41,7 @@
             
 
           </div>
-          <div class="btn-add">
-        
-
-      </div>
+          
       </div>
       
 
