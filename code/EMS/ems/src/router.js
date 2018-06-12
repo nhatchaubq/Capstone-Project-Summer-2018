@@ -8,10 +8,11 @@ import CreateOrderComponent from "./components/Order/CreateOrder/CreateOrder.vue
 import CalendarComponent from "./components/Calendar/Calendar.vue";
 import ReportComponent from "./components/Report/Report.vue";
 import TeamComponent from "./components/Team/Team.vue";
+import AddTeamComponent from "./components/Team/AddTeam.vue";
 import LocationComponent from "./components/Location/Location.vue";
 import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
-import AccountComponent from'./components/Account/Account.vue';
+import AccountComponent from './components/Account/Account.vue';
 import AddAccountComponent from './components/Account/AddAccount.vue';
 import DepartmentComponent from './components/Department/Department.vue';
 import ProjectComponent from './components/Project/Project.vue'
@@ -23,8 +24,7 @@ import menu from './models/menu';
 
 let router = new Router({
     mode: 'history',
-    routes: [
-        {
+    routes: [{
             path: '/',
             component: DashboardComponent,
             beforeEnter: (to, from, next) => {
@@ -118,11 +118,21 @@ let router = new Router({
             path: '/team',
             component: TeamComponent,
             beforeEnter: (to, from, next) => {
+
                 store.set('title', menu.Teams);
+
                 next();
             },
             meta: {
                 showSearchBar: true,
+            }
+        },
+        {
+            path: '/team/add',
+            component: AddTeamComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Team');
+                next();
             }
         },
         {
@@ -185,8 +195,10 @@ let router = new Router({
         {
             path: '/location/create-location',
             component: CreateLocation,
+
             beforeEnter: (to,from,next) => {
                 store.set('title', menu.Location);
+
                 next();
             },
             meta: {
