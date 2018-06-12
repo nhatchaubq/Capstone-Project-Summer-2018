@@ -7,7 +7,7 @@
                     {{ order.Priority }}
                     </span>
                     <span class="detail-title">
-                        Order #{{ order.Id }}
+                        {{ order.Name }}
                     </span>
                 </div>
                 <div style="text-align: right; user-select: none;">

@@ -8,10 +8,11 @@ import CreateOrderComponent from "./components/Order/CreateOrder/CreateOrder.vue
 import CalendarComponent from "./components/Calendar/Calendar.vue";
 import ReportComponent from "./components/Report/Report.vue";
 import TeamComponent from "./components/Team/Team.vue";
+import AddTeamComponent from "./components/Team/AddTeam.vue";
 import LocationComponent from "./components/Location/Location.vue";
 import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
-import AccountComponent from'./components/Account/Account.vue';
+import AccountComponent from './components/Account/Account.vue';
 import AddAccountComponent from './components/Account/AddAccount.vue';
 import DepartmentComponent from './components/Department/Department.vue';
 import ProjectComponent from './components/Project/Project.vue'
@@ -19,15 +20,15 @@ import CreateLocation from './components/Location/CreateLocation.vue';
 Vue.use(Router)
 
 import store from "./store";
+import menu from './models/menu';
 
 let router = new Router({
     mode: 'history',
-    routes: [
-        {
+    routes: [{
             path: '/',
             component: DashboardComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Dashboard');
+                store.set('title', menu.Dashboard);
                 next();
             },
             meta: {
@@ -43,7 +44,7 @@ let router = new Router({
             path: '/equipment',
             component: EquipmentComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Equipment');
+                store.set('title', menu.Equipment);
                 next();
             },
             meta: {
@@ -54,7 +55,7 @@ let router = new Router({
             path: '/equipment/create',
             component: AddEquipmentComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Equipment');
+                store.set('title', menu.Equipment);
                 next();
             },
             meta: {
@@ -65,7 +66,7 @@ let router = new Router({
             path: '/equipment/:id',
             component: EquipmentDetailsComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Equipment details');
+                store.set('title', menu.EquipmentDetail);
                 next();
             }
         },
@@ -73,7 +74,7 @@ let router = new Router({
             path: '/work_order',
             component: OrderComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Work Order');
+                store.set('title', menu.WorkOrder);
                 next();
             },
             meta: {
@@ -84,7 +85,7 @@ let router = new Router({
             path: '/work_order/create',
             component: CreateOrderComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Work Order');
+                store.set('title', menu.WorkOrder);
                 next();
             },
             meta: {
@@ -95,7 +96,7 @@ let router = new Router({
             path: '/calendar',
             component: CalendarComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Calendar');
+                store.set('title', menu.Calendar);
                 next();
             },
             meta: {
@@ -106,7 +107,7 @@ let router = new Router({
             path: '/report',
             component: ReportComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Report');
+                store.set('title', menu.Report);
                 next();
             },
             meta: {
@@ -117,7 +118,9 @@ let router = new Router({
             path: '/team',
             component: TeamComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Teams ');
+
+                store.set('title', menu.Teams);
+
                 next();
             },
             meta: {
@@ -125,10 +128,18 @@ let router = new Router({
             }
         },
         {
+            path: '/team/add',
+            component: AddTeamComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Team');
+                next();
+            }
+        },
+        {
             path: '/account',
             component: AccountComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Account');
+                store.set('title', menu.Accounts);
                 next();
             }
         },
@@ -136,7 +147,7 @@ let router = new Router({
             path: '/account/add',
             component: AddAccountComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Account');
+                store.set('title', menu.Accounts);
                 next();
             }
         },
@@ -144,7 +155,7 @@ let router = new Router({
             path: '/department',
             component: DepartmentComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Department');
+                store.set('title', menu.Department);
                 next();
             }
         },
@@ -152,7 +163,7 @@ let router = new Router({
             path: '/location',
             component: LocationComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Location');
+                store.set('title', menu.Location);
                 next();
             },
             meta: {
@@ -163,7 +174,7 @@ let router = new Router({
             path: '/project',
             component: ProjectComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Project');
+                store.set('title', menu.Project);
                 next();
             },
             meta: {
@@ -174,7 +185,7 @@ let router = new Router({
             path: '/vendors',
             component: LocationComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Vendors');
+                store.set('title', menu.Vendors);
                 next();
             },
             meta: {
@@ -184,8 +195,10 @@ let router = new Router({
         {
             path: '/location/create-location',
             component: CreateLocation,
+
             beforeEnter: (to,from,next) => {
-                store.set('title','Location');
+                store.set('title', menu.Location);
+
                 next();
             },
             meta: {
