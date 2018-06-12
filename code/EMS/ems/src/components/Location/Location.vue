@@ -5,7 +5,7 @@
           <b>Sort By</b>
         </div>
         <div class="location-blocks">
-          <div class="material-box material-shadow-animate"  v-bind:key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
+          <div class="material-box material-shadow-animate" :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
             <div class="location-name" >
               {{location.Name}}
             </div>
@@ -31,15 +31,21 @@
             <br/> <br/>
             
             <div class="type-bar">
-              <div>Equipment</div>
-              <div>Work Order</div>
-              <div>People</div>
-              <div>Team</div>
-
+              <div v-on:click="currentMode = modes.EQUIPMENT">Equipment</div>
+              <div v-on:click="currentMode = modes.WORKORDER">Work Order</div>
+              <div v-on:click="currentMode = modes.TEAM">Team</div>
+              <div v-on:click="currentMode = modes.POSITION">Position</div>
             </div>
-
+            <br>
             
-
+            <div v-if="currentMode == modes.EQUIPMENT"> 
+              <div v-bind:key='equipment.Id' v-for="equipment in equipments">
+               {{equipment.Id}}
+              </div>
+            </div>
+            <div v-else-if="currentMode == modes.WORKORDER">work order</div>
+            <div v-else-if="currentMode == modes.TEAM"> team </div>
+            <div v-else>position </div>
           </div>
           
       </div>
@@ -55,14 +61,33 @@ export default {
   data() {
     return {
       locations: [],
+      equipments: [],
       selectedLocation: null,
+      currentMode: 0,
+      modes: {
+        EQUIPMENT: 0,
+        WORKORDER: 1,
+        TEAM: 2,
+        POSITION: 3
+      }
     };
   },
   methods: {
     setSelectedLocation(location) {
-      this.selectedLocation = location;
+      this.equipments = [];
+      let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
+      this.axios.get(url)
+        .then((response) => {
+          let data = response.data;
+          data.forEach(equipment => {
+            this.equipments.push(equipment);
+          })     
+        })
+        .catch((error) => {
+          console.log(error);
+        })
       // alert(this.selectedLocation);
-    }
+    },
   },
   created( ){
     this.axios.get(Server.LOCATION_API_PATH)
@@ -73,8 +98,9 @@ export default {
         })
         this.selectedLocation = this.locations[0];
       }).catch((error) => {
-      console.log(error);
-    });
+        console.log(error);
+      });
+    
   }
 };
 </script>
