@@ -9,8 +9,10 @@
         <div class="">
             <div class="headerbar-end">
                 <div class="searchbar-wrapper" v-show="showSearchBar">
-                    <i class="fa fa-search"></i>
-                    <input type="text" class="searchbar" placeholder="Search"/>
+                    <form @submit.prevent="search()">
+                        <i class="fa fa-search" v-on:click="search()" id="searchIcon"></i>
+                        <input v-model="searchValue" type="text" class="searchbar" placeholder="Search"/>
+                    </form>
                 </div>
                 <div>
                     <div class="headerbar-button">
@@ -29,15 +31,36 @@
 
 <script>
 import { sync, } from 'vuex-pathify';
+import menu from '@/models/menu.js';
+import Server from '@/config/config.js';
+
 export default {
     name: 'header-bar',
     data() {
         return {
+            
         }
     },
     computed: {
         title: sync('title'),
+        searchValue: sync('searchValue'),
         showSearchBar: sync('showSearchBar'),
+    },
+    methods: {
+        search() {
+            switch(this.title) {
+                case menu.WorkOrder: {
+                    let url = `${Server.WORKORDER_SEARCH_API_PATH}/${this.searchValue}`;
+                    this.axios.get(url)
+                        .then((res) => {
+                            let result = res.data.WorkOrders;
+                            this.$store.state.workOrderPage.searchValues = result;
+                        });
+                    break;
+                }
+
+            }
+        }
     }
 }
 </script>
@@ -108,6 +131,10 @@ export default {
     .searchbar:hover, .searchbar-wrapper input:focus {
         /* border: 1px solid #eeeeee; */
         box-shadow: 4px 4px 8px #bdbdbd;  
+    }
+
+    #searchIcon:hover {
+        cursor: pointer;
     }
 
     .headerbar-button {
