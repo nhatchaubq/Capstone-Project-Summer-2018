@@ -170,8 +170,8 @@
                     <div class="form-field-title" >
                         Role
                     </div>
-                    <div class="field is-horizontal" style="margin-right:6rem">
-                        <model-select style="width: 100% !important" :options="roleOptions" v-model="account.role" placeholder="Select a role"></model-select>  
+                    <div class="field is-horizontal" >
+                        <model-select style="width: 100% !important" :options="roleOptions" v-model="account.roleid" placeholder="Select a role"></model-select>  
                         
                     </div>
 <!-- /tien -->
@@ -233,7 +233,7 @@ export default {
         phone: null,
         email: "",
         startdate: "",
-        role: null
+        roleid: null
       },
       roleOptions: []
     };
