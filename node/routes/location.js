@@ -9,5 +9,10 @@ router.get("/", (request, response) => {
     .into(response);
 });
 
+router.get('/:id/team', (req, res) => {
+  req.sql("exec GetTeamFromLocationId @locationId")
+    .param("locationId", req.params.id, TYPES.Int)
+    .into(res);
+})
 
 module.exports = router;
