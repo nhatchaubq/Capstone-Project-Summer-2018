@@ -39,8 +39,35 @@
             <br>
             
             <div v-if="currentMode == modes.EQUIPMENT"> 
-              <div v-bind:key='equipment.Id' v-for="equipment in equipments">
-               {{equipment.Id}}
+              <div >
+                <!-- {{equipment.Id}},{{equipment.Name}} , 
+                <img v-show="equipment.Image" :src="equipment.Image"  style="width: 3rem; height: 3rem;"> -->
+                <v-flex >
+                        <v-expansion-panel popout>
+                            <v-expansion-panel-content v-bind:key='equipment.Id' v-for="equipment in equipments">
+                                <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
+                                    <div style="display: flex">
+                                        <img v-show="equipment.Image" :src="equipment.Image" style="width: 3rem; height: 3rem;">
+                                    </div>
+                                    <div style="display: grid; grid-template-rows: auto auto;">
+                                        <div>
+                                            {{ equipment.Name }}
+                                        </div>                                            
+                                        <div style="font-size: .9rem">
+                                            <!-- Quantity: {{ equipment.EquipmentItems.length }} -->
+                                            Quantity: {{ equipment.EquipmentItems.length }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <v-card v-for="eqtItem in equipment.EquipmentItems" :key="eqtItem.Id">
+                                    <v-card-text style="font-size: .9rem">
+                                        Serial #: <a>{{ eqtItem.SerialNumber }}</a> | 
+                                        <a href="">View position</a>
+                                    </v-card-text>
+                                </v-card>
+                            </v-expansion-panel-content>
+                        </v-expansion-panel>
+                    </v-flex>
               </div>
             </div>
             <div v-else-if="currentMode == modes.WORKORDER">work order</div>
@@ -74,20 +101,34 @@ export default {
   },
   methods: {
     setSelectedLocation(location) {
-      this.equipments = [];
-      let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
-      this.axios.get(url)
-        .then((response) => {
-          let data = response.data;
-          data.forEach(equipment => {
-            this.equipments.push(equipment);
-          })     
-        })
-        .catch((error) => {
-          console.log(error);
-        })
+      // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
+      // this.axios.get(url)
+      //   .then((response) => {
+      //     let data = response.data;
+      //     data.forEach(equipment => {
+      //       this.equipments.push(equipment);
+      //     })     
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   })
       // alert(this.selectedLocation);
+      this.selectedLocation = location;
+      this.getEquipmentFromLocation(location);
     },
+    getEquipmentFromLocation(location){
+      this.equipments = [];
+      let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/getByEquipmentId/${location.Id}`;
+      this.axios.get(url)
+      .then((response) => {
+        let data = response.data;
+        data.forEach(eqtItem => {
+          this.equipments.push(eqtItem);
+        })
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
   },
   created( ){
     this.axios.get(Server.LOCATION_API_PATH)
@@ -96,7 +137,7 @@ export default {
         data.forEach(location =>{
           this.locations.push(location);
         })
-        this.selectedLocation = this.locations[0];
+        // this.selectedLocation(this.locations[0]);
       }).catch((error) => {
         console.log(error);
       });
