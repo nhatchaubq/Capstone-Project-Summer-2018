@@ -2,16 +2,18 @@ var router = require("express").Router();
 var TYPES = require("tedious").TYPES;
 
 /* GET request, for select */
-router.get("/", function(request, response) {
+router.get("/", function (request, response) {
   request
     .sql(
       "SELECT acc.Id as 'Account.Id', acc.Username as 'Account.Username', acc.Password as 'Account.Password', acc.Email as 'Account.Email', " +
-        "acc.Fullname as 'Account.Fullname', acc.Phone as 'Account.Phone', acc.IsActive as 'Account.IsActive', acc.StartDate as 'Account.StartDate', " +
-        "acc.EndDate as 'Account.EndDate', acc.AvatarImage as 'Account.AvatarImage', acc.RoleID as 'Account.RoleId', r.Name as 'Account.Role.Name' " +
-        
-        "FROM [Account] as acc JOIN [Role] as r ON acc.RoleID = r.Id " +
-        
-        "ORDER BY acc.StartDate DESC for json path"
+
+      "acc.Fullname as 'Account.Fullname', acc.Phone as 'Account.Phone', acc.IsActive as 'Account.IsActive', acc.StartDate as 'Account.StartDate', " +
+      "acc.EndDate as 'Account.EndDate', acc.AvatarImage as 'Account.AvatarImage', acc.RoleID as 'Account.RoleId', r.Name as 'Account.Role.Name' " +
+
+      "FROM [Account] as acc JOIN [Role] as r ON acc.RoleID = r.Id " +
+
+      "ORDER BY acc.StartDate DESC for json path"
+
     )
     .into(response);
 });
@@ -22,7 +24,7 @@ router.post("/", (request, response) => {
     .sql(
    
       "insert into [Account](Username, Password, Email, Fullname, Phone, IsActive, StartDate, EndDate, RoleId, AvatarImage)" +
-        " values(@username, @password, @email, @fullname, @phone, @isActive, @startdate, @enddate, @roleid, @avatarimage)"
+      " values(@username, @password, @email, @fullname, @phone, @isActive, @startdate, @enddate, @roleid, @avatarimage)"
     )
     .param("username", request.body.account.username, TYPES.NVarChar)
     .param("password", request.body.account.password, TYPES.NVarChar)
@@ -39,19 +41,18 @@ router.post("/", (request, response) => {
 });
 
 /* PUT request, for update */
-router.put("/:id", function(request, response) {
-  request
-    .sql(
-      "update [Account] set Password = @password, Fullname = @fullname, Birthday = @birthday where Id = @id"
-    )
-    .param("password", request.params.id, TYPES.NVarChar)
-    .param("fullname", request.body.email, TYPES.NVarChar)
-    .param("birthday", request.body.fullname, TYPES.NVarChar)
+
+router.put('/:id', function (request, response) {
+  request.sql('update [Account] set Password = @password, Fullname = @fullname where Id = @id')
+    .param('id', request.params.id, TYPES.Int)
+    .param('password', request.body.password, TYPES.NVarChar)
+    .param('fullname', request.body.email, TYPES.NVarChar)
+
     .exec(response);
 });
 
 /* DELETE request, for delete */
-router.delete("/:id", function(request, response) {
+router.delete("/:id", function (request, response) {
   request
     .sql("delete from [Account] where Id = @id")
     .param("id", request.params.id, TYPES.NVarChar)

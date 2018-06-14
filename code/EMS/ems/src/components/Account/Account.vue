@@ -28,6 +28,7 @@
     </div>
         <div v-else>
       <account-table :accounts="accounts" v-if="isTableMode"></account-table>
+
       <account-card :accounts="accounts" v-else></account-card>
     </div>
 

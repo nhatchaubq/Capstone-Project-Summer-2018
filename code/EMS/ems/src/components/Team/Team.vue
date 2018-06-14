@@ -59,6 +59,7 @@ export default {
   created() {
     let URL = "http://localhost:3000/api/team";
     this.axios.get(URL).then(res => {
+      // alert("alao alo");
       let data = res.data;
       data.forEach(element => {
         let team = element.Team;
