@@ -32,6 +32,7 @@ server.use(function (request, respones, next) {
 server.use(bodyParser.json());
 server.use('/api/login', require('./routes/login'));
 server.use('/api/account', require('./routes/account'));
+server.use('/api/account/id', require('./routes/accountDetail'));
 server.use('/api/equipment', require('./routes/equipment'));
 server.use('/api/EquipmentCategory', require('./routes/EquipmentCategory'));
 server.use('/api/Vendor', require('./routes/Vendor'));
