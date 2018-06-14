@@ -9,6 +9,7 @@ router.get("/", (request, response) => {
       "FROM [Team] as team " +
       "ORDER BY team.id DESC for json path"
     )
+
     .into(response);
 });
 router.post("/", (request, response) => {
@@ -23,3 +24,4 @@ router.post("/", (request, response) => {
     .exec(response);
 });
 module.exports = router;
+
