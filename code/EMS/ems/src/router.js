@@ -132,7 +132,15 @@ let router = new Router({
             path: '/team/add',
             component: AddTeamComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Team');
+                store.set('title', menu.Teams);
+                next();
+            }
+        },
+        {
+            path: '/team/:id',
+            component: AddTeamComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', menu.TeamDetails);
                 next();
             }
         },
@@ -156,7 +164,7 @@ let router = new Router({
             path: '/account/:id',
             component: AccountDetailComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', menu.Accounts);
+                store.set('title', menu.AccountDetails);
                 next();
             }
         },
