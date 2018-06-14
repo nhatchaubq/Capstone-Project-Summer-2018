@@ -1,31 +1,75 @@
 <template>
-    <div>
-    <image-modal :visible="true" transition="roll">
-      <p class="image is-4by3">
-        <img src="http://placehold.it/1280x960">
-      </p>
-    </image-modal>
+  <div class="grid-wrapper">
 
-    <card-modal :visible="true" :title="title" transition="zoom">
-    <modal-card-title>Hello kira! </modal-card-title>
-      <div class="content has-text-centered">
-      </div>
-      <div>Hello world!!</div>
-    </card-modal>
-  </div>
+<img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem; ">
+<div class="material-box">
+
+<h2 style="text-transform: uppercase;font-size: 30px; color: #3960A4">{{account.Username}}</h2>
+<h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
+<h2>Full name: {{account.Fullname}}</h2>
+<h2>Status: {{account.IsActive? 'Active': 'Unactive'}}</h2>
+<h2>Role: {{account.SystemRole.Name}}</h2>
+<h2>Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2>
+<h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
+<h2 >
+  <!-- <span class="icon is-small is-left">
+                            <i class="fa fa-envelope"></i>
+                            </span> -->
+  Email: {{account.Email ?account.Email: 'N/A' }}</h2>
+<h2>Phone number: {{account.Phone ? account.Phone: NaN }}</h2>
+</div>
+
+<h1><strong v-bind:key="team.id" v-for="team in teams">
+    {{account.Teams.id}}
+   </strong></h1>
+
+
+
+
+
+
+<!-- <h1>{{account.Id}}</h1> -->
+  <!-- <td>{{account.Id}}</td>    
+  <td>{{account.Username}}</td>
+  <td>{{account.Password}}</td> -->
+
+
+
+</div>
 </template>
 
 <script>
-import { Modal, ImageModal, CardModal } from "vue-bulma-modal";
-
 export default {
-  components: {
-    Modal,
-    ImageModal,
-    CardModal
+  created() {
+    //   let URL = "http://localhost:3000/api/account/id/:id";
+    //   this.axios.get(URL).then(response => {
+    //     let data = response.data;
+    //     // alert('in');
+    //     data.forEach(element => {
+    //       let account = element.Account;
+    //       this.accounts.push(account);
+    //     });
+    //   });
+    // },
+    let URL = `http://localhost:3000/api/account/id/${this.$route.params.id}`;
+    this.axios.get(URL).then(response => {
+      let data = response.data;
+      this.account = data;
+    });
+  },
+  data() {
+    return {
+      account: null
+    };
   }
 };
 </script>
 
-<style>
+<style scoped>
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-column-gap: 1rem;
+  grid-row-gap: 2rem;
+}
 </style>
