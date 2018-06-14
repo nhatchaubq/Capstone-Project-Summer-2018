@@ -174,7 +174,7 @@ export default {
   position: fixed;
   height: 38.3rem;
   padding-right: 1rem;
-  width: 36rem;
+  width: 40%;
   overflow-y: auto;
 }
 
@@ -202,7 +202,7 @@ export default {
   top: 5.1rem;
   height: 40.8rem;
   overflow-y: auto;
-  width: 40rem;
+  width: 43%;
   z-index: 2;
 }
 .type-bar {

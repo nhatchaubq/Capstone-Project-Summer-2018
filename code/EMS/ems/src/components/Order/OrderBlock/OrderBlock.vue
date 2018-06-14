@@ -6,7 +6,7 @@
             <i class="fa" :class="makeStatusIcon(order)"></i>            
         </div>
         <div class="order-block-info">
-            <div v-bind:style="priorityBadgeColor(order)" class="badge">{{ order.Priority }}</div>
+            <div style="color: white" :style="`background-color: ${order.PriorityColor}`" class="tag">{{ order.Priority }}</div>
             <div>#{{ order.Id }}</div>
             <div>
                 <i class="fa fa-user"></i>

@@ -21,7 +21,12 @@ router.post('/create',(request,respone) =>{
     .param("longtitude",request.body.newLocation.longtitude,TYPES.Float)
     .param("latitude",request.body.newLocation.latitude,TYPES.Float)
     .exec(respone);
-})
+});
 
+router.get('/:id/team', (req, res) => {
+  req.sql("exec GetTeamFromLocationId @locationId")
+    .param("locationId", req.params.id, TYPES.Int)
+    .into(res);
+});
 
 module.exports = router;
