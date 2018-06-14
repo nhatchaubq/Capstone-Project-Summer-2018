@@ -2,12 +2,12 @@
     <div>        
         <div class="order-content">
             <!-- <div class="orders-view">                 -->
-                <div class="filter">
-                    <div style="width: 100%; position: relative; top: .4rem; margin-right: 1rem;">
-                        Add filter:
-                    </div>
-                    <div style="width: 100%">
-                        <div class="select">
+                <div class="">
+                    <!-- <div style="width: 100%;">
+                        Filter:
+                    </div> -->
+                    <div class="filter" style="width: 100%">
+                        <!-- <div class="select">
                             <select v-model="selectedFilter">
                                 <option disabled :value=null>Choose a filter</option>
                                 <optgroup label="Status">
@@ -17,19 +17,33 @@
                                     <option :disabled="filterValues.includes(priority)" :key="priority.id" v-for="priority in options.priorities" :value="priority">{{ priority.name }}</option>
                                 </optgroup>
                             </select>
+                        </div> -->
+                        <div>
+                            Priority:
+                            <label class="checkbox" :key="priority.id" v-for="priority in options.priorities">
+                                <input type="checkbox" v-on:change="addFilter(priority, $event)">
+                                {{ priority.name }}
+                            </label>
+                        </div>
+                        <div>
+                            Status:
+                            <label class="checkbox" :key="status.id" v-for="status in options.status">
+                                <input type="checkbox" v-on:change="addFilter(status, $event)">
+                                {{ status.name }}
+                            </label>
                         </div>
                     </div>
                     <div style="width: 100%"></div>
-                    <div class="filters-bar">
-                        <span class="tag is-light" style="user-select: none; margin-right: .3rem; cursor: pointer;" :key="filter.id" v-on:click="removeFilter(filter)" v-for="filter in filterValues">
-                            {{ filter.type == optionTypes.STATUS ? 'Status: ' : 'Priority: ' }} {{ filter.name }}
-                            <i class="fa fa-times-circle"></i>
-                        </span>
+                        <!-- <div class="filters-bar">
+                            <span class="tag is-light" style="user-select: none; margin-right: .3rem; cursor: pointer;" :key="filter.id" v-on:click="removeFilter(filter)" v-for="filter in filterValues">
+                                {{ filter.type == optionTypes.STATUS ? 'Status: ' : 'Priority: ' }} {{ filter.name }}
+                                <i class="fa fa-times-circle"></i>
+                            </span>
+                        </div> -->
                     </div>
-                </div>
-                <div v-show="searchMode" style="display: flex; justify-content: flex-end; align-content: center;">
-                    <span><a v-on:click="clearSearch()">Clear search result</a></span>  
-                </div>             
+                    <div v-show="searchMode" style="display: flex; justify-content: flex-end; align-content: center;">
+                        <span><a v-on:click="clearSearch()">Clear search result</a></span>  
+                    </div>             
             <!-- </div>             -->
         </div>
         <div class="order-blocks">
@@ -50,7 +64,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
+// import Vue from 'vue';
 import { sync, } from 'vuex-pathify';
 import Server from '@/config/config.js';
 import OrderBlock from './OrderBlock/OrderBlock';
@@ -103,7 +117,7 @@ export default {
             tempValues: null, // to hold the original orders when apply filters
             workOrders: [], // orders data to display in orderblocks <order-block></order-block>
             selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
-            selectedFilter: null, // to hold the selected value when change in <select></select>
+            // selectedFilter: null, // to hold the selected value when change in <select></select>
             searchMode: false,
             options: {
                 priorities: [],
@@ -199,20 +213,18 @@ export default {
         clearSearch() {
             this.$store.state.searchValue = '';
             this.$store.state.workOrderPage.searchValues = [];
-        }
-    },
-    watch: { // this 'watch' is used when we need to monitor changes of some variables, if they changes value then the function in this 'watch' will be triggered.
-        'selectedFilter': function() {
-            Vue.nextTick(() => {
-                if (this.selectedFilter != null && !this.filterValues.includes(this.selectedFilter)) {                    
-                    this.filterValues.push(this.selectedFilter);
-                    switch (this.selectedFilter.type) {
+        },
+        addFilter(filter, event) {
+            if (event.target.checked) {
+                if (!this.filterValues.includes(filter)) {                  
+                    this.filterValues.push(filter);
+                    switch (filter.type) {
                         case this.optionTypes.STATUS: {
-                            this.filterOptionsValues.status.push(this.selectedFilter);
+                            this.filterOptionsValues.status.push(filter);
                             break;
                         }
                         case this.optionTypes.PRIORITY: {
-                            this.filterOptionsValues.priorities.push(this.selectedFilter);
+                            this.filterOptionsValues.priorities.push(filter);
                             break;
                         }
                     }
@@ -222,10 +234,38 @@ export default {
                     }     
                     this.filterOrders();                    
                 } else {
-                    this.selectedFilter = null;
+                    filter = null;
                 }
-            });
-        },
+            } else {
+                this.removeFilter(filter);
+            }
+        }
+    },
+    watch: { // this 'watch' is used when we need to monitor changes of some variables, if they changes value then the function in this 'watch' will be triggered.
+        // 'selectedFilter': function() {
+        //     Vue.nextTick(() => {
+        //         if (this.selectedFilter != null && !this.filterValues.includes(this.selectedFilter)) {                    
+        //             this.filterValues.push(this.selectedFilter);
+        //             switch (this.selectedFilter.type) {
+        //                 case this.optionTypes.STATUS: {
+        //                     this.filterOptionsValues.status.push(this.selectedFilter);
+        //                     break;
+        //                 }
+        //                 case this.optionTypes.PRIORITY: {
+        //                     this.filterOptionsValues.priorities.push(this.selectedFilter);
+        //                     break;
+        //                 }
+        //             }
+        //             // tempValues is null means that no filters yet.
+        //             if (this.tempValues == null) {
+        //                 this.tempValues = this.workOrders;
+        //             }     
+        //             this.filterOrders();                    
+        //         } else {
+        //             this.selectedFilter = null;
+        //         }
+        //     });
+        // },
         'searchValues': function() {
             if (this.searchValues.length == 0) {
                 this.workOrders = this.$store.state.workOrderPage.orders;
@@ -241,11 +281,24 @@ export default {
 </script>
 
 <style scoped>
-    .filter {
+    /* .filter {
         display: grid;
         grid-template-columns: 18% auto;
         grid-template-rows: auto auto;
         margin-bottom: 1rem;   
+    } */
+    
+    .filter {
+        display: grid;
+        /* grid-template-columns: 18% auto; */
+        grid-template-rows: auto auto;
+        margin-bottom: 1rem;
+        user-select: none;
+        grid-row-gap: .5rem;
+    }
+
+    .filter label {
+        margin-right: .5rem;
     }
 
     .tag i {

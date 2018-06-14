@@ -28,9 +28,11 @@ export default {
     HeaderBar,
     Login
   },
+  computed: {
+      isLoggedIn: sync('isLoggedIn'),
+  },
   data() {
     return {
-      isLoggedIn: true
     };
   }
 };
