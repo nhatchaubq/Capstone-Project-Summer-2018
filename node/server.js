@@ -40,7 +40,7 @@ server.use('/api/location', require('./routes/location'));
 server.use('/api/role', require('./routes/accountRole'));
 server.use('/api/team',require('./routes/team'));
 server.use('/api/equipmentItem',require("./routes/equipmentItem"))
-
+server.use('/api/team_location', require('./routes/team_location'));
 
 // catch 404 and forward to error handler
 server.use(function (req, res, next) {

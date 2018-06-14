@@ -7,33 +7,34 @@
             <div></div>
             <div class="form-title-end">
                 <!-- <button id="btn-cancel" class="button" style="" v-on:click="cancel">Cancel</button> -->
-                <button class="button" style="margin-right: .5rem" v-on:click="cancel">Cancel</button>
+                <button class="button" style="margin-right: .5rem" v-on:click="cancel()">Cancel</button>
                 <!-- <button id="btn-add" class="button is-primary">Create Work Order</button> -->
-                <button class="button is-primary">Create Work Order</button>
+                <button class="button is-primary" v-on:click="createWorkOrder()">Create Work Order</button>
             </div>
         </div>
         <div class="form-content">
             <div class="form-field is-horizonal">
                 <div class="form-field-title">Category: </div>
-                <label class="radio" :key="category.Id" v-for="(category, index) in categories" style="margin-right: 1rem;">
+                <label class="radio" :key="category.Id" v-for="(category, index) in categories" v-on:click="workOrderCategory = category.Id" style="margin-right: 1rem;">
                     <input required type="radio" name="category" :checked="index == 0">
                     {{ category.Name }}
                 </label>
             </div>
             <div class="form-field is-horizonal">
                 <div class="form-field-title" style="margin-right: 1rem">Priority:</div> 
-                <label class="radio" :key="priority.Id" v-for="(priority, index) in priorities" style="margin-right: 1rem; user-select: none;">
+                <label class="radio" :key="priority.Id" v-for="(priority, index) in priorities" v-on:click="workOrderPriority = priority.Id" style="margin-right: 1rem; user-select: none;">
                     <input type="radio" name="priority" :checked="index == 0" style="margin-right: .3rem;">
                     <span class="tag" style="color: white" :style="`background-color: ${priority.TagHexColor}`">{{ priority.Name }}</span>
                 </label>
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Title This Work Order (required)
+                    Title this Work Order (required)
                 </div>
                 <div class="form-field-input">
-                    <input type="text" class="input" placeholder="Công trình dự án Vinhomes">
+                    <input v-model="workOrderTitle" type="text" class="input" required placeholder="Công trình dự án Vinhomes">
                 </div>
+                {{ workOrderTitle }}
             </div>
             <div class="form-field">
                 <div style="display: grid; grid-template-columns: 40% 5% 15% 15% 5%; grid-column-gap: 1rem;">
@@ -45,7 +46,7 @@
                     <div>To</div>
                     <div></div>
                 </div>
-                <div :key="index" v-for="(equipment, index) in selectedEquipments" style="display: grid; grid-template-columns: 40% 5% 15% 15% 5%; grid-column-gap: 1rem; margin-bottom: 1rem;">
+                <div :key="equipment.Id" v-for="equipment in selectedEquipments" style="display: grid; grid-template-columns: 40% 5% 15% 15% 5%; grid-column-gap: 1rem; margin-bottom: 1rem;">
                     <div style="padding-left: 1rem; display: grid; grid-template-columns: 5rem auto; grid-column-gap: 1rem;">
                         <img style="width: 100%; height: 5rem;" :src="equipment.image" alt="">
                         <div style="">
@@ -112,7 +113,7 @@
                     Describe this work order (optional)
                 </div>
                 <div class="form-field-input">
-                    <textarea class="input" rows="5"></textarea>
+                    <textarea class="input" rows="5" v-model="workOrderDescription"></textarea>
                 </div>
             </div>
             <!-- <div class="form-field">
@@ -154,30 +155,33 @@ export default {
     },
     data() {
         return {
-            files: [],
-            categories: [],
-            priorities: [],
-            equipmentOptions: [],
+            workOrderTitle: '',
+            workOrderDescription: '',
+            workOrderPriority: -1,
+            workOrderCategory: -1,
+            selectedEquipmentQuantity: 1,
+            selectedEquipmentFromDate: '',
+            selectedEquipmentToDate: '',
+            selectedEquipments: [],
+            selectedLocation: {
+                text: '',
+                value: '',
+            },
+            selectedTeam: {
+                text: '',
+                value: '',
+            },
             selectedEquipment: {
                 text: '',
                 value: '',
                 image: '',
                 availableQuantity: 0,
             },
-            selectedEquipmentQuantity: 1,
-            selectedEquipmentFromDate: '',
-            selectedEquipmentToDate: '',
-            selectedEquipments: [],
+            categories: [],
+            priorities: [],
+            equipmentOptions: [],
             locationOptions: [],
-            selectedLocation: {
-                text: '',
-                value: '',
-            },
             teamOptions: [],
-            selectedTeam: {
-                text: '',
-                value: '',
-            }
         }
     },
     created() {
@@ -186,6 +190,7 @@ export default {
                 if (res.data) {
                     let data = res.data;
                     this.categories = data;
+                    this.workOrderCategory = data[0].Id;
                 }
             });
         this.axios.get(Server.EQUIPMENT_API_PATH)
@@ -208,6 +213,7 @@ export default {
             .then((res) => {
                 if (res.data) {
                     this.priorities = res.data;
+                    this.workOrderPriority = this.priorities[0].Id;
                 }
             });
         this.axios.get(Server.LOCATION_API_PATH)
@@ -266,6 +272,62 @@ export default {
         },
         getToday() {
             return moment().format('YYYY-MM-DD');
+        },
+        createWorkOrder() {
+            let context = this;
+            let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${this.selectedLocation.value}/${this.selectedTeam.value}`;
+            this.axios.get(teamLocationApi)
+                .then(function(res) {
+                    if (res.data.Id) {
+                        let result = res.data.Id;
+                        let workOrderApi = Server.WORKORDER_API_PATH;
+                        let authUser = JSON.parse(window.localStorage.getItem('user'));
+
+                        context.axios.post(workOrderApi, {
+                            name: context.workOrderTitle,
+                            description: context.workOrderDescription,
+                            requestUserId: authUser.Id,
+                            createDate: new Date(),
+                            priorityId: context.workOrderPriority,
+                            statusId: 1,
+                            categoryId: context.workOrderCategory,
+                            teamLocationId: result,
+                        }).then(function(res) {
+                            if (res.data.NewWorkOrderId) {
+                                let newWorkOrderId = res.data.NewWorkOrderId;
+                                alert(context.selectedEquipments.length);
+                                context.selectedEquipments.forEach(equipment => {
+                                    for (var i = 0; i < equipment.quantity; i++) {
+                                        // alert('loopin');
+                                        context.axios.post(Server.WORKORDER_DETAIL_API_PATH, {
+                                            workOrderId: newWorkOrderId, 
+                                            equipmentItemId: equipment.id, 
+                                            startDate: equipment.fromDate, 
+                                            dueDate: equipment.toDate, 
+                                            maintainceCost: null, 
+                                            description: null
+                                        })
+                                            .then(function(res) {
+                                                alert('result');
+                                                if (i == equipment.quantity) {
+                                                    context.$router.push('/work_order');
+                                                }
+                                            }).catch((error) => {
+                                                alert(error)
+                                            });
+                                    }
+                                });
+                            } else {
+                                alert('no work order id')
+                            }
+                        }).catch((error) => {
+                            alert("Create work order detail: Cannot create work order due to some errors happened in the server. Please contact the system administrator to investigate this situation!" + error)
+                        });
+
+                    }
+                }).catch((error) => {
+                        alert("Create work order: Cannot create work order due to some errors happened in the server. Please contact the system administrator to investigate this situation!" + error)
+                });
         }
     },
     watch: {

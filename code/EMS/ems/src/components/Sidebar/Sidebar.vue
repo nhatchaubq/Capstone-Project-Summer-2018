@@ -117,7 +117,7 @@ export default {
     logout() {
       this.$store.state.isLoggedIn = false;
       window.localStorage.removeItem("user");
-      // this.$router.push('/');
+      this.$router.push('/');
     }
   }
 };
