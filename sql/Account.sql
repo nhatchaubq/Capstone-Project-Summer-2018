@@ -1,9 +1,0 @@
-use EquipmentManageSystem
-
-INSERT INTO [Account]( [Username], [Password], [Email], [Fullname], [Phone], [IsActive], [StartDate], [EndDate], [RoleID], [AvatarImage], [TeamID], [DepartmentID]) VALUES ( N'admin', N'123456', NULL, NULL, NULL, '1', '2018-06-03 14:20:49.000', NULL, 1, NULL, NULL, 1);	
-INSERT INTO [Account]( [Username], [Password], [Email], [Fullname], [Phone], [IsActive], [StartDate], [EndDate], [RoleID], [AvatarImage], [TeamID], [DepartmentID]) VALUES (N'manager', N'123456', NULL, NULL, NULL, '1', '2018-06-03 14:31:11.000', NULL, 2, NULL, NULL, 2); 
-INSERT INTO [Account]( [Username], [Password], [Email], [Fullname], [Phone], [IsActive], [StartDate], [EndDate], [RoleID], [AvatarImage], [TeamID], [DepartmentID]) VALUES ( N'sitemanager', N'123456', NULL, NULL, NULL, '1', '2018-06-03 14:31:46.000', NULL, 3, NULL, NULL, 2); 
-INSERT INTO [Account]( [Username], [Password], [Email], [Fullname], [Phone], [IsActive], [StartDate], [EndDate], [RoleID], [AvatarImage], [TeamID], [DepartmentID]) VALUES ( N'eqtstaff', N'123456', NULL, NULL, NULL, '1', '2018-06-03 14:32:19.000', NULL, 4, NULL, NULL, 2); 
-INSERT INTO [Account]( [Username], [Password], [Email], [Fullname], [Phone], [IsActive], [StartDate], [EndDate], [RoleID], [AvatarImage], [TeamID], [DepartmentID]) VALUES ( N'staff', N'123456', NULL, NULL, NULL, '1', '2018-06-03 14:32:42.000', NULL, 5, NULL, NULL, 2); 
-INSERT INTO [Account]( [Username], [Password], [Email], [Fullname], [Phone], [IsActive], [StartDate], [EndDate], [RoleID], [AvatarImage], [TeamID], [DepartmentID]) VALUES ( N'staff1', N'23456', NULL, NULL, NULL, '1', '2018-06-03 14:33:08.000', NULL, 5, NULL, NULL, 3); 
-INSERT INTO [Account]( [Username], [Password], [Email], [Fullname], [Phone], [IsActive], [StartDate], [EndDate], [RoleID], [AvatarImage], [TeamID], [DepartmentID]) VALUES ( N'nhatchau', N'123456', NULL, NULL, NULL, '1', '2018-06-03 14:33:34.000', NULL, 1, N'https://i.imgur.com/0OGAkGJ.jpg', NULL, 1); 

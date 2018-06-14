@@ -31,6 +31,12 @@ router.get('/search/:value', (req, res) => {
 router.get('/categories', (req, res) => {
     req.sql("select * from WorkOrderCategory for json path")
         .into(res);
-})
+});
+
+router.post('/', (req, res) => {
+    req.sql("exec [dbo].CreateWorkOrder @name, @requestUserId, @createDate, "
+    + "@description, @priorityId, @statusId, @categoryId, @teamLocationId")
+        .
+});
 
 module.exports = router;
