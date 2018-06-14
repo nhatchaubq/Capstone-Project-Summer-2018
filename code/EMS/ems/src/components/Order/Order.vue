@@ -201,7 +201,8 @@ export default {
                 var date2 = parseInt(new Date(order2.CreateDate).getTime());
                 // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
                 var result = date2 - date1;
-                return (result > 0) ? 1 : (result < 0) ? -1 : (order2.PriorityID - order1.PriorityID);
+                // return (result > 0) ? 1 : (result < 0) ? -1 : 0;
+                return result;
             });
         },
         reset() {
