@@ -1,9 +1,9 @@
 <template>
     <div class="location-page">
       <div class="location-list">
-        <div class="location-sort">
+        <!-- <div class="location-sort">
           <b>Sort By</b>
-        </div>
+        </div> -->
         <div class="location-blocks">
           <div class="material-box material-shadow-animate" :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
             <div class="location-name" >
@@ -154,16 +154,17 @@ export default {
   color: teal;
 }
 .location-page {
+  width: 100%;
 }
 .location-list {
-  width: 36rem;
+  width: 40%;
 }
 
 .location-sort {
   height: 2.6rem;
   line-height: 2.6rem;
   /* text-justify:  */
-  width: 36rem;
+  width: 100%;
   background-color: lightgrey;
   text-align: center;
   font-size: 1.4rem;
@@ -172,7 +173,7 @@ export default {
   /* display: grid;
   grid-gap: 10px; */
   position: fixed;
-  height: 38.3rem;
+  height: 88%;
   padding-right: 1rem;
   width: 40%;
   overflow-y: auto;
@@ -197,12 +198,11 @@ export default {
 }
 
 .location-detail {
-  position: fixed;
-  left: 53rem;
-  top: 5.1rem;
-  height: 40.8rem;
+  position: fixed;    
+  left: 59%;    
+  max-height: 88%; 
   overflow-y: auto;
-  width: 43%;
+  width: 39%;    
   z-index: 2;
 }
 .type-bar {
