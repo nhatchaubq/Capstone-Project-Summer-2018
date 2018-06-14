@@ -155,24 +155,28 @@ export default {
             // the lamda below will iterate the filterValues to find if any elements in it match the condition, then return the result array.
             // in this case it will find if any elements in filterValues match the filter we provided.
             // it is the same as we make a for loop then find the needed elements by using if, then return it as an array. all of those steps in one line of code if we use lamda.
-            this.filterValues = this.filterValues.filter(value => value != filter);
+            // this.filterValues = this.filterValues.filter(value => value.type != filter.type && value.id != filter.id);
             switch(filter.type) {
                 case this.optionTypes.STATUS: {
-                    this.filterOptionsValues.status.pop(filter);
+                    this.filterOptionsValues.status = this.filterOptionsValues.status.filter(status => status.id != filter.id);
                     break;
                 }
                 case this.optionTypes.PRIORITY: {
-                    this.filterOptionsValues.priorities.pop(filter);
+                    this.filterOptionsValues.priorities = this.filterOptionsValues.priorities.filter(priority => priority.id != filter.id);
                     break;
                 }
             }
             this.filterOrders();
-            if (this.filterValues.length === 0) {
+            if (this.filterOptionsValues.status.length == 0 && this.filterOptionsValues.priorities.length == 0) {
                 this.selectedFilter = null;
                 this.workOrders = this.tempValues;
+                this.tempValues = null;
             }
         },
         filterOrders() {
+            if (!this.tempValues) {
+                this.tempValues = this.workOrders;
+            }
             this.workOrders = []; // reset orders before applying new filters
             this.selectedOrder = null;
             if (this.filterOptionsValues.status.length > 0) {
@@ -218,7 +222,7 @@ export default {
         addFilter(filter, event) {
             if (event.target.checked) {
                 if (!this.filterValues.includes(filter)) {                  
-                    this.filterValues.push(filter);
+                    // this.filterValues.push(filter);
                     switch (filter.type) {
                         case this.optionTypes.STATUS: {
                             this.filterOptionsValues.status.push(filter);
@@ -229,14 +233,12 @@ export default {
                             break;
                         }
                     }
-                    // tempValues is null means that no filters yet.
-                    if (this.tempValues == null) {
-                        this.tempValues = this.workOrders;
-                    }     
+                    // tempValues is null means that no filters yet.                       
                     this.filterOrders();                    
-                } else {
-                    filter = null;
-                }
+                } 
+                // else {
+                //     filter = null;
+                // }
             } else {
                 this.removeFilter(filter);
             }

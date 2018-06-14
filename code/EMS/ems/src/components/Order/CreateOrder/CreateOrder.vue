@@ -307,7 +307,7 @@ export default {
                                             description: null
                                         })
                                             .then(function(res) {
-                                                if ((i + 1) > equipment.quantity) {
+                                                if ((i + 1) == equipment.quantity) {
                                                     context.$router.push('/work_order');
                                                 }
                                             }).catch((error) => {
