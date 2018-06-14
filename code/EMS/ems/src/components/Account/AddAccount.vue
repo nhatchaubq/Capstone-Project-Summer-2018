@@ -154,18 +154,27 @@
     
             <div>
                 <div class="form-field">
-                    <div class="form-field-title">
+                    <!-- <div class="form-field-title">
                         Role <strong><span style="color:red;">*</span></strong>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="account.role" class="input" type="text" placeholder="Text input" >
+                        <input v-model="account.rolename" class="input" type="text" placeholder="Text input" >
                             <span class="icon is-small is-left">
                             <i class="fa fa-user-md"></i>
                             </span>
-                            <!-- {{account.role}} -->
+
                         </div>
+                    </div> -->
+<!-- tien -->
+                    <div class="form-field-title" >
+                        Role
                     </div>
+                    <div class="field is-horizontal" >
+                        <model-select style="width: 100% !important" :options="roleOptions" v-model="account.roleid" placeholder="Select a role"></model-select>  
+                        
+                    </div>
+<!-- /tien -->
                 </div>            
             </div>
 
@@ -178,10 +187,10 @@
 
                     <!-- <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
                     <button id="btn-add" class="button" v-on:click="createAccountTrueEnd()">Create Account true end</button> -->
-                    <router-link to='/account/'>
+                    <!-- <router-link to='/account/'>
                     <button id="btn-add" class="button">Create Account</button>
-                    </router-link>
-                    <!-- <button id="btn-add" class="button">Create Account</button> -->
+                    </router-link> -->
+                    <button id="btn-add" class="button">Create Account</button>
                 </div>
             <div>&nbsp</div>
          </form>
@@ -190,7 +199,31 @@
 </template>
 
 <script>
+import VueBase64FileUpload from "vue-base64-file-upload";
+import { ModelSelect } from "vue-search-select";
 export default {
+  components: {
+    VueBase64FileUpload,
+    ModelSelect
+  },
+  created() {
+    this.axios
+      .get("http://localhost:3000/api/role")
+      .then(response => {
+        let data = response.data;
+        data.forEach(role => {
+          let option = {
+            text: role.Name,
+            value: role.Id
+          };
+          this.roleOptions.push(option);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
+  },
+
   data() {
     return {
       account: {
@@ -200,40 +233,20 @@ export default {
         phone: null,
         email: "",
         startdate: "",
-        role: null
-      }
+        roleid: null
+      },
+      roleOptions: []
     };
   },
   methods: {
-    createAccount() {
-      this.axios.put("http://localhost:3000/api/account/6", {
-        password: "abc"
-      });
-    },
-    createAccountTrueEnd() {
-      this.axios.post("http://localhost:3000/api/account", {
-        username: "Dien159",
-        password: 123456,
-        fullname: "Doan Dien",
-        phone: 12345678910,
-        email: "abc@abc",
-        startdate: "2018/03/02",
-        roleid: 1
-        // avatarimage: "https://www.ebay.co.uk/p/Watchmen-Smiley-Face-25mm-1-Pin-Badge-Button-DC-Comics/1588249551",
-        // teamid: 1,
-      });
-    },
     createAccount1() {
-      this.axios.post("http://localhost:3000/api/account", {
-        // username: this.username,
-        // password: this.password,
-        // fullname: this.fullname,
-        // phone: this.phone,
-        // email: this.email,
-        // startdate: this.startdate,
-        // role: this.role,
-        account: this.account
-      });
+      this.axios
+        .post("http://localhost:3000/api/account", {
+          account: this.account
+        })
+        .then(res => {
+          this.$router.push("/account");
+        });
     }
   }
 };

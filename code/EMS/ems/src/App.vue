@@ -28,9 +28,11 @@ export default {
     HeaderBar,
     Login
   },
+  computed: {
+      isLoggedIn: sync('isLoggedIn'),
+  },
   data() {
     return {
-      isLoggedIn: true
     };
   }
 };
@@ -89,6 +91,8 @@ body {
 
 #main {
   margin-left: 13rem;
+  /* width: 50%; */
+  /* background: #26a69a */
 }
 
 .router-view {
