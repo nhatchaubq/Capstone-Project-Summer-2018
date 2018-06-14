@@ -12,7 +12,12 @@ const VIEW_ACCOUNT_DETAIL_API_PATH = ACCOUNT_API_PATH + "/1";
 
 // equipment api section - start
 const EQUIPMENT_API_PATH = SERVER_DEFAULT + "/equipment";
+
 // equipment api section - end
+
+// equipmentitem api section - start
+const EQUIPMENTITEM_BY_ID_LOCATION_API_PATH = SERVER_DEFAULT + "/equipmentItem";
+// equipmentitem api section - end
 
 // work order api section - start
 const WORKORDER_API_PATH = SERVER_DEFAULT + "/work_order";
@@ -25,6 +30,7 @@ const WORKORDER_PRIORITIES_API_PATH = WORKORDER_API_PATH + '/priorities';
 
 //location api section - start
 const LOCATION_API_PATH = SERVER_DEFAULT + "/location";
+const LOCATION_CREATE_API_PATH =LOCATION_API_PATH + "/create";
 //location api section - end
 
 //team_location api section - start
@@ -40,6 +46,7 @@ export default {
   ACCOUNT_API_PATH,
   CREATE_ACCOUNT_API_PATH,
   EQUIPMENT_API_PATH,
+  EQUIPMENTITEM_BY_ID_LOCATION_API_PATH,
 
   WORKORDER_API_PATH,
   WORKORDER_DETAIL_API_PATH,
@@ -49,10 +56,11 @@ export default {
   WORKORDER_CATEGORIES_API_PATH,
   
   LOCATION_API_PATH,
-
+  LOCATION_CREATE_API_PATH,
   TEAM_API_PATH,
   VIEW_ACCOUNT_DETAIL_API_PATH,
 
   TEAM_LOCATION_API_PATH,
+  
   
 };

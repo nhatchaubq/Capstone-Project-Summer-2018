@@ -5,7 +5,7 @@
           <b>Sort By</b>
         </div>
         <div class="location-blocks">
-          <div class="material-box material-shadow-animate"  v-bind:key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
+          <div class="material-box material-shadow-animate" :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
             <div class="location-name" >
               {{location.Name}}
             </div>
@@ -31,20 +31,50 @@
             <br/> <br/>
             
             <div class="type-bar">
-              <div>Equipment</div>
-              <div>Work Order</div>
-              <div>People</div>
-              <div>Team</div>
-
+              <div v-on:click="currentMode = modes.EQUIPMENT">Equipment</div>
+              <div v-on:click="currentMode = modes.WORKORDER">Work Order</div>
+              <div v-on:click="currentMode = modes.TEAM">Team</div>
+              <div v-on:click="currentMode = modes.POSITION">Position</div>
             </div>
-
+            <br>
             
-
+            <div v-if="currentMode == modes.EQUIPMENT"> 
+              <div >
+                <!-- {{equipment.Id}},{{equipment.Name}} , 
+                <img v-show="equipment.Image" :src="equipment.Image"  style="width: 3rem; height: 3rem;"> -->
+                <v-flex >
+                        <v-expansion-panel popout>
+                            <v-expansion-panel-content v-bind:key='equipment.Id' v-for="equipment in equipments">
+                                <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
+                                    <div style="display: flex">
+                                        <img v-show="equipment.Image" :src="equipment.Image" style="width: 3rem; height: 3rem;">
+                                    </div>
+                                    <div style="display: grid; grid-template-rows: auto auto;">
+                                        <div>
+                                            {{ equipment.Name }}
+                                        </div>                                            
+                                        <div style="font-size: .9rem">
+                                            <!-- Quantity: {{ equipment.EquipmentItems.length }} -->
+                                            Quantity: {{ equipment.EquipmentItems.length }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <v-card v-for="eqtItem in equipment.EquipmentItems" :key="eqtItem.Id">
+                                    <v-card-text style="font-size: .9rem">
+                                        Serial #: <a>{{ eqtItem.SerialNumber }}</a> | 
+                                        <a href="">View position</a>
+                                    </v-card-text>
+                                </v-card>
+                            </v-expansion-panel-content>
+                        </v-expansion-panel>
+                    </v-flex>
+              </div>
+            </div>
+            <div v-else-if="currentMode == modes.WORKORDER">work order</div>
+            <div v-else-if="currentMode == modes.TEAM"> team </div>
+            <div v-else>position </div>
           </div>
-          <div class="btn-add">
-        
-
-      </div>
+          
       </div>
       
 
@@ -58,13 +88,46 @@ export default {
   data() {
     return {
       locations: [],
+      equipments: [],
       selectedLocation: null,
+      currentMode: 0,
+      modes: {
+        EQUIPMENT: 0,
+        WORKORDER: 1,
+        TEAM: 2,
+        POSITION: 3
+      }
     };
   },
   methods: {
     setSelectedLocation(location) {
-      this.selectedLocation = location;
+      // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
+      // this.axios.get(url)
+      //   .then((response) => {
+      //     let data = response.data;
+      //     data.forEach(equipment => {
+      //       this.equipments.push(equipment);
+      //     })     
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   })
       // alert(this.selectedLocation);
+      this.selectedLocation = location;
+      this.getEquipmentFromLocation(location);
+    },
+    getEquipmentFromLocation(location){
+      this.equipments = [];
+      let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/getByEquipmentId/${location.Id}`;
+      this.axios.get(url)
+      .then((response) => {
+        let data = response.data;
+        data.forEach(eqtItem => {
+          this.equipments.push(eqtItem);
+        })
+      }).catch((error) => {
+        console.log(error);
+      })
     }
   },
   created( ){
@@ -74,10 +137,11 @@ export default {
         data.forEach(location =>{
           this.locations.push(location);
         })
-        this.selectedLocation = this.locations[0];
+        // this.selectedLocation(this.locations[0]);
       }).catch((error) => {
-      console.log(error);
-    });
+        console.log(error);
+      });
+    
   }
 };
 </script>

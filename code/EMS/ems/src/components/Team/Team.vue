@@ -2,13 +2,16 @@
 
     <div class="">
       <div class="field is-grouped view-mode">
-        <router-link to='/account/'>     
+        <!-- <router-link to='/account/'>     
         <button class="btn-view-mode-left" >Table view</button>
 
         <button class="btn-view-mode-right" >Card view</button>
-        </router-link>
+        </router-link> -->
+      <router-link to='/account/'>  
+        <button class="btn-view-mode" >Account view</button>
+      </router-link>
       <router-link to='/team/'>  
-        <button class="btn-view-mode" >Team view</button>
+        <button class="btn-view-mode" disabled="disabled">Team view</button>
       </router-link>
 
       </div>
@@ -23,13 +26,13 @@
                 <tr>
                     <th><strong>ID</strong></th>
                     <th><strong>User name</strong></th>
-                    <th><strong>Full name </strong></th>
+                    <th><strong>Create date </strong></th>
 
                     <!-- <th><strong>Department</strong></th> -->
                 </tr>
             </thead>  
             <tbody>
-                <tr v-bind:key="team.id" v-for="team in teams">
+                <tr v-bind:key="team.Id" v-for="team in teams">
                     <td>{{team.Id}}</td>    
                     <td>{{team.Name}}</td>
                     <td>{{team.CreatedDate}}</td>
@@ -40,25 +43,39 @@
         </table>
     </div>
     </div>
+  
+    <router-link to='/team/add/'>
+      <button id="btn-add-account" class=" material-shadow-animate">Add Team</button>
+    </router-link>
+
+          <!-- <button id="btn-add-account" class=" material-shadow-animate">Add Team</button> -->
+
 </div>
 </template>
 
 <script>
 export default {
   name: "team",
-  props: {
-    teams: null
+  created() {
+    let URL = "http://localhost:3000/api/team";
+    this.axios.get(URL).then(res => {
+      // alert("alao alo");
+      let data = res.data;
+      data.forEach(element => {
+        let team = element.Team;
+        this.teams.push(team);
+      });
+    });
   },
   data() {
     return {
-      teams: [],
+      teams: []
     };
-  },
+  }
 };
 </script>
 
 <style scoped>
-
 .view-mode {
   margin-bottom: 2rem;
 }
@@ -75,7 +92,6 @@ export default {
   z-index: 1;
   /* padding-right: 20px;
       padding-left: 20px; */
-
 }
 
 .btn-view-mode-left:hover {
@@ -123,7 +139,11 @@ export default {
   color: white;
   cursor: pointer;
 }
-
+.btn-view-mode:disabled {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+}
 
 .is-active {
   background-color: #26a69a;
@@ -167,10 +187,9 @@ export default {
   background-color: var(--primary-color);
   color: white;
 }
-#btn-add-account1:disabled{
+#btn-add-account1:disabled {
   cursor: pointer;
   background-color: var(--primary-color);
   color: white;
 }
-
 </style>
