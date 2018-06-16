@@ -13,7 +13,7 @@
                 </tr>
             </thead>  
             <tbody>
-                <tr v-bind:key="equipment.id" v-for="equipment in equipments">
+                <tr v-bind:key="equipment.id" v-for="equipment in equipments" v-on:click="setSelectedEquipment(equipment)">
                     <td>{{equipment.Id}}</td>    
                     <td>{{equipment.Name}}</td>
                     <td>{{equipment.Vendor.Name}}</td>
@@ -24,19 +24,41 @@
                 </tr>
             </tbody>
         </table>
+        <vodal class="no-padding" height="500" :show="selectedEquipment != null" @hide="selectedEquipment = null" animation="slideUp">
+          <!-- <div>alo</div> -->
+          <equipment-detail-popup :equipment="selectedEquipment" class="" v-show="selectedEquipment != null"></equipment-detail-popup>
+        </vodal>
     </div>
 </template>
 
 <script>
+import "vodal/common.css";
+import "vodal/slide-up.css";
+import EquipmentDetailPopup from './EquipmentDetailPopup';
+import Vodal from 'vodal';
+
 export default {
   name: "equipment-table",
+  components: {
+    EquipmentDetailPopup, Vodal
+  },
   props: {
     equipments: null
+  }, 
+  data() {
+    return {
+      selectedEquipment: null,
+    }
+  },
+  methods: {
+    setSelectedEquipment(equipment) {
+      this.selectedEquipment = equipment;
+    }
   }
 };
 </script>
 
-<style>
+<style scoped>
 table {
   /* border: 1px solid black; */
   width: 100%;
@@ -66,5 +88,9 @@ tr:nth-child(even) {
 #th1:curve {
   text-align: justify;
   background-color: #b0bec5;
+}
+
+.no-padding {
+  padding: 0 !important;
 }
 </style>

@@ -10,7 +10,7 @@
             <div>#{{ order.Id }}</div>
             <div>
                 <i class="fa fa-user"></i>
-                {{ order.RequestFullname }}
+                {{ order.RequestUsername }}
             </div>
             <div>
                 <i class="fa fa-calendar"></i>
@@ -22,7 +22,7 @@
         </div>
         <div class="order-block-location">
             <i class="material-icons">location_on</i>
-            {{ order.LocationAddress }}
+            {{ order.Location.Name }} - {{ order.Location.Address }}
         </div>
     </div>
 </template>
@@ -136,7 +136,7 @@ export default {
     }
 
     .order-block-location i {
-        font-size: 1.2rem;
+        font-size: 1rem;
         position: relative;
         top: .1rem;
     }
