@@ -10,10 +10,11 @@ import ReportComponent from "./components/Report/Report.vue";
 import TeamComponent from "./components/Team/Team.vue";
 import AddTeamComponent from "./components/Team/AddTeam.vue";
 import LocationComponent from "./components/Location/Location.vue";
-import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
+// import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
 import AccountComponent from './components/Account/Account.vue';
 import AddAccountComponent from './components/Account/AddAccount.vue';
+import AccountDetailComponent from './components/Account/AccountDetail.vue';
 import DepartmentComponent from './components/Department/Department.vue';
 import ProjectComponent from './components/Project/Project.vue'
 import CreateLocation from './components/Location/CreateLocation.vue';
@@ -62,14 +63,14 @@ let router = new Router({
                 showSearchBar: false,
             }
         },
-        {
-            path: '/equipment/:id',
-            component: EquipmentDetailsComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.EquipmentDetail);
-                next();
-            }
-        },
+        // {
+        //     path: '/equipment/:id',
+        //     component: EquipmentDetailsComponent,
+        //     beforeEnter: (to, from, next) => {
+        //         store.set('title', menu.EquipmentDetail);
+        //         next();
+        //     }
+        // },
         {
             path: '/work_order',
             component: OrderComponent,
@@ -152,6 +153,14 @@ let router = new Router({
             }
         },
         {
+            path: '/account/:id',
+            component: AccountDetailComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', menu.Accounts);
+                next();
+            }
+        },
+        {
             path: '/department',
             component: DepartmentComponent,
             beforeEnter: (to, from, next) => {
@@ -196,7 +205,7 @@ let router = new Router({
             path: '/location/create-location',
             component: CreateLocation,
 
-            beforeEnter: (to,from,next) => {
+            beforeEnter: (to, from, next) => {
                 store.set('title', menu.Location);
 
                 next();

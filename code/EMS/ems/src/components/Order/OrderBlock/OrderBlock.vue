@@ -6,11 +6,11 @@
             <i class="fa" :class="makeStatusIcon(order)"></i>            
         </div>
         <div class="order-block-info">
-            <div v-bind:style="priorityBadgeColor(order)" class="badge">{{ order.Priority }}</div>
+            <div style="color: white" :style="`background-color: ${order.PriorityColor}`" class="tag">{{ order.Priority }}</div>
             <div>#{{ order.Id }}</div>
             <div>
                 <i class="fa fa-user"></i>
-                {{ order.RequestFullname }}
+                {{ order.RequestUsername }}
             </div>
             <div>
                 <i class="fa fa-calendar"></i>
@@ -22,7 +22,7 @@
         </div>
         <div class="order-block-location">
             <i class="material-icons">location_on</i>
-            {{ order.LocationAddress }}
+            {{ order.Location.Name }} - {{ order.Location.Address }}
         </div>
     </div>
 </template>
@@ -136,7 +136,7 @@ export default {
     }
 
     .order-block-location i {
-        font-size: 1.2rem;
+        font-size: 1rem;
         position: relative;
         top: .1rem;
     }
