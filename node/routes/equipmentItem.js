@@ -10,7 +10,7 @@ var TYPES = require("tedious").TYPES;
 router.post('/', (request, response) => {
     request.sql("INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, ImportDate, StatusId, Description, PositionID)" +
             " VALUES (@equipmentID, @serialNumber, @warrantyDuration, @importDate, @statusId, @description, @positionID)")
-        .param('name', request.body.name, TYPES.NVarChar)
+        .param('equipmentID', request.body.name, TYPES.NVarChar)
         .param('serialNumber', request.body.vendorID, TYPES.NVarChar)
         .param('warrantyDuration', request.body.image, TYPES.NVarChar)
         .param('importDate', request.body.price, TYPES.DateTime)

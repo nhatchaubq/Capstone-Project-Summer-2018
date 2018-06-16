@@ -125,6 +125,26 @@ body {
   box-shadow: 4px 4px 8px var(--shadow) !important;
 }
 
+.button.btn-primary {
+  border: 0;
+  color: white !important;
+  background-color: var(--primary-color);
+  z-index: 99;
+  transition: all .2s ease-in-out;
+}
+
+button.btn-primary:hover {
+  cursor: pointer;
+  color: white !important;
+  background-color: var(--lighten-primary-color);
+}
+
+button.btn-primary:active {
+  color: white !important;
+  background-color: var(--darken-primary-color);
+  box-shadow: 1px 1px 1px var(--shadow) !important;
+}
+
 .badge {
   color: white;
   border-radius: 5px;

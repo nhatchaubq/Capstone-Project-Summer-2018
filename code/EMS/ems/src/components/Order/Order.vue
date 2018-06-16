@@ -59,7 +59,9 @@
         <div id="order-detail-view">
             <order-detail class="order-detail" :order="selectedOrder" :statusList="options.status"></order-detail>
         </div>
-        <router-link to="/work_order/create" tag="button" id="btn-add-work-order" class="button is-primary material-shadow-animate">Add Work Order</router-link>
+        <router-link to="/work_order/create">
+            <button class="button btn-primary right-corner material-shadow-animate">Add Work Order</button>
+        </router-link>
     </div>
 </template>
 
@@ -155,24 +157,28 @@ export default {
             // the lamda below will iterate the filterValues to find if any elements in it match the condition, then return the result array.
             // in this case it will find if any elements in filterValues match the filter we provided.
             // it is the same as we make a for loop then find the needed elements by using if, then return it as an array. all of those steps in one line of code if we use lamda.
-            this.filterValues = this.filterValues.filter(value => value != filter);
+            // this.filterValues = this.filterValues.filter(value => value.type != filter.type && value.id != filter.id);
             switch(filter.type) {
                 case this.optionTypes.STATUS: {
-                    this.filterOptionsValues.status.pop(filter);
+                    this.filterOptionsValues.status = this.filterOptionsValues.status.filter(status => status.id != filter.id);
                     break;
                 }
                 case this.optionTypes.PRIORITY: {
-                    this.filterOptionsValues.priorities.pop(filter);
+                    this.filterOptionsValues.priorities = this.filterOptionsValues.priorities.filter(priority => priority.id != filter.id);
                     break;
                 }
             }
             this.filterOrders();
-            if (this.filterValues.length === 0) {
+            if (this.filterOptionsValues.status.length == 0 && this.filterOptionsValues.priorities.length == 0) {
                 this.selectedFilter = null;
                 this.workOrders = this.tempValues;
+                this.tempValues = null;
             }
         },
         filterOrders() {
+            if (!this.tempValues) {
+                this.tempValues = this.workOrders;
+            }
             this.workOrders = []; // reset orders before applying new filters
             this.selectedOrder = null;
             if (this.filterOptionsValues.status.length > 0) {
@@ -201,7 +207,8 @@ export default {
                 var date2 = parseInt(new Date(order2.CreateDate).getTime());
                 // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
                 var result = date2 - date1;
-                return (result > 0) ? 1 : (result < 0) ? -1 : (order2.PriorityID - order1.PriorityID);
+                // return (result > 0) ? 1 : (result < 0) ? -1 : 0;
+                return result;
             });
         },
         reset() {
@@ -217,7 +224,7 @@ export default {
         addFilter(filter, event) {
             if (event.target.checked) {
                 if (!this.filterValues.includes(filter)) {                  
-                    this.filterValues.push(filter);
+                    // this.filterValues.push(filter);
                     switch (filter.type) {
                         case this.optionTypes.STATUS: {
                             this.filterOptionsValues.status.push(filter);
@@ -228,14 +235,12 @@ export default {
                             break;
                         }
                     }
-                    // tempValues is null means that no filters yet.
-                    if (this.tempValues == null) {
-                        this.tempValues = this.workOrders;
-                    }     
+                    // tempValues is null means that no filters yet.                       
                     this.filterOrders();                    
-                } else {
-                    filter = null;
-                }
+                } 
+                // else {
+                //     filter = null;
+                // }
             } else {
                 this.removeFilter(filter);
             }
@@ -339,28 +344,6 @@ export default {
         font-weight: bold;        
     }
 
-    #btn-add-work-order {
-        position: fixed;
-        right: 3rem;
-        bottom: 2rem;
-        background-color: var(--primary-color);
-        /* padding: 13px;
-        color: white;
-        border-radius: 10px; */
-        z-index: 99;
-        transition: all .2s ease-in-out;
-    }
-
-    #btn-add-work-order:hover {
-        cursor: pointer;
-        background-color: var(--lighten-primary-color);        
-    }
-
-    #btn-add-work-order:active {
-        background-color: var(--darken-primary-color);
-        box-shadow: 1px 1px 1px var(--shadow) !important;
-    }
-
     .order-content {
         margin-top: 1rem;
         display: grid;
@@ -375,7 +358,7 @@ export default {
 
     .order-blocks {
         position: fixed;   
-        height: 77%;          
+        height: 75%;          
         padding-right: .5rem;
         width: 40%;
         overflow-y: auto;
@@ -390,9 +373,15 @@ export default {
     .order-detail {
         position: fixed;    
         left: 59%;    
-        max-height: 77%; 
+        height: 75%; 
         overflow-y: auto;
         width: 39%;    
         z-index: 2;
+    }    
+
+    .right-corner {
+    position: fixed;
+    right: 3rem;
+    bottom: 2rem;
     }
 </style>
