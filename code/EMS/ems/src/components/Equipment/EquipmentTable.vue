@@ -3,22 +3,21 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th><strong>ID</strong></th>
+                    <th><strong>Order #</strong></th>
                     <th><strong>Equipment name</strong></th>
                     <th><strong>Vendor name</strong></th>
                     <th><strong>Made In</strong></th>
-                    <th><strong>Price</strong></th>
                     <th><strong>Description</strong></th>
                     <th><strong>Category</strong></th>
                 </tr>
             </thead>  
             <tbody>
-                <tr v-bind:key="equipment.id" v-for="equipment in equipments" v-on:click="setSelectedEquipment(equipment)">
-                    <td>{{equipment.Id}}</td>    
+                <tr v-bind:key="equipment.id" v-for="(equipment, index) in equipments" v-on:click="setSelectedEquipment(equipment)">
+                    <td>{{ index + 1 }}</td>   
                     <td>{{equipment.Name}}</td>
                     <td>{{equipment.Vendor.Name}}</td>
                     <td>{{equipment.MadeIn}}</td>
-                    <td>{{equipment.Price ? equipment.Price : 'n/a'}}</td>
+                    <!-- <td>{{equipment.Price ? equipment.Price : 'n/a'}}</td> -->
                     <td>{{equipment.Description ? equipment.Description : 'n/a' }}</td>
                     <td>{{equipment.Category.Name}}</td>
                 </tr>
