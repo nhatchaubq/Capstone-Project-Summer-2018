@@ -9,6 +9,7 @@ import CalendarComponent from "./components/Calendar/Calendar.vue";
 import ReportComponent from "./components/Report/Report.vue";
 import TeamComponent from "./components/Team/Team.vue";
 import AddTeamComponent from "./components/Team/AddTeam.vue";
+import TeamDetailComponent from "./components/Team/TeamDetail.vue";
 import LocationComponent from "./components/Location/Location.vue";
 import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
@@ -138,7 +139,7 @@ let router = new Router({
         },
         {
             path: '/team/:id',
-            component: AddTeamComponent,
+            component: TeamDetailComponent,
             beforeEnter: (to, from, next) => {
                 store.set('title', menu.TeamDetails);
                 next();
