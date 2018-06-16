@@ -10,7 +10,7 @@ import ReportComponent from "./components/Report/Report.vue";
 import TeamComponent from "./components/Team/Team.vue";
 import AddTeamComponent from "./components/Team/AddTeam.vue";
 import LocationComponent from "./components/Location/Location.vue";
-import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
+// import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
 import AccountComponent from './components/Account/Account.vue';
 import AddAccountComponent from './components/Account/AddAccount.vue';
@@ -63,14 +63,14 @@ let router = new Router({
                 showSearchBar: false,
             }
         },
-        {
-            path: '/equipment/:id',
-            component: EquipmentDetailsComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.EquipmentDetail);
-                next();
-            }
-        },
+        // {
+        //     path: '/equipment/:id',
+        //     component: EquipmentDetailsComponent,
+        //     beforeEnter: (to, from, next) => {
+        //         store.set('title', menu.EquipmentDetail);
+        //         next();
+        //     }
+        // },
         {
             path: '/work_order',
             component: OrderComponent,
