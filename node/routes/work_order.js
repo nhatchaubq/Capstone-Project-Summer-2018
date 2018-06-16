@@ -12,6 +12,12 @@ router.get('/:id/equipments', (request, response) => {
         .into(response);
 });
 
+router.get('/workorderbylocationId/:id',(request,response) => {
+    request.sql("exec GetWorkOrderByLocationId @locationId")
+    .param('locationId',request.params.id, TYPES.Int)
+    .into(response);
+})
+
 router.get('/status', (request, response) => {
     request.sql("select * from WorkOrderStatus for json path")
         .into(response);

@@ -23,5 +23,12 @@ router.post("/", (request, response) => {
 
     .exec(response);
 });
+router.get("/getTeamByLocation/:id",(request,response) =>{
+      request
+      .sql("exec GetTeamByLocation @locationId")
+      .param('locationId',request.params.id,TYPES.Int)
+      .into(response);
+});
 module.exports = router;
 
+ 
