@@ -16,13 +16,41 @@
                             <i class="fa fa-envelope"></i>
                             </span> -->
   Email: {{account.Email ?account.Email: 'N/A' }}</h2>
-<h2>Phone number: {{account.Phone ? account.Phone: NaN }}</h2>
+<h2 >Phone number: {{account.Phone ? account.Phone: 'N/A' }}</h2>
 </div>
+<div class="material-box">
+  <h2 style="text-transform: uppercase;font-size: 30px; color: #3960A4">Team</h2>
+        <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
+<h1 v-bind:key="team.id" v-for="team in account.Teams" >
+  <div style="padding:10px" v-if="team.TeamRole.TeamRole == 'Leader'">
+    <h1> 
+            <span class="icon is-small is-left" style="color:blue" >
+      <i class="fa fa-users"></i>
+    </span>
+      Team name: {{team.Name}}</h1>  
+      <h1>
+              <span class="icon is-small is-left" style="color:blue" >
+      <i class="fa fa-user-md"></i>
+    </span>
+         Role in team: {{team.TeamRole.TeamRole}}</h1>
+      <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
+      </div>
+      <div style="padding:10px" v-else>
+    <h1> 
+            <span class="icon is-small is-left"  >
+      <i class="fa fa-users"></i>
+    </span>
+      Team name: {{team.Name}}</h1>  
+      <h1>
+              <span class="icon is-small is-left"  >
+      <i class="fa fa-user-md"></i>
+    </span>
+         Role in team: {{team.TeamRole.TeamRole}}</h1>
+      <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
+      </div>
+  </h1>
 
-<h1><strong v-bind:key="team.id" v-for="team in teams">
-    {{account.Teams.id}}
-   </strong></h1>
-
+</div>
 
 
 
