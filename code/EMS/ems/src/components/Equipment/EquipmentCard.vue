@@ -16,7 +16,7 @@
           <div><span>Category: </span>{{equipment.Category.Name}}</div>
           <div><span>Vendor: </span>{{equipment.Vendor.Name}}</div>
           <div><span>Made In: </span>{{equipment.MadeIn}}</div>
-          <div><span>Price: </span>{{equipment.Price ? equipment.Price : 'n/a'}}</div>
+          <!-- <div><span>Price: </span>{{equipment.Price ? equipment.Price : 'n/a'}}</div> -->
           <div><span>Description: </span>{{equipment.Description ? equipment.Description : 'n/a'}}</div>
         <!-- <div><span>In department: </span>{{equipment.department}}</div> -->
       </div>
