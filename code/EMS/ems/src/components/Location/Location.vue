@@ -15,7 +15,9 @@
             </div>
           </div>         
         </div>
-        <router-link to="/location/create-location" class="btn-add-location material-shadow-animate" >Add Location</router-link> 
+        <router-link to="/location/create-location">
+          <button class="button btn-add-location btn-primary material-shadow-animate">Add Location</button>
+        </router-link> 
       </div>
    
       <div v-if="selectedLocation != null" class="location-detail material-box material-shadow">  
@@ -311,20 +313,24 @@ export default {
   color: white;
   background-color: var(--primary-color);
 }
+
 .btn-add-location {
+
   position: fixed;
   right: 2.5rem;
   bottom: 2rem;
   background-color: var(--primary-color);
-  padding: 13px;
+  /* padding: 13px; */
   color: white;
-  border-radius: 5px;
+  /* border-radius: 5px;
   z-index: 10;
-  font-size: 1.3rem;
+  font-size: 1.3rem; */
 }
-.btn-add-location:hover {
-  cursor: pointer;
-  background-color: #009688;
+
+.btn-add-location:hover{
+  /* cursor: pointer;
+  background-color: #009688; */
+
 }
 #name-team{
   height: 3rem;
