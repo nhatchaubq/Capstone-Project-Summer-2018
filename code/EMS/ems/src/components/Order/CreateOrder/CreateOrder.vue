@@ -295,7 +295,6 @@ export default {
                         }).then(function(res) {
                             if (res.data.NewWorkOrderId) {
                                 let newWorkOrderId = res.data.NewWorkOrderId;
-                                alert(context.selectedEquipments.length);
                                 context.selectedEquipments.forEach(equipment => {
                                     for (var i = 0; i < equipment.quantity; i++) {
                                         // alert('loopin');
@@ -308,8 +307,7 @@ export default {
                                             description: null
                                         })
                                             .then(function(res) {
-                                                alert('result');
-                                                if (i == equipment.quantity) {
+                                                if ((i + 1) == equipment.quantity) {
                                                     context.$router.push('/work_order');
                                                 }
                                             }).catch((error) => {
@@ -318,7 +316,7 @@ export default {
                                     }
                                 });
                             } else {
-                                alert('no work order id')
+                                alert('No new work order id returned')
                             }
                         }).catch((error) => {
                             alert("Create work order detail: Cannot create work order due to some errors happened in the server. Please contact the system administrator to investigate this situation!" + error)
