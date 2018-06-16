@@ -9,7 +9,7 @@ server.use(cors());
 var connection = {
     server: "localhost",
     userName: "sa",
-    password: "cCS94@bcnq836894",
+    password: "123456",
     port: "1433",
     options: {
         // instanceName : "SQLEXPRESS",

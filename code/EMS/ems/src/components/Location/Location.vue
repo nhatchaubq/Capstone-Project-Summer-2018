@@ -26,7 +26,7 @@
               {{selectedLocation.Description}}
             </div><br/>
             <div>
-              Site Manager: {{selectedLocation.Description}}            
+              Description: {{selectedLocation.Description}}            
             </div>
             <br/> <br/>
             
@@ -70,8 +70,53 @@
                     </v-flex>
               </div>
             </div>
-            <div v-else-if="currentMode == modes.WORKORDER">work order</div>
-            <div v-else-if="currentMode == modes.TEAM"> team </div>
+            <div v-else-if="currentMode == modes.WORKORDER">              
+              <div v-bind:key='workorder.Id' v-for="workorder in workorders">           
+                <div style="display: grid; grid-template-columns: 40% auto;">
+                    <div style="display: flex">
+                        {{workorder.Name}}
+                    </div>
+                    <div style="display: grid; grid-template-rows: auto auto;">                                                                                  
+                        <div style="font-size: .9rem">
+                            <!-- Quantity: {{ equipment.EquipmentItems.length }} -->
+                            Created Date: {{ workorder.CreateDate }}
+                        </div>
+                        <div>
+                          Quantity of Item: {{workorder.Quantity}}
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div v-else-if="currentMode == modes.TEAM">
+               <div :key='account.Id' v-for="account in team" style="padding-top:0.2rem">
+                 <div v-if="account.RoleID == 1">
+                   <div id="name-team"> {{account.NameOfTeam}} </div>
+                   <div style="display: grid; grid-template-columns: 40% auto">
+                     <div class="acc-img">
+                       <img v-show="account.AvatarImage" :src="account.AvatarImage" >
+                     </div>
+                     <div >
+                       <div>
+                         <h2 id="info-title">Info</h2>
+                       </div>
+                        <div class="acc-info">
+                          <div><i class="material-icons">credit_card</i> Name: {{account.Fullname}}  </div>
+                          <div><i class="material-icons">settings_phone  </i> Phone: {{account.Phone}} </div>
+                          <div><i class="material-icons">email</i> Email: {{account.Email}} </div>
+                          <div><i class="material-icons">date_range</i> StartDate: {{account.StartDate}}</div>
+                        </div>                        
+                     </div>
+                   </div>
+                   <!--  -->
+                 </div>
+                 <div v-else>
+                   <i class="material-icons">perm_identity</i>
+                 </div>
+                  
+               </div>
+            </div>
+
             <div v-else>position </div>
           </div>
           
@@ -82,13 +127,15 @@
 </template>
 
 <script>
-import Server from '@/config/config.js';
+import Server from "@/config/config.js";
 
 export default {
   data() {
     return {
       locations: [],
       equipments: [],
+      workorders: [],
+      team: [],
       selectedLocation: null,
       currentMode: 0,
       modes: {
@@ -107,7 +154,7 @@ export default {
       //     let data = response.data;
       //     data.forEach(equipment => {
       //       this.equipments.push(equipment);
-      //     })     
+      //     })
       //   })
       //   .catch((error) => {
       //     console.log(error);
@@ -115,33 +162,71 @@ export default {
       // alert(this.selectedLocation);
       this.selectedLocation = location;
       this.getEquipmentFromLocation(location);
+      this.getWororderFromLocation(location);
+      this.getTeamFromLocation(location);
     },
-    getEquipmentFromLocation(location){
+    getEquipmentFromLocation(location) {
       this.equipments = [];
-      let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/getByEquipmentId/${location.Id}`;
-      this.axios.get(url)
-      .then((response) => {
-        let data = response.data;
-        data.forEach(eqtItem => {
-          this.equipments.push(eqtItem);
+      let url = `${
+        Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH
+      }/getByEquipmentId/${location.Id}`;
+      this.axios
+        .get(url)
+        .then(response => {
+          let data = response.data;
+          data.forEach(eqtItem => {
+            this.equipments.push(eqtItem);
+          });
         })
-      }).catch((error) => {
-        console.log(error);
-      })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getWororderFromLocation(location) {
+      this.workorders = [];
+      let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
+      this.axios
+        .get(url)
+        .then(response => {
+          let data = response.data;
+          data.forEach(workorder => {
+            this.workorders.push(workorder);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getTeamFromLocation(location) {
+      this.team = [];
+      let url = `${Server.TEAM_BY_LOCATION_ID_API_PATH}/${location.Id}`;
+      this.axios
+        .get(url)
+        .then(response => {
+          let data = response.data;
+          data.forEach(account => {
+            this.team.push(account);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   },
-  created( ){
-    this.axios.get(Server.LOCATION_API_PATH)
-      .then((response) => {
+
+  created() {
+    this.axios
+      .get(Server.LOCATION_API_PATH)
+      .then(response => {
         let data = response.data;
-        data.forEach(location =>{
+        data.forEach(location => {
           this.locations.push(location);
-        })
+        });
         // this.selectedLocation(this.locations[0]);
-      }).catch((error) => {
+      })
+      .catch(error => {
         console.log(error);
       });
-    
   }
 };
 </script>
@@ -198,11 +283,11 @@ export default {
 }
 
 .location-detail {
-  position: fixed;    
-  left: 59%;    
-  max-height: 88%; 
+  position: fixed;
+  left: 59%;
+  max-height: 88%;
   overflow-y: auto;
-  width: 39%;    
+  width: 39%;
   z-index: 2;
 }
 .type-bar {
@@ -226,8 +311,8 @@ export default {
   color: white;
   background-color: var(--primary-color);
 }
-.btn-add-location{
-   position: fixed;
+.btn-add-location {
+  position: fixed;
   right: 2.5rem;
   bottom: 2rem;
   background-color: var(--primary-color);
@@ -237,8 +322,36 @@ export default {
   z-index: 10;
   font-size: 1.3rem;
 }
-.btn-add-location:hover{
+.btn-add-location:hover {
   cursor: pointer;
   background-color: #009688;
+}
+#name-team{
+  height: 3rem;
+  line-height: 3rem;
+  text-align: center;
+  font-size: 25px ;
+  font-weight: bold;
+  color: var( --primary-color);
+  
+}
+.acc-info{
+  padding-left: 1rem;
+  margin: 0.3rem;
+}
+#info-title{
+  padding-left: 0 !important;
+  height: 1.7rem;
+  width: 100%;
+  text-align: center;
+  background-color: aquamarine;
+  font: 24px bold;
+
+}
+.acc-info i{
+  position: relative; top: 0.3rem
+}
+.acc-info div{
+  width: 100%;
 }
 </style>
