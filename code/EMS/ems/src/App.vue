@@ -42,7 +42,7 @@ export default {
 :root {
   --primary-color: #26a69a;
   --darken-primary-color: #229488;
-  --lighten-primary-color: #2EBAAC;
+  --lighten-primary-color: #2ebaac;
   --secondary-color: #80deea;
   --light-background: #fafafa;
   --dark-background: #263238;

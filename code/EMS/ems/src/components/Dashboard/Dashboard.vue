@@ -1,12 +1,22 @@
 <template>
     <div>
         <div>
-            <div class="viewgraph">
+            <div class="viewgraph columns">
+                <div class=" workordergraph column">
                 <div class="titlediv">
                     <strong>Number of Work Order Completed</strong>
                 </div>
                 <div>
                     <img :src="require('@/assets/linegraph.png')" style="width:100%; height: 200px"/>
+                </div>
+                </div>
+                <div class="workordergraph column">
+                    <div class="titlediv">
+                        <strong>Work Order by Category</strong>
+                    </div>
+                    <div>
+                        <img :src="require('@/assets/piegraph.jpg')" style="width:100%; height: 200px"/>
+                    </div>
                 </div>
             </div>
             <div class="statusworkorder columns">
@@ -14,23 +24,6 @@
                     <div class="headerstatus columns">
                         <div style="width:40%" class="column">
                         <strong>Request</strong>
-                        </div>
-                        <div class="column" style="width:30%">
-                            <div class="control">
-                                <div class="select is-small">
-                                <select class="is-hovered">
-                            <option>All time</option>
-                            <option>This year</option>
-                            <option>This month</option>
-                            <option>This week</option>
-                            <option>Today</option>
-                            <option>Yesterday</option>
-                            <option>Last week</option>
-                            <option>Last month</option>
-                            <option>Last year</option>  
-                                </select>
-                                </div>
-                            </div>
                         </div>
 
                     </div>
@@ -44,23 +37,6 @@
                         <div style="width:40%" class="column">
                         <strong>Checked</strong>
                         </div>
-                        <div class="column" style="width:30%">
-                            <div class="control">
-                                <div class="select is-small">
-                                <select class="is-hovered">
-                                <option>All time</option>
-                            <option>This year</option>
-                            <option>This month</option>
-                            <option>This week</option>
-                            <option>Today</option>
-                            <option>Yesterday</option>
-                            <option>Last week</option>
-                            <option>Last month</option>
-                            <option>Last year</option>  
-                                </select>
-                                </div>
-                            </div>
-                        </div>
 
                     </div>
                     <div class="contentstatus">
@@ -72,23 +48,6 @@
                     <div class="headerstatus columns">
                         <div style="width:40%" class="column">
                         <strong>Approved</strong>
-                        </div>
-                        <div class="column" style="width:30%">
-                            <div class="control">
-                                <div class="select is-small">
-                                <select class="is-hovered">
-                                <option>All time</option>
-                            <option>This year</option>
-                            <option>This month</option>
-                            <option>This week</option>
-                            <option>Today</option>
-                            <option>Yesterday</option>
-                            <option>Last week</option>
-                            <option>Last month</option>
-                            <option>Last year</option>  
-                                </select>
-                                </div>
-                            </div>
                         </div>
 
                     </div>
@@ -102,23 +61,7 @@
                         <div style="width:40%;" class="column">
                         <strong>Delivered</strong>
                         </div>
-                        <div class="column" style="width:30%">
-                            <div class="control">
-                                <div class="select is-small">
-                                <select class="is-hovered">
-                                <option>All time</option>
-                            <option>This year</option>
-                            <option>This month</option>
-                            <option>This week</option>
-                            <option>Today</option>
-                            <option>Yesterday</option>
-                            <option>Last week</option>
-                            <option>Last month</option>
-                            <option>Last year</option>  
-                                </select>
-                                </div>
-                            </div>
-                        </div>
+
 
                     </div>
                     <div class="contentstatus">
@@ -126,27 +69,10 @@
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
-                <div class="status column">
+                <div class="status column" style="margin-right:0 !important">
                     <div class="headerstatus columns">
                         <div style="width:40%" class="column">
                         <strong>Closed</strong>
-                        </div>
-                        <div class="column" style="width:30%">
-                            <div class="control">
-                                <div class="select is-small">
-                                <select class="is-hovered">
-                                <option>All time</option>
-                            <option>This year</option>
-                            <option>This month</option>
-                            <option>This week</option>
-                            <option>Today</option>
-                            <option>Yesterday</option>
-                            <option>Last week</option>
-                            <option>Last month</option>
-                            <option>Last year</option>  
-                                </select>
-                                </div>
-                            </div>
                         </div>
 
                     </div>
@@ -158,55 +84,76 @@
                 
             </div>
             <div class="divrow3 columns" style="margin-right:0rem !important">
-                <div class="workordergraph column">
-                    <div class="titlediv">
-                        <strong>Work Order by Category</strong>
-                    </div>
-                    <div>
-                        <img :src="require('@/assets/piegraph.jpg')" style="width:100%; height: 200px"/>
+                <div class="column" style="padding: 0 !important; margin-right:1.3rem;">
+                    <div class="row3childs">
+                        <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
+                            <strong>Maintain</strong>
+                        </div>
+                        <div class="row3child">                            
+                            <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                <div class="column">
+                                    <strong>Today: 2 maintain order</strong>
+                                </div> 
+                                <div class="numItem column" style="text-align:right;">
+                                    <strong>5</strong> items
+                                </div>
+                            </div>
+                            
+                            <div class="contentstatus" style="padding: 0.5rem">
+                                
+                            </div>    
+                        </div>
+                         <div class="row3child">                            
+                            <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                <div class="column">
+                                    <strong>Tomorrow: 2 maintain order</strong>
+                                </div> 
+                                <div class="numItem column" style="text-align:right;">
+                                    <strong>4</strong> items
+                                </div>
+                            </div>
+                            
+                            <div class="contentstatus" style="padding: 0.5rem">
+                                
+                            </div>    
+                        </div>
+
                     </div>
                 </div>
                 <div class="column" style="padding: 0 !important">
                     <div class="row3childs">
-                        <div class="row3child">
-                            <div class="headerstatus" style="padding: 0.5rem 0 0.5rem 0">
-                                <strong>Reservations</strong>
-                            </div>
-                            <div class="contentstatus" style="padding: 0.5rem">
-                                <p style="color: var(--shadow); font-size:38px; text-align: center;font-weight: bold;">2</p>
-                                <p style="font-size:15px;">Overdue</p>
-                            </div>                    
-                            <div class="contentstatus">
-                                <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">0</p>
-                                <p style="font-size:15px;">Booked</p>
-                            </div>
+                        <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
+                            <strong>Returns</strong>
                         </div>
-                        <div class="row3child">
-                            <div class="headerstatus" style="padding: 0.5rem 0 0.5rem 0">
-                                <strong>Check-out</strong>
+                        <div class="row3child">                            
+                            <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                <div class="column is-9">
+                                    <strong>Today: 2 orders to be returned</strong>
+                                </div> 
+                                <div class="numItem column" style="text-align:right;">
+                                    <strong>5</strong> items
+                                </div>
                             </div>
+                            
                             <div class="contentstatus" style="padding: 0.5rem">
-                                <p style="color: var(--shadow); font-size:38px; text-align: center;font-weight: bold;">5</p>
-                                <p style="font-size:15px;">Overdue</p>
-                            </div>                    
-                            <div class="contentstatus">
-                                <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">0</p>
-                                <p style="font-size:15px;">Closed</p>
-                            </div>
+                                
+                            </div>    
                         </div>
-                        <div class="row3child" style="margin-right: 0rem !important">
-                            <div class="headerstatus" style="padding: 0.5rem 0 0.5rem 0">
-                                <strong>Maintenance bookings</strong>
+                         <div class="row3child">                            
+                            <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                <div class=" column is-9">
+                                    <strong>Tomorrow: 2 orders to be returned</strong>
+                                </div> 
+                                <div class="numItem column" style="text-align:right;">
+                                    <strong>4</strong> items
+                                </div>
                             </div>
+                            
                             <div class="contentstatus" style="padding: 0.5rem">
-                                <p style="color: var(--shadow); font-size:38px; text-align: center;font-weight: bold;">0</p>
-                                <p style="font-size:15px;">In progress</p>
-                            </div>                    
-                            <div class="contentstatus">
-                                <p style="color: var(--shadow); font-size:38px; text-align: center;font-weight: bold;">1</p>
-                                <p style="font-size:15px;">Planned</p>
-                            </div>
+                                
+                            </div>    
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -263,6 +210,7 @@ export default {};
 }
 .headerstatus {
   border-bottom: 1px #cfd8dc solid;
+  background-color: #f5f5f5;
 }
 p {
   text-align: center;
@@ -273,7 +221,6 @@ p {
   margin: 0.3rem;
 }
 .workordergraph {
-  width: 10%;
   background-color: white;
   margin-right: 1rem;
   height: 250px !important;
@@ -281,13 +228,12 @@ p {
 
 .row3childs {
   display: grid;
-  grid-template-columns: 31% 31% 38%;
+  grid-row-gap: 1rem;
 }
 
 .row3child {
   background-color: white;
-  margin-right: 1rem;
-  padding: 0.5rem;
+  padding: 0.7rem 1rem 0.3rem 1rem;
   height: 250px !important;
 }
 </style>
