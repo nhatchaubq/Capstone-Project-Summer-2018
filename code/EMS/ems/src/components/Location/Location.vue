@@ -1,5 +1,10 @@
 <template>
+    
     <div class="location-page">
+      <!-- <div class="type-page">
+        <div><button id="btn-list">Location List</button></div>
+        <div><button id="btn-map-view">Map View</button></div>
+      </div> -->
       <div class="location-list">
         <!-- <div class="location-sort">
           <b>Sort By</b>
@@ -12,6 +17,7 @@
             <div class="location-address">
               <i class="material-icons">place</i>
               {{location.Address}}
+              
             </div>
           </div>         
         </div>
@@ -23,7 +29,7 @@
             <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>
             
             <div class="location-address">
-              {{selectedLocation.Description}}
+              {{selectedLocation.Address}}
             </div>
             <div>
               Description: {{selectedLocation.Description}}            
@@ -31,6 +37,7 @@
             <br/> 
             <div style="">
             <div class="type-bar">
+              <div v-on:click="currentMode = modes.MAP">Map</div>
               <div v-on:click="currentMode = modes.EQUIPMENT">Equipment</div>
               <div v-on:click="currentMode = modes.WORKORDER">Work Order</div>
               <div v-on:click="currentMode = modes.TEAM">Team</div>
@@ -38,9 +45,27 @@
             </div>
             </div>
             <br>
-            
+            <div v-if="currentMode == modes.MAP">
+              <div class="ggmap">
+                <GmapMap
+                :center="{lat:selectedLocation.Latitude, lng:selectedLocation.Longitude}"
+                :zoom="16"
+                map-type-id="terrain"
+                style="width: 100%; height:31rem"
+              >
+              <GmapMarker
+                :position="google && new google.maps.LatLng(selectedLocation.Latitude, selectedLocation.Longitude)"
+                :clickable="true"
+                :draggable="true"
+                @click="center=google && new google.maps.LatLng(selectedLocation.Latitude, selectedLocation.Longitude)"
+              />
+              </GmapMap>
+              </div>
+            </div>
             <div v-if="currentMode == modes.EQUIPMENT" > 
+              
               <div >
+                
                 <!-- {{equipment.Id}},{{equipment.Name}} , 
                 <img v-show="equipment.Image" :src="equipment.Image"  style="width: 3rem; height: 3rem;"> -->
                 <v-flex >
@@ -148,8 +173,12 @@
 
 <script>
 import Server from "@/config/config.js";
+import {gmapApi} from 'vue2-google-maps'
 
 export default {
+  computed: {
+    google: gmapApi
+  },
   data() {
     return {
       locations: [],
@@ -162,8 +191,10 @@ export default {
         EQUIPMENT: 0,
         WORKORDER: 1,
         TEAM: 2,
-        POSITION: 3
-      }
+        POSITION: 3,
+        MAP: 4
+      },
+      
     };
   },
   methods: {
@@ -252,6 +283,32 @@ export default {
 </script>
 
 <style scoped>
+/* .type-page{
+  display: grid;
+  grid-template-columns: 10% 10% auto;
+  padding-top: 0 ;
+  width: 100%;
+  height: 2.5rem;
+  line-height: 2.5rem;
+ 
+}
+#btn-list{
+  background-color: white;
+  padding: 0.4rem 0.6rem;
+  
+  font-size: 15px;
+ 
+  color: var(--primary-color);
+  border-radius: 5px 0 0 5px;
+  border: 1px solid #26a69a;
+  z-index: 1;
+}
+#btn-map-view{
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+} */
+
 #edit-text {
   font-size: 1.3rem;
   cursor: pointer;
@@ -260,6 +317,7 @@ export default {
 }
 .location-page {
   width: 100%;
+  /* padding: 0 !important; */
 }
 .location-list {
   width: 40%;
@@ -305,10 +363,10 @@ export default {
 .location-detail {
    
   position: fixed;
-  left: 59%;
+  left: 56%;
   max-height: 88%;
   overflow-y: auto;
-  width: 39%;
+  width: 42%;
   z-index: 2;
 }
 .type-bar {
@@ -316,7 +374,7 @@ export default {
   border: 0.5px solid;
   border-radius: 5px;
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: auto auto auto auto auto;
   color: var(--primary-color);
   border-color: var(--primary-color);
 }
