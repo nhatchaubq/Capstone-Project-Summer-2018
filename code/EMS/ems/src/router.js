@@ -9,6 +9,7 @@ import CalendarComponent from "./components/Calendar/Calendar.vue";
 import ReportComponent from "./components/Report/Report.vue";
 import TeamComponent from "./components/Team/Team.vue";
 import AddTeamComponent from "./components/Team/AddTeam.vue";
+import TeamDetailComponent from "./components/Team/TeamDetail.vue";
 import LocationComponent from "./components/Location/Location.vue";
 // import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
@@ -132,7 +133,15 @@ let router = new Router({
             path: '/team/add',
             component: AddTeamComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', 'Team');
+                store.set('title', menu.Teams);
+                next();
+            }
+        },
+        {
+            path: '/team/:id',
+            component: TeamDetailComponent,
+            beforeEnter: (to, from, next) => {
+                store.set('title', menu.TeamDetails);
                 next();
             }
         },
@@ -156,7 +165,7 @@ let router = new Router({
             path: '/account/:id',
             component: AccountDetailComponent,
             beforeEnter: (to, from, next) => {
-                store.set('title', menu.Accounts);
+                store.set('title', menu.AccountDetails);
                 next();
             }
         },
