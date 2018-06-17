@@ -118,7 +118,9 @@
                                           <div><i class="material-icons">settings_phone  </i> Phone: {{account.Phone}} </div>
                                           <div><i class="material-icons">email</i> Email: {{account.Email}} </div>
                                           <div><i class="material-icons">date_range</i> StartDate: {{account.StartDate}}</div>
-                                          <div style="font-size: 28px;text-align:center"> <a href="">Show Team Detail</a>  </div>
+                                          <div style="font-size: 28px;text-align:center">
+                                            <router-link :to="'/team/' + account.IdOfTeam">Show Team Detail</router-link>
+                                          </div>
                                         </div>                        
                                       </div>
                                       </div>
