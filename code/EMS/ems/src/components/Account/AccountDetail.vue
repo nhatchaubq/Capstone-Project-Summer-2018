@@ -7,6 +7,23 @@
 <h2 style="text-transform: uppercase;font-size: 30px; color: #3960A4">{{account.Username}}</h2>
 <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
 <h2>Full name: {{account.Fullname}}</h2>
+<h2 class="field is-horizontal">
+ <div style="position:relative; top:0.8rem">Full name:</div> 
+<!-- <input v-model="account.Fullname" type="text" placeholder="Search" style="    border-style: solid;
+    border-width: 2; border-radius: 3px;"/> -->
+<div class="control has-icons-left has-icons-right" style="padding:8px">
+    <input v-model="account.Fullname" class="input " type="text" placeholder="Text input" >
+
+        <span class="icon is-small is-left">
+        <i class="fa fa-user"></i>
+        </span>
+        <!-- <span class="icon is-small is-right">
+        <i class="fa fa-check"></i>
+        </span> -->
+
+</div>
+</h2>
+
 <h2>Status: {{account.IsActive? 'Active': 'Unactive'}}</h2>
 <h2>Role: {{account.SystemRole.Name}}</h2>
 <h2>Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2>
@@ -49,9 +66,11 @@
       <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
       </div>
   </h1>
+  
       <router-link to='/account/add/'>
       <button id="btn-add-account" class=" material-shadow-animate" v-on:click="ondelete()">Delete account</button>
     </router-link>
+
 
 
 </div>

@@ -24,7 +24,7 @@
                             <i class="fa fa-check"></i>
                             </span> -->
 
-                        </div>
+                    </div>
                     </div>
                 
             </div>
