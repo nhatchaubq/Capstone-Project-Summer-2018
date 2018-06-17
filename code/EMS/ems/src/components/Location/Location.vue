@@ -33,10 +33,10 @@
             <br/> <br/>
             
             <div class="type-bar">
-              <div v-on:click="currentMode = modes.EQUIPMENT">Equipment</div>
-              <div v-on:click="currentMode = modes.WORKORDER">Work Order</div>
-              <div v-on:click="currentMode = modes.TEAM">Team</div>
-              <div v-on:click="currentMode = modes.POSITION">Position</div>
+              <div :class="{'is-active': currentMode == modes.EQUIPMENT}" v-on:click="currentMode = modes.EQUIPMENT">Equipment</div>
+              <div :class="{'is-active': currentMode == modes.WORKORDER}" v-on:click="currentMode = modes.WORKORDER">Work Order</div>
+              <div :class="{'is-active': currentMode == modes.TEAM}" v-on:click="currentMode = modes.TEAM">Team</div>
+              <div :class="{'is-active': currentMode == modes.POSITION}" v-on:click="currentMode = modes.POSITION">Position</div>
             </div>
             <br>
             
@@ -228,6 +228,13 @@ export default {
   color: white;
   background-color: var(--primary-color);
 }
+
+.is-active {
+  cursor: pointer;
+  color: white;
+  background-color: var(--primary-color);
+}
+
 .btn-add-location{
   position: fixed;
   right: 2.5rem;

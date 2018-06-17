@@ -16,6 +16,7 @@ const EQUIPMENT_API_PATH = SERVER_DEFAULT + "/equipment";
 // equipment api section - end
 
 // equipmentitem api section - start
+const EQUIPMENTITEM_API_PATH = SERVER_DEFAULT + "/equipmentItem";
 const EQUIPMENTITEM_BY_ID_LOCATION_API_PATH = SERVER_DEFAULT + "/equipmentItem";
 // equipmentitem api section - end
 
@@ -46,6 +47,8 @@ export default {
   ACCOUNT_API_PATH,
   CREATE_ACCOUNT_API_PATH,
   EQUIPMENT_API_PATH,
+
+  EQUIPMENTITEM_API_PATH,
   EQUIPMENTITEM_BY_ID_LOCATION_API_PATH,
 
   WORKORDER_API_PATH,
