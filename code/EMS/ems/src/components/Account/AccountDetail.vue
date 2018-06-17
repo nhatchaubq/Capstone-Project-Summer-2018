@@ -49,6 +49,10 @@
       <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
       </div>
   </h1>
+      <router-link to='/account/add/'>
+      <button id="btn-add-account" class=" material-shadow-animate" v-on:click="ondelete()">Delete account</button>
+    </router-link>
+
 
 </div>
 
@@ -85,10 +89,18 @@ export default {
       this.account = data;
     });
   },
+
   data() {
     return {
       account: null
     };
+  },
+  methods: {
+    onDelete() {
+      this.axios.delete(
+        "`http://localhost:3000/api/account/delete/id/${this.$route.params.id}`"
+      );
+    }
   }
 };
 </script>
@@ -99,5 +111,21 @@ export default {
   grid-template-columns: 50% 50%;
   grid-column-gap: 1rem;
   grid-row-gap: 2rem;
+}
+#btn-add-account {
+  position: fixed;
+  right: 3rem;
+  bottom: 2rem;
+  background-color: #ff1d1d;
+  padding: 13px;
+  color: white;
+  border-radius: 5px;
+  z-index: 1;
+}
+
+#btn-add-account:hover {
+  cursor: pointer;
+  background-color: var(--danger-color);
+  color: white;
 }
 </style>
