@@ -34,7 +34,9 @@
             <tbody>
                 <tr v-bind:key="team.Id" v-for="team in teams">
                     <td>{{team.Id}}</td>    
-                    <td>{{team.Name}}</td>
+                    <router-link :to="`/team/${team.Id}`">  
+                      <td>{{team.Name}}</td>
+                    </router-link>
                     <td>{{team.CreatedDate}}</td>
 
 
