@@ -52,8 +52,8 @@
 
   <div class="col-7" style="padding-left: 0 !important">
   <!-- <div class="row col-7 " style="height: 36px"> -->
-      <div style="margin-top:0.5rem">
-        <label style="margin-right: 1rem;" class="radio" v-if="account.IsActive==true" >
+      <div style="margin-top:0.5rem" >
+        <label style="margin-right: 1rem;" class="radio"  >
           <input type="radio" name="active" v-on:change="account.IsActive = true" checked="checked" :disabled="!editMode">
           Active
         </label>
@@ -101,8 +101,15 @@
 </div>
 <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
 <div v-bind:key="team.id" v-for="team in account.Teams" >
-  <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'">{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
-  <div style="margin-left:1.5rem" v-else>{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
+  <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'"> 
+                        <router-link :to="`/team/${team.Id}`">
+                        {{team.Name}}
+                    </router-link>
+      ({{team.TeamRole.TeamRole}} ) </div>
+  <div style="margin-left:1.5rem" v-else>                        
+                      <router-link :to="`/team/${team.Id}`">
+                        {{team.Name}}
+                    </router-link> ( {{team.TeamRole.TeamRole}} ) </div>
 </div>
 </div>
 
