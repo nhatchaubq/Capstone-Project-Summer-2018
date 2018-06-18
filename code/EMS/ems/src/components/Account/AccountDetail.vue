@@ -1,22 +1,130 @@
 <template>
   <div class="grid-wrapper">
-
+  <!-- <button class="button " style="background-color:green;   position: fixed;
+  top: 6rem;
+  right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
 <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem; ">
 <div class="material-box">
+<div >
+  <h2 > <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{account.Username}}</strong> </h2>
 
-<h2 style="text-transform: uppercase;font-size: 30px; color: #3960A4">{{account.Username}}</h2>
-<h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
-<h2>Full name: {{account.Fullname}}</h2>
-<h2>Status: {{account.IsActive? 'Active': 'Unactive'}}</h2>
-<h2>Role: {{account.SystemRole.Name}}</h2>
-<h2>Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2>
-<h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
-<h2 >
+
+</div>
+<div  class="row" style="height: 36px" >
   <!-- <span class="icon is-small is-left">
-                            <i class="fa fa-envelope"></i>
-                            </span> -->
-  Email: {{account.Email ?account.Email: 'N/A' }}</h2>
-<h2 >Phone number: {{account.Phone ? account.Phone: 'N/A' }}</h2>
+    <i class="fa fa-user"></i>
+  </span> -->
+  <div class="col-2 text-right" style="margin-top:0.5rem" >
+    Full name:  
+  </div>
+  <!-- <span v-if="!editMode" class="col-7" style="margin-top:0.3rem">
+    {{account.Fullname}}
+  </span> -->
+  <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+  <input v-else v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
+  
+  </div>  
+ <!-- <h2 class="field is-horizontal" style="margin:0px">
+
+<div style="padding-top:1rem; ">
+             <span class="icon is-small is-left">
+        <i class="fa fa-user"></i>
+        </span>
+   Full name:</div>  -->
+ 
+<!-- <input v-model="account.Fullname" type="text" placeholder="Search" style="    border-style: solid;
+    border-width: 2; border-radius: 3px;"/> -->
+<!-- <div class="control  " style="padding:8px">
+    <input v-model="account.Fullname" class="input " type="text" placeholder="Text input" style="margin:0px" >
+</div> 
+</h2>-->
+
+<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem" v-if="!editMode">
+  <div class=" col-2 text-right" >
+  Status: 
+  </div>
+
+  <div class=" col-7 " >
+  <!-- <div class="row col-7 " style="height: 36px"> -->
+      <label class="row" v-if="account.IsActive==true" >
+      <div style="margin-right: 2rem" >
+        <input type="radio" name="active" v-on:change="account.IsActive = true" checked="checked" >
+        Active
+      </div>
+    <div >
+      <input type="radio" name="active" v-on:change="account.IsActive = false" disabled="disabled">
+      Inactive
+    </div>
+    </label>
+    <label class="row" v-else >
+      <div style="margin-right: 2rem">
+        <input type="radio" name="active" v-on:change="account.IsActive = true"  disabled="disabled">
+        Active
+      </div>
+    <div >
+      <input type="radio" name="active" v-on:change="account.IsActive = false" checked="checked">
+      Inactive
+    </div>
+    </label>
+
+  </div>
+
+</div >
+
+<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem" v-if="editMode">
+  <div class=" col-2 text-right" >
+  Status: 
+  </div>
+
+  <div class=" col-7 "  >
+
+      <label class="row" v-if="account.IsActive==true" >
+      <div style="margin-right: 2rem">
+        <input type="radio" name="active" v-on:change="account.IsActive = true" checked="checked" >
+        Active
+      </div>
+    <div >
+      <input type="radio" name="active" v-on:change="account.IsActive = false" >
+      Inactive
+    </div>
+    </label>
+    <label class="row" v-else >
+      <div style="margin-right: 2rem">
+        <input type="radio" name="active" v-on:change="account.IsActive = true"  >
+        Active
+      </div>
+    <div >
+      <input type="radio" name="active" v-on:change="account.IsActive = false" checked="checked">
+      Inactive
+    </div>
+    </label>
+
+  </div>
+
+</div >
+
+<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+  <div class="col-2 text-right" >Role:</div>
+  <div class="col-7"> {{account.SystemRole.Name}}</div>
+</div>
+<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+  <div class="col-2 text-right">Start date: </div>
+  <div class="col-7"> {{account.StartDate ? account.StartDate: 'N/A' }}</div>
+</div>
+<!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
+<div class="row">
+  <div class="col-2 text-right">Email: </div>
+  <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div>
+</div>
+<div class="row">
+  <div class="col-2 text-right">Phone: </div>
+  <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div>
+</div>
+<div style="font-size: 20px"><strong>Team</strong></div>
+<div v-bind:key="team.id" v-for="team in account.Teams" >
+  <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'">{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
+  <div style="margin-left:1.5rem" v-else>{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
+</div>
 </div>
 <div class="material-box">
   <h2 style="text-transform: uppercase;font-size: 30px; color: #3960A4">Team</h2>
@@ -49,9 +157,11 @@
       <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
       </div>
   </h1>
-      <router-link to='/account/add/'>
-      <button id="btn-add-account" class=" material-shadow-animate" v-on:click="ondelete()">Delete account</button>
-    </router-link>
+  
+
+          <button class="button btn-edit btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Edit</button>
+
+
 
 
 </div>
@@ -92,7 +202,9 @@ export default {
 
   data() {
     return {
-      account: null
+      account: null,
+      checkedActive: [],
+      editMode: false
     };
   },
   methods: {
@@ -112,7 +224,7 @@ export default {
   grid-column-gap: 1rem;
   grid-row-gap: 2rem;
 }
-#btn-add-account {
+/* #btn-add-account {
   position: fixed;
   right: 3rem;
   bottom: 2rem;
@@ -127,5 +239,22 @@ export default {
   cursor: pointer;
   background-color: var(--danger-color);
   color: white;
+} */
+
+.btn-edit {
+  position: fixed;
+  top: 6rem;
+  right: 2rem;
+  background-color: var(--primary-color);
+  /* padding: 13px; */
+  color: white;
+  /* border-radius: 5px;
+  z-index: 10;
+  font-size: 1.3rem; */
+}
+
+.btn-edit:hover {
+  cursor: pointer;
+  background-color: #009688;
 }
 </style>
