@@ -1,7 +1,7 @@
 <template>
     <div>
         <ul class="progressbar">
-            <li class="tag" :class='{"active": status.id <= workOrderStatusId}' :key="status.id" v-for="status in statusList" :value="status.name">
+            <li class="tag" :class='{"active": status.id <= workOrderStatusId}' :key="'step' + status.id" v-for="status in statusList" :value="status.name">
                 {{ status.name }}
             </li>
         </ul>

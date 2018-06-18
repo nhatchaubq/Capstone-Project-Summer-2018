@@ -20,14 +20,14 @@
                       </div> -->
                       <div style="user-select: none">
                           Priority:
-                          <label class="checkbox" :key="priority.id" v-for="priority in options.priorities" style="margin-right: 1rem;">
+                          <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: 1rem;">
                               <input type="checkbox" v-on:change="addFilter(priority, $event)">
                               {{ priority.name }}
                           </label>
                       </div>
                       <div style="user-select: none">
                           Status:
-                          <label class="checkbox" :key="status.id" v-for="status in options.status" style="margin-right: .5rem;">
+                          <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
                               <input type="checkbox" v-on:change="addFilter(status, $event)">
                               {{ status.name }}
                           </label>
@@ -52,7 +52,7 @@
                     There is no orders to display.
                 </div>
                 <div v-else>
-                    <order-block :key="order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
+                    <order-block :key="'order' + order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
                 </div>
             </div>
         </div>
@@ -69,11 +69,16 @@
                               {{ selectedOrder.Name }}
                           </span>
                       </div>
-                      <div style="text-align: right; user-select: none;">
-                          <a style="position: relative; top: .8rem;" v-on:click="editMode = !editMode">
-                              <i class="fa" :class="{'fa-pencil-square-o': !editMode, 'fa-check-circle-o': editMode}" style=" font-size: 1rem; margin-right: 2px"></i>
-                              {{ editMode ? 'Done' : 'Edit' }}
-                          </a>
+                      <div style="display: grid; grid-template-rows: auto auto; grid-row-gap: 1rem; text-align: right; user-select: none;" v-show="authUser.RoleID == 1 || authUser.RoleID == 4">
+                            <div>
+                                <a style="position: relative; top: .8rem;" v-on:click="editMode = !editMode">
+                                    <i class="fa" :class="{'fa-pencil-square-o': !editMode, 'fa-check-circle-o': editMode}" style=" font-size: 1rem; margin-right: 2px"></i>
+                                    {{ editMode ? 'Done' : 'Edit' }}
+                                </a>
+                            </div>
+                            <div>
+                                <a v-on:click="showCancelDialog = true">Cancel this order</a>
+                            </div>
                       </div>
                   </div>
                   <div style="width: 100%">
@@ -83,7 +88,7 @@
                               <span class="detail-label" style="position: relative; top: .4rem; margin-right: 1rem;">Change status to:</span>
                               <div class="select">
                                   <select>
-                                      <option :disabled="status.id <= selectedOrder.StatusID" :selected="status.id == (selectedOrder.StatusID)" :key="status.id" value="" v-for="status in options.status">
+                                      <option :disabled="status.id <= selectedOrder.StatusID" :selected="status.id == (selectedOrder.StatusID)" :key="'editStatus' + status.id" value="" v-for="status in options.status">
                                           {{ status.name }}
                                       </option>
                                   </select>
@@ -94,7 +99,7 @@
                           <span class="detail-label">Equipments:</span>
                           <v-flex>
                               <v-expansion-panel popout>
-                                  <v-expansion-panel-content v-for="equipment in equipments" :key="equipment.Id">
+                                  <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
                                       <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
                                           <div style="display: flex">
                                               <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
@@ -108,9 +113,9 @@
                                               </div>
                                           </div>
                                       </div>
-                                      <v-card v-for="equipmentItem in equipment.EquipmentItems" :key="equipmentItem.Id">
+                                      <v-card v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
                                           <v-card-text style="font-size: .9rem">
-                                              Serial #: <a v-on:click="showDetailPopup(equipmentItem.Id)">{{ equipmentItem.SerialNumber }}</a> | 
+                                              Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a> | 
                                               <a href="">View position</a>
                                           </v-card-text>
                                       </v-card>
@@ -127,9 +132,16 @@
           </div>
         </div>
         <router-link to="/work_order/create" tag="button" id="btn-add-work-order" class="button is-primary material-shadow-animate">Add Work Order</router-link>
-      <vodal class="no-padding" height="500" :show="equipmentItem != null" @hide="equipmentItem = null" animation="slideUp">
+      <vodal height="500" :show="equipmentItem != null" @hide="equipmentItem = null" animation="slideUp">
         <!-- <div>alo</div> -->
         <equipment-detail-popup :equipment="equipmentItem" class=""></equipment-detail-popup>
+      </vodal>
+      <vodal :show="showCancelDialog" @hide="showCancelDialog = false" animation="slideUp" :closeButton="false">
+          <div v-if="selectedOrder">
+            <span>Are you sure to delete this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
+            <button class="button vodal-cancel-btn" @click="showCancelDialog = false">Cancel</button>
+            <button class="button vodal-confirm-btn" style="background: var(--danger-color); color: white" @click="showCancelDialog = false">Delete</button>
+          </div>
       </vodal>
     </div>
 </template>
@@ -157,14 +169,10 @@ export default {
   created() {
     // this.sortOrdersByDate(this.orders);
     // alert(this.$store.state.workOrderPage.orders.length);
-    if (this.$store.state.workOrderPage.orders.length == 0) {
-      this.axios.get(Server.WORKORDER_API_PATH).then(response => {
-        let data = response.data.WorkOrders;
-        this.$store.state.workOrderPage.orders = data;
-        this.workOrders = data;
-      });
+    if (this.$store.state.workOrderPage.searchValues.length != 0) {
+        this.workOrders = this.$store.state.workOrderPage.searchValues;
     } else {
-      this.workOrders = this.$store.state.workOrderPage.orders;
+      this.getWorkOrders();
     }
     this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
       let data = response.data;
@@ -191,33 +199,44 @@ export default {
   },
   data() {
     return {
-      tempValues: null, // to hold the original orders when apply filters
-      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
-      selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
-      equipments: [], // to hold equipments in the selected work order
-      editMode: false, // edit work order detail
-      equipmentItem: null, // when select an item in the list of equipment of selected order
-      selectedFilter: null, // to hold the selected value when change in <select></select>
-      searchMode: false, // flag to display the "Clear search result"
-      options: { 
-        priorities: [],
-        status: []
-      },
-      // filterValues: [],
-      filterOptionsValues: {
-        priorities: [],
-        status: []
-      },
-      optionTypes: {
-        STATUS: 0,
-        PRIORITY: 1
-      },
+        tempValues: null, // to hold the original orders when apply filters
+        workOrders: [], // orders data to display in orderblocks <order-block></order-block>
+        selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
+        equipments: [], // to hold equipments in the selected work order
+        editMode: false, // edit work order detail
+        equipmentItem: null, // when select an item in the list of equipment of selected order
+        selectedFilter: null, // to hold the selected value when change in <select></select>
+        searchMode: false, // flag to display the "Clear search result"
+        options: { 
+            priorities: [],
+            status: []
+        },
+        // filterValues: [],
+        filterOptionsValues: {
+            priorities: [],
+            status: []
+        },
+        optionTypes: {
+            STATUS: 0,
+            PRIORITY: 1
+        },
+        showCancelDialog: false,
     };
   },
   computed: {
-    searchValues: sync("workOrderPage.searchValues")
+    searchValues: sync("workOrderPage.searchValues"),
+    authUser() {
+        return JSON.parse(window.localStorage.getItem('user'));
+    },
   },
   methods: {
+    getWorkOrders() {
+        this.axios.get(Server.WORKORDER_API_PATH).then(response => {
+            let data = response.data.WorkOrders;
+            this.$store.state.workOrderPage.orders = data;
+            this.workOrders = data;
+        });
+    },
     setSelectedOrder(order) {
       if (this.selectedOrder == order) {
         this.selectedOrder = null;
@@ -332,14 +351,18 @@ export default {
       this.$store.state.workOrderPage.searchValues = [];
     },
     showDetailPopup(equipmentItemId) {
-      let url = `${Server.EQUIPMENTITEM_API_PATH}/${equipmentItemId}`;
-      this.axios.get(url)
-          .then((res) => {
-              if(res.data) {
-                  this.equipmentItem = res.data;
-              }
-          })
-      }
+        let url = `${Server.EQUIPMENTITEM_API_PATH}/${equipmentItemId}`;
+        this.axios.get(url)
+            .then((res) => {
+                if(res.data) {
+                    this.equipmentItem = res.data;
+                }
+            })
+    },
+    cancelOrder() {
+
+        this.showCancelDialog = false;
+    }
   },
   watch: {
     // this 'watch' is used when we need to monitor changes of some variables, if they changes value then the function in this 'watch' will be triggered.
@@ -371,7 +394,7 @@ export default {
     // },
     searchValues: function() {
       if (this.searchValues.length == 0) {
-        this.workOrders = this.$store.state.workOrderPage.orders;
+        this.getWorkOrders();
         this.searchMode = false;
       } else {
         this.workOrders = this.searchValues;
@@ -491,7 +514,7 @@ export default {
 
 .detail-header {
     display: grid;
-    grid-template-columns: 85% 15%
+    grid-template-columns: 70% 30%;
 }
 
 .detail-title {
@@ -504,5 +527,20 @@ export default {
 
 .detail-contents {
     margin-bottom: 1rem;
+}
+
+.vodal-confirm-btn {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 4rem;
+    font-size: .9rem;
+}
+
+.vodal-cancel-btn {
+    position: absolute;
+    bottom: 1rem;
+    right: 6rem;
+    font-size: .9rem;
 }
 </style>
