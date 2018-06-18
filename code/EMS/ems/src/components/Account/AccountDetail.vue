@@ -1,29 +1,36 @@
 <template>
+
+   <!-- <form @submit.prevent="editAccount()"> -->
   <div class="grid-wrapper">
+
   <!-- <button class="button " style="background-color:green;   position: fixed;
   top: 6rem;
   right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
 <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem; ">
 <div class="material-box">
-<div >
-  <h2 > <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{account.Username}}</strong> </h2>
-
+<div class="row" >
+  <h2 > <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a; margin-left: 2rem" >{{account.Username}}</strong> </h2>
+ <button class="button btn-edit btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Edit</button>
 
 </div>
 <div  class="row" style="height: 36px" >
   <!-- <span class="icon is-small is-left">
     <i class="fa fa-user"></i>
   </span> -->
-  <div class="col-2 text-right" style="margin-top:0.5rem" >
+  <div class="col-3 text-right" style="margin-top:0.5rem" >
     Full name:  
   </div>
-  <!-- <span v-if="!editMode" class="col-7" style="margin-top:0.3rem">
-    {{account.Fullname}}
-  </span> -->
+
   <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
   
   </div>  
+  <div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+  <div class="col-3 text-right" style="margin-top:0.5rem">Password: </div>
+  <!-- <div class="col-7"> {{account.Password ? account.Password: 'N/A' }}</div> -->
+  <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+  <input v-else v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input">
+</div>
  <!-- <h2 class="field is-horizontal" style="margin:0px">
 
 <div style="padding-top:1rem; ">
@@ -39,15 +46,15 @@
 </div> 
 </h2>-->
 
-<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem" v-if="!editMode">
-  <div class=" col-2 text-right" >
+<div class="row" style="margin-top:0.5rem; " v-if="!editMode">
+  <div class=" col-3 text-right" style="margin-top:0.5rem">
   Status: 
   </div>
 
   <div class=" col-7 " >
   <!-- <div class="row col-7 " style="height: 36px"> -->
-      <label class="row" v-if="account.IsActive==true" >
-      <div style="margin-right: 2rem" >
+      <label class="row"  v-if="account.IsActive==true" >
+      <div style="margin-right: 1rem" >
         <input type="radio" name="active" v-on:change="account.IsActive = true" checked="checked" >
         Active
       </div>
@@ -56,8 +63,8 @@
       Inactive
     </div>
     </label>
-    <label class="row" v-else >
-      <div style="margin-right: 2rem">
+    <label class="row" style="margin-top:0.5rem;" v-else >
+      <div style="margin-right: 1rem">
         <input type="radio" name="active" v-on:change="account.IsActive = true"  disabled="disabled">
         Active
       </div>
@@ -71,15 +78,15 @@
 
 </div >
 
-<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem" v-if="editMode">
-  <div class=" col-2 text-right" >
+<div class="row" style="margin-top:0.5rem; " v-if="editMode">
+  <div class=" col-3 text-right" style="margin-top:0.5rem">
   Status: 
   </div>
 
   <div class=" col-7 "  >
 
       <label class="row" v-if="account.IsActive==true" >
-      <div style="margin-right: 2rem">
+      <div style="margin-right: 1rem">
         <input type="radio" name="active" v-on:change="account.IsActive = true" checked="checked" >
         Active
       </div>
@@ -89,7 +96,7 @@
     </div>
     </label>
     <label class="row" v-else >
-      <div style="margin-right: 2rem">
+      <div style="margin-right: 1rem">
         <input type="radio" name="active" v-on:change="account.IsActive = true"  >
         Active
       </div>
@@ -104,80 +111,51 @@
 </div >
 
 <div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
-  <div class="col-2 text-right" >Role:</div>
+  <div class="col-3 text-right" >Role:</div>
   <div class="col-7"> {{account.SystemRole.Name}}</div>
 </div>
 <div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
-  <div class="col-2 text-right">Start date: </div>
+  <div class="col-3 text-right">Start date: </div>
   <div class="col-7"> {{account.StartDate ? account.StartDate: 'N/A' }}</div>
 </div>
 <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
-<div class="row">
-  <div class="col-2 text-right">Email: </div>
-  <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div>
+<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+  <div class="col-3 text-right" style="margin-top:0.5rem">Email: </div>
+  <!-- <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div> -->
+  <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+  <input v-else v-model="account.Email" class="input col-7 " type="text"  placeholder="Text input">
 </div>
-<div class="row">
-  <div class="col-2 text-right">Phone: </div>
-  <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div>
+<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+  <div class="col-3 text-right" style="margin-top:0.5rem">Phone: </div>
+  <!-- <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div> -->
+  <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+  <input v-else v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
 </div>
-<div style="font-size: 20px"><strong>Team</strong></div>
+<div class="row" v-if="editMode">
+  <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Done</button>
+    <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Cancel</button>
+</div>
+<div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
 <div v-bind:key="team.id" v-for="team in account.Teams" >
   <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'">{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
   <div style="margin-left:1.5rem" v-else>{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
 </div>
 </div>
-<div class="material-box">
-  <h2 style="text-transform: uppercase;font-size: 30px; color: #3960A4">Team</h2>
-        <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
-<h1 v-bind:key="team.id" v-for="team in account.Teams" >
-  <div style="padding:10px" v-if="team.TeamRole.TeamRole == 'Leader'">
-    <h1> 
-            <span class="icon is-small is-left" style="color:blue" >
-      <i class="fa fa-users"></i>
-    </span>
-      Team name: {{team.Name}}</h1>  
-      <h1>
-              <span class="icon is-small is-left" style="color:blue" >
-      <i class="fa fa-user-md"></i>
-    </span>
-         Role in team: {{team.TeamRole.TeamRole}}</h1>
-      <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
-      </div>
-      <div style="padding:10px" v-else>
-    <h1> 
-            <span class="icon is-small is-left"  >
-      <i class="fa fa-users"></i>
-    </span>
-      Team name: {{team.Name}}</h1>  
-      <h1>
-              <span class="icon is-small is-left"  >
-      <i class="fa fa-user-md"></i>
-    </span>
-         Role in team: {{team.TeamRole.TeamRole}}</h1>
-      <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
-      </div>
-  </h1>
-  
 
-          <button class="button btn-edit btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Edit</button>
+
+         
 
 
 
-
-</div>
+  </div>
+  <!-- </form> -->
 
 
 
 
 
-<!-- <h1>{{account.Id}}</h1> -->
-  <!-- <td>{{account.Id}}</td>    
-  <td>{{account.Username}}</td>
-  <td>{{account.Password}}</td> -->
 
 
-
-</div>
 </template>
 
 <script>
@@ -208,10 +186,14 @@ export default {
     };
   },
   methods: {
-    onDelete() {
-      this.axios.delete(
-        "`http://localhost:3000/api/account/delete/id/${this.$route.params.id}`"
-      );
+    editAccount() {
+      this.axios
+        .put(`http://localhost:3000/api/account/${this.$route.params.id}`, {
+          account: this.account
+        })
+        .then(res => {
+          this.$router.push("/account");
+        });
     }
   }
 };
@@ -242,9 +224,7 @@ export default {
 } */
 
 .btn-edit {
-  position: fixed;
-  top: 6rem;
-  right: 2rem;
+  margin-left: 22rem;
   background-color: var(--primary-color);
   /* padding: 13px; */
   color: white;
@@ -256,5 +236,36 @@ export default {
 .btn-edit:hover {
   cursor: pointer;
   background-color: #009688;
+}
+.btn-confirm-edit {
+  background-color: var(--primary-color);
+  margin-left: 7rem;
+  margin-top: 1rem;
+  /* padding: 13px; */
+  color: white;
+  /* border-radius: 5px;
+  z-index: 10;
+  font-size: 1.3rem; */
+}
+
+.btn-confirm-edit:hover {
+  cursor: pointer;
+  background-color: #009688;
+}
+
+.btn-cancel {
+  background-color: var(--shadow);
+  margin-left: 1rem;
+  margin-top: 1rem;
+  /* padding: 13px; */
+  color: white;
+  /* border-radius: 5px;
+  z-index: 10;
+  font-size: 1.3rem; */
+}
+
+.btn-cancel:hover {
+  cursor: pointer;
+  background-color: #aca4a4;
 }
 </style>
