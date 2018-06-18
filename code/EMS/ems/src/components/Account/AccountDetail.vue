@@ -14,7 +14,7 @@
   <!-- <span class="icon is-small is-left">
     <i class="fa fa-user"></i>
   </span> -->
-  <div class="col-2 text-right" style="margin-top:0.5rem" >
+  <div class="col-3 text-right" style="margin-top:0.5rem" >
     Full name:  
   </div>
   <!-- <span v-if="!editMode" class="col-7" style="margin-top:0.3rem">
@@ -24,6 +24,12 @@
   <input v-else v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
   
   </div>  
+  <div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+  <div class="col-3 text-right" style="margin-top:0.5rem">Password: </div>
+  <!-- <div class="col-7"> {{account.Password ? account.Password: 'N/A' }}</div> -->
+  <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+  <input v-else v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input">
+</div>
  <!-- <h2 class="field is-horizontal" style="margin:0px">
 
 <div style="padding-top:1rem; ">
@@ -39,15 +45,15 @@
 </div> 
 </h2>-->
 
-<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem" v-if="!editMode">
-  <div class=" col-2 text-right" >
+<div class="row" style="margin-top:0.5rem; " v-if="!editMode">
+  <div class=" col-3 text-right" >
   Status: 
   </div>
 
   <div class=" col-7 " >
   <!-- <div class="row col-7 " style="height: 36px"> -->
-      <label class="row" v-if="account.IsActive==true" >
-      <div style="margin-right: 2rem" >
+      <label class="row"  v-if="account.IsActive==true" >
+      <div style="margin-right: 1rem" >
         <input type="radio" name="active" v-on:change="account.IsActive = true" checked="checked" >
         Active
       </div>
@@ -56,8 +62,8 @@
       Inactive
     </div>
     </label>
-    <label class="row" v-else >
-      <div style="margin-right: 2rem">
+    <label class="row" style="margin-top:0.5rem;" v-else >
+      <div style="margin-right: 1rem">
         <input type="radio" name="active" v-on:change="account.IsActive = true"  disabled="disabled">
         Active
       </div>
@@ -72,14 +78,14 @@
 </div >
 
 <div class="row" style="margin-top:0.5rem; margin-bot:0.5rem" v-if="editMode">
-  <div class=" col-2 text-right" >
+  <div class=" col-3 text-right" style="margin-top:0.5rem">
   Status: 
   </div>
 
   <div class=" col-7 "  >
 
       <label class="row" v-if="account.IsActive==true" >
-      <div style="margin-right: 2rem">
+      <div style="margin-right: 1rem">
         <input type="radio" name="active" v-on:change="account.IsActive = true" checked="checked" >
         Active
       </div>
@@ -89,7 +95,7 @@
     </div>
     </label>
     <label class="row" v-else >
-      <div style="margin-right: 2rem">
+      <div style="margin-right: 1rem">
         <input type="radio" name="active" v-on:change="account.IsActive = true"  >
         Active
       </div>
@@ -104,29 +110,33 @@
 </div >
 
 <div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
-  <div class="col-2 text-right" >Role:</div>
+  <div class="col-3 text-right" >Role:</div>
   <div class="col-7"> {{account.SystemRole.Name}}</div>
 </div>
 <div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
-  <div class="col-2 text-right">Start date: </div>
+  <div class="col-3 text-right">Start date: </div>
   <div class="col-7"> {{account.StartDate ? account.StartDate: 'N/A' }}</div>
 </div>
 <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
-<div class="row">
-  <div class="col-2 text-right">Email: </div>
-  <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div>
+<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+  <div class="col-3 text-right" style="margin-top:0.5rem">Email: </div>
+  <!-- <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div> -->
+  <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+  <input v-else v-model="account.Email" class="input col-7 " type="text"  placeholder="Text input">
 </div>
-<div class="row">
-  <div class="col-2 text-right">Phone: </div>
-  <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div>
+<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+  <div class="col-3 text-right" style="margin-top:0.5rem">Phone: </div>
+  <!-- <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div> -->
+  <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+  <input v-else v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
 </div>
-<div style="font-size: 20px"><strong>Team</strong></div>
+<div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
 <div v-bind:key="team.id" v-for="team in account.Teams" >
   <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'">{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
   <div style="margin-left:1.5rem" v-else>{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
 </div>
 </div>
-<div class="material-box">
+<!-- <div class="material-box">
   <h2 style="text-transform: uppercase;font-size: 30px; color: #3960A4">Team</h2>
         <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
 <h1 v-bind:key="team.id" v-for="team in account.Teams" >
@@ -156,7 +166,7 @@
          Role in team: {{team.TeamRole.TeamRole}}</h1>
       <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
       </div>
-  </h1>
+  </h1> -->
   
 
           <button class="button btn-edit btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Edit</button>
