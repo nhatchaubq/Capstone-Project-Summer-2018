@@ -130,21 +130,21 @@
                                 </div>
                                 <v-card>
                                     <v-card-text style="font-size: .9rem">
-                                      <div style="display: grid; grid-template-columns: 40% auto">
+                                      <div style="display: grid; grid-template-columns: 40% auto; background-color:#F5F5F5; padding: 1rem;">
                                         <div class="acc-img">
                                           <img v-show="account.AvatarImage" :src="account.AvatarImage" >
                                         </div>
                                       <div >
                                         <div>
-                                          <h2 id="info-title">Info</h2>
+                                          <h2 id="info-title">Information</h2>
                                         </div>
                                         <div class="acc-info">
                                           <div><i class="material-icons">credit_card</i> Name: {{account.Fullname}}  </div>
                                           <div><i class="material-icons">settings_phone  </i> Phone: {{account.Phone}} </div>
                                           <div><i class="material-icons">email</i> Email: {{account.Email}} </div>
                                           <div><i class="material-icons">date_range</i> StartDate: {{account.StartDate}}</div>
-                                          <div style="font-size: 28px;text-align:center">
-                                            <router-link :to="'/team/' + account.IdOfTeam">Show Team Detail</router-link>
+                                          <div id="team-detail">
+                                            <router-link :to="'/team/' + account.IdOfTeam" >Show Team Detail </router-link>
                                           </div>
                                         </div>                        
                                       </div>
@@ -418,7 +418,7 @@ export default {
   height: 3rem;
   line-height: 3rem;
   
-  font-size: 25px ;
+  font-size: 20px ;
   font-weight: bold;
   color: var( --primary-color);
   border-bottom: 0.5px solid lightgrey;
@@ -428,7 +428,7 @@ export default {
   color: gray;
   position: relative;
   top: 0.3rem;
-  font-size: 30px;
+  font-size: 25px;
 }
 #show-detail{
   text-align: center;
@@ -441,11 +441,12 @@ export default {
 }
 #info-title{
   padding-left: 0 !important;
-  height: 1.7rem;
+  padding-bottom: 0.5rem;
   width: 100%;
   text-align: center;
-  background-color: aquamarine;
+  border-bottom: var(--shadow) 1px solid;
   font: 24px bold;
+  
 
 }
 .acc-info i{
@@ -453,5 +454,17 @@ export default {
 }
 .acc-info div{
   width: 100%;
+} 
+#team-detail{
+  margin-top: 0.5rem;
+  color: #26a69a !important;
+  font-size: 17px;
+  text-align: center;
 }
+/* #team-detail router-link{
+  color: #26a69a;
+}
+#team-detail:hover{
+  color: var(--darken-primary-color);
+} */
 </style>
