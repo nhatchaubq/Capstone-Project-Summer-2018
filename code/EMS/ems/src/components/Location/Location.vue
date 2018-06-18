@@ -37,11 +37,10 @@
             <br/> 
             <div style="">
             <div class="type-bar">
-              <div v-on:click="currentMode = modes.MAP">Map</div>
-              <div v-on:click="currentMode = modes.EQUIPMENT">Equipment</div>
-              <div v-on:click="currentMode = modes.WORKORDER">Work Order</div>
-              <div v-on:click="currentMode = modes.TEAM">Team</div>
-              <div v-on:click="currentMode = modes.POSITION">Position</div>
+              <div :class="{'is-active': currentMode == modes.MAP}" v-on:click="currentMode = modes.MAP">Map</div>
+              <div :class="{'is-active': currentMode == modes.EQUIPMENT}" v-on:click="currentMode = modes.EQUIPMENT">Equipment</div>
+              <div :class="{'is-active': currentMode == modes.WORKORDER}" v-on:click="currentMode = modes.WORKORDER">Work Order</div>
+              <div :class="{'is-active': currentMode == modes.TEAM}" v-on:click="currentMode = modes.TEAM">Team</div>
             </div>
             </div>
             <br>
@@ -391,7 +390,14 @@ export default {
   color: white;
   background-color: var(--primary-color);
 }
-.btn-add-location {
+
+.is-active {
+  cursor: pointer;
+  color: white;
+  background-color: var(--primary-color);
+}
+
+.btn-add-location{
   position: fixed;
   right: 2.5rem;
   bottom: 2rem;

@@ -61,16 +61,23 @@ export default {
 table {
   /* border: 1px solid black; */
   width: 100%;
+  font-size: 30px;
   /* text-align: right; */
 }
 
 th {
   text-align: left;
   background-color: #cfd8dc;
+  height: 30px;
+  line-height: 30px;
+  padding: 0.5rem !important;
 }
 
 td {
   vertical-align: middle;
+  height: 25px;
+  line-height: 25px;
+  padding: 0.5rem;
   /* text-align: justify; */
 }
 
@@ -80,13 +87,16 @@ tr:nth-child(odd) {
 }
 
 tr:nth-child(even) {
-  background-color: #eceff1;
+  background-color: #f5f5f5;
   color: #263238;
 }
 
 #th1:curve {
   text-align: justify;
   background-color: #b0bec5;
+}
+tr:hover {
+  background-color: #eceff1;
 }
 
 .no-padding {
