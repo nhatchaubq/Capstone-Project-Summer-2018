@@ -46,7 +46,7 @@
 </h2>-->
 
 <div class="row" style="margin-top:0.5rem; " v-if="!editMode">
-  <div class=" col-3 text-right" >
+  <div class=" col-3 text-right" style="margin-top:0.5rem">
   Status: 
   </div>
 
@@ -77,7 +77,7 @@
 
 </div >
 
-<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem" v-if="editMode">
+<div class="row" style="margin-top:0.5rem; " v-if="editMode">
   <div class=" col-3 text-right" style="margin-top:0.5rem">
   Status: 
   </div>
