@@ -1,22 +1,21 @@
 <template>
   <div>
-    <div class="">
+    <!-- <div class="">
       <div class="field is-grouped view-mode">
         <button class="btn-view-mode" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
       </div>
-
-    </div>
+    </div> -->
     <div v-if="!equipments">
       There is no equipment yet.
     </div>
     <div v-else>
       <equipment-table :equipments="equipments" v-if="isTableMode"></equipment-table>
-      <equipment-card :equipments="equipments" v-else></equipment-card>
+      <!-- <equipment-card :equipments="equipments" v-else></equipment-card> -->
     </div>
 
     <router-link to='/equipment/create/'>
-      <button id="btn-add-equipment" class="material-shadow-animate">Add Equipment</button>
+      <button id="btn-add-equipment"  class="button btn-primary material-shadow-animate">Add Equipment</button>
     </router-link>
 
   </div>
@@ -26,12 +25,12 @@
 import { sync } from "vuex-pathify";
 import Server from "@/config/config.js";
 import EquipmentTable from "./EquipmentTable";
-import EquipmentCard from "./EquipmentCard";
+// import EquipmentCard from "./EquipmentCard";
 
 export default {
   components: {
     EquipmentTable,
-    EquipmentCard
+    // EquipmentCard
   },
   created() {
     let URL = Server.EQUIPMENT_API_PATH;
@@ -83,17 +82,17 @@ export default {
   position: fixed;
   right: 3rem;
   bottom: 2rem;
-  background-color: var(--primary-color);
-  padding: 13px;
+  /* background-color: var(--primary-color); */
+  /* padding: 13px; */
   color: white;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   z-index: 1;
 }
 
 #btn-add-equipment:hover {
   cursor: pointer;
-  background-color: #009688;
-  color: white;
+  /* background-color: #009688;
+  color: white; */
 }
 
 .btn-view-mode {

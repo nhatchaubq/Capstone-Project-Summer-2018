@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bootstrap": "^4.1.1",
     "bulma": "^0.7.1",
     "chart.js": "^2.7.2",
     "cloudinary": "^1.11.0",
@@ -18,6 +19,7 @@
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
     "smart-css-grid": "^1.0.0",
+    "vodal": "^2.3.3",
     "vue": "^2.5.16",
     "vue-axios": "^2.1.1",
     "vue-base64-file-upload": "^1.0.4",
@@ -28,6 +30,7 @@
     "vue-fullcalendar": "^1.0.9",
     "vue-router": "^3.0.1",
     "vue-search-select": "^2.6.1",
+    "vue2-google-maps": "^0.9.7",
     "vuebar": "0.0.18",
     "vuetify": "^1.0.18",
     "vuex": "^3.0.1",

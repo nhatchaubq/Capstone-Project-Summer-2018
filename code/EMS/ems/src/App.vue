@@ -42,7 +42,7 @@ export default {
 :root {
   --primary-color: #26a69a;
   --darken-primary-color: #229488;
-  --lighten-primary-color: #2EBAAC;
+  --lighten-primary-color: #2ebaac;
   --secondary-color: #80deea;
   --light-background: #fafafa;
   --dark-background: #263238;
@@ -123,6 +123,26 @@ body {
 
 .material-shadow-animate:hover {
   box-shadow: 4px 4px 8px var(--shadow) !important;
+}
+
+.button.btn-primary {
+  border: 0;
+  color: white !important;
+  background-color: var(--primary-color);
+  z-index: 99;
+  transition: all .2s ease-in-out;
+}
+
+button.btn-primary:hover {
+  cursor: pointer;
+  color: white !important;
+  background-color: var(--lighten-primary-color);
+}
+
+button.btn-primary:active {
+  color: white !important;
+  background-color: var(--darken-primary-color);
+  box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
 .badge {
