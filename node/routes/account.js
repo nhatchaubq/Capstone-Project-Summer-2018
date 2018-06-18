@@ -42,12 +42,13 @@ router.post("/", (request, response) => {
 
 
 router.put('/:id', function (request, response) {
-  request.sql('update [Account] set Password = @password, Fullname = @fullname, where Id = @id')
+  request.sql('update [Account] set Fullname = @fullname, Password = @password, IsActive = @isActive, Email = @email, Phone = @phone  where Id = @id')
     .param('id', request.params.id, TYPES.Int)
-    .param('password', request.body.password, TYPES.NVarChar)
-    .param('fullname', request.body.email, TYPES.NVarChar)
-
-
+    .param('fullname', request.body.account.Fullname, TYPES.NVarChar)
+    .param('password', request.body.account.Password, TYPES.NVarChar)
+    .param('isActive', request.body.account.IsActive, TYPES.NVarChar)
+    .param('email', request.body.account.Email, TYPES.NVarChar)
+    .param('phone', request.body.account.Phone, TYPES.NVarChar)
     .exec(response);
 });
 
@@ -58,5 +59,7 @@ router.delete("/:id", function (request, response) {
     .param("id", request.params.id, TYPES.NVarChar)
     .exec(response);
 });
+
+router.put('/edit/id')
 
 module.exports = router;

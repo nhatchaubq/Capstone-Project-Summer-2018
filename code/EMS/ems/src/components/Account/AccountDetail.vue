@@ -188,12 +188,9 @@ export default {
   methods: {
     editAccount() {
       this.axios
-        .put(
-          `http://localhost:3000/api/account/edit/id/${this.$route.params.id}`,
-          {
-            account: this.account
-          }
-        )
+        .put(`http://localhost:3000/api/account/${this.$route.params.id}`, {
+          account: this.account
+        })
         .then(res => {
           this.$router.push("/account");
         });
