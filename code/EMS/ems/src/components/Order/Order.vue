@@ -18,16 +18,16 @@
                               </optgroup>
                           </select>
                       </div> -->
-                      <div>
+                      <div style="user-select: none">
                           Priority:
-                          <label class="checkbox" :key="priority.id" v-for="priority in options.priorities">
+                          <label class="checkbox" :key="priority.id" v-for="priority in options.priorities" style="margin-right: 1rem;">
                               <input type="checkbox" v-on:change="addFilter(priority, $event)">
                               {{ priority.name }}
                           </label>
                       </div>
-                      <div>
+                      <div style="user-select: none">
                           Status:
-                          <label class="checkbox" :key="status.id" v-for="status in options.status">
+                          <label class="checkbox" :key="status.id" v-for="status in options.status" style="margin-right: .5rem;">
                               <input type="checkbox" v-on:change="addFilter(status, $event)">
                               {{ status.name }}
                           </label>
@@ -83,7 +83,7 @@
                               <span class="detail-label" style="position: relative; top: .4rem; margin-right: 1rem;">Change status to:</span>
                               <div class="select">
                                   <select>
-                                      <option :disabled="status.id <= order.StatusID" :selected="status.id == order.StatusID" :key="status.id" value="" v-for="status in statusList">
+                                      <option :disabled="status.id <= selectedOrder.StatusID" :selected="status.id == (selectedOrder.StatusID)" :key="status.id" value="" v-for="status in options.status">
                                           {{ status.name }}
                                       </option>
                                   </select>
@@ -119,7 +119,7 @@
                           </v-flex>
                       </div>
                       <div class="detail-contents">
-                          <span class="detail-label">Location:</span>
+                          <span class="detail-label">Location: {{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
                           <img src="http://images.indianexpress.com/2016/11/hazaribagh-759.jpg" />
                       </div>
                   </div>
