@@ -1,5 +1,5 @@
 <template>
-<div class="form">
+
    <!-- <form @submit.prevent="editAccount()"> -->
   <div class="grid-wrapper">
 
@@ -132,7 +132,7 @@
   <input v-else v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
 </div>
 <div class="row" v-if="editMode">
-  <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Done</button>
+  <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Done</button>
     <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Cancel</button>
 </div>
 <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
@@ -141,38 +141,7 @@
   <div style="margin-left:1.5rem" v-else>{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
 </div>
 </div>
-<!-- <div class="material-box">
-  <h2 style="text-transform: uppercase;font-size: 30px; color: #3960A4">Team</h2>
-        <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
-<h1 v-bind:key="team.id" v-for="team in account.Teams" >
-  <div style="padding:10px" v-if="team.TeamRole.TeamRole == 'Leader'">
-    <h1> 
-            <span class="icon is-small is-left" style="color:blue" >
-      <i class="fa fa-users"></i>
-    </span>
-      Team name: {{team.Name}}</h1>  
-      <h1>
-              <span class="icon is-small is-left" style="color:blue" >
-      <i class="fa fa-user-md"></i>
-    </span>
-         Role in team: {{team.TeamRole.TeamRole}}</h1>
-      <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
-      </div>
-      <div style="padding:10px" v-else>
-    <h1> 
-            <span class="icon is-small is-left"  >
-      <i class="fa fa-users"></i>
-    </span>
-      Team name: {{team.Name}}</h1>  
-      <h1>
-              <span class="icon is-small is-left"  >
-      <i class="fa fa-user-md"></i>
-    </span>
-         Role in team: {{team.TeamRole.TeamRole}}</h1>
-      <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2>
-      </div>
-  </h1> -->
-  
+
 
          
 
@@ -180,7 +149,6 @@
 
   </div>
   <!-- </form> -->
-</div>
 
 
 
