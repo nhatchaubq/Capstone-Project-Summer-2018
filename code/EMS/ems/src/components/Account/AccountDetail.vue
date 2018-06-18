@@ -1,13 +1,16 @@
 <template>
+<div class="form">
+   <!-- <form @submit.prevent="editAccount()"> -->
   <div class="grid-wrapper">
+
   <!-- <button class="button " style="background-color:green;   position: fixed;
   top: 6rem;
   right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
 <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem; ">
 <div class="material-box">
-<div >
-  <h2 > <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{account.Username}}</strong> </h2>
-
+<div class="row" >
+  <h2 > <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a; margin-left: 2rem" >{{account.Username}}</strong> </h2>
+ <button class="button btn-edit btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Edit</button>
 
 </div>
 <div  class="row" style="height: 36px" >
@@ -17,9 +20,7 @@
   <div class="col-3 text-right" style="margin-top:0.5rem" >
     Full name:  
   </div>
-  <!-- <span v-if="!editMode" class="col-7" style="margin-top:0.3rem">
-    {{account.Fullname}}
-  </span> -->
+
   <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
   
@@ -130,6 +131,10 @@
   <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
 </div>
+<div class="row" v-if="editMode">
+  <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Done</button>
+    <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Cancel</button>
+</div>
 <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
 <div v-bind:key="team.id" v-for="team in account.Teams" >
   <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'">{{team.TeamRole.TeamRole}} of  {{team.Name}}</div>
@@ -169,25 +174,20 @@
   </h1> -->
   
 
-          <button class="button btn-edit btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Edit</button>
+         
 
 
 
-
+  </div>
+  <!-- </form> -->
 </div>
 
 
 
 
 
-<!-- <h1>{{account.Id}}</h1> -->
-  <!-- <td>{{account.Id}}</td>    
-  <td>{{account.Username}}</td>
-  <td>{{account.Password}}</td> -->
 
 
-
-</div>
 </template>
 
 <script>
@@ -218,10 +218,17 @@ export default {
     };
   },
   methods: {
-    onDelete() {
-      this.axios.delete(
-        "`http://localhost:3000/api/account/delete/id/${this.$route.params.id}`"
-      );
+    editAccount() {
+      this.axios
+        .put(
+          `http://localhost:3000/api/account/edit/id/${this.$route.params.id}`,
+          {
+            account: this.account
+          }
+        )
+        .then(res => {
+          this.$router.push("/account");
+        });
     }
   }
 };
@@ -252,9 +259,7 @@ export default {
 } */
 
 .btn-edit {
-  position: fixed;
-  top: 6rem;
-  right: 2rem;
+  margin-left: 22rem;
   background-color: var(--primary-color);
   /* padding: 13px; */
   color: white;
@@ -266,5 +271,36 @@ export default {
 .btn-edit:hover {
   cursor: pointer;
   background-color: #009688;
+}
+.btn-confirm-edit {
+  background-color: var(--primary-color);
+  margin-left: 7rem;
+  margin-top: 1rem;
+  /* padding: 13px; */
+  color: white;
+  /* border-radius: 5px;
+  z-index: 10;
+  font-size: 1.3rem; */
+}
+
+.btn-confirm-edit:hover {
+  cursor: pointer;
+  background-color: #009688;
+}
+
+.btn-cancel {
+  background-color: var(--shadow);
+  margin-left: 1rem;
+  margin-top: 1rem;
+  /* padding: 13px; */
+  color: white;
+  /* border-radius: 5px;
+  z-index: 10;
+  font-size: 1.3rem; */
+}
+
+.btn-cancel:hover {
+  cursor: pointer;
+  background-color: #aca4a4;
 }
 </style>

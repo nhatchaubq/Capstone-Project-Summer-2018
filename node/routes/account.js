@@ -42,7 +42,7 @@ router.post("/", (request, response) => {
 
 
 router.put('/:id', function (request, response) {
-  request.sql('update [Account] set Password = @password, Fullname = @fullname where Id = @id')
+  request.sql('update [Account] set Password = @password, Fullname = @fullname, where Id = @id')
     .param('id', request.params.id, TYPES.Int)
     .param('password', request.body.password, TYPES.NVarChar)
     .param('fullname', request.body.email, TYPES.NVarChar)
