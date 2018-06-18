@@ -177,12 +177,12 @@ import Server from '@/config/config.js';
 
 import moment from 'moment';
 import {ModelSelect} from 'vue-search-select';
-import fileBase64 from 'vue-file-base64';
+// import fileBase64 from 'vue-file-base64';
 
 export default {    
     components: {
         ModelSelect, 
-        fileBase64
+        // fileBase64
     },
     data() {
         return {
