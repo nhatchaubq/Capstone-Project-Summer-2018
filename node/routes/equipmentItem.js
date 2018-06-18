@@ -6,6 +6,12 @@ var TYPES = require("tedious").TYPES;
 //         .into(response);
 // });
 
+router.get('/:id', (req, res) => {
+    req.sql('exec GetEquipmentDetailById @id')
+        .param('id', req.params.id, TYPES.Int)
+        .into(res);
+});
+
 /* POST request, for insert */
 router.post('/', (request, response) => {
     request.sql("INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, ImportDate, StatusId, Description, PositionID)" +

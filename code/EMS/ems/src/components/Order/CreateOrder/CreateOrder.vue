@@ -116,6 +116,36 @@
                     <textarea class="input" rows="5" v-model="workOrderDescription"></textarea>
                 </div>
             </div>
+            <div class="form-field">
+                <div class="form-field-title">
+                    Files base 64
+                </div>
+                <div class="form-field-input">
+                    <div class="input_picture">                    
+                        <label class="file-label" style="width: 100% !important"> 
+                        <span class="file-cta">
+                            <!-- <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange"  /> -->
+                            <file-base64 :multiple="false" :done="getFile"></file-base64>
+                            <span class="file-icon">
+                                <i class="fa fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                                Choose images...
+                            </span>
+                        </span>
+                            <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
+                                {{ file.name }}
+                            <div>
+                                <img class="file-upload" v-bind:src="getFilePath(file)" style="width: 75px height:75px"/>
+                            </div>
+
+                            </div>
+                        </label>
+                        <!-- <input type="file" id="file"  v-on:change="onFileChanged"> -->
+                        <!-- <button v-on:click="onUpload">Upload!!!</button> -->
+                    </div> 
+                </div>
+            </div>
             <!-- <div class="form-field">
                 <div class="file is-boxed has-name">
                     <label class="file-label" style="width: 100% !important">
@@ -146,12 +176,13 @@
 import Server from '@/config/config.js';
 
 import moment from 'moment';
-
 import {ModelSelect} from 'vue-search-select';
+import fileBase64 from 'vue-file-base64';
 
 export default {    
     components: {
-        ModelSelect,
+        ModelSelect, 
+        fileBase64
     },
     data() {
         return {
@@ -326,6 +357,9 @@ export default {
                 }).catch((error) => {
                         alert("Create work order: Cannot create work order due to some errors happened in the server. Please contact the system administrator to investigate this situation!" + error)
                 });
+        },
+        getFile(file) {
+            console.log(file);
         }
     },
     watch: {
