@@ -3,11 +3,11 @@
         <div class="detail">
             <div class="detail-header">
                 <div>
-                    <span v-bind:style="priorityBadgeColor(order)" class="badge" style="position: relative; top: -.3rem">
+                    <span :style="`background-color: ${order.PriorityColor}`" class="tag" style="position: relative; top: -.3rem; color: white">
                     {{ order.Priority }}
                     </span>
                     <span class="detail-title">
-                        Order #{{ order.Id }}
+                        {{ order.Name }}
                     </span>
                 </div>
                 <div style="text-align: right; user-select: none;">
