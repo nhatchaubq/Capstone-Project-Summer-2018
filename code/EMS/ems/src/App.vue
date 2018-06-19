@@ -46,7 +46,8 @@ export default {
   --secondary-color: #80deea;
   --light-background: #fafafa;
   --dark-background: #263238;
-  --danger-color: #f44336;
+  --success-color: #00c853;
+  --danger-color: #ef5350;
   --shadow: #9e9e9e;
   --status-request: #f44336;
   --status-checked: #304ffe;
