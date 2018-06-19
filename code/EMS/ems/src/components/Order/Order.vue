@@ -69,14 +69,14 @@
                               {{ selectedOrder.Name }}
                           </span>
                       </div>
-                      <div style="display: grid; grid-template-rows: auto auto; grid-row-gap: 1rem; text-align: right; user-select: none;" v-show="authUser.RoleID == 1 || authUser.RoleID == 4">
+                      <div style="display: grid; grid-template-rows: auto auto; grid-row-gap: 1rem; text-align: right; user-select: none;" v-show="authUser.RoleID == 4">
                             <div>
                                 <a style="position: relative; top: .8rem;" v-on:click="editMode = !editMode">
                                     <i class="fa" :class="{'fa-pencil-square-o': !editMode, 'fa-check-circle-o': editMode}" style=" font-size: 1rem; margin-right: 2px"></i>
                                     {{ editMode ? 'Done' : 'Edit' }}
                                 </a>
                             </div>
-                            <div>
+                            <div v-if="selectedOrder.StatusID < 3 && authUser.Id == selectedOrder.RequestUserId">
                                 <a v-on:click="showCancelDialog = true">Cancel this order</a>
                             </div>
                       </div>
@@ -93,6 +93,18 @@
                                       </option>
                                   </select>
                               </div>
+                          </div>
+                          <div v-if="authUser.RoleID == 2" style="margin-top: 1rem;">
+                              <!-- <span class="detail-label" style="position: relative; top: .4rem; margin-right: 1rem;">Change status to:</span> -->
+                              <!-- <div class="select">
+                                  <select>
+                                      <option :disabled="status.id <= selectedOrder.StatusID" :selected="status.id == (selectedOrder.StatusID)" :key="'editStatus' + status.id" value="" v-for="status in options.status">
+                                          {{ status.name }}
+                                      </option>
+                                  </select>
+                              </div> -->
+                                <button class="button" style="color: white; background-color: var(--primary-color); margin-right: .5rem">Approve</button>
+                                <button class="button" style="color: white; background-color: #B0BEC5;">Reject</button>
                           </div>
                       </div>
                       <div class="detail-contents">
@@ -136,11 +148,18 @@
         <!-- <div>alo</div> -->
         <equipment-detail-popup :equipment="equipmentItem" class=""></equipment-detail-popup>
       </vodal>
-      <vodal :show="showCancelDialog" @hide="showCancelDialog = false" animation="slideUp" :closeButton="false">
+      <vodal :show="showCancelDialog" :height="170" @hide="showCancelDialog = false" animation="slideUp" :closeButton="false">
           <div v-if="selectedOrder">
-            <span>Are you sure to delete this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
-            <button class="button vodal-cancel-btn" @click="showCancelDialog = false">Cancel</button>
-            <button class="button vodal-confirm-btn" style="background: var(--danger-color); color: white" @click="showCancelDialog = false">Delete</button>
+              <div class="my-dialog">
+                <div class="my-dialog-title">
+                    Confirm
+                </div>
+                <div class="my-dialog-content">
+                    <span>Are you sure to cancel this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
+                    <button class="button vodal-cancel-btn" @click="showCancelDialog = false">No</button>
+                    <button class="button btn-primary vodal-confirm-btn" @click="showCancelDialog = false">Yes</button>
+                </div>
+              </div>
           </div>
       </vodal>
     </div>
@@ -540,7 +559,19 @@ export default {
 .vodal-cancel-btn {
     position: absolute;
     bottom: 1rem;
-    right: 6rem;
+    right: 5.5rem;
+    width: 4rem;
     font-size: .9rem;
+}
+
+
+.my-dialog-title {
+    padding: .7rem 1rem .5rem 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    font-weight: 500;
+}
+
+.my-dialog-content {
+    padding: 1rem;
 }
 </style>
