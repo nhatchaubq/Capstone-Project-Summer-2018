@@ -1,7 +1,7 @@
 <template>
      <div class="form">
          
-         <!-- <form @submit.prevent="createAccount1()"> -->
+         <form @submit.prevent="createAccount1()">
             <div class="form-title">
                 <div class="form-title-start">
                     Add New Account
@@ -194,7 +194,7 @@
                 </div>
             <div>&nbsp</div>
          <!-- </form> -->
-        
+         </form>
     </div>
 </template>
 

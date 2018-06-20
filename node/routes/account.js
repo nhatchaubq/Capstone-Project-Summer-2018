@@ -51,7 +51,7 @@ router.put('/:id', function (request, response) {
     .param('phone', request.body.account.Phone, TYPES.NVarChar)
     .exec(response);
 });
-
+router.put('/edit/id')
 /* DELETE request, for delete */
 router.delete("/:id", function (request, response) {
   request
@@ -60,6 +60,6 @@ router.delete("/:id", function (request, response) {
     .exec(response);
 });
 
-router.put('/edit/id')
+
 
 module.exports = router;

@@ -23,12 +23,18 @@ router.post("/", (request, response) => {
 
     .exec(response);
 });
-router.get("/getTeamByLocation/:id",(request,response) =>{
-      request
-      .sql("exec GetTeamByLocation @locationId")
-      .param('locationId',request.params.id,TYPES.Int)
-      .into(response);
+router.get("/getTeamByLocation/:id", (request, response) => {
+  request
+    .sql("exec GetTeamByLocation @locationId")
+    .param('locationId', request.params.id, TYPES.Int)
+    .into(response);
 });
-module.exports = router;
 
- 
+
+router.put('/changeMemberToLeader', (request, response) => {
+  request.sql("exec ChangeLeaderToMember&MeToLiByAccountID(19/06)")
+    .into(response);
+});
+
+
+module.exports = router;
