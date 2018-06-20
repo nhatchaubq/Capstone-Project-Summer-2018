@@ -45,7 +45,7 @@
         <!-- <br/> -->
         <strong>Members</strong>
         <div  v-bind:key="account.Id" v-for="account in team.Accounts">
-          <div class="row" style="height:36px; margin-bottom: 3px" v-if="account.TeamRole!='Leader'">
+          <div class="row" style="height:24px; " v-if="account.TeamRole!='Leader'">
             <div class="col-8">
                 <span>-</span>
                 <router-link :to="`/account/${account.Id}`">
@@ -66,7 +66,7 @@
       <!-- <h2>test: {{team.Accounts[0].Id}}</h2> -->
   
   
-
+              <strong v-if="editMode">Add new members: </strong>
               <multi-select v-if="editMode" style="width: 100% !important"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
               <div class="col-12  ">
                 <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 1rem" v-on:click="addNew()">add new</button> 

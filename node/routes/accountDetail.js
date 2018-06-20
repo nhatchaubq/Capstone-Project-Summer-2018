@@ -6,4 +6,6 @@ router.get('/:id', (request, response) => {
         .param('accId', request.params.id, TYPES.Int)
         .into(response);
 });
+
+
 module.exports = router;
