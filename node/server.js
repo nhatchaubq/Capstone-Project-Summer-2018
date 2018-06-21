@@ -9,7 +9,9 @@ server.use(cors());
 var connection = {
     server: "localhost",
     userName: "sa",
-    password: "tien1005",
+
+    password: "cCS94@bcnq836894",
+
     port: "1433",
     options: {
         // instanceName : "SQLEXPRESS",
@@ -39,12 +41,14 @@ server.use('/api/Vendor', require('./routes/Vendor'));
 server.use('/api/work_order', require('./routes/work_order'));
 server.use('/api/location', require('./routes/location'));
 server.use('/api/role', require('./routes/accountRole'));
+server.use('/api/AllAccExceptThatTeam', require('./routes/AllAccExceptThatTeam'));
 server.use('/api/team', require('./routes/team'));
 server.use('/api/equipmentItem', require("./routes/equipmentItem"))
 server.use('/api/team_location', require('./routes/team_location'));
 server.use('/api/team/id', require('./routes/teamDetails'));
-server.use('/api/account/edit/id', require('./routes/account'));
-server.use('/api/account/delete/id', require('./routes/account'));
+// server.use('/api/account/edit/id', require('./routes/account'));
+// server.use('/api/account', require('./routes/account'));
+// server.use('/api/account/delete/id', require('./routes/'));
 
 
 // catch 404 and forward to error handler

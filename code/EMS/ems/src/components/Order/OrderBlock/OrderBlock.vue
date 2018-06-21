@@ -112,8 +112,8 @@ export default {
         font-size: 14px;
         width: 100%;
         display: flex;
-        align-content: center;
-        color: #9e9e9e;
+        /* align-content: center; */
+        color: #616161;
         margin-bottom: 10px;        
     }
 
@@ -132,7 +132,7 @@ export default {
         display: flex;
         align-content: center;
         font-size: 14px;        
-        color: #9e9e9e;        
+        color: #616161;        
     }
 
     .order-block-location i {
