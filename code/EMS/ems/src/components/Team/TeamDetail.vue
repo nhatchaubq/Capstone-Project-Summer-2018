@@ -1,9 +1,10 @@
 <template>
-  <div >
+  <div v-if="team">
     <router-link to="/team">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams</a>
     
     </router-link>
+    {{this.$route.params.id}}
     <div class="material-box" style="width: 50%">
       <div class="row">
         
@@ -22,15 +23,23 @@
   
         <strong style="color:var(--primary-color)">Leader</strong>
       <div >
-
-        <div  v-bind:key="account.Id" v-for="account in team.Accounts">
-          <div class="row " style="height:36px; margin-bottom: 3px" v-if="account.TeamRole=='Leader'">
+        <div class="row">
+           <model-select v-if="editMode" class="col-9" style="margin-right:1rem; "  :options="toLeaderOptions" v-model="selectedToLeader"  placeholder="Select a leader"></model-select>  
+            <button v-if="editMode" class="button btn-primary   " style="margin-top: 1rem; padding :-1rem" v-on:click="addNew()">add new</button> 
+         
+        </div>
+        
+        <div v-if="!editMode" v-bind:key="account.Id" v-for="account in team.Accounts" >
+          <div class="row " style="height:43.42px" v-if="account.TeamRole=='Leader'">
             <div class="col-8 ">
+
               <span>-</span>
             <router-link :to="`/account/${account.Id}`">
               {{account.Fullname ? account.Fullname :'N/A' }}
             </router-link>
+            
             </div>
+            
           <div class="col-4 ">
             <!-- <button v-if="editMode" class="button btn-danger " >Kick</button> -->
 
@@ -68,6 +77,7 @@
   
               <strong v-if="editMode">Add new members: </strong>
               <multi-select v-if="editMode" style="width: 100% !important"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
+              
               <div class="col-12  ">
                 <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 1rem" v-on:click="addNew()">add new</button> 
               </div>
@@ -147,11 +157,13 @@
 <script>
 import { sync } from "vuex-pathify";
 import VueBase64FileUpload from "vue-base64-file-upload";
-import { MultiSelect } from "vue-search-select";
+import { BasicSelect, MultiSelect, ModelSelect } from "vue-search-select";
 export default {
   components: {
     VueBase64FileUpload,
-    MultiSelect
+    MultiSelect,
+    BasicSelect,
+    ModelSelect
   },
   created() {
     let teamApiUrl = `http://localhost:3000/api/team/id/${
@@ -183,18 +195,56 @@ export default {
         this.memberOptions.push(option);
       });
     });
+    // let getMembersInTeamApiUrl = `http://localhost:3000/api/getMembersInTeam/${
+    //   this.$route.params.id
+    // }`;
+    // this.axios.get(getMembersInTeamApiUrl).then(res => {
+    //   let data = res.data;
+    //   data.forEach(element => {
+    //     let option = {
+    //       value: element.account.Id,
+    //       text: element.account.Fullname
+    //     };
+    //     this.toLeaderOptions.push(option);
+    //   });
+    // });
+    this.axios
+      .get(
+        `http://localhost:3000/api/team/id/getMembersInTeam/${
+          this.$route.params.id
+        }`
+      )
+      .then(response => {
+        let data = response.data;
+        data.forEach(element => {
+          let option = {
+            value: element.Id,
+            text: element.Fullname
+          };
+          this.toLeaderOptions.push(option);
+          console.log(this.toLeaderOptions.length);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
   },
 
   data() {
     return {
       team: null,
       memberOptions: [],
+      toLeaderOptions: [],
       selectedMember: {
         value: "",
         text: ""
       },
       selectedMemberList: [],
-      lastSelectItem: {}
+      lastSelectItem: {},
+      selectedToLeader: {
+        value: "",
+        text: ""
+      }
     };
   },
   computed: {
@@ -218,6 +268,9 @@ export default {
     onSelect(items, lastSelectItem) {
       this.selectedMemberList = items;
       this.lastSelectItem = lastSelectItem;
+    },
+    onSelect1(item) {
+      this.item = item;
     },
     addNew() {
       this.selectedMemberList.forEach(element => {

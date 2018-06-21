@@ -6,6 +6,12 @@ router.get('/:id', (request, response) => {
         .param('teamId', request.params.id, TYPES.Int)
         .into(response);
 });
+router.get("/getMembersInTeam/:id", (request, response) => {
+    request
+        .sql("exec [dbo].[GetAllMemberInteam] @id")
+        .param('id', request.params.id, TYPES.Int)
+        .into(response);
+});
 
 /* DELETE request, for delete */
 router.delete("/:id/:accountId", (request, response) => {
