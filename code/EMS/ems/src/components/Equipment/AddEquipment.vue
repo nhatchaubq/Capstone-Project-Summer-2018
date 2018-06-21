@@ -155,7 +155,7 @@ import VueBase64FileUpload from "vue-base64-file-upload";
 import { ModelSelect } from "vue-search-select";
 import Autocomplete from "./Autocomplete";
 export default {
-  props:['filterby'],
+  props: ["filterby"],
   components: {
     AddEquipment,
     VueBase64FileUpload,
@@ -247,7 +247,9 @@ export default {
 
   methods: {
     EquipSelected(equipment) {
-      console.log(`Customer Selected:\nid: ${ equipment.Dd}\nname: ${equipment.Name}`);
+      console.log(
+        `Customer Selected:\nid: ${equipment.Dd}\nname: ${equipment.Name}`
+      );
     },
     onChange(value) {
       // do something with the current value
@@ -339,20 +341,20 @@ export default {
       //   }
     },
     getRandomNumber() {
-      if (this.form.Category == '') {
-        alert('Please choose category');
-      }else{
+      if (this.form.Category == "") {
+        alert("Please choose category");
+      } else {
         this.randomNumbers = [];
         for (var i = 0; i < this.quantity; i++) {
           var number = "";
-          if(0 < this.form.Category && this.form.Category <10){
+          if (0 < this.form.Category && this.form.Category < 10) {
             number = "000" + this.form.Category;
-          }else if(10 <= this.form.Category && this.form.Category <100){
+          } else if (10 <= this.form.Category && this.form.Category < 100) {
             number = "00" + this.form.Category;
-          }else if(100 <= this.form.Category && this.form.Category <1000){
+          } else if (100 <= this.form.Category && this.form.Category < 1000) {
             number = "0" + this.form.Category;
-          }else {
-              number = this.form.Category;
+          } else {
+            number = this.form.Category;
           }
           number = number + Math.floor(Math.random() * 900000000 + 100000000);
           this.randomNumbers.push(number);
@@ -362,38 +364,34 @@ export default {
     },
     createNewEquipentItem() {
       alert(this.checked);
-        // this.axios
-        // .get("http://localhost:3000/api/equipment/" +
-        //     this.form.EquipmentName )
-        // .then(response => {
-        //    for(var i = 0; i < this.quantity; i ++){
-        //     let data = response.data;
-        //     this.axios
-        //     .post("http://localhost:3000/api/equipmentItem", {
-        //       equipmentID: data.Id,
-        //       serialNumber: this.randomNumbers[i],
-        //       warrantyDuration: this.form.Warranty,
-        //       price: this.form.Price,
-        //       statusId: 1,
-        //       description: "No description",
-        //       positionID: 1
-        //     })
-        //     .then(function(respone) {
-        //       alert('oke');
-        //     })
-        //     .catch(function(error) {
-        //       console.log(error);
-        //     });
-        //   }
-        // })
-        // .catch(function(error) {
-        //   console.log(error);
-        // });
-       
-
+      this.axios
+        .get("http://localhost:3000/api/equipment/" + this.form.EquipmentName)
+        .then(response => {
+          for (var i = 0; i < this.quantity; i++) {
+            let data = response.data;
+            this.axios
+              .post("http://localhost:3000/api/equipmentItem", {
+                equipmentID: data.Id,
+                serialNumber: this.randomNumbers[i],
+                warrantyDuration: this.form.Warranty,
+                price: this.form.Price,
+                statusId: 1,
+                description: "No description",
+                positionID: 1
+              })
+              .then(function(respone) {
+                alert("oke");
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     }
-  
-  
+
     // createBarcode(){
     //     var barcode =this.form.Category.id +"";
     //     alert(barcode);
@@ -402,7 +400,7 @@ export default {
     //         barcode = barcode + x;
     //     }
     //     return barcode;
-}
+  }
   // watch: {
   //   selectedEquipment: function() {
   //     this.axios
@@ -522,15 +520,15 @@ export default {
 .input-new-name {
   border: 1px solid black;
 }
- .form-content {
+.form-content {
   /* position: fixed;
   max-height: 100%;
   width: 85%;
   overflow-y: scroll; */
   margin-bottom: 2rem;
-} 
-.hr{
-   border-top: 0.5px solid #616161;
-   margin: 1rem 3rem;
+}
+.hr {
+  border-top: 0.5px solid #616161;
+  margin: 1rem 3rem;
 }
 </style>

@@ -125,7 +125,7 @@
                         <label class="file-label" style="width: 100% !important"> 
                         <span class="file-cta">
                             <!-- <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange"  /> -->
-                            <file-base64 :multiple="false" :done="getFile"></file-base64>
+                            <!-- <file-base64 :multiple="false" :done="getFile"></file-base64> -->
                             <span class="file-icon">
                                 <i class="fa fa-upload"></i>
                             </span>
@@ -173,304 +173,335 @@
 </template>
 
 <script>
-import Server from '@/config/config.js';
+import Server from "@/config/config.js";
 
-import moment from 'moment';
-import {ModelSelect} from 'vue-search-select';
+import moment from "moment";
+import { ModelSelect } from "vue-search-select";
 // import fileBase64 from 'vue-file-base64';
 
-export default {    
-    components: {
-        ModelSelect, 
-        // fileBase64
+export default {
+  components: {
+    ModelSelect
+    // fileBase64
+  },
+  data() {
+    return {
+      workOrderTitle: "",
+      workOrderDescription: "",
+      workOrderPriority: -1,
+      workOrderCategory: -1,
+      selectedEquipmentQuantity: 1,
+      selectedEquipmentFromDate: "",
+      selectedEquipmentToDate: "",
+      selectedEquipments: [],
+      selectedLocation: {
+        text: "",
+        value: ""
+      },
+      selectedTeam: {
+        text: "",
+        value: ""
+      },
+      selectedEquipment: {
+        text: "",
+        value: "",
+        image: "",
+        availableQuantity: 0
+      },
+      categories: [],
+      priorities: [],
+      equipmentOptions: [],
+      locationOptions: [],
+      teamOptions: []
+    };
+  },
+  created() {
+    this.axios.get(Server.WORKORDER_CATEGORIES_API_PATH).then(res => {
+      if (res.data) {
+        let data = res.data;
+        this.categories = data;
+        this.workOrderCategory = data[0].Id;
+      }
+    });
+    this.axios.get(Server.EQUIPMENT_API_PATH).then(res => {
+      if (res.data) {
+        let data = res.data;
+        data.forEach(element => {
+          let quantity = parseInt(element.Equipment.AvailableQuantity);
+          let option = {
+            text: `${element.Equipment.Name}, available: ${quantity} ${
+              quantity > 1 ? "units" : "unit"
+            }`,
+            value: element.Equipment.Id,
+            image: element.Equipment.Image,
+            availableQuantity: quantity
+          };
+          this.equipmentOptions.push(option);
+        });
+      }
+    });
+    this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(res => {
+      if (res.data) {
+        this.priorities = res.data;
+        this.workOrderPriority = this.priorities[0].Id;
+      }
+    });
+    this.axios.get(Server.LOCATION_API_PATH).then(res => {
+      if (res.data) {
+        let data = res.data;
+        data.forEach(location => {
+          let option = {
+            value: location.Id,
+            text: `${location.Name} - ${location.Address}`
+          };
+          this.locationOptions.push(option);
+        });
+      }
+    });
+    this.selectedEquipmentFromDate = this.getToday();
+    this.selectedEquipmentToDate = this.getToday();
+  },
+  methods: {
+    cancel() {
+      this.$router.push("/work_order");
     },
-    data() {
-        return {
-            workOrderTitle: '',
-            workOrderDescription: '',
-            workOrderPriority: -1,
-            workOrderCategory: -1,
-            selectedEquipmentQuantity: 1,
-            selectedEquipmentFromDate: '',
-            selectedEquipmentToDate: '',
-            selectedEquipments: [],
-            selectedLocation: {
-                text: '',
-                value: '',
-            },
-            selectedTeam: {
-                text: '',
-                value: '',
-            },
-            selectedEquipment: {
-                text: '',
-                value: '',
-                image: '',
-                availableQuantity: 0,
-            },
-            categories: [],
-            priorities: [],
-            equipmentOptions: [],
-            locationOptions: [],
-            teamOptions: [],
+    inputFileChange() {
+      this.files = this.$refs.fileInput.files;
+    },
+    getFilePath(file) {
+      return window.URL.createObjectURL(file);
+    },
+    addEquipment() {
+      if (
+        this.selectedEquipment.value &&
+        this.selectedEquipment.availableQuantity > 0
+      ) {
+        let index = this.selectedEquipments.findIndex(
+          equipment => equipment.id == this.selectedEquipment.value
+        );
+        if (index < 0) {
+          let equipment = {
+            id: this.selectedEquipment.value,
+            name: this.selectedEquipment.text,
+            quantity: parseInt(this.selectedEquipmentQuantity),
+            image: this.selectedEquipment.image,
+            availableQuantity: parseInt(
+              this.selectedEquipment.availableQuantity
+            ),
+            fromDate: this.selectedEquipmentFromDate,
+            toDate: this.selectedEquipmentToDate
+          };
+          this.selectedEquipments.push(equipment);
+        } else {
+          let currentQuantity = parseInt(
+            this.selectedEquipments[index].quantity
+          );
+          this.selectedEquipments[index].quantity =
+            currentQuantity + parseInt(this.selectedEquipmentQuantity);
         }
-    },
-    created() {
-        this.axios.get(Server.WORKORDER_CATEGORIES_API_PATH)
-            .then((res) => {
-                if (res.data) {
-                    let data = res.data;
-                    this.categories = data;
-                    this.workOrderCategory = data[0].Id;
-                }
-            });
-        this.axios.get(Server.EQUIPMENT_API_PATH)
-            .then((res) => {
-                if (res.data) {
-                    let data = res.data;
-                    data.forEach(element => {
-                        let quantity = parseInt(element.Equipment.AvailableQuantity);
-                        let option = {
-                            text: `${element.Equipment.Name}, available: ${quantity} ${quantity > 1 ? 'units' : 'unit'}`,
-                            value: element.Equipment.Id,
-                            image: element.Equipment.Image,
-                            availableQuantity: quantity,
-                        };
-                        this.equipmentOptions.push(option);
-                    });
-                }
-            });
-        this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH)
-            .then((res) => {
-                if (res.data) {
-                    this.priorities = res.data;
-                    this.workOrderPriority = this.priorities[0].Id;
-                }
-            });
-        this.axios.get(Server.LOCATION_API_PATH)
-            .then((res) => {
-                if (res.data) {
-                    let data = res.data;
-                    data.forEach(location => {
-                        let option = {
-                            value: location.Id,
-                            text: `${location.Name} - ${location.Address}`,
-                        };
-                        this.locationOptions.push(option);
-                    });
-                }
-            });
+
+        this.selectedEquipment = {
+          text: "",
+          value: "",
+          image: "",
+          availableQuantity: 0
+        };
+        this.selectedEquipmentQuantity = 1;
         this.selectedEquipmentFromDate = this.getToday();
         this.selectedEquipmentToDate = this.getToday();
+      }
     },
-    methods: {
-        cancel() {
-            this.$router.push('/work_order');
-        },
-        inputFileChange() {
-            this.files = this.$refs.fileInput.files;
-        },
-        getFilePath(file) {
-            return window.URL.createObjectURL(file);
-        },
-        addEquipment() {
-            if (this.selectedEquipment.value && this.selectedEquipment.availableQuantity > 0) {
-                let index = this.selectedEquipments.findIndex(equipment => equipment.id == this.selectedEquipment.value);
-                if (index < 0) {
-                    let equipment = {
-                        id: this.selectedEquipment.value,
-                        name: this.selectedEquipment.text,
-                        quantity: parseInt(this.selectedEquipmentQuantity),
-                        image: this.selectedEquipment.image,
-                        availableQuantity: parseInt(this.selectedEquipment.availableQuantity),
-                        fromDate: this.selectedEquipmentFromDate,
-                        toDate: this.selectedEquipmentToDate,
-                    };
-                    this.selectedEquipments.push(equipment);
-                } else {
-                    let currentQuantity = parseInt(this.selectedEquipments[index].quantity);
-                    this.selectedEquipments[index].quantity = currentQuantity + parseInt(this.selectedEquipmentQuantity);
-                }
-    
-                this.selectedEquipment = { text: '', value: '', image: '', availableQuantity: 0 };
-                this.selectedEquipmentQuantity = 1;
-                this.selectedEquipmentFromDate = this.getToday();
-                this.selectedEquipmentToDate = this.getToday();
-            }
-        },
-        removeEquipment(equipment) {
-            this.selectedEquipments = this.selectedEquipments.filter(e => e.id != equipment.id);
-        },
-        getToday() {
-            return moment().format('YYYY-MM-DD');
-        },
-        createWorkOrder() {
-            let context = this;
-            let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${this.selectedLocation.value}/${this.selectedTeam.value}`;
-            this.axios.get(teamLocationApi)
-                .then(function(res) {
-                    if (res.data.Id) {
-                        let result = res.data.Id;
-                        let workOrderApi = Server.WORKORDER_API_PATH;
-                        let authUser = JSON.parse(window.localStorage.getItem('user'));
+    removeEquipment(equipment) {
+      this.selectedEquipments = this.selectedEquipments.filter(
+        e => e.id != equipment.id
+      );
+    },
+    getToday() {
+      return moment().format("YYYY-MM-DD");
+    },
+    createWorkOrder() {
+      let context = this;
+      let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${
+        this.selectedLocation.value
+      }/${this.selectedTeam.value}`;
+      this.axios
+        .get(teamLocationApi)
+        .then(function(res) {
+          if (res.data.Id) {
+            let result = res.data.Id;
+            let workOrderApi = Server.WORKORDER_API_PATH;
+            let authUser = JSON.parse(window.localStorage.getItem("user"));
 
-                        context.axios.post(workOrderApi, {
-                            name: context.workOrderTitle,
-                            description: context.workOrderDescription,
-                            requestUserId: authUser.Id,
-                            createDate: new Date(),
-                            priorityId: context.workOrderPriority,
-                            statusId: 1,
-                            categoryId: context.workOrderCategory,
-                            teamLocationId: result,
-                        }).then(function(res) {
-                            if (res.data.NewWorkOrderId) {
-                                let newWorkOrderId = res.data.NewWorkOrderId;
-                                context.selectedEquipments.forEach(equipment => {
-                                    for (var i = 0; i < equipment.quantity; i++) {
-                                        // alert('loopin');
-                                        context.axios.post(Server.WORKORDER_DETAIL_API_PATH, {
-                                            workOrderId: newWorkOrderId, 
-                                            equipmentItemId: equipment.id, 
-                                            startDate: equipment.fromDate, 
-                                            dueDate: equipment.toDate, 
-                                            maintainceCost: null, 
-                                            description: null
-                                        })
-                                            .then(function(res) {
-                                                if ((i + 1) == equipment.quantity) {
-                                                    context.$router.push('/work_order');
-                                                }
-                                            }).catch((error) => {
-                                                alert(error)
-                                            });
-                                    }
-                                });
-                            } else {
-                                alert('No new work order id returned')
-                            }
-                        }).catch((error) => {
-                            alert("Create work order detail: Cannot create work order due to some errors happened in the server. Please contact the system administrator to investigate this situation!" + error)
+            context.axios
+              .post(workOrderApi, {
+                name: context.workOrderTitle,
+                description: context.workOrderDescription,
+                requestUserId: authUser.Id,
+                createDate: new Date(),
+                priorityId: context.workOrderPriority,
+                statusId: 1,
+                categoryId: context.workOrderCategory,
+                teamLocationId: result
+              })
+              .then(function(res) {
+                if (res.data.NewWorkOrderId) {
+                  let newWorkOrderId = res.data.NewWorkOrderId;
+                  context.selectedEquipments.forEach(equipment => {
+                    for (var i = 0; i < equipment.quantity; i++) {
+                      // alert('loopin');
+                      context.axios
+                        .post(Server.WORKORDER_DETAIL_API_PATH, {
+                          workOrderId: newWorkOrderId,
+                          equipmentItemId: equipment.id,
+                          startDate: equipment.fromDate,
+                          dueDate: equipment.toDate,
+                          maintainceCost: null,
+                          description: null
+                        })
+                        .then(function(res) {
+                          if (i + 1 == equipment.quantity) {
+                            context.$router.push("/work_order");
+                          }
+                        })
+                        .catch(error => {
+                          alert(error);
                         });
-
                     }
-                }).catch((error) => {
-                        alert("Create work order: Cannot create work order due to some errors happened in the server. Please contact the system administrator to investigate this situation!" + error)
-                });
-        },
-        getFile(file) {
-            console.log(file);
-        }
+                  });
+                } else {
+                  alert("No new work order id returned");
+                }
+              })
+              .catch(error => {
+                alert(
+                  "Create work order detail: Cannot create work order due to some errors happened in the server. Please contact the system administrator to investigate this situation!" +
+                    error
+                );
+              });
+          }
+        })
+        .catch(error => {
+          alert(
+            "Create work order: Cannot create work order due to some errors happened in the server. Please contact the system administrator to investigate this situation!" +
+              error
+          );
+        });
     },
-    watch: {
-        'selectedLocation': function() {
-            this.teamOptions = [];
-            this.selectedTeam = {
-                text: '',
-                value: '',
-            };
-            if (this.selectedLocation.value) {
-                // alert('in 2')
-                let url = `${Server.LOCATION_API_PATH}/${this.selectedLocation.value}/team`;
-                this.axios.get(url)
-                    .then((res) => {
-                        if (res.data) {
-                            let data = res.data;
-                            data.forEach(element => {
-                                let option = {
-                                    value: element.Team.Id,
-                                    text: element.Team.Name,
-                                };
-                                this.teamOptions.push(option);
-                            });
-                        }
-                    });
-            }
-        }
+    getFile(file) {
+      console.log(file);
     }
-}
+  },
+  watch: {
+    selectedLocation: function() {
+      this.teamOptions = [];
+      this.selectedTeam = {
+        text: "",
+        value: ""
+      };
+      if (this.selectedLocation.value) {
+        // alert('in 2')
+        let url = `${Server.LOCATION_API_PATH}/${
+          this.selectedLocation.value
+        }/team`;
+        this.axios.get(url).then(res => {
+          if (res.data) {
+            let data = res.data;
+            data.forEach(element => {
+              let option = {
+                value: element.Team.Id,
+                text: element.Team.Name
+              };
+              this.teamOptions.push(option);
+            });
+          }
+        });
+      }
+    }
+  }
+};
 </script>
 
 <style scoped>
-    .form {
-        /* background-color: white; */
-        padding: 0 !important;
-    }
-    .form-title {
-        display: grid;
-        grid-template-columns: 25% 40% 35%;
-        border-bottom: 1px solid #e0e0e0;
-        padding: 1rem 2rem;
-    }
+.form {
+  /* background-color: white; */
+  padding: 0 !important;
+}
+.form-title {
+  display: grid;
+  grid-template-columns: 25% 40% 35%;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem 2rem;
+}
 
-    .form-title-start{
-        position: relative;
-        top: 10px;
-        font-weight: bold;
-        font-size: 20px;
-        color: #616161;
-    }
+.form-title-start {
+  position: relative;
+  top: 10px;
+  font-weight: bold;
+  font-size: 20px;
+  color: #616161;
+}
 
-    .form-title-end {
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-        /* align-content: center; */
-    }
+.form-title-end {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  /* align-content: center; */
+}
 
-    .form-title-end button {
-        /* font-weight: bold;
+.form-title-end button {
+  /* font-weight: bold;
         color: white;
         border: 1px solid transparent;
         border-radius: 10px;
         padding: .6rem 1.5rem; */
-    }
+}
 
-    #btn-cancel {
-        background-color: #bdbdbd;
-        color: white;
-        margin-right: .6rem
-    }
+#btn-cancel {
+  background-color: #bdbdbd;
+  color: white;
+  margin-right: 0.6rem;
+}
 
-    #btn-add {
-        background-color: var(--primary-color);
-        color: white;
-    }
+#btn-add {
+  background-color: var(--primary-color);
+  color: white;
+}
 
-    .form-content {
-        font-size: .9rem;
-        position: fixed;
-        max-height: 80%;
-        width: 100%;
-        overflow-y: scroll;
-        /* display: flex;
+.form-content {
+  font-size: 0.9rem;
+  position: fixed;
+  max-height: 80%;
+  width: 100%;
+  overflow-y: scroll;
+  /* display: flex;
         flex-direction: column;  */
-    }
+}
 
-    .form-field {
-        /* margin-bottom: 5px; */
-        padding: 1rem 2rem;
-    }
+.form-field {
+  /* margin-bottom: 5px; */
+  padding: 1rem 2rem;
+}
 
-    .form-field input[type="text"], .form-field textarea {
-        width: 40%;
-    }
+.form-field input[type="text"],
+.form-field textarea {
+  width: 40%;
+}
 
-    .form-field textarea {
-        min-height: 5rem;
-        max-height: 10rem;
-    }
+.form-field textarea {
+  min-height: 5rem;
+  max-height: 10rem;
+}
 
-    .form-field-title {
-        margin-bottom: .5rem;
-        font-weight: 500;
-    }
+.form-field-title {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
 
-    .btn-plus {
-        color: black;
-    }
+.btn-plus {
+  color: black;
+}
 
-    .box-danger {
-        border: 1px solid var(--danger-color) !important;
-    }
+.box-danger {
+  border: 1px solid var(--danger-color) !important;
+}
 </style>

@@ -6,16 +6,29 @@ var TYPES = require("tedious").TYPES;
 //         .into(response);
 // });
 
+// router.get('/:id', (req, res) => {
+//     req.sql('exec GetEquipmentDetailById @id')
+//         .param('id', req.params.id, TYPES.Int)
+//         .into(res);
+// });
+/*Count Quality Equipment Item of one Equipment*/
+// router.get('/:id', (req, res) => {
+//     req.sql('exec CountQualityItem @id')
+//         .param('id', req.params.id, TYPES.Int)
+//         .into(res);
+// });
+
+/* Get all Item of an equipment by EquipmentID */
 router.get('/:id', (req, res) => {
-    req.sql('exec GetEquipmentDetailById @id')
+    req.sql('exec GetAllItemOfAnEquipment @id')
         .param('id', req.params.id, TYPES.Int)
         .into(res);
 });
 
 /* POST request, for insert */
 router.post('/', (request, response) => {
-    request.sql("INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, PositionID)" +
-            " VALUES (@equipmentID, @serialNumber, @warrantyDuration, 0, @price, GETDATE(), @statusId, @description, @positionID)")
+    request.sql("INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
+            " VALUES (@equipmentID, @serialNumber, @warrantyDuration, 0, @price, GETDATE(), @statusId, @description, @tileID)")
         .param('equipmentID', request.body.equipmentID, TYPES.Int)
         .param('serialNumber', request.body.serialNumber, TYPES.NVarChar)
         .param('warrantyDuration', request.body.warrantyDuration, TYPES.Int)
@@ -23,7 +36,7 @@ router.post('/', (request, response) => {
         //.param('importDate', request.body.importDate, TYPES.DateTime)
         .param('statusId', request.body.statusId, TYPES.Int)
         .param('description', request.body.description, TYPES.NVarChar)
-        .param('positionID', request.body.positionID, TYPES.Int)
+        .param('tileID', request.body.tileID, TYPES.Int)
         .exec(response);
 });
 

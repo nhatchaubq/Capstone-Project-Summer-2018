@@ -5,6 +5,11 @@ router.get('/', (request, response) => {
     request.sql("exec GetEquipments")
         .into(response);
 });
+router.get('/:id', (request, response) => {
+    request.sql("exec GetEquipmentByID @id")
+        .param("id", request.params.id, TYPES.Int)
+        .into(response);
+});
 /* GET request, get EquipmentByName */
 router.get("/:equipmentName", function (request, response) {
     request

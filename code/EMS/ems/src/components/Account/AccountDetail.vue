@@ -22,7 +22,6 @@
   </span> -->
   <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
-  
   </div>  
  <!-- <h2 class="field is-horizontal" style="margin:0px">
 
