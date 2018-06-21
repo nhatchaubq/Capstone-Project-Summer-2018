@@ -12,6 +12,11 @@ router.get("/", (request, response) => {
 
     .into(response);
 });
+router.get("/getAllTeam",(request,response) =>{
+  request
+  .sql("select * from [Team] for json path")
+  .into(response);
+})
 router.post("/", (request, response) => {
   request
     .sql(
