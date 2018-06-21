@@ -22,14 +22,16 @@
 
   <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
-  
+
+  </div>  
+
   </div>
 <div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
     <div class="col-3" style="margin-top:0.5rem">Password: </div>
     <!-- <div class="col-7"> {{account.Password ? account.Password: 'N/A' }}</div> -->
     <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
     <input v-else v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input">
-</div>
+
  <!-- <h2 class="field is-horizontal" style="margin:0px">
 
 <div style="padding-top:1rem; ">
