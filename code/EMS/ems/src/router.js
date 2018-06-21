@@ -11,6 +11,7 @@ import TeamComponent from "./components/Team/Team.vue";
 import AddTeamComponent from "./components/Team/AddTeam.vue";
 import TeamDetailComponent from "./components/Team/TeamDetail.vue";
 import LocationComponent from "./components/Location/Location.vue";
+
 // import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from "./components/Equipment/AddEquipment.vue";
 import AccountComponent from "./components/Account/Account.vue";
@@ -21,6 +22,8 @@ import ProjectComponent from "./components/Project/Project.vue";
 import CreateLocation from "./components/Location/CreateLocation.vue";
 import EditLocation from "./components/Location/EditLocation.vue";
 Vue.use(Router);
+
+
 
 import store from "./store";
 import menu from "./models/menu";
@@ -123,7 +126,6 @@ let router = new Router({
       component: TeamComponent,
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Teams);
-
         next();
       },
       meta: {

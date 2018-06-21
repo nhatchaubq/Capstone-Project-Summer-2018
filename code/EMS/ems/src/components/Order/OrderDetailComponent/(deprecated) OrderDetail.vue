@@ -51,7 +51,7 @@
                                 </div>
                                 <v-card v-for="equipmentItem in equipment.EquipmentItems" :key="equipmentItem.Id">
                                     <v-card-text style="font-size: .9rem">
-                                        Serial #: <a>{{ equipmentItem.SerialNumber }}</a> | 
+                                        Serial #: <a v-on:click="showDetailPopup(equipmentItem.Id)">{{ equipmentItem.SerialNumber }}</a> | 
                                         <a href="">View position</a>
                                     </v-card-text>
                                 </v-card>
@@ -65,17 +65,25 @@
                 </div>
             </div>
         </div>
+        <vodal class="no-padding" height="500" :show="equipmentItem != null" @hide="equipmentItem = null" animation="slideUp">
+          <!-- <div>alo</div> -->
+          <equipment-detail-popup :equipment="equipmentItem" class="" v-show="equipmentItem != null"></equipment-detail-popup>
+        </vodal>
     </div>
 </template>
 
 <script>
 import Server from '@/config/config.js';
 import StepProgress from '@/components/StepProgress/StepProgress.vue';
+import "vodal/common.css";
+import "vodal/slide-up.css";
+import EquipmentDetailPopup from '@/components/Equipment/EquipmentDetailPopup';
+import Vodal from 'vodal';
 
 export default {
     name: 'order-detail',
     components: {
-        StepProgress,
+        StepProgress, EquipmentDetailPopup, Vodal
     },
     props: {
         order: null,
@@ -85,12 +93,22 @@ export default {
         return {
             equipments: [],
             editMode: false,
+            equipmentItem: null,
         }
     },
     methods: {
         priorityBadgeColor(order) {
             let tagColor = order.PriorityColor;
             return `border: 1px solid ${tagColor}; background-color: ${tagColor}`;
+        },
+        showDetailPopup(id) {
+            let url = `${Server.EQUIPMENTITEM_API_PATH}/${id}`;
+            this.axios.get(url)
+                .then((res) => {
+                    if(res.data) {
+                        this.equipmentItem = res.data;
+                    }
+                })
         }
     },
     watch: {

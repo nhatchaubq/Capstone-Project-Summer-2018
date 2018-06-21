@@ -21,7 +21,7 @@
         <!-- <div v-else> -->
             <div>
 <div >
-        <table class="table">
+        <table class="mytable">
              <thead>
                 <tr>
                     <th><strong>ID</strong></th>

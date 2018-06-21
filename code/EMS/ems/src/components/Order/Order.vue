@@ -2,31 +2,45 @@
     <div>        
         <div class="order-content">
             <!-- <div class="orders-view">                 -->
-                <div class="filter">
-                    <div style="width: 100%; position: relative; top: .4rem; margin-right: 1rem;">
-                        Add filter:
-                    </div>
-                    <div style="width: 100%">
-                        <div class="select">
-                            <select v-model="selectedFilter">
-                                <option disabled :value=null>Choose a filter</option>
-                                <optgroup label="Status">
-                                    <option :disabled="filterValues.includes(status)" :key="status.id" v-for="status in options.status" :value="status">{{ status.name }}</option>
-                                </optgroup>
-                                <optgroup label="Priorities">
-                                    <option :disabled="filterValues.includes(priority)" :key="priority.id" v-for="priority in options.priorities" :value="priority">{{ priority.name }}</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                    </div>
-                    <div style="width: 100%"></div>
-                    <div class="filters-bar">
-                        <span class="tag is-light" style="user-select: none; margin-right: .3rem; cursor: pointer;" :key="filter.id" v-on:click="removeFilter(filter)" v-for="filter in filterValues">
-                            {{ filter.type == optionTypes.STATUS ? 'Status: ' : 'Priority: ' }} {{ filter.name }}
-                            <i class="fa fa-times-circle"></i>
-                        </span>
-                    </div>
-                </div>
+                <div class="">
+                    <!-- <div style="width: 100%;">
+                        Filter:
+                    </div> -->
+                  <div class="filter" style="width: 100%">
+                      <!-- <div class="select">
+                          <select v-model="selectedFilter">
+                              <option disabled :value=null>Choose a filter</option>
+                              <optgroup label="Status">
+                                  <option :disabled="filterValues.includes(status)" :key="status.id" v-for="status in options.status" :value="status">{{ status.name }}</option>
+                              </optgroup>
+                              <optgroup label="Priorities">
+                                  <option :disabled="filterValues.includes(priority)" :key="priority.id" v-for="priority in options.priorities" :value="priority">{{ priority.name }}</option>
+                              </optgroup>
+                          </select>
+                      </div> -->
+                      <div style="user-select: none">
+                          Priority:
+                          <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: 1rem;">
+                              <input type="checkbox" v-on:change="addFilter(priority, $event)">
+                              {{ priority.name }}
+                          </label>
+                      </div>
+                      <div style="user-select: none">
+                          Status:
+                          <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
+                              <input type="checkbox" v-on:change="addFilter(status, $event)">
+                              {{ status.name }}
+                          </label>
+                      </div>
+                  </div>
+                  <div style="width: 100%"></div>
+                      <!-- <div class="filters-bar">
+                          <span class="tag is-light" style="user-select: none; margin-right: .3rem; cursor: pointer;" :key="filter.id" v-on:click="removeFilter(filter)" v-for="filter in filterValues">
+                              {{ filter.type == optionTypes.STATUS ? 'Status: ' : 'Priority: ' }} {{ filter.name }}
+                              <i class="fa fa-times-circle"></i>
+                          </span>
+                      </div> -->
+                  </div>
                 <div v-show="searchMode" style="display: flex; justify-content: flex-end; align-content: center;">
                     <span><a v-on:click="clearSearch()">Clear search result</a></span>  
                 </div>             
@@ -38,40 +52,146 @@
                     There is no orders to display.
                 </div>
                 <div v-else>
-                    <order-block :key="order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
+                    <order-block :key="'order' + order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
                 </div>
             </div>
         </div>
         <div id="order-detail-view">
-            <order-detail class="order-detail" :order="selectedOrder" :statusList="options.status"></order-detail>
+            <!-- <order-detail class="order-detail" :order="selectedOrder" :statusList="options.status"></order-detail> -->
+            <div v-if="selectedOrder != null" class="order-detail material-box material-shadow">
+              <div class="detail">
+                  <div class="detail-header">
+                      <div>
+                          <span :style="`background-color: ${selectedOrder.PriorityColor}`" class="tag" style="position: relative; top: -.3rem; color: white">
+                          {{ selectedOrder.Priority }}
+                          </span>
+                          <span class="detail-title">
+                              {{ selectedOrder.Name }}
+                          </span>
+                      </div>
+                      <div style="display: grid; grid-template-rows: auto auto; grid-row-gap: 1rem; text-align: right; user-select: none;" v-show="authUser.RoleID == 4">
+                            <div>
+                                <a style="position: relative; top: .8rem;" v-on:click="editMode = !editMode">
+                                    <i class="fa" :class="{'fa-pencil-square-o': !editMode, 'fa-check-circle-o': editMode}" style=" font-size: 1rem; margin-right: 2px"></i>
+                                    {{ editMode ? 'Done' : 'Edit' }}
+                                </a>
+                            </div>
+                            <div v-if="selectedOrder.StatusID < 3 && authUser.Id == selectedOrder.RequestUserId">
+                                <a v-on:click="showCancelDialog = true">Cancel this order</a>
+                            </div>
+                      </div>
+                  </div>
+                  <div style="width: 100%">
+                      <div class="detail-contents" style="margin-top: 1rem;">
+                          <step-progress :workOrderStatusId="selectedOrder.StatusID" :statusList="options.status"></step-progress>
+                          <div v-if="editMode" style="margin-top: 1rem;">
+                              <span class="detail-label" style="position: relative; top: .4rem; margin-right: 1rem;">Change status to:</span>
+                              <div class="select">
+                                  <select>
+                                      <option :disabled="status.id <= selectedOrder.StatusID" :selected="status.id == (selectedOrder.StatusID)" :key="'editStatus' + status.id" value="" v-for="status in options.status">
+                                          {{ status.name }}
+                                      </option>
+                                  </select>
+                              </div>
+                          </div>
+                          <div v-if="authUser.RoleID == 2" style="margin-top: 1rem;">
+                              <!-- <span class="detail-label" style="position: relative; top: .4rem; margin-right: 1rem;">Change status to:</span> -->
+                              <!-- <div class="select">
+                                  <select>
+                                      <option :disabled="status.id <= selectedOrder.StatusID" :selected="status.id == (selectedOrder.StatusID)" :key="'editStatus' + status.id" value="" v-for="status in options.status">
+                                          {{ status.name }}
+                                      </option>
+                                  </select>
+                              </div> -->
+                                <button class="button" style="color: white; background-color: var(--primary-color); margin-right: .5rem">Approve</button>
+                                <button class="button" style="color: white; background-color: #B0BEC5;">Reject</button>
+                          </div>
+                      </div>
+                      <div class="detail-contents">
+                          <span class="detail-label">Equipments:</span>
+                          <v-flex>
+                              <v-expansion-panel popout>
+                                  <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
+                                      <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
+                                          <div style="display: flex">
+                                              <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
+                                          </div>
+                                          <div style="display: grid; grid-template-rows: auto auto;">
+                                              <div>
+                                                  {{ equipment.Name }}
+                                              </div>                                            
+                                              <div style="font-size: .9rem">
+                                                  Quantity: {{ equipment.EquipmentItems.length }}
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <v-card v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
+                                          <v-card-text style="font-size: .9rem">
+                                              Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a> | 
+                                              <a href="">View position</a>
+                                          </v-card-text>
+                                      </v-card>
+                                  </v-expansion-panel-content>
+                              </v-expansion-panel>
+                          </v-flex>
+                      </div>
+                      <div class="detail-contents">
+                          <span class="detail-label">Location: {{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
+                          <img src="http://images.indianexpress.com/2016/11/hazaribagh-759.jpg" />
+                      </div>
+                  </div>
+              </div>            
+          </div>
         </div>
         <router-link to="/work_order/create" tag="button" id="btn-add-work-order" class="button is-primary material-shadow-animate">Add Work Order</router-link>
+      <vodal height="500" :show="equipmentItem != null" @hide="equipmentItem = null" animation="slideUp">
+        <!-- <div>alo</div> -->
+        <equipment-detail-popup :equipment="equipmentItem" class=""></equipment-detail-popup>
+      </vodal>
+      <vodal :show="showCancelDialog" :height="170" @hide="showCancelDialog = false" animation="slideUp" :closeButton="false">
+          <div v-if="selectedOrder">
+              <div class="my-dialog">
+                <div class="my-dialog-title">
+                    Confirm
+                </div>
+                <div class="my-dialog-content">
+                    <span>Are you sure to cancel this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
+                    <button class="button vodal-cancel-btn" @click="showCancelDialog = false">No</button>
+                    <button class="button btn-primary vodal-confirm-btn" @click="showCancelDialog = false">Yes</button>
+                </div>
+              </div>
+          </div>
+      </vodal>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
+// import Vue from "vue";
 import { sync } from "vuex-pathify";
 import Server from "@/config/config.js";
 import OrderBlock from "./OrderBlock/OrderBlock";
-import OrderDetail from "./OrderDetailComponent/OrderDetail";
+import StepProgress from '@/components/StepProgress/StepProgress.vue';
+// import OrderDetail from "./OrderDetailComponent/OrderDetail";
+import "vodal/common.css";
+import "vodal/slide-up.css";
+import EquipmentDetailPopup from '@/components/Equipment/EquipmentDetailPopup';
+import Vodal from 'vodal';
 
 export default {
   components: {
-    OrderDetail,
-    OrderBlock
+    // OrderDetail,
+    OrderBlock,
+    Vodal,
+    EquipmentDetailPopup,
+    StepProgress
   },
   created() {
     // this.sortOrdersByDate(this.orders);
     // alert(this.$store.state.workOrderPage.orders.length);
-    if (this.$store.state.workOrderPage.orders.length == 0) {
-      this.axios.get(Server.WORKORDER_API_PATH).then(response => {
-        let data = response.data.WorkOrders;
-        this.$store.state.workOrderPage.orders = data;
-        this.workOrders = data;
-      });
+    if (this.$store.state.workOrderPage.searchValues.length != 0) {
+        this.workOrders = this.$store.state.workOrderPage.searchValues;
     } else {
-      this.workOrders = this.$store.state.workOrderPage.orders;
+      this.getWorkOrders();
     }
     this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
       let data = response.data;
@@ -98,35 +218,63 @@ export default {
   },
   data() {
     return {
-      tempValues: null, // to hold the original orders when apply filters
-      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
-      selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
-      selectedFilter: null, // to hold the selected value when change in <select></select>
-      searchMode: false,
-      options: {
-        priorities: [],
-        status: []
-      },
-      filterValues: [],
-      filterOptionsValues: {
-        priorities: [],
-        status: []
-      },
-      optionTypes: {
-        STATUS: 0,
-        PRIORITY: 1
-      }
+        tempValues: null, // to hold the original orders when apply filters
+        workOrders: [], // orders data to display in orderblocks <order-block></order-block>
+        selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
+        equipments: [], // to hold equipments in the selected work order
+        editMode: false, // edit work order detail
+        equipmentItem: null, // when select an item in the list of equipment of selected order
+        selectedFilter: null, // to hold the selected value when change in <select></select>
+        searchMode: false, // flag to display the "Clear search result"
+        options: { 
+            priorities: [],
+            status: []
+        },
+        // filterValues: [],
+        filterOptionsValues: {
+            priorities: [],
+            status: []
+        },
+        optionTypes: {
+            STATUS: 0,
+            PRIORITY: 1
+        },
+        showCancelDialog: false,
     };
   },
   computed: {
-    searchValues: sync("workOrderPage.searchValues")
+    searchValues: sync("workOrderPage.searchValues"),
+    authUser() {
+        return JSON.parse(window.localStorage.getItem('user'));
+    },
   },
   methods: {
+    getWorkOrders() {
+        this.axios.get(Server.WORKORDER_API_PATH).then(response => {
+            let data = response.data.WorkOrders;
+            this.$store.state.workOrderPage.orders = data;
+            this.workOrders = data;
+        });
+    },
     setSelectedOrder(order) {
       if (this.selectedOrder == order) {
         this.selectedOrder = null;
       } else {
         this.selectedOrder = order;
+        // get equipments in the selected work order - start
+        this.equipments = [];
+        let url = `${Server.WORKORDER_API_PATH}/${this.selectedOrder.Id}/equipments`;
+        this.axios.get(url)
+            .then((res) => {
+                let data = res.data;
+                data.forEach(equipment => {
+                    this.equipments.push(equipment);
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+        // get equipments in the selected work order - end
       }
     },
     // when click on an orderblock, add 'is-active-block' class to it
@@ -140,43 +288,40 @@ export default {
       // the lamda below will iterate the filterValues to find if any elements in it match the condition, then return the result array.
       // in this case it will find if any elements in filterValues match the filter we provided.
       // it is the same as we make a for loop then find the needed elements by using if, then return it as an array. all of those steps in one line of code if we use lamda.
-      this.filterValues = this.filterValues.filter(value => value != filter);
-      switch (filter.type) {
-        case this.optionTypes.STATUS: {
-          this.filterOptionsValues.status.pop(filter);
-          break;
-        }
-        case this.optionTypes.PRIORITY: {
-          this.filterOptionsValues.priorities.pop(filter);
-          break;
-        }
+      // this.filterValues = this.filterValues.filter(value => value != filter);
+      switch(filter.type) {
+          case this.optionTypes.STATUS: {
+              this.filterOptionsValues.status = this.filterOptionsValues.status.filter(status => filter.id != status.id);
+              break;
+          }
+          case this.optionTypes.PRIORITY: {
+              this.filterOptionsValues.priorities = this.filterOptionsValues.priorities.filter(priority => filter.id != priority.id);
+              break;
+          }
       }
       this.filterOrders();
-      if (this.filterValues.length === 0) {
+      if (this.filterOptionsValues.status.length == 0 && this.filterOptionsValues.priorities.length == 0) {
         this.selectedFilter = null;
         this.workOrders = this.tempValues;
       }
     },
     filterOrders() {
+      if (this.tempValues == null) {
+        this.tempValues = this.workOrders;
+      }
       this.workOrders = []; // reset orders before applying new filters
       this.selectedOrder = null;
       if (this.filterOptionsValues.status.length > 0) {
         this.filterOptionsValues.status.forEach(status => {
-          this.workOrders = this.workOrders.concat(
-            this.tempValues.filter(
-              order => order.WorkOrderStatus == status.name
-            )
-          );
+          this.workOrders = this.workOrders.concat(this.tempValues.filter(order => order.WorkOrderStatus == status.name));
         });
       } else {
-        this.workOrders = this.tempValues;
+          this.workOrders = this.tempValues;
       }
       if (this.filterOptionsValues.priorities.length > 0) {
         var tempValues = [];
         this.filterOptionsValues.priorities.forEach(priority => {
-          tempValues = tempValues.concat(
-            this.workOrders.filter(order => order.Priority == priority.name)
-          );
+          tempValues = tempValues.concat(this.workOrders.filter(order => order.Priority == priority.name));
         });
         this.workOrders = tempValues;
       }
@@ -187,15 +332,32 @@ export default {
       // }
     },
     sortOrdersByDate(orders) {
-      return orders.sort((order1, order2) => {
-        var date1 = parseInt(new Date(order1.CreateDate).getTime());
-        var date2 = parseInt(new Date(order2.CreateDate).getTime());
-        // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
-        var result = date2 - date1;
-        return result > 0
-          ? 1
-          : result < 0 ? -1 : order2.PriorityID - order1.PriorityID;
-      });
+        return orders.sort((order1, order2) => {
+            var date1 = parseInt(new Date(order1.CreateDate).getTime());
+            var date2 = parseInt(new Date(order2.CreateDate).getTime());
+            // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
+            var result = date2 - date1;
+            return (result > 0) ? 1 : (result < 0) ? -1 : (order2.PriorityID - order1.PriorityID);
+        });
+    },
+    addFilter(filter, event) {
+      if (event.target.checked) {
+        // this.filterValues.push(this.selectedFilter);
+        switch (filter.type) {
+          case this.optionTypes.STATUS: {
+            this.filterOptionsValues.status.push(filter);
+            break;
+          }
+          case this.optionTypes.PRIORITY: {
+            this.filterOptionsValues.priorities.push(filter);
+            break;
+          }
+        }
+        // tempValues is null means that no filters yet.                                                                                                                                                                                                                                    
+        this.filterOrders();
+      } else {
+        this.removeFilter(filter);
+      }
     },
     reset() {
       this.filterValues = [];
@@ -206,40 +368,52 @@ export default {
     clearSearch() {
       this.$store.state.searchValue = "";
       this.$store.state.workOrderPage.searchValues = [];
+    },
+    showDetailPopup(equipmentItemId) {
+        let url = `${Server.EQUIPMENTITEM_API_PATH}/${equipmentItemId}`;
+        this.axios.get(url)
+            .then((res) => {
+                if(res.data) {
+                    this.equipmentItem = res.data;
+                }
+            })
+    },
+    cancelOrder() {
+
+        this.showCancelDialog = false;
     }
   },
   watch: {
     // this 'watch' is used when we need to monitor changes of some variables, if they changes value then the function in this 'watch' will be triggered.
-    selectedFilter: function() {
-      Vue.nextTick(() => {
-        if (
-          this.selectedFilter != null &&
-          !this.filterValues.includes(this.selectedFilter)
-        ) {
-          this.filterValues.push(this.selectedFilter);
-          switch (this.selectedFilter.type) {
-            case this.optionTypes.STATUS: {
-              this.filterOptionsValues.status.push(this.selectedFilter);
-              break;
-            }
-            case this.optionTypes.PRIORITY: {
-              this.filterOptionsValues.priorities.push(this.selectedFilter);
-              break;
-            }
-          }
-          // tempValues is null means that no filters yet.
-          if (this.tempValues == null) {
-            this.tempValues = this.workOrders;
-          }
-          this.filterOrders();
-        } else {
-          this.selectedFilter = null;
-        }
-      });
-    },
+    // selectedFilter: function() {
+    //   Vue.nextTick(() => {
+    //     if (this.selectedFilter != null &&
+    //       !this.filterValues.includes(this.selectedFilter)
+    //     ) {
+    //       this.filterValues.push(this.selectedFilter);
+    //       switch (this.selectedFilter.type) {
+    //         case this.optionTypes.STATUS: {
+    //           this.filterOptionsValues.status.push(this.selectedFilter);
+    //           break;
+    //         }
+    //         case this.optionTypes.PRIORITY: {
+    //           this.filterOptionsValues.priorities.push(this.selectedFilter);
+    //           break;
+    //         }
+    //       }
+    //       // tempValues is null means that no filters yet.
+    //       if (this.tempValues == null) {
+    //         this.tempValues = this.workOrders;
+    //       }
+    //       this.filterOrders();
+    //     } else {
+    //       this.selectedFilter = null;
+    //     }
+    //   });
+    // },
     searchValues: function() {
       if (this.searchValues.length == 0) {
-        this.workOrders = this.$store.state.workOrderPage.orders;
+        this.getWorkOrders();
         this.searchMode = false;
       } else {
         this.workOrders = this.searchValues;
@@ -254,7 +428,7 @@ export default {
 <style scoped>
 .filter {
   display: grid;
-  grid-template-columns: 18% auto;
+  /* grid-template-columns: 18% auto; */
   grid-template-rows: auto auto;
   margin-bottom: 1rem;
 }
@@ -351,5 +525,53 @@ export default {
   overflow-y: auto;
   width: 39%;
   z-index: 2;
+}
+
+.detail {
+    padding: .5rem 1rem;
+}
+
+.detail-header {
+    display: grid;
+    grid-template-columns: 70% 30%;
+}
+
+.detail-title {
+    font-size: 2rem;
+}
+
+.detail-label {
+    font-size: .98rem;
+}
+
+.detail-contents {
+    margin-bottom: 1rem;
+}
+
+.vodal-confirm-btn {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 4rem;
+    font-size: .9rem;
+}
+
+.vodal-cancel-btn {
+    position: absolute;
+    bottom: 1rem;
+    right: 5.5rem;
+    width: 4rem;
+    font-size: .9rem;
+}
+
+
+.my-dialog-title {
+    padding: .7rem 1rem .5rem 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    font-weight: 500;
+}
+
+.my-dialog-content {
+    padding: 1rem;
 }
 </style>

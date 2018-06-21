@@ -6,32 +6,52 @@ var TYPES = require("tedious").TYPES;
 //         .into(response);
 // });
 
+// router.get('/:id', (req, res) => {
+//     req.sql('exec GetEquipmentDetailById @id')
+//         .param('id', req.params.id, TYPES.Int)
+//         .into(res);
+// });
+/*Count Quality Equipment Item of one Equipment*/
+// router.get('/:id', (req, res) => {
+//     req.sql('exec CountQualityItem @id')
+//         .param('id', req.params.id, TYPES.Int)
+//         .into(res);
+// });
+
+/* Get all Item of an equipment by EquipmentID */
+router.get('/:id', (req, res) => {
+    req.sql('exec GetAllItemOfAnEquipment @id')
+        .param('id', req.params.id, TYPES.Int)
+        .into(res);
+});
+
 /* POST request, for insert */
 router.post('/', (request, response) => {
-    request.sql("INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, ImportDate, StatusId, Description, PositionID)" +
-            " VALUES (@equipmentID, @serialNumber, @warrantyDuration, @importDate, @statusId, @description, @positionID)")
-        .param('equipmentID', request.body.name, TYPES.NVarChar)
-        .param('serialNumber', request.body.vendorID, TYPES.NVarChar)
-        .param('warrantyDuration', request.body.image, TYPES.NVarChar)
-        .param('importDate', request.body.price, TYPES.DateTime)
-        .param('statusId', request.body.price, TYPES.Int)
+    request.sql("INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
+            " VALUES (@equipmentID, @serialNumber, @warrantyDuration, 0, @price, GETDATE(), @statusId, @description, @tileID)")
+        .param('equipmentID', request.body.equipmentID, TYPES.Int)
+        .param('serialNumber', request.body.serialNumber, TYPES.NVarChar)
+        .param('warrantyDuration', request.body.warrantyDuration, TYPES.Int)
+        .param('price', request.body.price, TYPES.Float)
+        //.param('importDate', request.body.importDate, TYPES.DateTime)
+        .param('statusId', request.body.statusId, TYPES.Int)
         .param('description', request.body.description, TYPES.NVarChar)
-        .param('positionID', request.body.categoryID, TYPES.Int)
+        .param('tileID', request.body.tileID, TYPES.Int)
         .exec(response);
 });
 
-    router.get('/:id/getByLocationId',(request,response) => {
-        request.sql("select eqti.*,eqt.Name,eqt.Image from [EquipmentItem] as eqti join [Position] as pos on eqti.PositionID = pos.Id "+
-        "join [Equipment] as eqt on eqti.EquipmentID = eqt.ID "+
-        "where pos.LocationID = @locationId for json path")
-        .param('locationId',request.params.id,TYPES.Int)
+router.get('/:id/getByLocationId', (request, response) => {
+    request.sql("select eqti.*,eqt.Name,eqt.Image from [EquipmentItem] as eqti join [Position] as pos on eqti.PositionID = pos.Id " +
+            "join [Equipment] as eqt on eqti.EquipmentID = eqt.ID " +
+            "where pos.LocationID = @locationId for json path")
+        .param('locationId', request.params.id, TYPES.Int)
         .into(response);
-    })
+})
 
-    router.get('/getByEquipmentId/:id',(request,response) => {
-        request.sql("exec [dbo].[GetEquipmentItemByEquipmentIdAndLocationId] @locationId")
-           .param('locationId',request.params.id, TYPES.Int)
-           .into(response)
-    })
+router.get('/getByEquipmentId/:id', (request, response) => {
+    request.sql("exec [dbo].[GetEquipmentItemByEquipmentIdAndLocationId] @locationId")
+        .param('locationId', request.params.id, TYPES.Int)
+        .into(response)
+})
 
 module.exports = router;
