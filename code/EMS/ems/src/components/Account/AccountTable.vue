@@ -27,8 +27,8 @@
   
       <tbody>
   
-        <tr v-bind:key="account.id" v-for="account in accounts" class="txtText">
-  
+        <tr v-bind:key="account.id" v-for="account in accounts" class="txtText" v-on:click="setSelectedAccount(account)">
+          <!-- <td>{{ index + 1 }}</td>    -->
           <td>{{account.Id}}</td>
   
   
@@ -58,6 +58,10 @@
       </tbody>
   
     </table>
+    <!-- <vodal class="no-padding" height="500" :show="selectedEquipment != null" @hide="selectedEquipment = null" animation="slideUp">
+
+          <equipment-detail-popup :equipment="selectedEquipment" class="" v-show="selectedEquipment != null"></equipment-detail-popup>
+        </vodal> -->
   
   </div>
 </template>

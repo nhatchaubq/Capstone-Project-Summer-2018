@@ -14,7 +14,6 @@
                 <div class="form-field-title">
                     Picture
                 </div>
-
                 <div class="input_picture">                    
                     <label class="file-label" style="width: 100% !important"> 
                     <span class="file-cta">
@@ -29,26 +28,27 @@
                         <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
                             {{ file.name }}
                         <div>
-                            <img class="file-upload" v-bind:src="getFilePath(file)" style="width: 75px height:75px"/>
+                            <img class="file-upload" v-bind:src="getFilePath(file)" width="300px" height="450px"/>
                         </div>
-
                         </div>
                     </label>
-                    <input type="file" id="file"  v-on:change="onFileChanged">
-                    <button v-on:click="onUpload">Upload!!!</button>
                 </div> 
             </div>
-
             <div class="form-field">
                 <div class="form-field-title">
                     Equipment Name
                 </div>
                 <div class="form-field-input" >
+                  <!-- <Autocomplete :items="equipmentOptions"
+                    filterby="equipmentOptions.Name"
+                    @change="onChange"
+                    title="Look for a customer"
+                    @selected="customerSelected"/> -->
                   <!-- <model-select style="width: 100% !important" :options="equipmentOptions" v-model="selectedEquipment" placeholder="Equipment Name"></model-select>   -->
-                  <input type="text" class="input" placeholder="EquipmentName" v-model="form.EquipmentName">
+                  <input type="text" class="input" placeholder="EquipmentName" v-model="form.EquipmentName" >
                 </div>
             </div>
-            <div class="field" style="margin-left: 3rem; margin-right: 1.5rem; display: grid; grid-template-columns: 50% 50%">
+            <div class="field" style="margin-left: 3rem; margin-top: 0.75rem; margin-right: 1.5rem; display: grid; grid-template-columns: 50% 50%">
                 <div>
                     <div class="form-field-title" >
                         Category
@@ -96,7 +96,22 @@
                     <input type="text" class="input" placeholder="Made In" v-model="form.MadeIn">
                 </div>
             </div>
-            <!-- <div class="form-field">
+            <div class="form-field">
+                <div class="form-field-title">
+                    Description
+                </div>
+                <div class="form-field-input">
+                    <input type="text" class="input" placeholder="Description" v-model="form.Description">
+                </div>
+            </div>
+            <div class="form-field">
+              <label class="checkbox">
+                <input type="checkbox" id="checkbox" v-model="checked">
+                Do you want to add item(s) for this equipment?
+              </label>
+            </div>
+            <div class="hr" v-if="checked"  >
+              <div class="form-field" style="margin: 1rem -3rem;">
                 <div class="form-field-title">
                     Quantity
                 </div>
@@ -106,36 +121,31 @@
                 </div>
                 <div v-show="showingBarcode">
                     <ul>
-                        
                         <li v-for="i in randomNumbers" :key="i">{{i}}</li>
                     </ul>
                 </div>
-            </div> -->
-            <!-- <div class="form-field">
-                <div class="form-field-title">
-                    Warranty
+              <div class="field" style="display: grid; grid-template-columns: 50% 50%">
+                <div>
+                    <div class="form-field-title" >
+                      Price
+                    </div>
+                    <div class="field is-horizontal" style="margin-right:6rem">
+                      <input type="text" class="input" placeholder="Price" v-model="form.Price">
+                    </div>
                 </div>
-                <div class="field is-horizontal">
-                    <input type="number" class="input" placeholder="Warranty Months" v-model="form.Warranty">
-                </div>
-            </div>
-            <div class="form-field">
-                <div class="form-field-title">
-                    Price
-                </div>
-                <div class="form-field-input">
-                    <input type="text" class="input" placeholder="Price" v-model="form.Price">
-                </div>
-            </div> -->
-            <div class="form-field">
-                <div class="form-field-title">
-                    Description
-                </div>
-                <div class="form-field-input">
-                    <input type="text" class="input" placeholder="Description" v-model="form.Description">
+                <div class="" >
+                    <div class="form-field-title">
+                      Warranty
+                    </div>
+                    <div class="field is-horizontal" >
+                      <input type="number" class="input" placeholder="Warranty Months" v-model="form.Warranty">
+                    </div> 
                 </div>
             </div>
+            <button id="" class="button is-rounded is-primary" v-on:click="createNewEquipentItem">Create New Items</button>  
         </div>
+        </div>
+    </div>        
     </div>
 </template>
 
@@ -143,13 +153,31 @@
 import AddEquipment from "./AddEquipment";
 import VueBase64FileUpload from "vue-base64-file-upload";
 import { ModelSelect } from "vue-search-select";
+import Autocomplete from "./Autocomplete";
 export default {
+  props: ["filterby"],
   components: {
     AddEquipment,
     VueBase64FileUpload,
-    ModelSelect
+    ModelSelect,
+    Autocomplete
   },
   created() {
+    this.axios
+      .get("http://localhost:3000/api/EquipmentCategory")
+      .then(response => {
+        let data = response.data;
+        data.forEach(category => {
+          let option = {
+            text: category.Name,
+            value: category.Id
+          };
+          this.categoryOptions.push(option);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
     this.axios
       .get("http://localhost:3000/api/vendor")
       .then(response => {
@@ -175,23 +203,6 @@ export default {
             value: element.Equipment.Id
           };
           this.equipmentOptions.push(option);
-        });
-      })
-      .catch(error => {
-        alert(error);
-      });
-  },
-  createdCategory() {
-    this.axios
-      .get("http://localhost:3000/api/EquipmentCategory")
-      .then(response => {
-        let data = response.data;
-        data.forEach(category => {
-          let option = {
-            text: category.Name,
-            value: category.Id
-          };
-          this.categoryOptions.push(option);
         });
       })
       .catch(error => {
@@ -228,11 +239,21 @@ export default {
       existEquipment: [],
       quantity: 1,
       validateExistEquipment: false,
-      file: ""
+      file: "",
+      visible: false,
+      checked: false
     };
   },
 
   methods: {
+    EquipSelected(equipment) {
+      console.log(
+        `Customer Selected:\nid: ${equipment.Dd}\nname: ${equipment.Name}`
+      );
+    },
+    onChange(value) {
+      // do something with the current value
+    },
     onFileChanged() {
       this.selectedFile = this.$refs.file.files[0];
     },
@@ -318,44 +339,88 @@ export default {
           console.log(error);
         });
       //   }
+    },
+    getRandomNumber() {
+      if (this.form.Category == "") {
+        alert("Please choose category");
+      } else {
+        this.randomNumbers = [];
+        for (var i = 0; i < this.quantity; i++) {
+          var number = "";
+          if (0 < this.form.Category && this.form.Category < 10) {
+            number = "000" + this.form.Category;
+          } else if (10 <= this.form.Category && this.form.Category < 100) {
+            number = "00" + this.form.Category;
+          } else if (100 <= this.form.Category && this.form.Category < 1000) {
+            number = "0" + this.form.Category;
+          } else {
+            number = this.form.Category;
+          }
+          number = number + Math.floor(Math.random() * 900000000 + 100000000);
+          this.randomNumbers.push(number);
+        }
+        this.showingBarcode = true;
+      }
+    },
+    createNewEquipentItem() {
+      alert(this.checked);
+      this.axios
+        .get("http://localhost:3000/api/equipment/" + this.form.EquipmentName)
+        .then(response => {
+          for (var i = 0; i < this.quantity; i++) {
+            let data = response.data;
+            this.axios
+              .post("http://localhost:3000/api/equipmentItem", {
+                equipmentID: data.Id,
+                serialNumber: this.randomNumbers[i],
+                warrantyDuration: this.form.Warranty,
+                price: this.form.Price,
+                statusId: 1,
+                description: "No description",
+                positionID: 1
+              })
+              .then(function(respone) {
+                alert("oke");
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     }
-    // getRandomNumber() {
-    //   this.randomNumbers = [];
-    //   for (var i = 0; i < this.quantity; i++) {
-    //     var number = Math.floor(Math.random() * 9000000000000 + 1000000000000);
-    //     this.randomNumbers.push(number);
-    //   }
-    //   this.showingBarcode = true;
-    // }
+
     // createBarcode(){
-    //     var barcode ="";
+    //     var barcode =this.form.Category.id +"";
+    //     alert(barcode);
     //     for (var i=0; i<13; i++){
     //         var x = this.getRandomNumber();
     //         barcode = barcode + x;
     //     }
     //     return barcode;
-    // }
-  },
-  watch: {
-    selectedEquipment: function() {
-      this.axios
-        .get(
-          "http://localhost:3000/api/equipment/" + this.selectedEquipment.text
-        )
-        .then(response => {
-          let data = response.data;
-          //alert("IN");
-          //let equipment = element.Equipment;
-          this.existEquipment.push(data);
-          if (this.existEquipment.length > 0) {
-            //alert("exist");
-          }
-        })
-        .catch(error => {
-          alert(error);
-        });
-    }
   }
+  // watch: {
+  //   selectedEquipment: function() {
+  //     this.axios
+  //       .get(
+  //         "http://localhost:3000/api/equipment/" + this.selectedEquipment.text
+  //       )
+  //       .then(response => {
+  //         let data = response.data;
+  //         //alert("IN");
+  //         //let equipment = element.Equipment;
+  //         this.existEquipment.push(data);
+  //         if (this.existEquipment.length > 0) {
+  //           //alert("exist");
+  //         }
+  //       })
+  //       .catch(error => {
+  //         alert(error);
+  //       });
+  //   }
+  // }
 };
 </script>
 
@@ -414,7 +479,7 @@ export default {
 
 .input_picture {
   padding: 1rem 3rem 1rem 3rem;
-  outline: 2px dashed #a8a8a8fb;
+  outline: 1px dashed #a8a8a8fb;
   background-color: #f0efeffb;
   display: flex;
 }
@@ -456,9 +521,14 @@ export default {
   border: 1px solid black;
 }
 .form-content {
-  position: fixed;
+  /* position: fixed;
   max-height: 100%;
   width: 85%;
-  overflow-y: scroll;
+  overflow-y: scroll; */
+  margin-bottom: 2rem;
+}
+.hr {
+  border-top: 0.5px solid #616161;
+  margin: 1rem 3rem;
 }
 </style>
