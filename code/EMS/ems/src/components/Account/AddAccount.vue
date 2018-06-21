@@ -24,7 +24,7 @@
                             <i class="fa fa-check"></i>
                             </span> -->
 
-                        </div>
+                    </div>
                     </div>
                 
             </div>
@@ -193,8 +193,8 @@
                     <button id="btn-add" class="button">Create Account</button>
                 </div>
             <div>&nbsp</div>
+         <!-- </form> -->
          </form>
-        
     </div>
 </template>
 
