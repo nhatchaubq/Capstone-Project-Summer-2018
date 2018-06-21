@@ -21,4 +21,22 @@ router.delete("/:id/:accountId", (request, response) => {
         .param("accountId", request.params.accountId, TYPES.Int)
         .exec(response);
 });
+
+/* PUT request, for update */
+// router.put('/:id/:leaderID', function (request, response) {
+//     request.sql("exec [dbo].[ChangeLeaderToMember&MeToLiByAccountID(21/06)] @id")
+//         .param('id', request.params.TeamID, TYPES.Int)
+//         .param('leaderID', request.params.LeaderID, TYPES.Int)
+//         .param('memberID', request.body.MemberID, TYPES.NVarChar)
+//         .into(response);
+// });
+
+/* PUT request, for update */
+router.put('/:id/:accountID', (request, response) => {
+    request.sql('update [TeamAccount] set TeamRoleID = 1 where TeamID = @id and AccountID = @accountID')
+        .param('id', request.params.id, TYPES.Int)
+        .param('accountID', request.params.accountID, TYPES.Int)
+        .exec(response);
+});
+
 module.exports = router;

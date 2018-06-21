@@ -4,7 +4,7 @@
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams</a>
     
     </router-link>
-    {{this.$route.params.id}}
+
     <div class="material-box" style="width: 50%">
       <div class="row">
         
@@ -25,7 +25,8 @@
       <div >
         <div class="row">
            <model-select v-if="editMode" class="col-9" style="margin-right:1rem; "  :options="toLeaderOptions" v-model="selectedToLeader"  placeholder="Select a leader"></model-select>  
-            <button v-if="editMode" class="button btn-primary   " style="margin-top: 1rem; padding :-1rem" v-on:click="addNew()">add new</button> 
+            
+            <button v-if="editMode" class="button btn-primary " style="margin-top: 1rem; padding :-1rem" v-on:click="console.error(this.account.id)">add new</button> 
          
         </div>
         
@@ -39,11 +40,6 @@
             </router-link>
             
             </div>
-            
-          <div class="col-4 ">
-            <!-- <button v-if="editMode" class="button btn-danger " >Kick</button> -->
-
-          </div>
           </div>
 
 
@@ -61,11 +57,12 @@
                   {{account.Fullname ? account.Fullname :'N/A' }}
                 </router-link>
             </div>
-                  <div class="col-4">
-                    <!-- <button v-if="editMode" class="button btn-edit btn-primary" style="margin-right: 3px">Leader</button> -->
-                    <!-- <button v-if="editMode" class="button btn-kick-member  " v-on:click="kick(account.Id)">Kick</button> -->
-                    <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px" v-on:click="kick(account.Id)">close</button>
-                  </div>
+            <div class="col-2">
+              <button v-if="editMode" class="material-icons"  style="color: var(--primary-color); text-align: center; padding-bottom: 3px" v-on:click="changeToLeader(account.Id)">close</button>
+            </div>
+            <div class="col-2">
+              <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px" v-on:click="kick(account.Id)">close</button>
+            </div>
 
           </div>
   
@@ -300,6 +297,28 @@ export default {
           // this.$router.push(`/team/${this.$route.params.id}`);
           location.reload();
         });
+    },
+    changeToLeader(accountID) {
+      this.axios
+        .put(
+          `http://localhost:3000/api/team/id/${
+            this.$route.params.id
+          }/${accountID}`
+        )
+        .then(res => {
+          // this.$router.push(`/team/${this.$route.params.id}`);
+          location.reload();
+        });
+    },
+    changeNewLeader(leaderID, memberID) {
+      this.axios.push(
+        `http://localhost:3000/api/team/id/${
+          this.$route.params.id
+        }/${leaderID}`,
+        {
+          memberID: memberID
+        }
+      );
     }
   }
 };
