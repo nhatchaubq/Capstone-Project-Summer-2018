@@ -34,11 +34,16 @@
                     Team
                 </div>
                 <div class="select" >
-                    <select>
-                        <option>Not now</option>
-                        <option v-bind:key='team.Id' v-for='team in teams'>{{team.Name}}</option>
+                    <select v-model="selectedTeam">
+                        <option :disabled="selectedTeams.length > 0"  value="null">Not now</option>
+                        <option v-bind:key='team.Id' v-for='team in teams' :value="team">{{team.Name}}</option>
                     </select>
                 </div>
+                 <div class="selected-team" >
+                        <label class="lb-team" :key='team.Id' v-for="team in selectedTeams">
+                        {{team.Name}} <div class="delete" v-on:click="removeSelectedTeam(team)"></div>
+                        </label> 
+                    </div>
             </div>
             
         </div>
@@ -65,23 +70,25 @@ export default {
     return {
       teams: [],
       selectedTeam: null,
+      tempTeams: [],
+      selectedTeams: [],
       newLocation: {
-          name: '',
-          address:'',
-          description:'',
-          longtitude: 40.244228,
-          latitude: 109.998079
+        name: "",
+        address: "",
+        description: "",
+        longtitude: 40.244228,
+        latitude: 109.998079
       }
     };
   },
   methods: {
-    setSelectedTeamLeader(team) {
-      this.selectedTeam = team;
-    }
+    // setSelectedTeamLeader(team) {
+    //   this.selectedTeam = team;
+    // }
   },
   created() {
     this.axios
-      .get(Server.TEAM_API_PATH)
+      .get(Server.TEAM_API_PATH + "/getAllTeam")
       .then(response => {
         let data = response.data;
         data.forEach(team => {
@@ -93,11 +100,49 @@ export default {
       });
   },
   methods: {
-      createLocation(){
-      this.axios.post(Server.LOCATION_CREATE_API_PATH,{
+    createLocation() {
+      this.axios
+        .post(Server.LOCATION_CREATE_API_PATH, {
           newLocation: this.newLocation
-      });
-  }
+        })
+        .then(res => {
+          if (this.selectedTeams.length > 0) {
+            if (res.data.NewLocationId) {
+              this.selectedTeams.forEach(team => {
+                this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
+                  locationId: res.data.NewLocationId,
+                  teamId: team.Id
+                });
+              });
+            }
+          }
+        });
+    },
+    removeSelectedTeam(tmpTeam) {
+      this.selectedTeams = this.selectedTeams.filter(
+        team => team.Id != tmpTeam.Id
+      );
+      // this.teams = this.tempTeams;
+      this.teams = this.tempTeams.filter(
+        team => !this.selectedTeams.includes(team)
+      );
+
+      if (this.selectedTeams.length == 0) {
+        this.teams = this.tempTeams;
+      }
+    }
+  },
+  watch: {
+    selectedTeam: function() {
+      if (this.selectedTeam) {
+        if (this.selectedTeams.length == 0) {
+          this.tempTeams = this.teams;
+        }
+        this.teams = this.teams.filter(team => team.Id != this.selectedTeam.Id);
+        this.selectedTeams.push(this.selectedTeam);
+        this.selectedTeam = null;
+      }
+    }
   }
 };
 </script>
@@ -119,6 +164,7 @@ export default {
   font-size: 20px;
   color: #616161;
 }
+
 .form-input {
   padding-left: 50px;
   padding-right: 50px;
@@ -156,9 +202,19 @@ export default {
   border: 0.5px solid lightgray;
   border-radius: 5px;
   padding: 0.3rem;
-  
 }
 #text-descrip:hover {
   border: 1px solid grey;
+}
+.lb-team {
+  border: 0.5px solid;
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.delete {
+  position: relative;
+  top: 0.2rem;
+  font-size: 20px;
 }
 </style>

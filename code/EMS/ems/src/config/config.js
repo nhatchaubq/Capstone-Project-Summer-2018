@@ -23,20 +23,24 @@ const EQUIPMENTITEM_BY_ID_LOCATION_API_PATH = SERVER_DEFAULT + "/equipmentItem";
 // work order api section - start
 const WORKORDER_API_PATH = SERVER_DEFAULT + "/work_order";
 const WORKORDER_DETAIL_API_PATH = WORKORDER_API_PATH + "/detail";
-const WORKORDER_SEARCH_API_PATH = WORKORDER_API_PATH + '/search';
-const WORKORDER_STATUS_API_PATH = WORKORDER_API_PATH + '/status';
-const WORKORDER_CATEGORIES_API_PATH = WORKORDER_API_PATH + '/categories';
-const WORKORDER_PRIORITIES_API_PATH = WORKORDER_API_PATH + '/priorities';
-const WORKODER_BY_ID_LOCATION_API_PATH = WORKORDER_API_PATH + '/workorderbylocationId';
+const WORKORDER_SEARCH_API_PATH = WORKORDER_API_PATH + "/search";
+const WORKORDER_STATUS_API_PATH = WORKORDER_API_PATH + "/status";
+const WORKORDER_CATEGORIES_API_PATH = WORKORDER_API_PATH + "/categories";
+const WORKORDER_PRIORITIES_API_PATH = WORKORDER_API_PATH + "/priorities";
+const WORKODER_BY_ID_LOCATION_API_PATH =
+  WORKORDER_API_PATH + "/workorderbylocationId";
 // work order api section - end
 
 //location api section - start
 const LOCATION_API_PATH = SERVER_DEFAULT + "/location";
-const LOCATION_CREATE_API_PATH =LOCATION_API_PATH + "/create";
+const LOCATION_CREATE_API_PATH = LOCATION_API_PATH + "/create";
+const LOCATION_UPDATE_API_PATH = LOCATION_API_PATH + "/editLocation";
 //location api section - end
 
 //team_location api section - start
 const TEAM_LOCATION_API_PATH = SERVER_DEFAULT + "/team_location";
+const TEAM_LOCATION_CREATE_API_PATH =
+  TEAM_LOCATION_API_PATH + "/createTeamLocation";
 //team_location api section - end
 
 //team api section - start
@@ -60,7 +64,7 @@ export default {
   WORKORDER_PRIORITIES_API_PATH,
   WORKORDER_CATEGORIES_API_PATH,
   WORKODER_BY_ID_LOCATION_API_PATH,
-  
+
   LOCATION_API_PATH,
   LOCATION_CREATE_API_PATH,
   TEAM_API_PATH,
@@ -68,6 +72,6 @@ export default {
 
   TEAM_LOCATION_API_PATH,
   TEAM_BY_LOCATION_ID_API_PATH,
-  
-  
+  LOCATION_UPDATE_API_PATH,
+  TEAM_LOCATION_CREATE_API_PATH
 };
