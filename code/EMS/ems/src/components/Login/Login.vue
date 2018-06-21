@@ -78,13 +78,16 @@ export default {
       this.sending = true;
       this.showNotification = false;
       await Utils.sleep(1000);
-      let uri = `${Server.LOGIN_API_PATH}/${this.form.username}/${this.form.password}`;
+      let uri = `${Server.LOGIN_API_PATH}/${this.form.username}/${
+        this.form.password
+      }`;
       this.axios
         .get(uri)
         .then(response => {
           if (response.data.Username) {
             const authUser = response.data;
             window.localStorage.setItem("user", JSON.stringify(authUser));
+            this.$store.state.isLoggedIn = true;
             this.$router.push("/");
             this.error = false;
           } else {
