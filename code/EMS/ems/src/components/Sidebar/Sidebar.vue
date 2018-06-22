@@ -156,18 +156,18 @@ export default {
 }
 
 .sidebar li a {
-  color: #b2dfdb;
+  color: #b2dfdb !important;
   text-decoration: none;
   transition: all 0.15s ease-in-out;
 }
 
 .sidebar-list ul li:hover a {
   cursor: pointer;
-  color: #26a69a;
+  color: #26a69a !important;
 }
 
 .is-active {
-  color: #26a69a;
+  color: #26a69a !important;
 }
 .sidebar-list-content {
   padding-left: 20px;

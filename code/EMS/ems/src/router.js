@@ -19,6 +19,7 @@ import AccountDetailComponent from './components/Account/AccountDetail.vue';
 import DepartmentComponent from './components/Department/Department.vue';
 import ProjectComponent from './components/Project/Project.vue'
 import CreateLocation from './components/Location/CreateLocation.vue';
+import TestComponent from './components/TestSite/Test.vue';
 Vue.use(Router)
 
 import store from "./store";
@@ -221,6 +222,18 @@ let router = new Router({
             },
             meta: {
                 showSearchBar: true,
+            }
+        },
+        {
+            path: '/test',
+            component: TestComponent,
+
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Test area');
+                next();
+            },
+            meta: {
+                showSearchBar: false,
             }
         }
     ]

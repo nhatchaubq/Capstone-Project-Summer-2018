@@ -85,6 +85,7 @@ export default {
           if (response.data.Username) {
             const authUser = response.data;
             window.localStorage.setItem("user", JSON.stringify(authUser));
+            this.$store.state.isLoggedIn = true;
             this.$router.push("/");
             this.error = false;
           } else {
