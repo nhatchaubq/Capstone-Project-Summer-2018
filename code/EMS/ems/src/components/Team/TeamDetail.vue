@@ -1,56 +1,37 @@
 <template>
-  <div v-if="team">
+  <!-- <div v-if="team">
     <router-link to="/team">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams</a>
     
-    </router-link>
+    </router-link> -->
 
-    <div class="material-box" style="width: 50%">
+  <div class="material-box" style="width: 50%">
       <div class="row">
-        
         <h2 class="col-10" style="font-size: 30px; color: #3960A4">{{team.Name}}</h2>
-        <button class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode
-        ">Edit</button>
-
+        <button class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
       </div>
-      <!-- <h2 style=" border-bottom: 1px solid #e0e0e0;"></h2> -->
-  
-      <!-- <h2>Team ID: {{team.Id}}</h2> -->
-  
       <div>
-  
         <h2>Create date: {{team.CreatedDate}} </h2>
   
-        <strong style="color:var(--primary-color)">Leader</strong>
+        <strong >Leader</strong>
         
       <div >
         <!-- <div class="row">
            <model-select v-if="editMode" class="col-9" style="margin-right:1rem; "  :options="toLeaderOptions" v-model="selectedToLeader"  placeholder="Select a leader"></model-select>  
-            
-            <button v-if="editMode" class="button btn-primary " style="margin-top: 1rem; padding :-1rem" v-on:click="console.error(this.account.id)">add new</button> 
-         
+            <button v-if="editMode" class="button btn-primary " style="margin-top: 1rem; padding :-1rem" v-on:click="console.error(this.account.id)">add new</button>     
         </div> -->
-        
-        <div  v-bind:key="leader.Id" v-for="leader in team.LeaderAccounts" >
+        <div>
           <div class="row " style="height:43.42px">
-            <div class="col-8 ">
-
+            <div class="col-8">
               <span>-</span>
-            <router-link :to="`/account/${leader.Id}`">
-              {{leader.Fullname ? leader.Fullname :'N/A' }}
+            <router-link :to="`/account/${team.LeaderAccount.Id}`">
+              {{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A' }}
             </router-link>
-              <span>({{leader.Username}})</span>
-            
+              <span>({{team.LeaderAccount.Username}})</span>
             </div>
           </div>
-
-
         </div>
-
       </div>  
-
-        <!-- <br/> -->
-
         <strong>Members</strong>
         <div :key="member.Id" v-for="member in team.MemberAccounts">
           <div class="row" style="height:36px; ">
@@ -60,103 +41,24 @@
                   {{member.Fullname ? member.Fullname :'N/A' }}
                 </router-link>
                   <span>({{member.Username}})</span>
-
             </div >
             <div class="col-3" >
-              <button v-if="editMode" class="button"  style="color: var(--primary-color); text-align: center; padding-bottom: 3px" v-on:click="changeToLeader(team.LeaderAccounts[0].Id, member.Id)">Set to leader</button>
+              <button v-if="editMode" class="button"  style="color: var(--primary-color); text-align: center; padding-bottom: 3px" v-on:click="changeToLeader(member.Id)">Set to leader</button>
             </div>
             <div class="col-1">
               <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px" v-on:click="kick(member.Id)">close</button>
             </div>
-
           </div>
-  
         </div>
       </div>
-  
-      <!-- <h2>test: {{team.Accounts[0].Id}}</h2> -->
-  
-  
-              <strong v-if="editMode">Add new members: </strong>
+    <strong v-if="editMode">Add new members: </strong>
+    <multi-select  v-if="editMode" style="width: 100% !important"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
+      <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 1rem" v-on:click="addNew()">add new</button> 
 
-                <multi-select  v-if="editMode" style="width: 100% !important"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
-              
-
-                  <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 1rem" v-on:click="addNew()">add new</button> 
-
-              </div>
-              
-              
-        <!-- <div :key="m.value" v-for="m in selectedMemberList">{{m.text}}</div> -->
-    </div>
-  
-  
-  
-    <!-- <div class="grid-wrapper">
-  
-      <div class=" location-blocks material-box">
-  
-        <h3>Member of team {{team.Name}}:</h3>
-  
-        <div style="padding:7px">
-  
-          <div v-bind:key="account.Id" v-for="account in team.Accounts">
-  
-            <div class="material-shadow-animate" style="padding:10px" v-if="account.TeamRole == 'Leader'">
-  
-  
-  
-              <span class="icon is-small is-left" style="color:blue">
-  
-  <i class="fa fa-user"></i>
-  
-      </span> {{account.Fullname ? account.Fullname :'N/A' }}
-  
-  
-  
-              <div>
-  
-                <span class="icon is-small is-left" style="color:blue">
-  
-        <i class="fa fa-user-md"></i>
-  
-      </span> {{account.TeamRole }}</div>
-  
-            </div>
-  
-  
-  
-            <div class="material-shadow-animate" style="padding:10px" v-else>
-  
-  
-  
-              <span class="icon is-small is-left">
-  
-  <i class="fa fa-user"></i>
-  
-      </span> {{account.Fullname ? account.Fullname :'N/A' }}
-  
-  
-  
-              <div>
-  
-                <span class="icon is-small is-left">
-  
-        <i class="fa fa-user-md"></i>
-  
-      </span> {{account.TeamRole }}</div>
-  
-            </div>
-  
-          </div>
-  
-        </div>
-  
-      </div>
-  
-    </div> -->
-  
   </div>
+         
+
+
 </template>
 
 <script>
@@ -306,7 +208,11 @@ export default {
           location.reload();
         });
     },
-    changeToLeader(leaderId, memberID) {
+    changeToLeader(memberID) {
+      let leaderId = null;
+      if (this.team.LeaderAccount) {
+        leaderId = this.team.LeaderAccount.Id;
+      }
       this.axios
         .put(
           `http://localhost:3000/api/team/id/${

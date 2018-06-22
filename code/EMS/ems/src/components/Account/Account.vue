@@ -14,9 +14,11 @@
     
     <div class="">
       <div class="field is-grouped view-mode">
-        <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
-        <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
-
+      <!-- <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
+      <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button> -->
+      <router-link to='/account/'>  
+        <button class="btn-view-mode" disabled="disabled">Account view</button>
+      </router-link>
       <router-link to='/team/'>  
         <button class="btn-view-mode" >Team view</button>
       </router-link>
@@ -150,7 +152,11 @@ export default {
   color: white;
   cursor: pointer;
 }
-
+.btn-view-mode:disabled {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+}
 .is-active {
   background-color: #26a69a;
   color: white;
