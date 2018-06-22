@@ -27,17 +27,17 @@
   
       <tbody>
   
-        <tr v-bind:key="account.id" v-for="account in accounts" class="txtText">
-  
+        <tr v-bind:key="account.id" v-for="account in accounts" class="txtText" v-on:click="gotoDetail(account.Id)">
+          <!-- <td>{{ index + 1 }}</td>    -->
           <td>{{account.Id}}</td>
   
   
   
-          <router-link :to="`/account/${account.Id}`">
+
   
             <td>{{account.Username }}</td>
   
-          </router-link>
+
   
   
   
@@ -58,6 +58,7 @@
       </tbody>
   
     </table>
+
   
   </div>
 </template>
@@ -68,6 +69,11 @@ export default {
 
   props: {
     accounts: null
+  },
+  methods: {
+    gotoDetail(accountId) {
+      this.$router.push(`/account/${accountId}`);
+    }
   }
 };
 </script>

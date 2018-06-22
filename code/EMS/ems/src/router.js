@@ -11,6 +11,7 @@ import TeamComponent from "./components/Team/Team.vue";
 import AddTeamComponent from "./components/Team/AddTeam.vue";
 import TeamDetailComponent from "./components/Team/TeamDetail.vue";
 import LocationComponent from "./components/Location/Location.vue";
+import VendorComponent from "./components/Vendor/Vendor.vue";
 
 // import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from "./components/Equipment/AddEquipment.vue";
@@ -30,8 +31,7 @@ import menu from "./models/menu";
 
 let router = new Router({
   mode: "history",
-  routes: [
-    {
+  routes: [{
       path: "/",
       component: DashboardComponent,
       beforeEnter: (to, from, next) => {
@@ -204,7 +204,7 @@ let router = new Router({
     },
     {
       path: "/vendors",
-      component: LocationComponent,
+      component: VendorComponent,
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Vendors);
         next();
