@@ -49,7 +49,7 @@
 export default {
   name: "equipment-detail-popup",
   props: {
-    equipment: null,
+    equipment: null
   }
 };
 </script>
@@ -75,7 +75,7 @@ export default {
 }
 
 .equipment-card-content div {
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 }
 
 .equipment-image-preview img {
@@ -83,21 +83,21 @@ export default {
 }
 
 .equipment-name {
-    font-size: 1.5rem !important;
-    font-weight: 500;
+  font-size: 1.5rem !important;
+  font-weight: 500;
 }
 
 .footer {
-    /* display: flex; */
+  /* display: flex; */
 }
 
 .top-right-corner {
   position: absolute;
-    cursor: pointer;
-    top: 13px;
-    right: 16px;
-    /* width: 16px; */
-    /* height: 16px; */
-    z-index: 9999;
+  cursor: pointer;
+  top: 13px;
+  right: 16px;
+  /* width: 16px; */
+  /* height: 16px; */
+  z-index: 9999;
 }
 </style>
