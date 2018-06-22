@@ -43,4 +43,17 @@ router.post('/', (request, response) => {
         .exec(response);
 });
 
+/* PUT request, for update an Equipment */
+router.put('/:id', function (request, response) {
+    request.sql('UPDATE [Equipment] set Name = @name, VendorID = @vendorid, Image=@image, MadeIn=@madein, Description=@description, CategoryID=@categoryid where Id = @id')
+        .param('id', request.params.id, TYPES.Int)
+        .param('name', request.body.name, TYPES.NVarChar)
+        .param('vendorid', request.body.vendorid, TYPES.Int)
+        .param('image', request.body.image, TYPES.NVarChar)
+        .param('madein', request.body.madein, TYPES.NVarChar)
+        .param('categoryid', request.body.categoryid, TYPES.Int)
+        .param('description', request.body.description, TYPES.NVarChar)
+        .exec(response);
+});
+
 module.exports = router;

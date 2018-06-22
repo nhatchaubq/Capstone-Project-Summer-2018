@@ -24,7 +24,12 @@ router.get('/:id', (req, res) => {
         .param('id', req.params.id, TYPES.Int)
         .into(res);
 });
-
+/* GET AN ITEM of an Equipment */
+router.get('/Item/:id', (request, response) => {
+    request.sql("exec GetAnItem @id")
+        .param('id', request.params.id, TYPES.Int)
+        .into(response)
+})
 /* POST request, for insert */
 router.post('/', (request, response) => {
     request.sql("INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
