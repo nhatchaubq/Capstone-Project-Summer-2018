@@ -1,5 +1,10 @@
 <template>
 
+  <div v-if="account">
+    <router-link to="/account">
+      <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Accounts</a>
+    
+    </router-link>
    <!-- <form @submit.prevent="editAccount()"> -->
 <div class="grid-wrapper1">
 
@@ -106,7 +111,7 @@
 
   </div>  
 
-
+  </div>
 </template>
 
 <script>

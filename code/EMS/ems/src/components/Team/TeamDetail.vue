@@ -22,6 +22,7 @@
         <h2>Create date: {{team.CreatedDate}} </h2>
   
         <strong style="color:var(--primary-color)">Leader</strong>
+        
       <div >
         <!-- <div class="row">
            <model-select v-if="editMode" class="col-9" style="margin-right:1rem; "  :options="toLeaderOptions" v-model="selectedToLeader"  placeholder="Select a leader"></model-select>  
@@ -30,14 +31,15 @@
          
         </div> -->
         
-        <div  v-bind:key="account.Id" v-for="account in team.Accounts" >
-          <div class="row " style="height:43.42px" v-if="account.TeamRole=='Leader'">
+        <div  v-bind:key="leader.Id" v-for="leader in team.LeaderAccounts" >
+          <div class="row " style="height:43.42px">
             <div class="col-8 ">
 
               <span>-</span>
-            <router-link :to="`/account/${account.Id}`">
-              {{account.Fullname ? account.Fullname :'N/A' }}
+            <router-link :to="`/account/${leader.Id}`">
+              {{leader.Fullname ? leader.Fullname :'N/A' }}
             </router-link>
+              <span>({{leader.Username}})</span>
             
             </div>
           </div>
@@ -48,20 +50,23 @@
       </div>  
 
         <!-- <br/> -->
+
         <strong>Members</strong>
-        <div  v-bind:key="account.Id" v-for="account in team.Accounts">
-          <div class="row" style="height:36px; " v-if="account.TeamRole!='Leader'">
+        <div :key="member.Id" v-for="member in team.MemberAccounts">
+          <div class="row" style="height:36px; ">
             <div class="col-8">
                 <span>-</span>
-                <router-link :to="`/account/${account.Id}`">
-                  {{account.Fullname ? account.Fullname :'N/A' }}
+                <router-link :to="`/account/${member.Id}`">
+                  {{member.Fullname ? member.Fullname :'N/A' }}
                 </router-link>
+                  <span>({{member.Username}})</span>
+
             </div >
             <div class="col-3" >
-              <button v-if="editMode" class="button"  style="color: var(--primary-color); text-align: center; padding-bottom: 3px" v-on:click="changeToLeader(account.Id)">Set to leader</button>
+              <button v-if="editMode" class="button"  style="color: var(--primary-color); text-align: center; padding-bottom: 3px" v-on:click="changeToLeader(team.LeaderAccounts[0].Id, member.Id)">Set to leader</button>
             </div>
             <div class="col-1">
-              <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px" v-on:click="kick(account.Id)">close</button>
+              <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px" v-on:click="kick(member.Id)">close</button>
             </div>
 
           </div>
@@ -301,28 +306,25 @@ export default {
           location.reload();
         });
     },
-    changeToLeader(accountID) {
+    changeToLeader(leaderId, memberID) {
       this.axios
         .put(
           `http://localhost:3000/api/team/id/${
             this.$route.params.id
-          }/${accountID}`
+          }/${memberID}/${leaderId}`
         )
         .then(res => {
           // this.$router.push(`/team/${this.$route.params.id}`);
           location.reload();
         });
-    },
-    changeNewLeader(leaderID, memberID) {
-      this.axios.push(
-        `http://localhost:3000/api/team/id/${
-          this.$route.params.id
-        }/${leaderID}`,
-        {
-          memberID: memberID
-        }
-      );
     }
+    // changeNewLeader(leaderId, memberID) {
+    //   this.axios.push(
+    //     `http://localhost:3000/api/team/id/${
+    //       this.$route.params.id
+    //     }/${memberID}/${leaderId}`
+    //   );
+    // }
   }
 };
 </script>

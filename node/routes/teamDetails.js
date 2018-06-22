@@ -32,11 +32,12 @@ router.delete("/:id/:accountId", (request, response) => {
 // });
 
 /* PUT request, for update */
-router.put('/:id/:accountID', (request, response) => {
+router.put('/:id/:memberID/:leaderId/', (request, response) => {
     // request.sql('update [TeamAccount] set TeamRoleID = 1 where TeamID = @id and AccountID = @accountID')
-    request.sql('update [TeamAccount] set TeamRoleID = 2  where AccountID =(select AccountID from TeamAccount where TeamAccount.TeamRoleID =1 and TeamAccount.TeamID = @id) and TeamAccount.TeamID =@id; update [TeamAccount] set TeamRoleID = 1  where AccountID = @memberID and TeamID =@id')
+    request.sql("exec [dbo].[ChangeLeaderToMemberAndMeToLiByAccountID] @id, @memberID, @leaderId")
         .param('id', request.params.id, TYPES.Int)
-        .param('memberID', request.params.accountID, TYPES.Int)
+        .param('memberID', request.params.memberID, TYPES.Int)
+        .param('leaderId', request.params.leaderId, TYPES.Int)
         .exec(response);
 });
 
