@@ -50,17 +50,17 @@
         <!-- <br/> -->
         <strong>Members</strong>
         <div  v-bind:key="account.Id" v-for="account in team.Accounts">
-          <div class="row" style="height:24px; " v-if="account.TeamRole!='Leader'">
+          <div class="row" style="height:36px; " v-if="account.TeamRole!='Leader'">
             <div class="col-8">
                 <span>-</span>
                 <router-link :to="`/account/${account.Id}`">
                   {{account.Fullname ? account.Fullname :'N/A' }}
                 </router-link>
+            </div >
+            <div class="col-3" >
+              <button v-if="editMode" class="button"  style="color: var(--primary-color); text-align: center; padding-bottom: 3px" v-on:click="changeToLeader(account.Id)">Set to leader</button>
             </div>
-            <div class="col-2">
-              <button v-if="editMode" class="material-icons"  style="color: var(--primary-color); text-align: center; padding-bottom: 3px" v-on:click="changeToLeader(account.Id)">close</button>
-            </div>
-            <div class="col-2">
+            <div class="col-1">
               <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px" v-on:click="kick(account.Id)">close</button>
             </div>
 
@@ -73,11 +73,14 @@
   
   
               <strong v-if="editMode">Add new members: </strong>
-              <multi-select v-if="editMode" style="width: 100% !important"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
+
+                <multi-select  v-if="editMode" style="width: 100% !important"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
               
-              <div class="col-12  ">
-                <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 1rem" v-on:click="addNew()">add new</button> 
+
+                  <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 1rem" v-on:click="addNew()">add new</button> 
+
               </div>
+              
               
         <!-- <div :key="m.value" v-for="m in selectedMemberList">{{m.text}}</div> -->
     </div>
