@@ -12,26 +12,32 @@
         </router-link>
       </div> -->
     
-    <div class="">
-      <div class="field is-grouped view-mode">
-      <!-- <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
-      <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button> -->
-      <router-link to='/account/'>  
-        <button class="btn-view-mode" disabled="disabled">Account view</button>
-      </router-link>
-      <router-link to='/team/'>  
-        <button class="btn-view-mode" >Team view</button>
-      </router-link>
+    <div >
+      <div class="field is-grouped view-mode" >
+        <!-- <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
+        <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button> -->
+        <router-link to='/account/'>  
+          <button class="btn-view-mode" disabled="disabled">Account view</button>
+        </router-link>
+        <router-link to='/team/'>  
+          <button class="btn-view-mode" >Team view</button>
+        </router-link>
       </div>
-
+    </div>
+    <div class="btncotrol" >
+      <div class="field is-grouped view-mode1">
+        <button class="btn-view-mode1" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
+        <button class="btn-view-mode1" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
+      </div>
     </div>
         <div v-if="!accounts">
       There is no account yet.
     </div>
-        <div v-else>
-      <account-table :accounts="accounts" v-if="isTableMode"></account-table>
+    <div v-else>
 
+      <account-table :accounts="accounts" v-if="isTableMode"></account-table>
       <account-card :accounts="accounts" v-else></account-card>
+
     </div>
 
     <router-link to='/account/add/'>
@@ -74,7 +80,9 @@ export default {
   data() {
     return {
       accounts: [],
-      selectedAccount: null
+      selectedAccount: null,
+      currentViewMode: true,
+      viewModes: {}
     };
   },
   methods: {
@@ -204,4 +212,31 @@ export default {
   background-color: var(--primary-color);
   color: white;
 }
+
+/* test */
+
+.btn-view-mode1:hover {
+  color: #263238;
+  cursor: pointer;
+}
+.btn-view-mode1 {
+  background-color: white;
+  padding: 0.4rem 0.4rem;
+  color: #9e9e9e;
+  z-index: 1;
+  font-size: 17px;
+  /* border-bottom: 3px solid; */
+}
+
+.btn-view-mode1:hover {
+  color: #263238;
+  cursor: pointer;
+  border-bottom: 3px var(--primary-color) solid;
+}
+.is-active {
+  border-bottom: 3px #26a69a solid;
+  cursor: pointer;
+  color: var(--primary-color);
+}
+/* /test */
 </style>
