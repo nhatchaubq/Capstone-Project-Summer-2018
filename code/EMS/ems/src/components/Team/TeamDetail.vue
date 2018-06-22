@@ -23,14 +23,14 @@
   
         <strong style="color:var(--primary-color)">Leader</strong>
       <div >
-        <div class="row">
+        <!-- <div class="row">
            <model-select v-if="editMode" class="col-9" style="margin-right:1rem; "  :options="toLeaderOptions" v-model="selectedToLeader"  placeholder="Select a leader"></model-select>  
             
             <button v-if="editMode" class="button btn-primary " style="margin-top: 1rem; padding :-1rem" v-on:click="console.error(this.account.id)">add new</button> 
          
-        </div>
+        </div> -->
         
-        <div v-if="!editMode" v-bind:key="account.Id" v-for="account in team.Accounts" >
+        <div  v-bind:key="account.Id" v-for="account in team.Accounts" >
           <div class="row " style="height:43.42px" v-if="account.TeamRole=='Leader'">
             <div class="col-8 ">
 
