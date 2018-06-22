@@ -79,14 +79,6 @@ export default {
 </script>
 
 <style>
-table {
-  /* border: 1px solid black; */
-
-  width: 100%;
-
-  /* text-align: right; */
-}
-
 th {
   text-align: left;
   background-color: #cfd8dc;
@@ -121,7 +113,9 @@ tr:nth-child(even) {
 tr:hover {
   background-color: #eceff1;
 }
-
+td:hover {
+  cursor: pointer;
+}
 .txtText {
   text-align: left;
 

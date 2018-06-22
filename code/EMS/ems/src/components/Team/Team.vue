@@ -140,7 +140,9 @@ export default {
       padding-left: 20px; */
   margin-right: 5px;
 }
-
+td:hover {
+  cursor: pointer;
+}
 .btn-view-mode:hover {
   background-color: #26a69a;
   color: white;

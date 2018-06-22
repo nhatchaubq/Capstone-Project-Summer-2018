@@ -26,6 +26,11 @@ const state = {
     detailPage: {
       editMode: false,
     }
+  },
+  vendorPage: {
+    detailPage: {
+      editMode: false,
+    }
   }
 };
 
