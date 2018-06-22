@@ -48,6 +48,12 @@ const TEAM_API_PATH = SERVER_DEFAULT + "/team";
 const TEAM_BY_LOCATION_ID_API_PATH = TEAM_API_PATH + "/getTeamByLocation";
 //team api section - end
 
+// vendor api section -start
+const VENDOR_API_PATH = SERVER_DEFAULT + "/vendor/1";
+
+
+// vendor api section -end
+
 export default {
   LOGIN_API_PATH,
   ACCOUNT_API_PATH,
@@ -73,5 +79,7 @@ export default {
   TEAM_LOCATION_API_PATH,
   TEAM_BY_LOCATION_ID_API_PATH,
   LOCATION_UPDATE_API_PATH,
-  TEAM_LOCATION_CREATE_API_PATH
+  TEAM_LOCATION_CREATE_API_PATH,
+
+  VENDOR_API_PATH
 };
