@@ -12,8 +12,11 @@ import AddTeamComponent from "./components/Team/AddTeam.vue";
 import TeamDetailComponent from "./components/Team/TeamDetail.vue";
 import LocationComponent from "./components/Location/Location.vue";
 import VendorComponent from "./components/Vendor/Vendor.vue";
-import VendorDetailComponent from "./components/Vendor/VendorDetail.vue"
-
+import VendorDetailComponent from "./components/Vendor/VendorDetail.vue";
+import AddVendorComponent from './components/Vendor/AddVendor.vue';
+// test
+import AddVendor1Component from './components/Vendor/AddVendor1.vue'
+// /test
 // import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from "./components/Equipment/AddEquipment.vue";
 import AccountComponent from "./components/Account/Account.vue";
@@ -223,6 +226,22 @@ let router = new Router({
       },
       meta: {
         showSearchBar: true
+      }
+    },
+    {
+      path: "/vendor/add",
+      component: AddVendorComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Vendors);
+        next();
+      }
+    },
+    {
+      path: "/vendor1/add",
+      component: AddVendor1Component,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Vendors);
+        next();
       }
     },
     {
