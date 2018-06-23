@@ -1,35 +1,36 @@
 <template>
-    <div v-if="!vendors">
-        There is no account yet.
-    </div>
-        <div v-else>
-        <table class="mytable">
-             <thead>
-                <tr>
-                    <th><strong>ID</strong></th>
-                    <th><strong>Business name</strong></th>
-                    <th><strong>Business address</strong></th>
-                    <th><strong>Website</strong></th>
-                    <th><strong>Contact name</strong></th>
+  <div v-if="!vendors">
+    There is no account yet.
+  </div>
+  <div v-else>
+    <table class="mytable">
+      <thead>
+        <tr>
+          <th><strong>ID</strong></th>
+          <th><strong>Business name</strong></th>
+          <th><strong>Business address</strong></th>
+          <th><strong>Website</strong></th>
+          <th><strong>Contact name</strong></th>
 
-                    <!-- <th><strong>Department</strong></th> -->
-                </tr>
-            </thead>  
-            <tbody>
-                <tr v-bind:key="vendor.Id" v-for="vendor in vendors" class="txtText" v-on:click="gotoDetail(vendor.Id)">
-                    <td style="width:3rem">{{vendor.Id}}</td>    
-                    <!-- <router-link :to="`/team/${team.Id}`">   -->
-                    <td style="width:15rem">{{vendor.BusinessName}}</td>
-                    <!-- </router-link> -->
-                    <td style="width:20rem">{{vendor.BusinessAddress}}</td>
-                    <td style="width:20rem">{{vendor.Website}}</td>
-                    <td>{{vendor.ContactName}}</td>
-                </tr>
-            </tbody>
-        </table>
-
-
-    </div>
+          <!-- <th><strong>Department</strong></th> -->
+        </tr>
+      </thead>  
+      <tbody>
+          <tr v-bind:key="vendor.Id" v-for="vendor in vendors" class="txtText" v-on:click="gotoDetail(vendor.Id)">
+            <td style="width:3rem">{{vendor.Id}}</td>    
+            <!-- <router-link :to="`/team/${team.Id}`">   -->
+            <td style="width:15rem">{{vendor.BusinessName}}</td>
+            <!-- </router-link> -->
+            <td style="width:20rem">{{vendor.BusinessAddress}}</td>
+            <td style="width:20rem">{{vendor.Website}}</td>
+            <td>{{vendor.ContactName}}</td>
+          </tr>
+      </tbody>
+    </table>
+    <router-link to='/vendor1/add/'>
+      <button id="btn-add-vendor" class=" material-shadow-animate">Add Vendor</button>
+    </router-link>
+  </div>
 </template>
 
 <script>
@@ -40,7 +41,7 @@ export default {
     this.axios.get(url).then(res => {
       let data = res.data;
       data.forEach(element => {
-        let vendor = element.Vendor;
+        let vendor = element;
         this.vendors.push(vendor);
       });
     });
@@ -115,5 +116,21 @@ table {
   font-size: 15px;
 
   /* text-align: right; */
+}
+#btn-add-vendor {
+  position: fixed;
+  right: 3rem;
+  bottom: 2rem;
+  background-color: var(--primary-color);
+  padding: 13px;
+  color: white;
+  border-radius: 5px;
+  z-index: 1;
+}
+
+#btn-add-vendor:hover {
+  cursor: pointer;
+  background-color: #009688;
+  color: white;
 }
 </style>

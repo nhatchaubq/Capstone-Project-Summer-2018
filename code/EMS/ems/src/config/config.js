@@ -49,7 +49,7 @@ const TEAM_BY_LOCATION_ID_API_PATH = TEAM_API_PATH + "/getTeamByLocation";
 //team api section - end
 
 // vendor api section -start
-const VENDOR_API_PATH = SERVER_DEFAULT + "/vendor/1";
+const VENDOR_API_PATH = SERVER_DEFAULT + "/vendor";
 
 
 // vendor api section -end
