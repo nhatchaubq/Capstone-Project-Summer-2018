@@ -9,6 +9,12 @@ router.get("/", (request, response) => {
     .into(response);
 });
 
+router.get('/floor_block_tile/:locationId', (req, res) => {
+  req.sql('exec [dbo].GetLocationBlockFloorTile @locationId')
+    .param('locationId', req.params.locationId, TYPES.Int)
+    .into(res);
+});
+
 router.post("/create", (request, response) => {
   request
     .sql(

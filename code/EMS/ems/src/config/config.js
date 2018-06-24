@@ -33,7 +33,8 @@ const WORKODER_BY_ID_LOCATION_API_PATH =
 
 //location api section - start
 const LOCATION_API_PATH = SERVER_DEFAULT + "/location";
-const LOCATION_CREATE_API_PATH = LOCATION_API_PATH + "/create";
+const LOCATION_CREATE_API_PATH =LOCATION_API_PATH + "/create";
+const LOCATION_BLOCK_FLOOR_TILE_API_PATH = LOCATION_API_PATH + '/floor_block_tile';
 const LOCATION_UPDATE_API_PATH = LOCATION_API_PATH + "/editLocation";
 //location api section - end
 
@@ -73,6 +74,7 @@ export default {
 
   LOCATION_API_PATH,
   LOCATION_CREATE_API_PATH,
+  LOCATION_BLOCK_FLOOR_TILE_API_PATH,
   TEAM_API_PATH,
   VIEW_ACCOUNT_DETAIL_API_PATH,
 
