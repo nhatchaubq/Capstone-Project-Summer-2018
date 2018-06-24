@@ -21,7 +21,7 @@
         <!-- <div v-else> -->
             <div>
 <div >
-        <table class="table">
+        <table class="mytable">
              <thead>
                 <tr>
                     <th><strong>ID</strong></th>
@@ -32,11 +32,11 @@
                 </tr>
             </thead>  
             <tbody>
-                <tr v-bind:key="team.Id" v-for="team in teams">
+                <tr v-bind:key="team.Id" v-for="team in teams" v-on:click="gotoDetail(team.Id)">
                     <td>{{team.Id}}</td>    
-                    <router-link :to="`/team/${team.Id}`">  
+                    <!-- <router-link :to="`/team/${team.Id}`">   -->
                       <td>{{team.Name}}</td>
-                    </router-link>
+                    <!-- </router-link> -->
                     <td>{{team.CreatedDate}}</td>
 
 
@@ -73,6 +73,11 @@ export default {
     return {
       teams: []
     };
+  },
+  methods: {
+    gotoDetail(teamId) {
+      this.$router.push(`/team/${teamId}`);
+    }
   }
 };
 </script>
@@ -135,7 +140,9 @@ export default {
       padding-left: 20px; */
   margin-right: 5px;
 }
-
+td:hover {
+  cursor: pointer;
+}
 .btn-view-mode:hover {
   background-color: #26a69a;
   color: white;

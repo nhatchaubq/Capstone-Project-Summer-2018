@@ -5,6 +5,11 @@ router.get('/', (request, response) => {
     request.sql("exec GetEquipments")
         .into(response);
 });
+router.get('/:id', (request, response) => {
+    request.sql("exec GetEquipmentByID @id")
+        .param("id", request.params.id, TYPES.Int)
+        .into(response);
+});
 /* GET request, get EquipmentByName */
 router.get("/:equipmentName", function (request, response) {
     request
@@ -35,6 +40,19 @@ router.post('/', (request, response) => {
         .param('madein', request.body.madein, TYPES.NVarChar)
         .param('description', request.body.description, TYPES.NVarChar)
         .param('categoryID', request.body.categoryID, TYPES.Int)
+        .exec(response);
+});
+
+/* PUT request, for update an Equipment */
+router.put('/:id', function (request, response) {
+    request.sql('UPDATE [Equipment] set Name = @name, VendorID = @vendorid, Image=@image, MadeIn=@madein, Description=@description, CategoryID=@categoryid where Id = @id')
+        .param('id', request.params.id, TYPES.Int)
+        .param('name', request.body.name, TYPES.NVarChar)
+        .param('vendorid', request.body.vendorid, TYPES.Int)
+        .param('image', request.body.image, TYPES.NVarChar)
+        .param('madein', request.body.madein, TYPES.NVarChar)
+        .param('categoryid', request.body.categoryid, TYPES.Int)
+        .param('description', request.body.description, TYPES.NVarChar)
         .exec(response);
 });
 

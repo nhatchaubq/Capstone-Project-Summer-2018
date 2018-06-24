@@ -25,8 +25,13 @@
         </div>
 
         <div v-if="selectedLocation != null" class="location-detail material-box material-shadow">  
-          <div style="">
-            <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>
+          <div class="info-location" >
+            <div class="header-detail">
+              <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>      
+              <div class="btn-edit">
+              <router-link :to="'/location/edit-location/'+selectedLocation.Id" class="rtl-edit"> Edit <i class="material-icons" style="position: relative;top: 0.43rem;right: 0.3rem;font-size: 25px;">chevron_right</i></router-link> 
+            </div>
+          </div>
             
             <div class="location-address">
               {{selectedLocation.Address}}
@@ -34,6 +39,7 @@
             <div>
               Description: {{selectedLocation.Description}}            
             </div>
+
             <br/> 
             <div style="">
               <div class="type-bar">
@@ -44,6 +50,7 @@
               </div>
             </div>
             <br>
+
             <div v-if="currentMode == modes.MAP">
               <div class="ggmap">
                 <GmapMap
@@ -129,21 +136,21 @@
                                 </div>
                                 <v-card>
                                     <v-card-text style="font-size: .9rem">
-                                      <div style="display: grid; grid-template-columns: 40% auto">
+                                      <div style="display: grid; grid-template-columns: 40% auto; background-color:#F5F5F5; padding: 1rem;">
                                         <div class="acc-img">
                                           <img v-show="account.AvatarImage" :src="account.AvatarImage" >
                                         </div>
                                       <div >
                                         <div>
-                                          <h2 id="info-title">Info</h2>
+                                          <h2 id="info-title">Information</h2>
                                         </div>
                                         <div class="acc-info">
                                           <div><i class="material-icons">credit_card</i> Name: {{account.Fullname}}  </div>
                                           <div><i class="material-icons">settings_phone  </i> Phone: {{account.Phone}} </div>
                                           <div><i class="material-icons">email</i> Email: {{account.Email}} </div>
                                           <div><i class="material-icons">date_range</i> StartDate: {{account.StartDate}}</div>
-                                          <div style="font-size: 28px;text-align:center">
-                                            <router-link :to="'/team/' + account.IdOfTeam">Show Team Detail</router-link>
+                                          <div id="team-detail">
+                                            <router-link :to="'/team/' + account.IdOfTeam" >Show Team Detail </router-link>
                                           </div>
                                         </div>                        
                                       </div>
@@ -152,18 +159,14 @@
                                 </v-card>
                             </v-expansion-panel-content>
                       </v-expansion-panel>
-                    </v-flex>                 
-                   
-                   
-                   
+                    </v-flex>                
+               
                  </div>
                  <!-- <div v-else>
                    <i class="material-icons">perm_identity</i>
-                 </div> -->
-                  
+                 </div> -->                  
                </div>
             </div>
-
             <div v-else>position</div>
       </div>
       <div v-else>
@@ -184,15 +187,13 @@
             <!-- <gmap-info-window :key="'mapViewLocationInfoWindow' + location.Id" v-for="location in locations">{{ location.Name }}</gmap-info-window> -->
           </GmapMap>
         </div>       
-
-      </div> 
-      
+      </div>       
   </div>
 </template>
 
 <script>
 import Server from "@/config/config.js";
-import {gmapApi} from 'vue2-google-maps'
+import { gmapApi } from "vue2-google-maps";
 
 export default {
   computed: {
@@ -205,7 +206,7 @@ export default {
       workorders: [],
       team: [],
       selectedLocation: null,
-      currentMode: 0,
+      currentMode: 4,
       modes: {
         EQUIPMENT: 0,
         WORKORDER: 1,
@@ -218,7 +219,7 @@ export default {
       medianLatitude: null,
       medianLongitude: null,
       mapViewSelectedLocation: null,
-      // chaubqn - start
+      // chaubqn - end
     };
   },
   methods: {
@@ -404,8 +405,6 @@ export default {
   cursor: pointer;
 }
 
-.block {
-}
 .location-name {
   font-size: 1.5rem;
 }
@@ -418,16 +417,63 @@ export default {
 }
 
 .location-detail {
-   
+  display: grid;
+  grid-template-rows: auto auto auto;
+  grid-gap: 0.3rem;
   position: fixed;
   left: 56%;
   max-height: 88%;
   overflow-y: auto;
-  width: 42%;
+  overflow-x: hidden;
+  width: 43%;
   z-index: 2;
 }
+.info-location {
+  border-bottom: 1px solid lightgray;
+}
+.header-detail {
+  display: grid;
+  grid-template-columns: 80% auto;
+}
+.rtl-edit {
+  color: var(--lighten-primary-color);
+}
+.rtl-edit:hover {
+  cursor: pointer;
+  color: #009688;
+}
+.btn-edit {
+  position: relative;
+  left: 1.2rem;
+  bottom: 1.2rem;
+  text-align: right;
+  padding-right: 0% !important;
+
+  color: var(--lighten-primary-color);
+  padding: 7px;
+
+  border-radius: 5px;
+  z-index: 10;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.btn-add-location {
+  position: fixed;
+  right: 43.5rem;
+  bottom: 1.5rem;
+  background-color: var(--primary-color);
+  padding: 13px;
+  color: white;
+  border-radius: 5px;
+  z-index: 10;
+  font-size: 1.3rem;
+}
+.btn-add-location:hover {
+  cursor: pointer;
+  background-color: #009688;
+}
 .type-bar {
-  
   border: 0.5px solid;
   border-radius: 5px;
   display: grid;
@@ -457,8 +503,8 @@ export default {
 
 .btn-add-location{
   position: fixed;
-  right: 2.5rem;
-  bottom: 2rem;
+  right: 43.5rem;
+  bottom: 1.5rem;
   background-color: var(--primary-color);
   padding: 13px;
   color: white;
@@ -470,55 +516,53 @@ export default {
   cursor: pointer;
   background-color: #009688;
 }
-.order-box{
+.order-box {
   padding-top: 0.5rem;
   border-bottom: 1.5px solid lightgray;
   padding-left: 10px;
 }
 
-.name-team{
+.name-team {
   display: grid;
   grid-template-columns: 5% auto;
   height: 3rem;
   line-height: 3rem;
-  
-  font-size: 25px ;
+
+  font-size: 20px;
   font-weight: bold;
-  color: var( --primary-color);
+  color: var(--primary-color);
   border-bottom: 0.5px solid lightgrey;
-  
 }
-.name-team i{
+.name-team i {
   color: gray;
   position: relative;
   top: 0.3rem;
-  font-size: 30px;
+  font-size: 25px;
 }
-#show-detail{
+#show-detail {
   text-align: center;
   height: 100%;
   line-height: 70px;
 }
-.acc-info{
+.acc-info {
   padding-left: 1rem;
   margin: 0.3rem;
 }
-#info-title{
+#info-title {
   padding-left: 0 !important;
-  height: 1.7rem;
+  padding-bottom: 0.5rem;
   width: 100%;
   text-align: center;
-  background-color: aquamarine;
+  border-bottom: var(--shadow) 1px solid;
   font: 24px bold;
-
 }
-.acc-info i{
-  position: relative; top: 0.3rem
+.acc-info i {
+  position: relative;
+  top: 0.3rem;
 }
-.acc-info div{
+.acc-info div {
   width: 100%;
 }
-
 
 .btn-view-mode-left {
   background-color: white;
@@ -567,4 +611,17 @@ export default {
   color: white;
   cursor: pointer;
 }
+
+#team-detail {
+  margin-top: 0.5rem;
+  color: #26a69a !important;
+  font-size: 17px;
+  text-align: center;
+}
+/* #team-detail router-link{
+  color: #26a69a;
+}
+#team-detail:hover{
+  color: var(--darken-primary-color);
+} */
 </style>

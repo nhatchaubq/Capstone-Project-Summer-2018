@@ -15,22 +15,28 @@ router.get('/floor_block_tile/:locationId', (req, res) => {
     .into(res);
 });
 
-router.post('/create',(request,respone) =>{
+router.post("/create", (request, response) => {
   request
     .sql(
-      "insert into [Location](Name,Address,Description,Longitude,Latitude)"+
-      " values(@name, @address, @description, @longtitude, @latitude)"
+      "exec CreateLocation @name,@address,@description,@longtitude,@latitude"
     )
-    .param("name",request.body.newLocation.name,TYPES.NVarChar)
-    .param("address",request.body.newLocation.addess,TYPES.NVarChar)
-    .param("description",request.body.newLocation.description,TYPES.NVarChar)
-    .param("longtitude",request.body.newLocation.longtitude,TYPES.Float)
-    .param("latitude",request.body.newLocation.latitude,TYPES.Float)
-    .exec(respone);
+    .param("name", request.body.newLocation.name, TYPES.NVarChar)
+    .param("address", request.body.newLocation.address, TYPES.NVarChar)
+    .param("description", request.body.newLocation.description, TYPES.NVarChar)
+    .param("longtitude", request.body.newLocation.longtitude, TYPES.Float)
+    .param("latitude", request.body.newLocation.latitude, TYPES.Float)
+    .into(response);
+});
+router.get("/editLocation/:id", (request, response) => {
+  request
+    .sql("exec EditLocationById @locationId")
+    .param("locationId", request.params.id, TYPES.Int)
+    .into(response);
 });
 
-router.get('/:id/team', (req, res) => {
-  req.sql("exec GetTeamFromLocationId @locationId")
+router.get("/:id/team", (req, res) => {
+  req
+    .sql("exec GetTeamFromLocationId @locationId")
     .param("locationId", req.params.id, TYPES.Int)
     .into(res);
 });

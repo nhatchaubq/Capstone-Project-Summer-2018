@@ -78,7 +78,9 @@ export default {
       this.sending = true;
       this.showNotification = false;
       await Utils.sleep(1000);
-      let uri = `${Server.LOGIN_API_PATH}/${this.form.username}/${this.form.password}`;
+      let uri = `${Server.LOGIN_API_PATH}/${this.form.username}/${
+        this.form.password
+      }`;
       this.axios
         .get(uri)
         .then(response => {

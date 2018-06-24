@@ -1,7 +1,11 @@
 <template>
 
+  <div v-if="account">
+    <router-link to="/account">
+      <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Accounts</a>
+    </router-link>
    <!-- <form @submit.prevent="editAccount()"> -->
-  <div class="grid-wrapper">
+<div class="grid-wrapper1">
 
   <!-- <button class="button " style="background-color:green;   position: fixed;
   top: 6rem;
@@ -22,30 +26,19 @@
 
   <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
-  
+
+
+
   </div>
-<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+<div class="row" style="margin-top:0.5rem;  height: 36px">
     <div class="col-3" style="margin-top:0.5rem">Password: </div>
-    <!-- <div class="col-7"> {{account.Password ? account.Password: 'N/A' }}</div> -->
+
     <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
     <input v-else v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input">
+
 </div>
- <!-- <h2 class="field is-horizontal" style="margin:0px">
 
-<div style="padding-top:1rem; ">
-  <span class="icon is-small is-left">
-        <i class="fa fa-user"></i>
-        </span>
-   Full name:</div>  -->
- 
-<!-- <input v-model="account.Fullname" type="text" placeholder="Search" style="    border-style: solid;
-    border-width: 2; border-radius: 3px;"/> -->
-<!-- <div class="control  " style="padding:8px">
-    <input v-model="account.Fullname" class="input " type="text" placeholder="Text input" style="margin:0px" >
-</div> 
-</h2>-->
-
-<div class="row" style="margin-top:0.5rem; ">
+<div class="row" style="margin-top:0.5rem; height: 36px">
   <div class=" col-3" style="margin-top:0.5rem">
     Status: 
   </div>
@@ -62,34 +55,25 @@
           Inactive
         </label>
       </div>
-    <!-- <label class="row" style="margin-top:0.5rem;" v-else >
-      <div style="margin-right: 1rem">
-        <input type="radio" name="active" v-on:change="account.IsActive = true"  disabled="disabled">
-        Active
-      </div>
-    <div >
-      <input type="radio" name="active" v-on:change="account.IsActive = false" checked="checked">
-      Inactive
-    </div>
-    </label> -->
+
   </div>
 </div >
-<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem;">
+<div class="row" style="margin-top:0.5rem; height: 36px">
   <div class="col-3" >Role:</div>
   <div class="col-7" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
 </div>
-<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem;">
+<div class="row" style="margin-top:0.5rem; height: 36px">
   <div class="col-3">Start date: </div>
   <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? account.StartDate: 'N/A' }}</div>
 </div>
 <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
-<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+<div class="row" style="margin-top:0.5rem; height: 36px">
   <div class="col-3" style="margin-top:0.5rem">Email: </div>
   <!-- <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div> -->
   <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Email" class="input col-7 " type="text"  placeholder="Text input">
 </div>
-<div class="row" style="margin-top:0.5rem; margin-bot:0.5rem">
+<div class="row" style="margin-top:0.5rem; height: 36px">
   <div class="col-3" style="margin-top:0.5rem">Phone: </div>
   <!-- <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div> -->
   <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
@@ -111,7 +95,7 @@
                         {{team.Name}}
                     </router-link> ( {{team.TeamRole.TeamRole}} ) </div>
 </div>
-</div>
+
 
 
          
@@ -124,9 +108,9 @@
 
 
 
+  </div>  
 
-
-
+  </div>
 </template>
 
 <script>
@@ -171,7 +155,7 @@ export default {
 </script>
 
 <style scoped>
-.grid-wrapper {
+.grid-wrapper1 {
   display: grid;
   grid-template-columns: 50% 50%;
   grid-column-gap: 1rem;

@@ -11,6 +11,12 @@ import TeamComponent from "./components/Team/Team.vue";
 import AddTeamComponent from "./components/Team/AddTeam.vue";
 import TeamDetailComponent from "./components/Team/TeamDetail.vue";
 import LocationComponent from "./components/Location/Location.vue";
+import VendorComponent from "./components/Vendor/Vendor.vue";
+import VendorDetailComponent from "./components/Vendor/VendorDetail.vue";
+import AddVendorComponent from './components/Vendor/AddVendor.vue';
+// test
+import AddVendor1Component from './components/Vendor/AddVendor1.vue'
+// /test
 // import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
 import AccountComponent from './components/Account/Account.vue';
@@ -19,243 +25,280 @@ import AccountDetailComponent from './components/Account/AccountDetail.vue';
 import DepartmentComponent from './components/Department/Department.vue';
 import ProjectComponent from './components/Project/Project.vue'
 import CreateLocation from './components/Location/CreateLocation.vue';
-import TestComponent from './components/TestSite/Test.vue';
+import EditLocation from "./components/Location/EditLocation.vue";
 
 // chaubqn - start
+import TestComponent from './components/TestSite/Test.vue';
 import LocationMapViewComponent from './components/Location/MapView.vue';
 // chaubqn - end
 
 Vue.use(Router)
 
 import store from "./store";
-import menu from './models/menu';
+import menu from "./models/menu";
 
 let router = new Router({
-    mode: 'history',
-    routes: [{
-            path: '/',
-            component: DashboardComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Dashboard);
-                next();
-            },
-            meta: {
-                showSearchBar: false,
-            }
-        },
-        // {
-        //     path: '/login',
-        //     name: 'login',
-        //     component: LoginComponent,
-        // },
-        {
-            path: '/equipment',
-            component: EquipmentComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Equipment);
-                next();
-            },
-            meta: {
-                showSearchBar: true,
-            }
-        },
-        {
-            path: '/equipment/create',
-            component: AddEquipmentComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Equipment);
-                next();
-            },
-            meta: {
-                showSearchBar: false,
-            }
-        },
-        // {
-        //     path: '/equipment/:id',
-        //     component: EquipmentDetailsComponent,
-        //     beforeEnter: (to, from, next) => {
-        //         store.set('title', menu.EquipmentDetail);
-        //         next();
-        //     }
-        // },
-        {
-            path: '/work_order',
-            component: OrderComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.WorkOrder);
-                next();
-            },
-            meta: {
-                showSearchBar: true,
-            }
-        },
-        {
-            path: '/work_order/create',
-            component: CreateOrderComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.WorkOrder);
-                next();
-            },
-            meta: {
-                showSearchBar: false,
-            }
-        },
-        {
-            path: '/calendar',
-            component: CalendarComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Calendar);
-                next();
-            },
-            meta: {
-                showSearchBar: false,
-            }
-        },
-        {
-            path: '/report',
-            component: ReportComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Report);
-                next();
-            },
-            meta: {
-                showSearchBar: false,
-            }
-        },
-        {
-            path: '/team',
-            component: TeamComponent,
-            beforeEnter: (to, from, next) => {
+  mode: "history",
+  routes: [{
+      path: "/",
+      component: DashboardComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Dashboard);
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    // {
+    //     path: '/login',
+    //     name: 'login',
+    //     component: LoginComponent,
+    // },
+    {
+      path: "/equipment",
+      component: EquipmentComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Equipment);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/equipment/create",
+      component: AddEquipmentComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Equipment);
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    // {
+    //     path: '/equipment/:id',
+    //     component: EquipmentDetailsComponent,
+    //     beforeEnter: (to, from, next) => {
+    //         store.set('title', menu.EquipmentDetail);
+    //         next();
+    //     }
+    // },
+    {
+      path: "/work_order",
+      component: OrderComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.WorkOrder);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/work_order/create",
+      component: CreateOrderComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.WorkOrder);
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      path: "/calendar",
+      component: CalendarComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Calendar);
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      path: "/report",
+      component: ReportComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Report);
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      path: "/team",
+      component: TeamComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Teams);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/team/add",
+      component: AddTeamComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Teams);
+        next();
+      }
+    },
+    {
+      path: "/team/:id",
+      component: TeamDetailComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.TeamDetails);
+        next();
+      }
+    },
+    {
+      path: "/account",
+      component: AccountComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Accounts);
+        next();
+      }
+    },
+    {
+      path: "/account/add",
+      component: AddAccountComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Accounts);
+        next();
+      }
+    },
+    {
+      path: "/account/:id",
+      component: AccountDetailComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.AccountDetails);
+        next();
+      }
+    },
+    {
+      path: "/department",
+      component: DepartmentComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Department);
+        next();
+      }
+    },
+    {
+      path: "/location",
+      component: LocationComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Location);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/project",
+      component: ProjectComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Project);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/vendor",
+      component: VendorComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Vendors);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/vendor/:id",
+      component: VendorDetailComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Vendors);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/vendor/add",
+      component: AddVendorComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Vendors);
+        next();
+      }
+    },
+    {
+      path: "/vendor1/add",
+      component: AddVendor1Component,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Vendors);
+        next();
+      }
+    },
+    {
+      path: "/location/create-location",
+      component: CreateLocation,
 
-                store.set('title', menu.Teams);
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Location);
 
-                next();
-            },
-            meta: {
-                showSearchBar: true,
-            }
-        },
-        {
-            path: '/team/add',
-            component: AddTeamComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Teams);
-                next();
-            }
-        },
-        {
-            path: '/team/:id',
-            component: TeamDetailComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.TeamDetails);
-                next();
-            }
-        },
-        {
-            path: '/account',
-            component: AccountComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Accounts);
-                next();
-            }
-        },
-        {
-            path: '/account/add',
-            component: AddAccountComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Accounts);
-                next();
-            }
-        },
-        {
-            path: '/account/:id',
-            component: AccountDetailComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.AccountDetails);
-                next();
-            }
-        },
-        {
-            path: '/department',
-            component: DepartmentComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Department);
-                next();
-            }
-        },
-        {
-            path: '/location',
-            component: LocationComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Location);
-                next();
-            },
-            meta: {
-                showSearchBar: true,
-            }
-        },
-        {
-            path: '/project',
-            component: ProjectComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Project);
-                next();
-            },
-            meta: {
-                showSearchBar: true,
-            }
-        },
-        {
-            path: '/vendors',
-            component: LocationComponent,
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Vendors);
-                next();
-            },
-            meta: {
-                showSearchBar: true,
-            }
-        },
-        {
-            path: '/location/create-location',
-            component: CreateLocation,
-
-            beforeEnter: (to, from, next) => {
-                store.set('title', menu.Location);
-
-                next();
-            },
-            meta: {
-                showSearchBar: true,
-            }
-        },
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/location/edit-location/:id",
+      component: EditLocation,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Location);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      },
+    },
         // chaubqn - start
-        {
-            path: '/test',
-            component: TestComponent,
+    {
+      path: '/test',
+      component: TestComponent,
 
-            beforeEnter: (to, from, next) => {
-                store.set('title', 'Test area');
-                next();
-            },
-            meta: {
-                showSearchBar: false,
-            }
+      beforeEnter: (to, from, next) => {
+          store.set('title', 'Test area');
+          next();
+      },
+      meta: {
+          showSearchBar: false,
+      }
+    },
+    {
+        path: '/location/mapview/:locationId',
+        component: LocationMapViewComponent,
+
+        beforeEnter: (to, from, next) => {
+            store.set('title', menu.Location);
+            next();
         },
-        {
-            path: '/location/mapview/:locationId',
-            component: LocationMapViewComponent,
-
-            beforeEnter: (to, from, next) => {
-                store.set('title', 'Location');
-                next();
-            },
-            meta: {
-                showSearchBar: true
-            }
+        meta: {
+            showSearchBar: true
         }
-        // chaubqn - end
-    ]
+    }
+      // chaubqn - end
+  ]
 });
 
 export default router;
