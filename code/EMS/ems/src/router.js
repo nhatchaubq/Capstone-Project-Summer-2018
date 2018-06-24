@@ -20,6 +20,11 @@ import DepartmentComponent from './components/Department/Department.vue';
 import ProjectComponent from './components/Project/Project.vue'
 import CreateLocation from './components/Location/CreateLocation.vue';
 import TestComponent from './components/TestSite/Test.vue';
+
+// chaubqn - start
+import LocationMapViewComponent from './components/Location/MapView.vue';
+// chaubqn - end
+
 Vue.use(Router)
 
 import store from "./store";
@@ -224,6 +229,7 @@ let router = new Router({
                 showSearchBar: true,
             }
         },
+        // chaubqn - start
         {
             path: '/test',
             component: TestComponent,
@@ -235,7 +241,20 @@ let router = new Router({
             meta: {
                 showSearchBar: false,
             }
+        },
+        {
+            path: '/location/mapview/:locationId',
+            component: LocationMapViewComponent,
+
+            beforeEnter: (to, from, next) => {
+                store.set('title', 'Location');
+                next();
+            },
+            meta: {
+                showSearchBar: true
+            }
         }
+        // chaubqn - end
     ]
 });
 

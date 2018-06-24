@@ -1,30 +1,30 @@
-<template>
-    
-    <div class="location-page">
-      <!-- <div class="type-page">
-        <div><button id="btn-list">Location List</button></div>
-        <div><button id="btn-map-view">Map View</button></div>
-      </div> -->
-      <div class="location-list">
-        <!-- <div class="location-sort">
-          <b>Sort By</b>
-        </div> -->
-        <div class="location-blocks">
-          <div class="material-box material-shadow-animate" :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
-            <div class="location-name" >
-              {{location.Name}}
-            </div>
-            <div class="location-address">
-              <i class="material-icons">place</i>
-              {{location.Address}}
-              
-            </div>
-          </div>         
-        </div>
-        <router-link to="/location/create-location" class="btn-add-location material-shadow-animate" >Add Location</router-link> 
+<template>    
+    <div class="location-page" v-if="locations">
+      <div class="field is-grouped view-mode">
+        <button class="btn-view-mode-left" :class='{"is-active": isListViewMode}' v-on:click="isListViewMode = true">List view</button>
+        <button class="btn-view-mode-right" :class='{"is-active": !isListViewMode}' v-on:click="isListViewMode = false">Map view</button>
       </div>
-   
-      <div v-if="selectedLocation != null" class="location-detail material-box material-shadow">  
+      <div v-if="isListViewMode">
+         <div class="location-list">
+          <!-- <div class="location-sort">
+            <b>Sort By</b>
+          </div> -->
+          <div class="location-blocks">
+            <div class="material-box material-shadow-animate" :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
+              <div class="location-name" >
+                {{location.Name}}
+              </div>
+              <div class="location-address">
+                <i class="material-icons">place</i>
+                {{location.Address}}
+                
+              </div>
+            </div>         
+          </div>
+          <router-link to="/location/create-location" class="btn-add-location material-shadow-animate" >Add Location</router-link> 
+        </div>
+
+        <div v-if="selectedLocation != null" class="location-detail material-box material-shadow">  
           <div style="">
             <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>
             
@@ -36,12 +36,12 @@
             </div>
             <br/> 
             <div style="">
-            <div class="type-bar">
-              <div :class="{'is-active': currentMode == modes.MAP}" v-on:click="currentMode = modes.MAP">Map</div>
-              <div :class="{'is-active': currentMode == modes.EQUIPMENT}" v-on:click="currentMode = modes.EQUIPMENT">Equipment</div>
-              <div :class="{'is-active': currentMode == modes.WORKORDER}" v-on:click="currentMode = modes.WORKORDER">Work Order</div>
-              <div :class="{'is-active': currentMode == modes.TEAM}" v-on:click="currentMode = modes.TEAM">Team</div>
-            </div>
+              <div class="type-bar">
+                <div :class="{'is-active': currentMode == modes.MAP}" v-on:click="currentMode = modes.MAP">Map</div>
+                <div :class="{'is-active': currentMode == modes.EQUIPMENT}" v-on:click="currentMode = modes.EQUIPMENT">Equipment</div>
+                <div :class="{'is-active': currentMode == modes.WORKORDER}" v-on:click="currentMode = modes.WORKORDER">Work Order</div>
+                <div :class="{'is-active': currentMode == modes.TEAM}" v-on:click="currentMode = modes.TEAM">Team</div>
+              </div>
             </div>
             <br>
             <div v-if="currentMode == modes.MAP">
@@ -164,10 +164,30 @@
                </div>
             </div>
 
-            <div v-else>position </div>
-          </div>
-          
-     
+            <div v-else>position</div>
+      </div>
+      <div v-else>
+        <div>
+          <GmapMap          
+            :center="{lat:medianLatitude, lng:medianLongitude}"
+            :zoom="13"
+            map-type-id="terrain"
+            style="width: 100%; height:31rem"
+            >
+            <GmapMarker
+              v-for="location in locations" :key="'mapViewMarker' + location.Id"
+              :position="google && new google.maps.LatLng(location.Latitude, location.Longitude)"
+              :clickable="true"
+              :draggable="true"
+              @click="gotoLocationDetail(location.Id)"
+            />
+            <!-- <gmap-info-window :key="'mapViewLocationInfoWindow' + location.Id" v-for="location in locations">{{ location.Name }}</gmap-info-window> -->
+          </GmapMap>
+        </div>       
+
+      </div> 
+      
+  </div>
 </template>
 
 <script>
@@ -193,7 +213,12 @@ export default {
         POSITION: 3,
         MAP: 4
       },
-      
+      // chaubqn - start
+      isListViewMode: true,
+      medianLatitude: null,
+      medianLongitude: null,
+      mapViewSelectedLocation: null,
+      // chaubqn - start
     };
   },
   methods: {
@@ -261,17 +286,50 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    }
-  },
+    },
+    // chaubqn - start
+    // getLocationBlockFloorTile(locationId) {
+    //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
+    //   this.axios.get(url)
+    //     .then((res) => {
+    //       this.mapViewSelectedLocation = res.data;
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     })
+    // }
 
+    gotoLocationDetail(locationId) {
+      this.$router.push(`/location/mapview/${locationId}`);
+    }
+    // chaubqn - end
+  },
   created() {
     this.axios
       .get(Server.LOCATION_API_PATH)
       .then(response => {
         let data = response.data;
+        let minLongitude = data[0].Longitude;
+        let maxLongitude = data[0].Longitude;
+        let minLatitude = data[0].Latitude;
+        let maxLatitude = data[0].Latitude;
         data.forEach(location => {
           this.locations.push(location);
+          if (location.Longitude <= minLongitude) {
+            minLongitude = location.Longitude;            
+          } 
+          if (location.Longitude > maxLongitude) {
+            maxLongitude = location.Longitude;
+          }
+          if (location.Latitude <= minLatitude) {
+            minLatitude = location.Latitude;
+          } 
+          if (location.Latitude > maxLatitude) {
+            maxLatitude = location.Latitude;
+          }
         });
+        this.medianLongitude = (minLongitude + maxLongitude) / 2;
+        this.medianLatitude = (minLatitude + maxLatitude) / 2;
         // this.selectedLocation(this.locations[0]);
       })
       .catch(error => {
@@ -459,5 +517,54 @@ export default {
 }
 .acc-info div{
   width: 100%;
+}
+
+
+.btn-view-mode-left {
+  background-color: white;
+  padding: 0.4rem 0.6rem;
+  /* height: 2rem; */
+  font-size: 15px;
+  /* line-height: 2rem; */
+  color: var(--primary-color);
+  border-radius: 5px 0 0 5px;
+  border: 1px solid #26a69a;
+  z-index: 1;
+  /* padding-right: 20px;
+      padding-left: 20px; */
+}
+
+.btn-view-mode-left:hover {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+}
+.btn-view-mode-right {
+  background-color: white;
+  padding: 0.4rem 0.6rem;
+  /* height: 2rem; */
+  font-size: 15px;
+  /* line-height: 2rem; */
+  color: var(--primary-color);
+  border-radius: 0 5px 5px 0;
+  border-top: 1px solid #26a69a;
+  border-right: 1px solid #26a69a;
+  border-bottom: 1px solid #26a69a;
+  z-index: 1;
+  /* padding-right: 20px;
+      padding-left: 20px; */
+  margin-right: 5px;
+}
+
+.btn-view-mode-right:hover {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+}
+
+.is-active {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
 }
 </style>

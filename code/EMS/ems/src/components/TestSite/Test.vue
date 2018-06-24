@@ -61,7 +61,12 @@
                         currentPoly = {name: '', points: []};
                         selectingPointIndex = -1;
                         drawPoints();
-                    }">Finish</button>
+                    }">Save tile</button>
+                    <div>
+                        <button class="button" v-on:click="() => {                            
+                            showAlert(JSON.stringify(polyList));
+                        }">Finish</button>
+                    </div>
                 </div>
             </div>
         </div>        
@@ -146,6 +151,9 @@ export default {
         });
     },
     methods: {
+        showAlert(msg) {
+            alert(msg);
+        },
         getFile(file) {
             console.log(file);
             // this.image = file;
@@ -280,7 +288,7 @@ export default {
                     canvasContext.font = '2rem Roboto';
                     canvasContext.fillStyle = "black";
                     canvasContext.textAlign = 'center';
-                    canvasContext.fillText(`${poly.name}`, (minX + (maxX - minX) / 2) - 10, minY + (maxY - minY) / 2);
+                    canvasContext.fillText(`${poly.name}`, (minX + maxX) / 2, (maxY + minY) / 2);
                 }
             }
         },
