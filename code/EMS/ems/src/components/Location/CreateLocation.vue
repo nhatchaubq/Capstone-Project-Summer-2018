@@ -106,6 +106,7 @@ export default {
           newLocation: this.newLocation
         })
         .then(res => {
+          alert(this.selectedTeams.length);
           if (this.selectedTeams.length > 0) {
             if (res.data.NewLocationId) {
               this.selectedTeams.forEach(team => {
@@ -113,9 +114,13 @@ export default {
                   locationId: res.data.NewLocationId,
                   teamId: team.Id
                 });
+                alert("Success!");
               });
             }
           }
+        })
+        .catch(error => {
+          console.log(error);
         });
     },
     removeSelectedTeam(tmpTeam) {

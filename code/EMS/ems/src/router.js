@@ -18,17 +18,21 @@ import AddVendorComponent from './components/Vendor/AddVendor.vue';
 import AddVendor1Component from './components/Vendor/AddVendor1.vue'
 // /test
 // import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
-import AddEquipmentComponent from "./components/Equipment/AddEquipment.vue";
-import AccountComponent from "./components/Account/Account.vue";
-import AddAccountComponent from "./components/Account/AddAccount.vue";
-import AccountDetailComponent from "./components/Account/AccountDetail.vue";
-import DepartmentComponent from "./components/Department/Department.vue";
-import ProjectComponent from "./components/Project/Project.vue";
-import CreateLocation from "./components/Location/CreateLocation.vue";
+import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
+import AccountComponent from './components/Account/Account.vue';
+import AddAccountComponent from './components/Account/AddAccount.vue';
+import AccountDetailComponent from './components/Account/AccountDetail.vue';
+import DepartmentComponent from './components/Department/Department.vue';
+import ProjectComponent from './components/Project/Project.vue'
+import CreateLocation from './components/Location/CreateLocation.vue';
 import EditLocation from "./components/Location/EditLocation.vue";
-Vue.use(Router);
 
+// chaubqn - start
+import TestComponent from './components/TestSite/Test.vue';
+import LocationMapViewComponent from './components/Location/MapView.vue';
+// chaubqn - end
 
+Vue.use(Router)
 
 import store from "./store";
 import menu from "./models/menu";
@@ -260,15 +264,40 @@ let router = new Router({
     {
       path: "/location/edit-location/:id",
       component: EditLocation,
-
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Location);
         next();
       },
       meta: {
         showSearchBar: true
+      },
+    },
+        // chaubqn - start
+    {
+      path: '/test',
+      component: TestComponent,
+
+      beforeEnter: (to, from, next) => {
+          store.set('title', 'Test area');
+          next();
+      },
+      meta: {
+          showSearchBar: false,
       }
+    },
+    {
+        path: '/location/mapview/:locationId',
+        component: LocationMapViewComponent,
+
+        beforeEnter: (to, from, next) => {
+            store.set('title', menu.Location);
+            next();
+        },
+        meta: {
+            showSearchBar: true
+        }
     }
+      // chaubqn - end
   ]
 });
 

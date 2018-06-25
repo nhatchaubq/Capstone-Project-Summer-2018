@@ -9,6 +9,31 @@ router.get("/", (request, response) => {
     .into(response);
 });
 
+router.delete("/deleteTeamWithoutWO/:id", (req, res) => {
+  req
+    .sql("exec DeleteTeamLocationWithoutWorkOrderByLocationId @locationId")
+    .param("locationId", req.params.id, TYPES.Int)
+    .exec(res);
+});
+
+router.put("/edit", (req, res) => {
+  req
+    .sql("exec EditLocation @locationId,@name,@address,@description")
+
+    .param("locationId", req.body.newLocation.id, TYPES.Int)
+    .param("name", req.body.newLocation.name, TYPES.NVarChar)
+    .param("address", req.body.newLocation.address, TYPES.NVarChar)
+    .param("description", req.body.newLocation.description, TYPES.NVarChar)
+    .exec(res);
+});
+
+router.get("/floor_block_tile/:locationId", (req, res) => {
+  req
+    .sql("exec [dbo].GetLocationBlockFloorTile @locationId")
+    .param("locationId", req.params.locationId, TYPES.Int)
+    .into(res);
+});
+
 router.post("/create", (request, response) => {
   request
     .sql(
@@ -23,7 +48,7 @@ router.post("/create", (request, response) => {
 });
 router.get("/editLocation/:id", (request, response) => {
   request
-    .sql("exec EditLocationById @locationId")
+    .sql("exec Get1LocationById @locationId")
     .param("locationId", request.params.id, TYPES.Int)
     .into(response);
 });
