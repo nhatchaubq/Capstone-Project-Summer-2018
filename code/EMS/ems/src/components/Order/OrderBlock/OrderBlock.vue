@@ -43,16 +43,24 @@ export default {
                 case 1: { // request
                     return 'fa-level-up';
                 }
-                case 2: // checked
+                case 2: { // checked
                     return 'fa-check';
-                case 3: // approved
+                }
+                case 3: { // approved
                     return 'fa-approve';
-                case 4: // delivered
+                }
+                case 4: { // delivered
                     return 'fa-handshake-o';
-                case 5: // return
+                }
+                case 5: { // return
                     return 'fa-archive';
-                case 6: // done
+                }
+                case 6: { // done
                     return 'fa-check-square-o';
+                }
+                case 8: {
+                    return 'fa-cancel';
+                }
             }
         }
     }

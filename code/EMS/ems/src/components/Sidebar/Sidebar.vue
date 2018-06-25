@@ -60,7 +60,7 @@
         <div class="divider"></div>
         
         <li>
-          <router-link to='/vendors'>
+          <router-link to='/vendor'>
             <div class="sidebar-list-content" :class="isActive(menu.Vendors)">
             <i class="material-icons">domain</i>
             {{ menu.Vendors }}
@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import menuData from '@/models/menu.js';
+import menuData from "@/models/menu.js";
 import { sync } from "vuex-pathify";
 export default {
   name: "sidebar",
@@ -96,8 +96,8 @@ export default {
   },
   data() {
     return {
-      menu: menuData,
-    }
+      menu: menuData
+    };
   },
   methods: {
     isActive(title) {
@@ -117,7 +117,7 @@ export default {
     logout() {
       this.$store.state.isLoggedIn = false;
       window.localStorage.removeItem("user");
-      this.$router.push('/');
+      this.$router.push("/");
     }
   }
 };
@@ -156,18 +156,18 @@ export default {
 }
 
 .sidebar li a {
-  color: #b2dfdb;
+  color: #b2dfdb !important;
   text-decoration: none;
   transition: all 0.15s ease-in-out;
 }
 
 .sidebar-list ul li:hover a {
   cursor: pointer;
-  color: #26a69a;
+  color: #26a69a !important;
 }
 
 .is-active {
-  color: #26a69a;
+  color: #26a69a !important;
 }
 .sidebar-list-content {
   padding-left: 20px;

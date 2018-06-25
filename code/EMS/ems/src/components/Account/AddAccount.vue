@@ -180,7 +180,7 @@
 
             
     
-    <div class="form-title-end">
+    <div class="form-title-end" style="margin-bottom:2rem">
                     <router-link to='/account'>
                         <button id="btn-cancel" class="button" >Cancel</button>
                     </router-link>
@@ -192,7 +192,7 @@
                     </router-link> -->
                     <button id="btn-add" class="button">Create Account</button>
                 </div>
-            <div>&nbsp</div>
+            <!-- <div>&nbsp</div> -->
          <!-- </form> -->
          </form>
     </div>
