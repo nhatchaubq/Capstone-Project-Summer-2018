@@ -28,7 +28,7 @@ export default {
         position: relative;
         /* float: left; */
         display: inline;
-        margin-right: 1.7rem;
+        margin-right: 4%;
         text-align: center;
         font-size: 13px;
         z-index: 1;
@@ -43,7 +43,7 @@ export default {
 
     .progressbar li:after {
         content: "";
-        width: 2.5rem;
+        width: 40%;
         height: 3px;
         background: #F5F5F5;
         z-index: -1;
