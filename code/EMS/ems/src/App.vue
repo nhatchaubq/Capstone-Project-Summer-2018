@@ -48,6 +48,8 @@ export default {
   --dark-background: #263238;
   --success-color: #00c853;
   --danger-color: #ef5350;
+  --lighten-danger-color: #FF6762;
+  --darken-danger-color: #DA3630;
   --shadow: #9e9e9e;
   --status-request: #f44336;
   --status-checked: #304ffe;
@@ -65,6 +67,16 @@ body {
   width: 100%;
   height: 100%;
   /* background-color: var(--light-background);   */
+}
+
+a {
+  color: hsl(217, 71%, 53%) !important;
+}
+a:hover {
+  color: hsl(217, 79%, 58%) !important;
+}
+a:active {
+  color: hsl(217, 71%, 30%) !important;
 }
 
 #app {
@@ -131,7 +143,15 @@ body {
   color: white !important;
   background-color: var(--primary-color);
   z-index: 99;
-  transition: all .2s ease-in-out;
+  transition: all .15s ease-in-out;
+}
+
+.button.btn-danger {
+  border: 0;
+  color: white !important;
+  background-color: var(--danger-color);
+  z-index: 99;
+  transition: all .15s ease-in-out;
 }
 
 button.btn-primary:hover {
@@ -140,9 +160,21 @@ button.btn-primary:hover {
   background-color: var(--lighten-primary-color);
 }
 
+button.btn-danger:hover {
+  cursor: pointer;
+  color: white !important;
+  background-color: var(--lighten-danger-color);
+}
+
 button.btn-primary:active {
   color: white !important;
-  background-color: var(--darken-primary-color);
+  background-color: var(--darken-primary-color) !important;
+  box-shadow: 1px 1px 1px var(--shadow) !important;
+}
+
+button.btn-danger:active {
+  color: white !important;
+  background-color: var(--darken-danger-color) !important;
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
