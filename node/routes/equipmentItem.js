@@ -6,11 +6,11 @@ var TYPES = require("tedious").TYPES;
 //         .into(response);
 // });
 
-// router.get('/:id', (req, res) => {
-//     req.sql('exec GetEquipmentDetailById @id')
-//         .param('id', req.params.id, TYPES.Int)
-//         .into(res);
-// });
+router.get('/chau/:id', (req, res) => {
+    req.sql('exec GetEquipmentDetailById @id')
+        .param('id', req.params.id, TYPES.Int)
+        .into(res);
+});
 /*Count Quality Equipment Item of one Equipment*/
 // router.get('/:id', (req, res) => {
 //     req.sql('exec CountQualityItem @id')

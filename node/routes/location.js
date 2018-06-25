@@ -15,6 +15,12 @@ router.get('/floor_block_tile/:locationId', (req, res) => {
     .into(res);
 });
 
+router.get('/:id', (req, res) => {
+  req.sql('select * from [Location] where Id = @id for json path, without_array_wrapper')
+    .param('id', req.params.id, TYPES.Int)
+    .into(res);
+});
+
 router.post("/create", (request, response) => {
   request
     .sql(
