@@ -36,8 +36,11 @@ const LOCATION_API_PATH = SERVER_DEFAULT + "/location";
 const LOCATION_CREATE_API_PATH =LOCATION_API_PATH + "/create";
 const LOCATION_BLOCK_FLOOR_TILE_API_PATH = LOCATION_API_PATH + '/floor_block_tile';
 const LOCATION_UPDATE_API_PATH = LOCATION_API_PATH + "/editLocation";
-//location api section - end
+const LOCATION_EDIT_API_PATH = LOCATION_API_PATH + "/edit";
+const LOCATION_DELETE_TEAM_WITHOUT_WORDODER =
+  LOCATION_API_PATH + "/deleteTeamWithoutWO";
 
+//location api section - end
 //team_location api section - start
 const TEAM_LOCATION_API_PATH = SERVER_DEFAULT + "/team_location";
 const TEAM_LOCATION_CREATE_API_PATH =
@@ -83,5 +86,9 @@ export default {
   LOCATION_UPDATE_API_PATH,
   TEAM_LOCATION_CREATE_API_PATH,
 
+  LOCATION_EDIT_API_PATH,
+  LOCATION_DELETE_TEAM_WITHOUT_WORDODER,
+  
   VENDOR_API_PATH
 };
+
