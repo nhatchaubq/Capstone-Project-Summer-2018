@@ -421,7 +421,7 @@ export default {
   border: 0.5px solid;
   border-radius: 5px;
   display: grid;
-  grid-template-columns: auto auto auto auto auto;
+  grid-template-columns: auto auto auto auto;
   color: var(--primary-color);
   border-color: var(--primary-color);
 }
