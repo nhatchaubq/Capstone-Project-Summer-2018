@@ -17,7 +17,7 @@ import AddVendorComponent from './components/Vendor/AddVendor.vue';
 // test
 import AddVendor1Component from './components/Vendor/AddVendor1.vue'
 // /test
-// import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
+import EquipmentDetailComponent from './components/Equipment/EquipmentDetail.vue';
 import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
 import AccountComponent from './components/Account/Account.vue';
 import AddAccountComponent from './components/Account/AddAccount.vue';
@@ -78,14 +78,14 @@ let router = new Router({
         showSearchBar: false
       }
     },
-    // {
-    //     path: '/equipment/:id',
-    //     component: EquipmentDetailsComponent,
-    //     beforeEnter: (to, from, next) => {
-    //         store.set('title', menu.EquipmentDetail);
-    //         next();
-    //     }
-    // },
+    {
+        path: '/equipment/:id',
+        component: EquipmentDetailComponent,
+        beforeEnter: (to, from, next) => {
+            store.set('title', menu.EquipmentDetail);
+            next();
+        }
+    },
     {
       path: "/work_order",
       component: OrderComponent,
