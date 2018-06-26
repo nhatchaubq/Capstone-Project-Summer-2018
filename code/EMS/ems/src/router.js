@@ -20,10 +20,19 @@ import AccountDetailComponent from "./components/Account/AccountDetail.vue";
 import DepartmentComponent from "./components/Department/Department.vue";
 import ProjectComponent from "./components/Project/Project.vue";
 import CreateLocation from "./components/Location/CreateLocation.vue";
+import VendorComponent from "./components/Vendor/Vendor.vue";
+import VendorDetailComponent from "./components/Vendor/VendorDetail.vue";
+import AddVendorComponent from './components/Vendor/AddVendor.vue';
+import AddVendor1Component from './components/Vendor/AddVendor1.vue'
 import EditLocation from "./components/Location/EditLocation.vue";
-Vue.use(Router);
 
+// chaubqn - start
+import TestComponent from './components/TestSite/Test.vue';
+import LocationMapViewComponent from './components/Location/MapView.vue';
+import AddBlockFloorTileComponent from './components/Location/AddBlockFloorTile.vue';
+// chaubqn - end
 
+Vue.use(Router)
 
 import store from "./store";
 import menu from "./models/menu";
@@ -202,14 +211,41 @@ let router = new Router({
       }
     },
     {
-      path: "/vendors",
-      component: LocationComponent,
+      path: "/vendor",
+      component: VendorComponent,
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Vendors);
         next();
       },
       meta: {
         showSearchBar: true
+      }
+    },
+    {
+      path: "/vendor/:id",
+      component: VendorDetailComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Vendors);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/vendor/add",
+      component: AddVendorComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Vendors);
+        next();
+      }
+    },
+    {
+      path: "/vendor1/add",
+      component: AddVendor1Component,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Vendors);
+        next();
       }
     },
     {
@@ -228,15 +264,52 @@ let router = new Router({
     {
       path: "/location/edit-location/:id",
       component: EditLocation,
-
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Location);
         next();
       },
       meta: {
         showSearchBar: true
+      },
+    },
+        // chaubqn - start
+    {
+      path: '/test',
+      component: TestComponent,
+
+      beforeEnter: (to, from, next) => {
+          store.set('title', 'Test area');
+          next();
+      },
+      meta: {
+          showSearchBar: false,
       }
-    }
+    },
+    {
+        path: '/location/mapview/:locationId',
+        component: LocationMapViewComponent,
+
+        beforeEnter: (to, from, next) => {
+            store.set('title', menu.Location);
+            next();
+        },
+        meta: {
+            showSearchBar: true,
+        }
+    },
+    {
+        path: '/location/:locationId/add_block_floor_tile',
+        component: AddBlockFloorTileComponent,
+
+        beforeEnter: (to, from, next) => {
+            store.set('title', menu.Location);
+            next();
+        },
+        meta: {
+            showSearchBar: false,
+        }
+    },
+      // chaubqn - end
   ]
 });
 

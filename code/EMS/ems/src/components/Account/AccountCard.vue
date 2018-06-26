@@ -1,7 +1,9 @@
 <template>
-   <div class="grid-wrapper" v-if="accounts">
-    <div class="account-card material-box material-shadow-animate" style="border: none !important;" v-bind:key="account.id" v-for="account in accounts">
+<div>
 
+   <div class="grid-wrapper" v-if="accounts">
+
+    <div class="account-card material-box material-shadow-animate" style="border: none !important;" v-bind:key="account.id" v-for="account in accounts" v-on:click="gotoDetail(account.Id)">
         <div class="account-image-preview">
           <img :src="getAccountAvatar(account)" :alt="account.Username" style="width: 100%; height: 12rem;">
         </div>
@@ -13,13 +15,16 @@
           <!-- <div><span>ID: </span>{{equipment.Id}}</div> -->
           <div><span>Full name: </span>{{account.Fullname ? account.Fullname : "N/A"}}</div>
           <div><span>Email: </span>{{account.Email ? account.Email : "N/A" }}</div>
-          <div><span>Telephone number: </span>{{account.Phone ? account.Phone : NaN}}</div>
+          <div><span>Telephone number: </span>{{account.Phone ? account.Phone : "N/A"}}</div>
           <div><span>Role: </span>{{account.Role.Name}}  </div>
           <div><span>Status: </span>{{account.IsActive ? 'Active': 'Inactive'}}</div>
         
         <!-- <div><span>In department: </span>{{equipment.department}}</div> -->
       </div>
+
     </div>
+  </div>
+
   </div>
 </template>
 
@@ -34,6 +39,9 @@ export default {
       return acc.AvatarImage
         ? acc.AvatarImage
         : "http://citizen.edisha.gov.in/Content/assets/stylesheet/img/placeholder-user.png";
+    },
+    gotoDetail(accountId) {
+      this.$router.push(`/account/${accountId}`);
     }
   }
 };

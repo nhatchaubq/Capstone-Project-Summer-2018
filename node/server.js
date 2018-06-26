@@ -36,7 +36,7 @@ server.use('/api/account', require('./routes/account'));
 server.use('/api/account/id', require('./routes/accountDetail'));
 server.use('/api/equipment', require('./routes/equipment'));
 server.use('/api/EquipmentCategory', require('./routes/EquipmentCategory'));
-server.use('/api/Vendor', require('./routes/Vendor'));
+server.use('/api/Vendor', require('./routes/vendor'));
 server.use('/api/work_order', require('./routes/work_order'));
 server.use('/api/location', require('./routes/location'));
 server.use('/api/EquipmentStatus', require('./routes/EquipmentStatus'));
@@ -46,6 +46,8 @@ server.use('/api/team', require('./routes/team'));
 server.use('/api/equipmentItem', require("./routes/equipmentItem"))
 server.use('/api/team_location', require('./routes/team_location'));
 server.use('/api/team/id', require('./routes/teamDetails'));
+server.use('/api/dashboard', require('./routes/dashBoard'));
+
 // server.use('/api/account/edit/id', require('./routes/account'));
 // server.use('/api/account', require('./routes/account'));
 // server.use('/api/account/delete/id', require('./routes/'));
