@@ -28,7 +28,7 @@
       </tbody>
     </table>
     <router-link to='/vendor1/add/'>
-      <button id="btn-add-vendor" class=" material-shadow-animate">Add Vendor</button>
+      <button id="btn-add-vendor" class="button btn-primary material-shadow-animate">Add Vendor</button>
     </router-link>
   </div>
 </template>
@@ -121,16 +121,16 @@ table {
   position: fixed;
   right: 3rem;
   bottom: 2rem;
-  background-color: var(--primary-color);
+  /* background-color: var(--primary-color);
   padding: 13px;
   color: white;
-  border-radius: 5px;
+  border-radius: 5px; */
   z-index: 1;
 }
 
 #btn-add-vendor:hover {
   cursor: pointer;
-  background-color: #009688;
-  color: white;
+  /* background-color: #009688;
+  color: white; */
 }
 </style>

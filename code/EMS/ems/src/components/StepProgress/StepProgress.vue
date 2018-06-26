@@ -1,9 +1,17 @@
 <template>
     <div>
         <ul class="progressbar">
-            <li class="tag" :class='{"active": status.id <= workOrderStatusId}' :key="'step' + status.id" v-for="status in statusList" :value="status.name">
-                {{ status.name }}
-            </li>
+            <!-- workOrderStatus rejected - 6 or cancelled - 1002 -->
+            <div v-if="workOrderStatus.name == 'Cancelled' || workOrderStatus.name == 'Rejected'">
+                <li class="tag" :class="{'danger': workOrderStatus.name == 'Rejected'}">
+                    {{ workOrderStatus.name }}
+                </li>
+            </div> <!-- workOrderStatus rejected - 6 or cancelled - 1002 -->
+            <div v-else>
+                <li class="tag" :class='{"active": status.id <= workOrderStatus.id}' :key="'step' + status.id" v-for="status in statusList" :value="status.name">
+                    {{ status.name }}
+                </li>
+            </div>
         </ul>
     </div>
 </template>
@@ -12,7 +20,7 @@
 export default {
     name: 'step-progress',
     props: {
-        workOrderStatusId: null,
+        workOrderStatus: null,
         statusList: null,
     },
 }
@@ -28,7 +36,7 @@ export default {
         position: relative;
         /* float: left; */
         display: inline;
-        margin-right: 1.7rem;
+        margin-right: 4%;
         text-align: center;
         font-size: 13px;
         z-index: 1;
@@ -43,7 +51,7 @@ export default {
 
     .progressbar li:after {
         content: "";
-        width: 2.5rem;
+        width: 40%;
         height: 3px;
         background: #F5F5F5;
         z-index: -1;
@@ -59,6 +67,12 @@ export default {
     li.active {
         background-color: var(--primary-color) !important;
         border: 1px solid var(--primary-color) !important;        
+        color: white;
+    }
+
+    li.rejected {
+        background-color: var(--danger-color) !important;
+        border: 1px solid var(--danger-color) !important;        
         color: white;
     }
 

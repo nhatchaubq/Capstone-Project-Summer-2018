@@ -21,7 +21,11 @@
               </div>
             </div>         
           </div>
-          <router-link to="/location/create-location" class="btn-add-location material-shadow-animate" >Add Location</router-link> 
+          <router-link to="/location/create-location" >
+            <button class="btn-add-location button btn-primary material-shadow-animate">
+              Add Location
+            </button>
+          </router-link> 
         </div>
 
         <div v-if="selectedLocation != null" class="location-detail material-box material-shadow">  
@@ -182,7 +186,7 @@
               :position="google && new google.maps.LatLng(location.Latitude, location.Longitude)"
               :clickable="true"
               :draggable="true"
-              @click="gotoLocationDetail(location.Id)"
+              @click="() => {$router.push(`/location/mapview/${location.Id}`);}"
             />
             <!-- <gmap-info-window :key="'mapViewLocationInfoWindow' + location.Id" v-for="location in locations">{{ location.Name }}</gmap-info-window> -->
           </GmapMap>
@@ -299,10 +303,6 @@ export default {
     //       console.log(error);
     //     })
     // }
-
-    gotoLocationDetail(locationId) {
-      this.$router.push(`/location/mapview/${locationId}`);
-    }
     // chaubqn - end
   },
   created() {
@@ -396,7 +396,7 @@ export default {
   position: fixed;
   height: 88%;
   padding-right: 1rem;
-  width: 40%;
+  width: 35%;
   overflow-y: auto;
 }
 
@@ -458,7 +458,7 @@ export default {
   font-weight: bold;
 }
 
-.btn-add-location {
+/* .btn-add-location {
   position: fixed;
   right: 43.5rem;
   bottom: 1.5rem;
@@ -472,7 +472,7 @@ export default {
 .btn-add-location:hover {
   cursor: pointer;
   background-color: #009688;
-}
+} */
 .type-bar {
   border: 0.5px solid;
   border-radius: 5px;
@@ -501,20 +501,20 @@ export default {
   background-color: var(--primary-color);
 }
 
-.btn-add-location{
+.btn-add-location {
   position: fixed;
-  right: 43.5rem;
+  right: 47%;
   bottom: 1.5rem;
-  background-color: var(--primary-color);
-  padding: 13px;
-  color: white;
-  border-radius: 5px;
+  /* background-color: var(--primary-color); */
+  /* padding: 13px; */
+  /* color: white; */
+  /* border-radius: 5px; */
   z-index: 10;
-  font-size: 1.3rem;
+  /* font-size: 1.3rem; */
 }
 .btn-add-location:hover {
   cursor: pointer;
-  background-color: #009688;
+  /* background-color: #009688; */
 }
 .order-box {
   padding-top: 0.5rem;

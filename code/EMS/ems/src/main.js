@@ -7,7 +7,6 @@ import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import VueBar from 'vuebar';
-
 import router from './router';
 import store from './store';
 import "./styles/style.scss";
@@ -16,7 +15,7 @@ import * as VueGoogleMaps from 'vue2-google-maps';
 Vue.use(VueGoogleMaps, {
   load: {
     key: 'AIzaSyDRqzJSGR-awKXq6mXNO9kgCpkDpR00faU',
-    libraries: 'places', 
+    libraries: 'places',
   },
 });
 
@@ -27,11 +26,11 @@ Vue.component('v-bar', VueBar);
 Vue.config.productionTip = false;
 
 router.beforeEach((to, from, next) => {
-  if(to.name == 'login') {
-      next('/');
+  if (to.name == 'login') {
+    next('/');
   } else {
-      store.state.showSearchBar = to.meta.showSearchBar;
-      next();
+    store.state.showSearchBar = to.meta.showSearchBar;
+    next();
   }
 });
 
