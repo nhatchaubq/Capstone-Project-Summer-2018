@@ -12,7 +12,7 @@ import AddTeamComponent from "./components/Team/AddTeam.vue";
 import TeamDetailComponent from "./components/Team/TeamDetail.vue";
 import LocationComponent from "./components/Location/Location.vue";
 
-// import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
+import EquipmentDetailComponent from './components/Equipment/EquipmentDetail.vue';
 import AddEquipmentComponent from "./components/Equipment/AddEquipment.vue";
 import AccountComponent from "./components/Account/Account.vue";
 import AddAccountComponent from "./components/Account/AddAccount.vue";
@@ -30,8 +30,7 @@ import menu from "./models/menu";
 
 let router = new Router({
   mode: "history",
-  routes: [
-    {
+  routes: [{
       path: "/",
       component: DashboardComponent,
       beforeEnter: (to, from, next) => {
@@ -69,14 +68,14 @@ let router = new Router({
         showSearchBar: false
       }
     },
-    // {
-    //     path: '/equipment/:id',
-    //     component: EquipmentDetailsComponent,
-    //     beforeEnter: (to, from, next) => {
-    //         store.set('title', menu.EquipmentDetail);
-    //         next();
-    //     }
-    // },
+    {
+      path: '/equipment/:id',
+      component: EquipmentDetailComponent,
+      beforeEnter: (to, from, next) => {
+        store.set('title', menu.EquipmentDetail);
+        next();
+      }
+    },
     {
       path: "/work_order",
       component: OrderComponent,

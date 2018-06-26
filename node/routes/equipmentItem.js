@@ -59,4 +59,6 @@ router.get('/getByEquipmentId/:id', (request, response) => {
         .into(response)
 })
 
+
+
 module.exports = router;
