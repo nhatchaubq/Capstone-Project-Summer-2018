@@ -1,11 +1,11 @@
 <template>
     <div>
         <router-link to="/location">
-            <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Location</a>
+            <a><i class="fa fa-chevron-left"></i> Back to Location</a>
         </router-link>
         <div v-if="mapViewSelectedLocation">
             <div v-if="!mapViewSelectedLocation.Blocks" style="margin-top: 1rem">
-            This location has no block yet. <a style="margin-left: .5rem; user-select: none;"><i class="fa fa-plus-circle" v-on:click="() => {$router.push(`/location/${$route.params.locationId}/add_block_floor_tile`)}"></i> Add new block</a>
+            This location has no block yet. <router-link :to="`/location/${$route.params.locationId}/add_block_floor_tile`"><a style="margin-left: .5rem; user-select: none;"><i class="fa fa-plus-circle"></i> Add new block</a></router-link>
             </div>
             <div v-else>
             <div :key="'mapViewBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks">

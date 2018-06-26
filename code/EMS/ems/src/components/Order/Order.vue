@@ -388,16 +388,13 @@ export default {
       this.$store.state.workOrderPage.searchValues = [];
     },
     showDetailPopup(equipmentItemId) {
-        let url = `${Server.EQUIPMENTITEM_API_PATH}/${equipmentItemId}`;
+        let url = `${Server.EQUIPMENTITEM_API_PATH}/chau/${equipmentItemId}`;
         this.axios.get(url)
             .then((res) => {
                 if(res.data) {
                     this.equipmentItem = res.data;
                 }
             })
-    },
-    cancelOrder() {
-        this.showCancelDialog = false;
     },
     showAlert(msg) {
         alert(msg);
@@ -539,7 +536,7 @@ export default {
   position: fixed;
   height: 77%;
   padding-right: 0.5rem;
-  width: 40%;
+  width: 38%;
   overflow-y: auto;
 }
 
@@ -551,10 +548,10 @@ export default {
 
 .order-detail {
   position: fixed;
-  left: 59%;
+  left: 60%;
   max-height: 77%;
   overflow-y: auto;
-  width: 39%;
+  width: 38%;
   z-index: 2;
 }
 

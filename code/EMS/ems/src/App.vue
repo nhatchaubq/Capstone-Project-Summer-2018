@@ -95,7 +95,7 @@ a:active {
 
 #sidebar {
   position: fixed;
-  width: 13rem;
+  width: 18%;
   height: 100%;
   z-index: 1;
   top: 0;
@@ -103,8 +103,8 @@ a:active {
 }
 
 #main {
-  margin-left: 13rem;
-  /* width: 50%; */
+  margin-left: 18%;
+  width: 82%;
   /* background: #26a69a */
 }
 

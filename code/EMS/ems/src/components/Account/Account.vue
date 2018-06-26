@@ -41,7 +41,7 @@
     </div>
 
     <router-link to='/account/add/'>
-      <button id="btn-add-account" class=" material-shadow-animate">Add Account</button>
+      <button id="btn-add-account" class="button btn-primary material-shadow-animate">Add Account</button>
     </router-link>
 
     </div>
@@ -175,10 +175,10 @@ export default {
   position: fixed;
   right: 3rem;
   bottom: 2rem;
-  background-color: var(--primary-color);
-  padding: 13px;
+  /* background-color: var(--primary-color); */
+  /* padding: 13px;
   color: white;
-  border-radius: 5px;
+  border-radius: 5px; */
   z-index: 1;
 }
 

@@ -30,6 +30,7 @@ import EditLocation from "./components/Location/EditLocation.vue";
 // chaubqn - start
 import TestComponent from './components/TestSite/Test.vue';
 import LocationMapViewComponent from './components/Location/MapView.vue';
+import AddBlockFloorTileComponent from './components/Location/AddBlockFloorTile.vue';
 // chaubqn - end
 
 Vue.use(Router)
@@ -294,9 +295,21 @@ let router = new Router({
             next();
         },
         meta: {
-            showSearchBar: true
+            showSearchBar: true,
         }
-    }
+    },
+    {
+        path: '/location/:locationId/add_block_floor_tile',
+        component: AddBlockFloorTileComponent,
+
+        beforeEnter: (to, from, next) => {
+            store.set('title', menu.Location);
+            next();
+        },
+        meta: {
+            showSearchBar: false,
+        }
+    },
       // chaubqn - end
   ]
 });

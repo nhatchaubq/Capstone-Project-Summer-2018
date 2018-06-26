@@ -34,7 +34,6 @@
                 <div class="form-field-input">
                     <input v-model="workOrderTitle" type="text" class="input" required placeholder="Công trình dự án Vinhomes">
                 </div>
-                {{ workOrderTitle }}
             </div>
             <div class="form-field">
                 <div style="display: grid; grid-template-columns: 40% 5% 15% 15% 5%; grid-column-gap: 1rem;">
@@ -116,58 +115,6 @@
                     <textarea class="input" rows="5" v-model="workOrderDescription"></textarea>
                 </div>
             </div>
-            <div class="form-field">
-                <div class="form-field-title">
-                    Files base 64
-                </div>
-                <div class="form-field-input">
-                    <div class="input_picture">                    
-                        <label class="file-label" style="width: 100% !important"> 
-                        <span class="file-cta">
-                            <!-- <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange"  /> -->
-                            <!-- <file-base64 :multiple="false" :done="getFile"></file-base64> -->
-                            <span class="file-icon">
-                                <i class="fa fa-upload"></i>
-                            </span>
-                            <span class="file-label">
-                                Choose images...
-                            </span>
-                        </span>
-                            <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
-                                {{ file.name }}
-                            <div>
-                                <img class="file-upload" v-bind:src="getFilePath(file)" style="width: 75px height:75px"/>
-                            </div>
-
-                            </div>
-                        </label>
-                        <!-- <input type="file" id="file"  v-on:change="onFileChanged"> -->
-                        <!-- <button v-on:click="onUpload">Upload!!!</button> -->
-                    </div> 
-                </div>
-            </div>
-            <!-- <div class="form-field">
-                <div class="file is-boxed has-name">
-                    <label class="file-label" style="width: 100% !important">
-                        <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange" multiple accept=".jpg, .jpeg, .png" />
-                        <span class="file-cta">
-                            <span class="file-icon">
-                                <i class="fa fa-upload"></i>
-                            </span>
-                            <span class="file-label">
-                                Choose images...
-                            </span>
-                        </span>
-
-                        <div v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
-                            {{ file.name }}
-                            <div>
-                                <img v-bind:src="getFilePath(file)"/>
-                            </div>
-                        </div>
-                    </label>
-                </div>
-            </div> -->
         </div>
     </div>
 </template>
@@ -177,12 +124,10 @@ import Server from "@/config/config.js";
 
 import moment from "moment";
 import { ModelSelect } from "vue-search-select";
-// import fileBase64 from 'vue-file-base64';
 
 export default {
   components: {
     ModelSelect
-    // fileBase64
   },
   data() {
     return {

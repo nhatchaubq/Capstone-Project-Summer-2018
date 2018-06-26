@@ -33,8 +33,8 @@
           <!-- <div><span>ID: </span>{{equipment.Id}}</div> -->
           <div>Serial code: {{equipment.SerialNumber}}</div>  
           <div>Vendor: {{equipment.VendorName}}</div>
-          <div>Current in: {{equipment.Position.PositionName }}, block {{ equipment.Position.Block }}, floor {{ equipment.Position.Floor == 0 ? 'G' : equipment.Position.Floor }}, tile {{ equipment.Position.Tile }}</div>
-          <div>Location: {{equipment.Location.Name}} - {{ equipment.Location.Address }}</div>
+          <!-- <div>Current in: {{equipment.Position.PositionName }}, block {{ equipment.Position.Block }}, floor {{ equipment.Position.Floor == 0 ? 'G' : equipment.Position.Floor }}, tile {{ equipment.Position.Tile }}</div> -->
+          <!-- <div>Location: {{equipment.Location.Name}} - {{ equipment.Location.Address }}</div> -->
           <!-- <div>Made In:{{equipment.MadeIn}}</div> -->
           <!-- <div>Price:{{equipment.Price ? equipment.Price : 'n/a'}}</div> -->
           <!-- <div>Description: {{equipment.Description ? equipment.Description : 'n/a'}}</div> -->
