@@ -59,4 +59,10 @@ router.get('/getByEquipmentId/:id', (request, response) => {
         .into(response)
 })
 
+router.put('/status/:id', (req, res) => {
+    req.sql('exec [dbo].[UpdateEquipmentItemStatus] @itemId, @newStatus')
+        .param(itemId, req.params.id, TYPES.Int)
+        .param(newStatus, req.body.newStatus, TYPES.Int)
+});
+
 module.exports = router;
