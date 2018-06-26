@@ -57,16 +57,16 @@
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
-                                <div class="status column">
-                    <div class="headerstatus columns">
+                                <div class="status column" style="margin-right:0rem !important">
+                    <div class="headerstatus columns" >
                         <div style="width:40%" class="column">
                         <strong>In Progress</strong>
                         </div>
 
                     </div>
-                    <div class="contentstatus">
+                    <div class="contentstatus" >
                         <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
-                        <p style="font-size:15px;">Work Orders</p>
+                        <p style="font-size:15px; ">Work Orders</p>
                     </div>
                 </div>
                 <!-- <div class="status column">
@@ -240,7 +240,7 @@ export default {
   margin-bottom: 0.3rem;
 }
 .status {
-  width: 25%;
+  /* width: 25%; */
   background-color: white;
   margin-right: 1.2rem;
 }
