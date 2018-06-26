@@ -5,6 +5,7 @@
                 <div class=" workordergraph column">
                 <div class="titlediv">
                     <strong>Number of Work Order Completed</strong>
+                    <strong> {{Dashboard.Requested}}</strong>
                 </div>
                 <div>
                     <img :src="require('@/assets/linegraph.png')" style="width:100%; height: 200px"/>
@@ -23,12 +24,12 @@
                 <div class="status column">
                     <div class="headerstatus columns">
                         <div style="width:40%" class="column">
-                        <strong>Request</strong>
+                        <strong>Requested</strong>
                         </div>
 
                     </div>
-                    <div class="contentstatus">
-                        <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">3</p>
+                    <div class="contentstatus" >
+                        <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">1</p>
                         <p style="font-size:15px;" >Work Orders</p>
                     </div>
                 </div>
@@ -44,10 +45,34 @@
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
+                                <div class="status column">
+                    <div class="headerstatus columns">
+                        <div style="width:40%" class="column">
+                        <strong>Approve</strong>
+                        </div>
+
+                    </div>
+                    <div class="contentstatus">
+                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">3</p>
+                        <p style="font-size:15px;">Work Orders</p>
+                    </div>
+                </div>
+                                <div class="status column">
+                    <div class="headerstatus columns">
+                        <div style="width:40%" class="column">
+                        <strong>In Progress</strong>
+                        </div>
+
+                    </div>
+                    <div class="contentstatus">
+                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">3</p>
+                        <p style="font-size:15px;">Work Orders</p>
+                    </div>
+                </div>
                 <div class="status column">
                     <div class="headerstatus columns">
                         <div style="width:40%" class="column">
-                        <strong>Approved</strong>
+                        <strong>Closed</strong>
                         </div>
 
                     </div>
@@ -59,7 +84,7 @@
                 <div class="status column">
                     <div class="headerstatus columns">
                         <div style="width:40%;" class="column">
-                        <strong>Delivered</strong>
+                        <strong>Rejected</strong>
                         </div>
 
 
@@ -72,7 +97,7 @@
                 <div class="status column" style="margin-right:0 !important">
                     <div class="headerstatus columns">
                         <div style="width:40%" class="column">
-                        <strong>Closed</strong>
+                        <strong>Cancelled</strong>
                         </div>
 
                     </div>
@@ -162,7 +187,22 @@
 </template>
 
 <script>
-export default {};
+import Server from "@/config/config.js";
+export default {
+  created() {
+    let URL = Server.DASHBOARD_API_PATH;
+    this.axios.get(URL).then(res => {
+      // alert("alao alo");
+      let data = res.data;
+      this.Dashboard = data;
+    });
+  },
+  data() {
+    return {
+      Dashboard: null
+    };
+  }
+};
 </script>
 
 <style scoped>
@@ -200,7 +240,7 @@ export default {};
   margin-bottom: 0.3rem;
 }
 .status {
-  width: 18.7%;
+  width: 14.28%;
   background-color: white;
   margin-right: 1.2rem;
 }
