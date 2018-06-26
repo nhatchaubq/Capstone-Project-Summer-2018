@@ -1,5 +1,5 @@
 <template>
-<div v-if="!vendor" >
+<div v-if="Vendor" >
     <router-link to="/vendor">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Vendors</a>
     </router-link>

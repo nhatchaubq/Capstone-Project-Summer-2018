@@ -29,7 +29,7 @@
 
                     </div>
                     <div class="contentstatus" >
-                        <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">1</p>
+                        <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
                         <p style="font-size:15px;" >Work Orders</p>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
 
                     </div>
                     <div class="contentstatus">
-                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">3</p>
+                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
 
                     </div>
                     <div class="contentstatus">
-                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">3</p>
+                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
 
                     </div>
                     <div class="contentstatus">
-                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">3</p>
+                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
@@ -77,7 +77,7 @@
 
                     </div>
                     <div class="contentstatus">
-                        <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">3</p>
+                        <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Closed}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
 
                     </div>
                     <div class="contentstatus">
-                        <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">3</p>
+                        <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Rejected}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
 
                     </div>
                     <div class="contentstatus">
-                        <p style="color: var(--status-closed); font-size:38px; text-align: center;font-weight: bold;">3</p>
+                        <p style="color: var(--status-closed); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Cancelled}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
@@ -194,7 +194,7 @@ export default {
     this.axios.get(URL).then(res => {
       // alert("alao alo");
       let data = res.data;
-      this.Dashboard = data;
+      this.Dashboard = data.Dashboard;
     });
   },
   data() {
