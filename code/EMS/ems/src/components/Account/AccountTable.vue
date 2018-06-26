@@ -45,7 +45,7 @@
   
           <td>{{account.Email ? account.Email : "N/A" }}</td>
   
-          <td>{{account.Phone ? account.Phone : NaN}}</td>
+          <td>{{account.Phone ? account.Phone : "N/A"}}</td>
   
           <td>{{account.Role.Name}}</td>
   
