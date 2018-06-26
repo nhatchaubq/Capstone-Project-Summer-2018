@@ -11,20 +11,19 @@ import TeamComponent from "./components/Team/Team.vue";
 import AddTeamComponent from "./components/Team/AddTeam.vue";
 import TeamDetailComponent from "./components/Team/TeamDetail.vue";
 import LocationComponent from "./components/Location/Location.vue";
+
+import EquipmentDetailComponent from './components/Equipment/EquipmentDetail.vue';
+import AddEquipmentComponent from "./components/Equipment/AddEquipment.vue";
+import AccountComponent from "./components/Account/Account.vue";
+import AddAccountComponent from "./components/Account/AddAccount.vue";
+import AccountDetailComponent from "./components/Account/AccountDetail.vue";
+import DepartmentComponent from "./components/Department/Department.vue";
+import ProjectComponent from "./components/Project/Project.vue";
+import CreateLocation from "./components/Location/CreateLocation.vue";
 import VendorComponent from "./components/Vendor/Vendor.vue";
 import VendorDetailComponent from "./components/Vendor/VendorDetail.vue";
 import AddVendorComponent from './components/Vendor/AddVendor.vue';
-// test
 import AddVendor1Component from './components/Vendor/AddVendor1.vue'
-// /test
-// import EquipmentDetailsComponent from './components/Equipment/EquipmentDetails.vue';
-import AddEquipmentComponent from './components/Equipment/AddEquipment.vue';
-import AccountComponent from './components/Account/Account.vue';
-import AddAccountComponent from './components/Account/AddAccount.vue';
-import AccountDetailComponent from './components/Account/AccountDetail.vue';
-import DepartmentComponent from './components/Department/Department.vue';
-import ProjectComponent from './components/Project/Project.vue'
-import CreateLocation from './components/Location/CreateLocation.vue';
 import EditLocation from "./components/Location/EditLocation.vue";
 
 // chaubqn - start
@@ -78,14 +77,14 @@ let router = new Router({
         showSearchBar: false
       }
     },
-    // {
-    //     path: '/equipment/:id',
-    //     component: EquipmentDetailsComponent,
-    //     beforeEnter: (to, from, next) => {
-    //         store.set('title', menu.EquipmentDetail);
-    //         next();
-    //     }
-    // },
+    {
+      path: '/equipment/:id',
+      component: EquipmentDetailComponent,
+      beforeEnter: (to, from, next) => {
+        store.set('title', menu.EquipmentDetail);
+        next();
+      }
+    },
     {
       path: "/work_order",
       component: OrderComponent,
