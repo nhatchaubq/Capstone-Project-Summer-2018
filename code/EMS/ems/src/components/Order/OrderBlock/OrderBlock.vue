@@ -17,7 +17,7 @@
                 {{ order.CreateDate }}
             </div>
         </div>
-        <div class="order-status">
+        <div class="order-status" :class="statusColor(order)">
             {{ order.WorkOrderStatus }}            
         </div>
         <div class="order-block-location">
@@ -40,26 +40,51 @@ export default {
         },
         makeStatusIcon(order) {
             switch(order.StatusID) {
-                case 1: { // request
-                    return 'fa-level-up';
+                case 1: { // Requested
+                    return 'fa-level-up requested';
                 }
-                case 2: { // checked
-                    return 'fa-check';
+                case 2: { // Checked
+                    return 'fa-check checked';
                 }
-                case 3: { // approved
-                    return 'fa-approve';
+                case 3: { // Approved
+                    return 'fa-thumbs-up approved';
                 }
-                case 4: { // delivered
-                    return 'fa-handshake-o';
+                case 4: { // InProgress
+                    return 'fa-handshake-o in-progress';
                 }
-                case 5: { // return
-                    return 'fa-archive';
+                case 5: { // Closed
+                    return 'fa-archive closed';
                 }
-                case 6: { // done
-                    return 'fa-check-square-o';
+                case 6: { // Rejected
+                    return 'fa-check-square-o rejected';
                 }
-                case 8: {
-                    return 'fa-cancel';
+                case 1002: { // Cancelled
+                    return 'fa-ban cancelled';
+                }
+            }
+        },
+        statusColor(order) {
+            switch(order.StatusID) {
+                case 1: { // Requested
+                    return 'requested';
+                }
+                case 2: { // Checked
+                    return 'checked';
+                }
+                case 3: { // Approved
+                    return 'approved';
+                }
+                case 4: { // InProgress
+                    return 'in-progress';
+                }
+                case 5: { // Closed
+                    return 'closed';
+                }
+                case 6: { // Rejected
+                    return 'rejected';
+                }
+                case 1002: { // Cancelled
+                    return 'cancelled';
                 }
             }
         }
@@ -147,5 +172,33 @@ export default {
         font-size: 1rem;
         position: relative;
         top: .1rem;
+    }
+
+    .requested {
+        color: #ef6c00;
+    }
+
+    .checked {
+        color: #2196f3;
+    }
+
+    .approved {
+        color: #43a047;
+    }
+
+    .rejected {
+        color: var(--danger-color);
+    }
+
+    .in-progress {
+        color: #795548;
+    }
+
+    .closed {
+        color: #424242;
+    }
+
+    .cancel {
+        color: var(--shadow);
     }
 </style>
