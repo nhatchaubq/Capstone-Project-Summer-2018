@@ -11,7 +11,7 @@
                 <h2 style="font-size: 1rem; margin-top: .5rem">{{ location.Address }}</h2>
             </div>
             <div class="form-content">
-                <div v-if="currentStep == Steps.ASK_LOCATION_FLOOR_PLAN_IMAGE">
+                <div v-if="currentStep === Steps.ASK_LOCATION_FLOOR_PLAN_IMAGE">
                     <div class="form-field">
                         <div class="form-field-title">
                             Do you have a floor plan image for location {{ location.Name }}?                            
@@ -31,15 +31,15 @@
                         <div class="form-field-nav">
                             <a style="float: left !important" v-on:click="() => {
                                 if (haveLocationFloorPlanImage) {
-                                    currentStep = Steps.LOCATION_FLOOR_PLANE_IMAGE.HAVE_IMAGE_UPLOAD;
+                                    currentStep = Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION;
                                 } else {
-                                    currentStep = Steps.LOCATION_FLOOR_PLANE_IMAGE.HAVE_NO_IMAGE_NAMING;
+                                    currentStep = Steps.CREATE_BLOCK_FOR_LOCATION;
                                 }
                             }">Next <i class="fa fa-chevron-circle-right"></i></a>    
                         </div>
                     </div>
                 </div>
-                <div v-if="currentStep == Steps.LOCATION_FLOOR_PLANE_IMAGE.HAVE_IMAGE_UPLOAD">
+                <div v-if="currentStep === Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION">
                     <div class="form-field">
                         <div class="form-field-title">
                             Upload floor plan image of location {{ location.Name }}
@@ -49,41 +49,41 @@
                         </div>
                     </div>
                 </div>
-                <div v-show="currentStep == Steps.LOCATION_FLOOR_PLANE_IMAGE.HAVE_IMAGE_UPLOAD || currentStep == Steps.CREATE_FLOOR_FOR_BLOCKS">
-                    <div class="form-field" v-show="floorPlanImageFile">
-                        <canvas :style="currentStep == Steps.LOCATION_FLOOR_PLANE_IMAGE.HAVE_IMAGE_UPLOAD ? 
-                                                            'cursor: pointer' : (currentStep == Steps.CREATE_FLOOR_FOR_BLOCKS ?
-                                                                                'cursor: not-allowed' : '')" ref="myCanvas"></canvas> 
+                <div v-show="currentStep === Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION || currentStep === Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS">
+                    <div class="form-field" v-show="locationFloorPlanImage">
+                        <canvas :style="currentStep === Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION ? 
+                                                            'cursor: pointer' : (currentStep === Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS ?
+                                                                                'cursor: not-allowed' : '')" ref="locationCanvas"></canvas> 
                     </div>
                 </div>
-                <div v-if="currentStep == Steps.LOCATION_FLOOR_PLANE_IMAGE.HAVE_IMAGE_UPLOAD">
-                    <div class="form-field" v-if="floorPlanImageFile && !newBlock && (currentPaintToolMode == paintToolMode.Preset && blocks.length == 0)">
+                <div v-if="currentStep === Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION">
+                    <div class="form-field" v-if="locationFloorPlanImage && !newBlock && (currentLocationPaintToolMode == paintToolMode.Preset && blocks.length == 0)">
                             <a v-on:click="() => {
                                 newBlock = {name: '', points: [], floors: []};
                             }"><i class="fa fa-plus-circle"></i> Add new block</a>
                         </div>
-                    <div v-if="floorPlanImageFile && newBlock">
+                    <div v-if="locationFloorPlanImage && newBlock">
                         <!-- paint helper tool -->
                         <div class="form-field">
                             <div>
                                 Paint helper tool:
-                                <label class="radio" v-on:click="currentPaintToolMode = paintToolMode.Preset">
-                                    <input name="paintToolMode" :checked="currentPaintToolMode == paintToolMode.Preset" type="radio">
+                                <label class="radio" v-on:click="currentLocationPaintToolMode = paintToolMode.Preset">
+                                    <input name="paintToolMode" :checked="currentLocationPaintToolMode == paintToolMode.Preset" type="radio">
                                     Preset
                                 </label>
-                                <label class="radio" v-on:click="currentPaintToolMode = paintToolMode.Rectangle">
-                                    <input name="paintToolMode" :checked="currentPaintToolMode == paintToolMode.Rectangle" type="radio">
+                                <label class="radio" v-on:click="currentLocationPaintToolMode = paintToolMode.Rectangle">
+                                    <input name="paintToolMode" :checked="currentLocationPaintToolMode == paintToolMode.Rectangle" type="radio">
                                     Rectangle tool
                                 </label>
-                                <label class="radio" v-on:click="currentPaintToolMode = paintToolMode.Hand">
-                                    <input name="paintToolMode" :checked="currentPaintToolMode == paintToolMode.Hand" type="radio">
+                                <label class="radio" v-on:click="currentLocationPaintToolMode = paintToolMode.Hand">
+                                    <input name="paintToolMode" :checked="currentLocationPaintToolMode == paintToolMode.Hand" type="radio">
                                     By hand
                                 </label>
                             </div>
                             <!-- select grid preset -->
                             <div class="field is-horizontal">
-                                <div class="select" v-if="currentPaintToolMode == paintToolMode.Preset">
-                                    <select v-model="selectedGridPreset">
+                                <div class="select" v-if="currentLocationPaintToolMode == paintToolMode.Preset">
+                                    <select v-model="selectedLocationGridPresetOption">
                                         <option value="null" disabled selected="true">Select a preset</option>
                                         <option :value="{column: 1, row: 1}">1 x 1</option>
                                         <option :value="{column: 1, row: 2}">1 x 2</option>
@@ -99,15 +99,15 @@
                                         <option value="custom">Custom</option>
                                     </select>
                                 </div>
-                                <div v-if="selectedGridPreset == 'custom'">
+                                <div v-if="selectedLocationGridPresetOption == 'custom'">
                                     <span style="position: relative; top: .5rem; margin-left: 1rem; align-text: right;">Column: </span>
-                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="customColumns"> </span>
+                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="gridLocationCustomColumns"> </span>
                                     <span style="position: relative; top: .5rem; margin-left: 1rem;"> Row: </span>
-                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="customRows"> </span>
+                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="gridLocationCustomRows"> </span>
                                 </div>                            
                             </div> <!-- select grid preset -->
                             <div>
-                                <div v-if="currentPaintToolMode == paintToolMode.Hand">
+                                <div v-if="currentLocationPaintToolMode == paintToolMode.Hand">
                                     <button class="button" :disabled="newBlock.points.length == 0" v-on:click="() => {
                                         newBlock.points.pop(); 
                                         if(newBlock.points.length > 0) {
@@ -159,7 +159,7 @@
                                     <span style="color: transparent;">Notice: </span>- For hand tool, you must draw at least 3 points to be accepted as a legal block.
                                 </div>
                             </div>
-                            <div v-if="currentPaintToolMode == paintToolMode.Preset && selectedTileIndex >= 0">
+                            <div v-if="currentLocationPaintToolMode == paintToolMode.Preset && selectedTileIndex >= 0">
                                 <div class="form-field">
                                     <div class="form-field-title">
                                         Name of this block
@@ -178,12 +178,12 @@
                                 </div>
                                 <div class="form-field">
                                     <a v-on:click="() => {
-                                        if (currentPaintToolMode == paintToolMode.Preset) {
+                                        if (currentLocationPaintToolMode == paintToolMode.Preset) {
                                             selectedTileIndex = -1;
                                             newBlock = {name: '', points: [], floors: []};
                                         }
                                         // newBlock = null;
-                                    }"><i class="fa fa-check-circle"></i> {{ currentPaintToolMode == paintToolMode.Preset ? 'Save changes' : 'Create block' }}</a>
+                                    }"><i class="fa fa-check-circle"></i> {{ currentLocationPaintToolMode == paintToolMode.Preset ? 'Save changes' : 'Create block' }}</a>
                                 </div>
                             </div>
                         </div> <!-- naming and describe block -->
@@ -194,7 +194,7 @@
                             <!-- back button -->
                             <a v-on:click="() => {
                                 currentStep = Steps.ASK_LOCATION_FLOOR_PLAN_IMAGE;
-                                floorPlanImageFile = null;
+                                locationFloorPlanImage = null;
                                 blocks = [];
                                 newBlock = null;
                             }"><i class="fa fa-chevron-circle-left"></i> Back</a>
@@ -202,16 +202,18 @@
                             <!-- disable when no block created, so need to create at least a block to enable -->
                             <a :style="blocks.length == 0 ? 'color: var(--shadow) !important; cursor: not-allowed': ''" v-on:click="() => {
                                 if (blocks.length > 0) {
-                                    currentStep = Steps.CREATE_FLOOR_FOR_BLOCKS;
+                                    totalFloor = 1;
+                                    totalBasementFloor = 0;
                                     selectedTileIndex = createFloorCurrentBlock;
+                                    currentStep = Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS;
                                     paintCanvas(null, null);
-                                }                      
+                                }          
                             }">Next <i class="fa fa-chevron-circle-right"></i></a>    
                         </div>
                     </div> <!-- back, next button -->
                 </div>
                 <!-- this step is to create floors info of blocks -->
-                <div v-if="currentStep == Steps.CREATE_FLOOR_FOR_BLOCKS">
+                <div v-if="currentStep === Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS">
                     <!-- currently, there is a block is selecting to create/edit floors info -->
                     <div v-if="createFloorCurrentBlock >= 0">
                         <div class="form-field">
@@ -274,6 +276,7 @@
                         <!-- display floors visually -->
                         <div class="form-field">
                             <div style="display: grid; grid-template-columns: 20% 80%">
+                                <!-- display floors -->
                                 <div>
                                     <div :key="'blockFloors' + index" v-for="(floor, index) in blocks[createFloorCurrentBlock].floors" style="padding-bottom: .3rem">
                                         <button class="button" :class="{'btn-primary': (index == blocks[createFloorCurrentBlock].floors.length - totalBasementFloor - 1)}" style="text-align: center; width: 4rem" v-on:click="currentFloorIndex = index">{{ floor.name }}</button>
@@ -284,29 +287,32 @@
                                         Floor {{ blocks[createFloorCurrentBlock].floors[currentFloorIndex].name }} selected.
                                     </span>
                                     <div>
-                                        <div v-if="blocks[createFloorCurrentBlock].floors.fileBase64.length == 0">
-                                            <file-base64></file-base64>
+                                        <div class="form-field" >
+                                            <canvas ref="locationCanvas"></canvas> 
+                                        </div>
+                                        <div v-if="currentFloorIndex >= 0 && blocks[createFloorCurrentBlock].floors[currentFloorIndex].imageBase64.length == 0">
+                                            <file-base64 :done="getFile"></file-base64>
                                         </div>
                                         <div class="" v-else>
                                             <div>
                                                 Paint helper tool:
-                                                <label class="radio" v-on:click="currentPaintToolMode = paintToolMode.Preset">
-                                                    <input name="paintToolMode" :checked="currentPaintToolMode == paintToolMode.Preset" type="radio">
+                                                <label class="radio" v-on:click="currentLocationPaintToolMode = paintToolMode.Preset">
+                                                    <input name="paintToolMode" :checked="currentLocationPaintToolMode == paintToolMode.Preset" type="radio">
                                                     Preset
                                                 </label>
-                                                <label class="radio" v-on:click="currentPaintToolMode = paintToolMode.Rectangle">
-                                                    <input name="paintToolMode" :checked="currentPaintToolMode == paintToolMode.Rectangle" type="radio">
+                                                <label class="radio" v-on:click="currentLocationPaintToolMode = paintToolMode.Rectangle">
+                                                    <input name="paintToolMode" :checked="currentLocationPaintToolMode == paintToolMode.Rectangle" type="radio">
                                                     Rectangle tool
                                                 </label>
-                                                <label class="radio" v-on:click="currentPaintToolMode = paintToolMode.Hand">
-                                                    <input name="paintToolMode" :checked="currentPaintToolMode == paintToolMode.Hand" type="radio">
+                                                <label class="radio" v-on:click="currentLocationPaintToolMode = paintToolMode.Hand">
+                                                    <input name="paintToolMode" :checked="currentLocationPaintToolMode == paintToolMode.Hand" type="radio">
                                                     By hand
                                                 </label>
                                             </div>
                                             <!-- select grid preset -->
                                             <div class="field is-horizontal">
-                                                <div class="select" v-if="currentPaintToolMode == paintToolMode.Preset">
-                                                    <select v-model="selectedGridPreset">
+                                                <div class="select" v-if="currentLocationPaintToolMode == paintToolMode.Preset">
+                                                    <select v-model="selectedLocationGridPresetOption">
                                                         <option value="null" disabled selected="true">Select a preset</option>
                                                         <option :value="{column: 1, row: 1}">1 x 1</option>
                                                         <option :value="{column: 1, row: 2}">1 x 2</option>
@@ -322,15 +328,15 @@
                                                         <option value="custom">Custom</option>
                                                     </select>
                                                 </div>
-                                                <div v-if="selectedGridPreset == 'custom'">
+                                                <div v-if="selectedLocationGridPresetOption == 'custom'">
                                                     <span style="position: relative; top: .5rem; margin-left: 1rem; align-text: right;">Column: </span>
-                                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="customColumns"> </span>
+                                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="gridLocationCustomColumns"> </span>
                                                     <span style="position: relative; top: .5rem; margin-left: 1rem;"> Row: </span>
-                                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="customRows"> </span>
+                                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="gridLocationCustomRows"> </span>
                                                 </div>                            
                                             </div> <!-- select grid preset -->
                                             <div>
-                                                <div v-if="currentPaintToolMode == paintToolMode.Hand">
+                                                <div v-if="currentLocationPaintToolMode == paintToolMode.Hand">
                                                     <button class="button" :disabled="newBlock.points.length == 0" v-on:click="() => {
                                                         newBlock.points.pop(); 
                                                         if(newBlock.points.length > 0) {
@@ -432,9 +438,9 @@
                     <div class="form-field">
                         <div class="form-field-nav">
                             <a v-on:click="() => {
-                                currentStep = Steps.LOCATION_FLOOR_PLANE_IMAGE.HAVE_IMAGE_UPLOAD;
-                                //selectedGridPreset = null;
-                                //floorPlanImageFile = null;
+                                currentStep = Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION;
+                                //selectedLocationGridPresetOption = null;
+                                //locationFloorPlanImage = null;
                                 //blocks = [];
                                 selectedTileIndex = -1;
                             }"><i class="fa fa-chevron-circle-left"></i> Back</a>
@@ -452,7 +458,7 @@
                     </div> <!-- back, next button -->
                 </div>
                 <!-- this step is when have no floor plan image for location, not yet implemented -->
-                <div v-if="currentStep == Steps.LOCATION_FLOOR_PLANE_IMAGE.HAVE_NO_IMAGE_NAMING">
+                <div v-if="currentStep === Steps.CREATE_BLOCK_FOR_LOCATION">
                     <div class="form-field">
                         <div class="form-field-title">
                             Ok I don't have any floor plan images, so what?
@@ -499,7 +505,7 @@ export default {
         return {
             location: null,
             newLocation: null,
-            floorPlanImageFile: null,
+            locationFloorPlanImage: null,
             blocks: [],
             newBlock: null,
             newFloor: {
@@ -512,8 +518,8 @@ export default {
                 Ground: 'Ground',
                 FloorOne: '1',
             },
-            totalFloor: 1,
-            totalBasementFloor: 0,
+            totalFloor: -1,
+            totalBasementFloor: -1,
             newTile: {
                 name: '',
                 points: [],
@@ -524,15 +530,10 @@ export default {
             createFloorCurrentBlock: 0,
             Steps: {
                 ASK_LOCATION_FLOOR_PLAN_IMAGE: 0,
-                LOCATION_FLOOR_PLANE_IMAGE: {
-                    HAVE_IMAGE_UPLOAD: 1.1,
-                    HAVE_NO_IMAGE_NAMING: 1.2,
-                },
-                CREATE_FLOOR_FOR_BLOCKS: 2,
-                FLOOR_FLOOR_PLANE_IMAGE: {
-                    HAVE_IMAGE_UPLOAD: 3.1,
-                    HAVE_NO_IMAGE_NAMING: 3.2,
-                },
+                CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION: 1.1,
+                CREATE_BLOCK_FOR_LOCATION: 1.2,
+                CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS: 2.1,
+                CREATE_FLOOR_FOR_BLOCKS: 2.2,
             },
             haveLocationFloorPlanImage: true,
             havaFloorFloorPlanImage: true,
@@ -540,8 +541,8 @@ export default {
             // step data - end
 
             // paint tool data - start
-            background: null,
-            currentPaintToolMode: 0,
+            locationBackground: null,
+            currentLocationPaintToolMode: 0,
             paintToolMode: {
                 Preset: 0,
                 Rectangle: 1,
@@ -551,10 +552,10 @@ export default {
             radius: 5,
             canvasMouseDown: false,
             selectingPointIndex: -1,
-            gridPreset: null,
-            selectedGridPreset: null,
-            customColumns: 1,
-            customRows: 1,
+            locationGridPreset: null,
+            selectedLocationGridPresetOption: null,
+            gridLocationCustomColumns: 1,
+            gridLocationCustomRows: 1,
             selectedTileIndex: -1,
             // paint tool data - end
         }
@@ -562,34 +563,38 @@ export default {
     methods: {
         getFile(file) {
             if (file) {
-                this.selectedGridPreset = null;
-                this.gridPreset = null;
-                this.floorPlanImageFile = file;
+                let canvas = null;
+                if (this.currentStep === this.Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION) {
+                    canvas = this.$refs.locationCanvas;
+                    this.selectedLocationGridPresetOption = null;
+                    this.locationGridPreset = null;
+                    this.locationFloorPlanImage = file;
 
-                this.newLocation = {
-                    Id: this.location.Id,
-                    Name: this.location.Name,
-                    Address: this.location.Address,
-                    Description: this.location.Description,
-                    Longitude: this.location.Longitude,
-                    Latitude: this.location.Latitude,
-                    ImageBase64: file.base64,
-                };
+                    this.newLocation = {
+                        Id: this.location.Id,
+                        Name: this.location.Name,
+                        Address: this.location.Address,
+                        Description: this.location.Description,
+                        Longitude: this.location.Longitude,
+                        Latitude: this.location.Latitude,
+                        PaintToolMode: this.currentLocationPaintToolMode,
+                        ImageBase64: file.base64,
+                    };
+                }
 
-                let canvas = this.$refs.myCanvas;
                 let canvasContext = canvas.getContext('2d');
-                this.background = new Image();
-                this.background.src = file.base64;
-                this.background.onload = () => {
-                    canvas.width = this.background.width;
-                    canvas.height = this.background.height;
-                    canvasContext.drawImage(this.background, 0, 0);
+                this.locationBackground = new Image();
+                this.locationBackground.src = file.base64;
+                this.locationBackground.onload = () => {
+                    canvas.width = this.locationBackground.width;
+                    canvas.height = this.locationBackground.height;
+                    canvasContext.drawImage(this.locationBackground, 0, 0);
                 };        
                 let context = this;
-                // let canvas = this.$refs.myCanvas;
-                // let canvasContext = this.$refs.myCanvas.getContext('2d');
+                // let canvas = this.$refs.locationCanvas;
+                // let canvasContext = this.$refs.locationCanvas.getContext('2d');
                 canvas.addEventListener('mousemove', (event) => {
-                    if (context.currentStep != context.Steps.CREATE_FLOOR_FOR_BLOCKS) {
+                    if (context.currentStep != context.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
                         var mousePos = {
                             x: event.clientX - canvas.getBoundingClientRect().left,
                             y: event.clientY - canvas.getBoundingClientRect().top
@@ -598,13 +603,13 @@ export default {
                     }
                 });
                 canvas.addEventListener('mousedown', (event) => {
-                    if (context.currentStep != context.Steps.CREATE_FLOOR_FOR_BLOCKS) {
+                    if (context.currentStep != context.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
                         context.canvasMouseDown = true;
                         var mousePos = {
                             x: event.clientX - canvas.getBoundingClientRect().left,
                             y: event.clientY - canvas.getBoundingClientRect().top
                         };
-                        if (context.currentPaintToolMode == context.paintToolMode.Hand) {
+                        if (context.currentLocationPaintToolMode == context.paintToolMode.Hand) {
                             for (var i = 0; i < context.newBlock.points.length; i++) {
                                 let point = context.newBlock.points[i];
                                 let distX = mousePos.x - point.x;
@@ -625,14 +630,14 @@ export default {
                 });
                 canvas.addEventListener('mouseup', (event) => {
                     context.canvasMouseDown = false;
-                    // if (!context.currentPaintToolMode == this.paintToolMode.Preset && (context.newBlock.points.length > 0 || context.polyList.length > 0)) {
+                    // if (!context.currentLocationPaintToolMode == this.paintToolMode.Preset && (context.newBlock.points.length > 0 || context.polyList.length > 0)) {
                     //     // context.selectingPointIndex = -1;
                     //     context.drawPoints();
                     // }
                 });
                 canvas.addEventListener('click', (event) => {
-                    if (context.currentStep != context.Steps.CREATE_FLOOR_FOR_BLOCKS) {
-                        if (context.currentPaintToolMode == this.paintToolMode.Preset) {
+                    if (context.currentStep != context.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
+                        if (context.currentLocationPaintToolMode == this.paintToolMode.Preset) {
                             var mousePos = {
                                 x: event.clientX - canvas.getBoundingClientRect().left,
                                 y: event.clientY - canvas.getBoundingClientRect().top
@@ -648,30 +653,30 @@ export default {
         },
         // paint methods - start
         clearCanvas() {
-            let canvas = this.$refs.myCanvas;
-            let canvasContext = this.$refs.myCanvas.getContext('2d');
+            let canvas = this.$refs.locationCanvas;
+            let canvasContext = this.$refs.locationCanvas.getContext('2d');
             canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-            canvasContext.drawImage(this.background, 0, 0);
+            canvasContext.drawImage(this.locationBackground, 0, 0);
             // canvasContext.beginPath();
             // canvasContext.moveTo(0,0);
             // canvasContext.stroke();
         },
         paintCanvas(mouseX, mouseY) {
-            if (this.floorPlanImageFile) {                
-                let canvas = this.$refs.myCanvas;
+            if (this.locationFloorPlanImage) {                
+                let canvas = this.$refs.locationCanvas;
                 // let canvasContext = canvas.getContext('2d');
 
-                if (this.currentPaintToolMode == this.paintToolMode.Preset && this.gridPreset) {
+                if (this.currentLocationPaintToolMode == this.paintToolMode.Preset && this.locationGridPreset) {
                     if (this.blocks.length == 0) {
-                        let tileWidth = canvas.width / this.gridPreset.column;
-                        let tileHeight = canvas.height / this.gridPreset.row;
+                        let tileWidth = canvas.width / this.locationGridPreset.column;
+                        let tileHeight = canvas.height / this.locationGridPreset.row;
                         this.clearCanvas();
-                        for (var row = 0; row < this.gridPreset.row; row++) {
-                            for (var col = 0; col < this.gridPreset.column; col++) {
-                                let x = col * canvas.width / this.gridPreset.column;
-                                let y = row * canvas.height / this.gridPreset.row;              
+                        for (var row = 0; row < this.locationGridPreset.row; row++) {
+                            for (var col = 0; col < this.locationGridPreset.column; col++) {
+                                let x = col * canvas.width / this.locationGridPreset.column;
+                                let y = row * canvas.height / this.locationGridPreset.row;              
 
-                                let tileOrderNumber = (col + 1) + (row * this.gridPreset.column);
+                                let tileOrderNumber = (col + 1) + (row * this.locationGridPreset.column);
 
                                 this.newBlock = {
                                     id: (tileOrderNumber - 1),
@@ -722,7 +727,7 @@ export default {
         },
         drawPoly(index, points, drawPoints, name, mouseX, mouseY) {
             // this.clearCanvas();
-            let canvasContext = this.$refs.myCanvas.getContext('2d');
+            let canvasContext = this.$refs.locationCanvas.getContext('2d');
             if (points.length > 0) {
                 // drawDot - start
                 if (drawPoints) {
@@ -755,20 +760,20 @@ export default {
                 let maxX = points[0].x;
                 let minY = points[0].y;
                 let maxY = points[0].y;
-                for(var index = 1; index < points.length; index++) {
-                    canvasContext.lineTo(points[index].x, points[index].y); 
+                for(var i = 1; i < points.length; i++) {
+                    canvasContext.lineTo(points[i].x, points[i].y); 
                     if (name && name.length > 0) {
-                        if (points[index].x < minX) {
-                            minX = points[index].x;
+                        if (points[i].x < minX) {
+                            minX = points[i].x;
                         }
-                        if (points[index].x > maxX) {
-                            maxX = points[index].x;
+                        if (points[i].x > maxX) {
+                            maxX = points[i].x;
                         }
-                        if (points[index].y < minY) {
-                            minY = points[index].y;
+                        if (points[i].y < minY) {
+                            minY = points[i].y;
                         }
-                        if (points[index].y > maxY) {
-                            maxY = points[index].y;
+                        if (points[i].y > maxY) {
+                            maxY = points[i].y;
                         }
                     }                
                 }
@@ -789,27 +794,27 @@ export default {
             }
         },
         canvasClick(mouseX, mouseY) {
-            if (this.floorPlanImageFile) {
-                let canvas = this.$refs.myCanvas;
+            if (this.locationFloorPlanImage) {
+                let canvas = this.$refs.locationCanvas;
                 // let canvasContext = canvas.getContext('2d');    
-                if (this.currentPaintToolMode == this.paintToolMode.Preset && this.gridPreset) {      
+                if (this.currentLocationPaintToolMode == this.paintToolMode.Preset && this.locationGridPreset) {      
                     // this.clearCanvas();          
-                    let tileWidth = canvas.width / this.gridPreset.column;
-                    let tileHeight = canvas.height / this.gridPreset.row;
-                    for (var row = 0; row < this.gridPreset.row; row++) {
-                        for (var col = 0; col < this.gridPreset.column; col++) {
-                            let x = col * canvas.width / this.gridPreset.column;
-                            let y = row * canvas.height / this.gridPreset.row;
+                    let tileWidth = canvas.width / this.locationGridPreset.column;
+                    let tileHeight = canvas.height / this.locationGridPreset.row;
+                    for (var row = 0; row < this.locationGridPreset.row; row++) {
+                        for (var col = 0; col < this.locationGridPreset.column; col++) {
+                            let x = col * canvas.width / this.locationGridPreset.column;
+                            let y = row * canvas.height / this.locationGridPreset.row;
               
     
                             if ((mouseX && mouseY) && (mouseX >= x && mouseX <= (x + tileWidth) 
                                                             && (mouseY >= y && mouseY <= (y + tileHeight)))) {
-                                this.selectedTileIndex = col + (row * this.gridPreset.column);
+                                this.selectedTileIndex = col + (row * this.locationGridPreset.column);
                                 this.newBlock = this.blocks[this.selectedTileIndex];        
                             }
                         }
                     }
-                } else if (this.currentPaintToolMode == this.paintToolMode.Hand) {                
+                } else if (this.currentLocationPaintToolMode == this.paintToolMode.Hand) {                
                     this.newBlock.points.push({x: mouseX, y: mouseY});     
                 }
             }
@@ -820,7 +825,8 @@ export default {
             for (var i = 0; i < this.totalFloor; i++) {
                 let floor = {
                     name: '',
-                    imageBase64: null,
+                    imageBase64: '',
+                    paintToolMode: 0,
                     tiles: [],
                 }
                 if (i == 0) {
@@ -836,7 +842,8 @@ export default {
                 for (var i = 1; i <= this.totalBasementFloor; i++) {
                     let floor = {
                         name: `B${i}`,
-                        imageBase64: null,
+                        imageBase64: '',
+                        paintToolMode: 0,
                         tiles: [],
                     }
                     this.blocks[index].floors.unshift(floor); // add to the head of list
@@ -847,39 +854,41 @@ export default {
     },
     watch: {
         // 'image': function() {
-        //     this.$refs.myCanvas.style.height = this.$refs.myImage.naturalHeight;
-        //     this.$refs.myCanvas.style.widht = this.$refs.myImage.naturalWidth;
+        //     this.$refs.locationCanvas.style.height = this.$refs.myImage.naturalHeight;
+        //     this.$refs.locationCanvas.style.widht = this.$refs.myImage.naturalWidth;
         // }
         // file: function() {
-            // let canvas = this.$refs.myCanvas;
+            // let canvas = this.$refs.locationCanvas;
             // let canvasContext = canvas.getContext('2d');
-            // this.background = new Image();
-            // this.background.src = this.floorPlanImageFile.base64;
-            // this.background.onload = () => {
-            //     canvasContext.drawImage(this.background, 0, 0);
+            // this.locationBackground = new Image();
+            // this.locationBackground.src = this.locationFloorPlanImage.base64;
+            // this.locationBackground.onload = () => {
+            //     canvasContext.drawImage(this.locationBackground, 0, 0);
             // }
         // },
-        selectedGridPreset: function() {
-            if (this.selectedGridPreset) {
-                if (this.selectedGridPreset == 'custom') {
-                    this.gridPreset = {
-                        column : this.customColumns,
-                        row: this.customRows,
-                    };
-                } else {
-                    this.gridPreset = this.selectedGridPreset;
+        selectedLocationGridPresetOption: function() {
+            if (this.currentStep === this.Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION) {
+                if (this.selectedLocationGridPresetOption) {
+                    if (this.selectedLocationGridPresetOption == 'custom') {
+                        this.locationGridPreset = {
+                            column : this.gridLocationCustomColumns,
+                            row: this.gridLocationCustomRows,
+                        };
+                    } else {
+                        this.locationGridPreset = this.selectedLocationGridPresetOption;
+                    }
+                    this.clearCanvas();
+                    this.blocks = [];    
+                    this.paintCanvas(null, null);
                 }
-                this.clearCanvas();
-                this.blocks = [];    
-                this.paintCanvas(null, null);
             }
         },
-        currentPaintToolMode: function() {
+        currentLocationPaintToolMode: function() {
             this.clearCanvas();
-            if (this.currentPaintToolMode == this.paintToolMode.Preset && this.selectedGridPreset) {
+            if (this.currentLocationPaintToolMode == this.paintToolMode.Preset && this.selectedLocationGridPresetOption) {
                 this.paintCanvas(null, null);
             } 
-            // else if (this.currentPaintToolMode == this.paintToolMode.Hand && this.newBlock.points.length > 0) {
+            // else if (this.currentLocationPaintToolMode == this.paintToolMode.Hand && this.newBlock.points.length > 0) {
             //     this.drawPoints();
             // }
         },
@@ -889,19 +898,19 @@ export default {
             }
             this.drawPoints();
         },
-        customColumns: function() {
-            this.gridPreset = {
-                column: this.customColumns,
-                row: this.customRows,
+        gridLocationCustomColumns: function() {
+            this.locationGridPreset = {
+                column: this.gridLocationCustomColumns,
+                row: this.gridLocationCustomRows,
             }
             this.clearCanvas();
             this.blocks = [];    
             this.paintCanvas(null, null);
         },
-        customRows: function() {
-            this.gridPreset = {
-                column: this.customColumns,
-                row: this.customRows,
+        gridLocationCustomRows: function() {
+            this.locationGridPreset = {
+                column: this.gridLocationCustomColumns,
+                row: this.gridLocationCustomRows,
             }
             this.clearCanvas();
             this.blocks = [];    
@@ -922,7 +931,7 @@ export default {
 
 <style scoped>
 .form {
-  /* background-color: white; */
+  /* locationBackground-color: white; */
   padding: 0 !important;
 }
 .form-title {
@@ -955,13 +964,13 @@ export default {
 }
 
 #btn-cancel {
-  background-color: #bdbdbd;
+  locationBackground-color: #bdbdbd;
   color: white;
   margin-right: 0.6rem;
 }
 
 #btn-add {
-  background-color: var(--primary-color);
+  locationBackground-color: var(--primary-color);
   color: white;
 }
 
