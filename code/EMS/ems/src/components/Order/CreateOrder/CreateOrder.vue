@@ -174,9 +174,7 @@ export default {
         data.forEach(element => {
           let quantity = parseInt(element.Equipment.AvailableQuantity);
           let option = {
-            text: `${element.Equipment.Name}, available: ${quantity} ${
-              quantity > 1 ? "units" : "unit"
-            }`,
+            text: `${element.Equipment.Name}, available: ${quantity} ${quantity > 0 ? element.Equipment.Unit : ''}`,
             value: element.Equipment.Id,
             image: element.Equipment.Image,
             availableQuantity: quantity

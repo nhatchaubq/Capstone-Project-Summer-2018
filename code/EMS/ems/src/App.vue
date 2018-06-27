@@ -154,6 +154,14 @@ a:active {
   transition: all .15s ease-in-out;
 }
 
+.button.btn-blue {
+  border: 0;
+  color: white !important;
+  background-color: #1976d2;
+  z-index: 99;
+  transition: all .15s ease-in-out;
+}
+
 button.btn-primary:hover {
   cursor: pointer;
   color: white !important;
@@ -166,6 +174,13 @@ button.btn-danger:hover {
   background-color: var(--lighten-danger-color);
 }
 
+
+button.btn-blue:hover {
+  cursor: pointer;
+  color: white !important;
+  background-color: #328BE5;
+}
+
 button.btn-primary:active {
   color: white !important;
   background-color: var(--darken-primary-color) !important;
@@ -175,6 +190,13 @@ button.btn-primary:active {
 button.btn-danger:active {
   color: white !important;
   background-color: var(--darken-danger-color) !important;
+  box-shadow: 1px 1px 1px var(--shadow) !important;
+}
+
+
+button.btn-blue:active {
+  color: white !important;
+  background-color: #1471CD !important;
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 

@@ -52,7 +52,7 @@
                     There is no orders to display.
                 </div>
                 <div v-else>
-                    <order-block :key="'order' + order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
+                    <order-block :key="'order' + order.Id" :order="order" :class="isActive(order.Id)" v-for="(order, index) in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
                 </div>
             </div>
         </div>
@@ -69,22 +69,39 @@
                               {{ selectedOrder.Name }}
                           </span>
                       </div>
-                      <div style="position: relative; top: .8rem; display: grid; grid-template-rows: auto auto; grid-row-gap: .3rem; text-align: right; user-select: none;" >
-                            <div class="" v-show="authUser.RoleID == 4">
+                      <!-- manager approve / reject -->
+                      <div v-if="authUser.RoleID == 2 && selectedOrder.WorkOrderStatus == 'Checked'" style="margin-top: 1rem; width: 100%">
+                            <div style="float: right; display: inline">
+                                <button class="button btn-primary material-shadow-animate" style="margin-right: .5rem" v-on:click="() => {
+                                    showApproveRejectDialog = true;
+                                    approveWorkOrder = true;
+                                }">Approve</button>
+                                <button class="button btn-danger material-shadow-animate" v-on:click="() => {
+                                    showApproveRejectDialog = true;
+                                    approveWorkOrder = false;    
+                                }">Reject</button>
+                            </div>
+                        </div> <!-- manager approve / reject -->
+                        <!-- edit/cancel work order -->
+                        <div style="position: relative; top: .8rem; display: grid; grid-template-rows: auto auto; grid-row-gap: .3rem; text-align: right; user-select: none;" >
+                            <!-- edit work order -->
+                            <!-- <div class="" v-if="authUser.RoleID == 4">
                                 <a v-on:click="editMode = !editMode">
                                     <i class="fa" :class="{'fa-pencil-square-o': !editMode, 'fa-check-circle-o': editMode}" style=" font-size: 1rem; margin-right: 2px"></i>
                                     {{ editMode ? 'Done' : 'Edit' }}
                                 </a>
-                            </div>
+                            </div> edit work order -->
+                            <!-- cancel work order -->
                             <div class="" style="margin-bottom: 1rem;" v-if="selectedOrder.StatusID < 3 && authUser.Id == selectedOrder.RequestUserID">
                                 <a v-on:click="showCancelDialog = true">Cancel this order</a>
-                            </div>
-                      </div>
+                            </div> <!-- cancel work order -->
+                        </div> <!-- edit/cancel work order -->
                   </div>
                   <div style="width: 100%">
                       <div class="detail-contents" style="margin-top: 1rem;">
-                          <step-progress :workOrderStatusId="selectedOrder.StatusID" :statusList="options.status.slice(0, 5)"></step-progress>
-                          <div v-if="editMode" style="margin-top: 1rem;">
+                          <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :statusList="options.status.slice(0, 5)"></step-progress>
+                      </div>
+                          <!-- <div v-if="editMode" style="margin-top: 1rem;">
                               <span class="detail-label" style="position: relative; top: .4rem; margin-right: 1rem;">Change status to:</span>
                               <div class="select">
                                   <select>
@@ -93,24 +110,31 @@
                                       </option>
                                   </select>
                               </div>
-                          </div>
-                          <div class="level" v-if="authUser.RoleID == 2" style="margin-top: 1rem; width: 100%">
-                              <!-- <span class="detail-label" style="position: relative; top: .4rem; margin-right: 1rem;">Change status to:</span> -->
-                              <!-- <div class="select">
-                                  <select>
-                                      <option :disabled="status.id <= selectedOrder.StatusID" :selected="status.id == (selectedOrder.StatusID)" :key="'editStatus' + status.id" value="" v-for="status in options.status">
-                                          {{ status.name }}
-                                      </option>
-                                  </select>
-                              </div> -->
-                                <div class="level-left"></div>
-                                <div class="level-right">
-                                    <button class="level-item button btn-primary material-shadow-animate" style="margin-right: .5rem">Approve</button>
-                                    <button class="level-item button btn-danger material-shadow-animate">Reject</button>
-                                </div>
-                          </div>
+                          </div> -->
+                        <div class="detail-contents">
+                            <div style="width: 100%; text-align: right;" v-if="authUser.RoleID == 4 && selectedOrder.WorkOrderStatus == 'Requested'">
+                                <button class="button btn-blue material-shadow-animate" v-on:click="() => {
+                                    newStatusId = 2;
+                                    newStatusName = 'Checked';
+                                    showChangeStatusDialog = true;
+                                }">Change status to Checked</button>
+                            </div>
+                            <div style="width: 100%; text-align: right;" v-if="authUser.RoleID == 4 && selectedOrder.WorkOrderStatus == 'Approved'">
+                                <button class="button btn-blue material-shadow-animate" v-on:click="() => {
+                                    newStatusId = 4;
+                                    newStatusName = 'In Progress';
+                                    showChangeStatusDialog = true;
+                                }">Change status to In Progress</button>
+                            </div>
+                            <div style="width: 100%; text-align: right;" v-if="authUser.RoleID == 4 && selectedOrder.WorkOrderStatus == 'In Progress'">
+                                <button class="button btn-blue material-shadow-animate" v-on:click="() => {
+                                    newStatusId = 5;
+                                    newStatusName = 'Closed';
+                                    showChangeStatusDialog = true;
+                                }">Close this work order</button>
+                            </div>
                       </div>
-                      <div class="detail-contents">
+                      <div class="detail-contents" style="width: 100%;">
                           <span class="detail-label">Equipments:</span>
                           <v-flex>
                               <v-expansion-panel popout>
@@ -124,7 +148,7 @@
                                                   {{ equipment.Name }}
                                               </div>                                            
                                               <div style="font-size: .9rem">
-                                                  Quantity: {{ equipment.EquipmentItems.length }}
+                                                  Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
                                               </div>
                                           </div>
                                       </div>
@@ -160,10 +184,11 @@
           </div>
         </div>
         <router-link to="/work_order/create" tag="button" id="btn-add-work-order" class="button is-primary material-shadow-animate">Add Work Order</router-link>
+      <!-- equipment detail dialog -->
       <vodal height="500" :show="equipmentItem != null" @hide="equipmentItem = null" animation="slideUp">
-        <!-- <div>alo</div> -->
         <equipment-detail-popup :equipment="equipmentItem" class=""></equipment-detail-popup>
-      </vodal>
+      </vodal> <!-- equipment detail dialog -->
+      <!-- cancel dialog -->
       <vodal :show="showCancelDialog" :height="170" @hide="showCancelDialog = false" animation="slideUp" :closeButton="false">
           <div v-if="selectedOrder">
               <div class="my-dialog">
@@ -177,7 +202,42 @@
                 </div>
               </div>
           </div>
-      </vodal>
+      </vodal> <!-- cancel dialog -->
+      <!-- approve / reject dialog -->
+      <vodal :show="showApproveRejectDialog" :height="170" @hide="showApproveRejectDialog = false" animation="slideUp" :closeButton="false">
+          <div v-if="selectedOrder">
+              <div class="my-dialog">
+                <div class="my-dialog-title">
+                    Confirm
+                </div>
+                <div class="my-dialog-content">
+                    <span>Are you sure to {{ approveWorkOrder ? 'approve' : 'reject' }} this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
+                    <button class="button vodal-cancel-btn" @click="showApproveRejectDialog = false">Cancel</button>
+                    <button :class="{'btn-primary': approveWorkOrder, 'btn-danger': !approveWorkOrder}" class="button vodal-confirm-btn" @click="approveRejectWorkOrder(selectedOrder.Id)">{{ approveWorkOrder ? 'Approve' : 'Reject' }}</button>
+                </div>
+              </div>
+          </div>
+      </vodal> <!-- approve / reject dialog -->
+      <!-- change status dialog -->
+      <vodal :show="showChangeStatusDialog" :height="170" @hide="showChangeStatusDialog = false" animation="slideUp" :closeButton="false">
+          <div v-if="selectedOrder">
+              <div class="my-dialog">
+                <div class="my-dialog-title">
+                    Confirm
+                </div>
+                <div class="my-dialog-content">
+                    <span v-if="newStatusName != 'Closed'">
+                        Are you sure to change status of this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }} to {{ newStatusName }}?
+                    </span>
+                    <span v-else>
+                        Are you sure to close this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?
+                    </span>
+                    <button class="button vodal-cancel-btn" @click="showChangeStatusDialog = false">No</button>
+                    <button class="btn-primary button vodal-confirm-btn" @click="changeWorkOrderStatus(selectedOrder.Id, newStatusId, newStatusName)">Yes</button>
+                </div>
+              </div>
+          </div>
+      </vodal> <!-- change status dialog -->
     </div>
 </template>
 
@@ -257,6 +317,11 @@ export default {
             PRIORITY: 1
         },
         showCancelDialog: false,
+        showApproveRejectDialog: false,
+        showChangeStatusDialog: false,
+        newStatusId: -1,
+        newStatusName: '',
+        approveWorkOrder: false,
     };
   },
   computed: {
@@ -400,11 +465,34 @@ export default {
         alert(msg);
     },
     cancelOrder(orderId) {
-        let url = `${Server.WORKORDER_API_PATH}/${orderId}/status/8`;
-        this.axios.put(url)
+        this.changeWorkOrderStatus(orderId, 1002, 'Cancelled');
+    },
+    approveRejectWorkOrder(orderId) {
+        let newStatusId = this.approveWorkOrder ? 3 : 6;
+        let newStatusName = this.approveWorkOrder ? 'Approved' : 'Rejected';
+
+        this.changeWorkOrderStatus(orderId, newStatusId, newStatusName);
+        // let authUser = JSON.parse(window.localStorage.getItem('user'));
+        
+    },
+    changeWorkOrderStatus(orderId, newStatusId, newStatusName) {
+        let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
+        this.axios.put(url, {
+            userId: this.authUser.Id,
+            oldWorkOrderStatusId: this.selectedOrder.StatusID,
+            newWorkOrderStatusId: newStatusId,
+        })
             .then((res) => {
-                this.showCancelDialog = false;
-                this.$router.push('/work_order')
+                if (res.status == 200) {
+                    this.showCancelDialog = false;
+                    this.showApproveRejectDialog = false;
+                    this.showChangeStatusDialog = false;
+                    this.selectedOrder.StatusID = newStatusId;
+                    this.selectedOrder.WorkOrderStatus = `${newStatusName}`;
+                    // if (newStatusName == 'Closed' || newStatusId == 'Cancelled') {
+                    //     url = `${Server.EQUIPMENTITEM_API_PATH}/status/${}`
+                    // }
+                }
             })
             .catch((error) => {
                 console.log(error);
@@ -561,7 +649,7 @@ export default {
 
 .detail-header {
     display: grid;
-    grid-template-columns: 65% 35%;
+    grid-template-columns: 55% 45%;
 }
 
 .detail-title {

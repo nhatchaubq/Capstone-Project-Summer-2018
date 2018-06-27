@@ -64,10 +64,12 @@ router.post('/detail', (req, res) => {
         .exec(res);
 });
 
-router.put('/:orderId/status/:statusId', (req, res) => {
-    req.sql('update [WorkOrder] set StatusID = @statusId where Id = @orderId')
-        .param('orderId', req.params.orderId, TYPES.Int)
-        .param('statusId', req.params.statusId, TYPES.Int)
+router.put('/status/:orderId', (req, res) => {
+    req.sql('exec [dbo].[UpdateWorkOrderStatus] @workOrderId, @userId, @oldWorkOrderStatusId, @newWorkOrderStatusId')
+        .param('workOrderId', req.params.orderId, TYPES.Int)
+        .param('userId', req.body.userId, TYPES.Int)
+        .param('oldWorkOrderStatusId', req.body.oldWorkOrderStatusId, TYPES.Int)
+        .param('newWorkOrderStatusId', req.body.newWorkOrderStatusId, TYPES.Int)
         .exec(res);
 });
 
