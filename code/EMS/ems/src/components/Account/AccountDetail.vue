@@ -11,16 +11,16 @@
   <!-- <button class="button " style="background-color:green;   position: fixed;
   top: 6rem;
   right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
-<img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem; ">
+<img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; ">
 <div class="material-box">
 <div class="row" style="margin: 0 !important">
-  <h2 class="col-11" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong> </h2>
-  <div class="col-12 ">
-    <button class="button btn-edit btn-primary material-shadow-animate col-3 pull-right" v-on:click="editMode = !editMode">Edit</button>
+  <h2 class="col-9" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong> </h2>
+  <div class="col-3 ">
+    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode">Edit</button>
   </div>
 </div>
 <div  class="row " style="height: 36px" >
-    <div class="col-12" style="margin-top:0.5rem" >
+    <div class="col-3" style="margin-top:0.5rem" >
       Full name:  
     </div>
 
@@ -31,20 +31,29 @@
 
 
 </div>
-<div class="row" style="margin-top:0.5rem;  height: 36px">
-    <div class="col-12" style="margin-top:0.5rem">Password: </div>
+<div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
+    <div class="col-3" style="margin-top:0.5rem">Password: </div>
+
+    <!-- <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled"> -->
+    <!-- <input v-if="editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" > -->
+    <input v-if="editMode" v-model ="account.Password"  class="input col-7 " type="password"  placeholder="Text input">
+    <div>One Way binding as text {{account.Password}}</div>
+
+</div>
+<!-- <div class="row" style="margin-top:0.5rem;  height: 36px">
+    <div class="col-3" style="margin-top:0.5rem">Password: </div>
 
     <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
     <input v-else v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input">
 
-</div>
+</div> -->
 
 <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class=" col-12" style="margin-top:0.5rem">
+  <div class=" col-3" style="margin-top:0.5rem">
     Status: 
   </div>
 
-  <div class="col-12" style="padding-left: 0 !important">
+  <div class="col-7" style="padding-left: 0 !important">
   <!-- <div class="row col-7 " style="height: 36px"> -->
       <div style="margin-top:0.5rem" >
         <label style="margin-right: 1rem;" class="radio"  >
@@ -60,25 +69,25 @@
   </div>
 </div >
 <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" >Role:</div>
-  <div class="col-12" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
+  <div class="col-3" >Role:</div>
+  <div class="col-7" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
 </div>
 <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12">Start date: </div>
-  <div class="col-12" style="padding-left: 0 !important;"> {{account.StartDate ? account.StartDate: 'N/A' }}</div>
+  <div class="col-3">Start date: </div>
+  <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? account.StartDate: 'N/A' }}</div>
 </div>
 <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
 <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem">Email: </div>
+  <div class="col-3" style="margin-top:0.5rem">Email: </div>
   <!-- <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div> -->
-  <input v-if="!editMode" v-model="account.Email" class="input col-12 " type="text"  placeholder="Text input" disabled="disabled">
+  <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Email" class="input col-7 " type="text"  placeholder="Text input">
 </div>
 <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem">Phone: </div>
+  <div class="col-3" style="margin-top:0.5rem">Phone: </div>
   <!-- <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div> -->
   <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-  <input v-else v-model="account.Phone" class="input col-12 " type="text"  placeholder="Text input">
+  <input v-else v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
 </div>
 <div class="row" v-if="editMode">
   <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Done</button>

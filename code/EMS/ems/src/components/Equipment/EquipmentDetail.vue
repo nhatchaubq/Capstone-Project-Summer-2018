@@ -260,7 +260,8 @@ export default {
         .get("http://localhost:3000/api/equipmentItem/Item/" + itemId)
         .then(response => {
           this.selectedItem = response.data;
-          alert(this.selectedItem.SerialNumber);n
+          alert(this.selectedItem.SerialNumber);
+          n;
         })
         .catch(error => {
           console.log(error);
@@ -304,7 +305,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .btn-edit:hover {
   cursor: pointer;
   background-color: #009688;
