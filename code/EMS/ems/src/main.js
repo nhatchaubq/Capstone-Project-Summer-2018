@@ -26,10 +26,14 @@ Vue.component('v-bar', VueBar);
 Vue.config.productionTip = false;
 
 router.beforeEach((to, from, next) => {
+  store.state.showSearchBar = to.meta.showSearchBar;
+  let authUser = JSON.parse(window.localStorage.getItem('user'));
   if (to.name == 'login') {
     next('/');
-  } else {
-    store.state.showSearchBar = to.meta.showSearchBar;
+  } else if (to.name == 'create_work_order' && authUser.RoleID != 5 && authUser.RoleID != 6) {
+    next('/work_order');
+  } 
+  else {
     next();
   }
 });

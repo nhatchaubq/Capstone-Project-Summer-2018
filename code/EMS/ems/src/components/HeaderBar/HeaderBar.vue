@@ -5,25 +5,53 @@
                 {{ title }}
             </div>
         </div>
-        <div class=""></div>
         <div class="">
             <div class="headerbar-end">
-                <div class="searchbar-wrapper" v-show="showSearchBar">
-                    <form @submit.prevent="search()">
-                        <i class="fa fa-search" v-on:click="search()" id="searchIcon"></i>
-                        <input v-model="searchValue" type="text" class="searchbar" placeholder="Search"/>
-                    </form>
+                <!-- search bar -->
+                <div style="padding-top: .2rem">
+                    <div class="searchbar-wrapper" v-show="showSearchBar">
+                        <form @submit.prevent="search()">
+                            <i class="fa fa-search" v-on:click="search()" id="searchIcon"></i>
+                            <input v-model="searchValue" type="text" class="searchbar" placeholder="Search"/>
+                        </form>
+                    </div> <!-- search bar -->
+
                 </div>
-                <div>
+                <!-- start button -->
+                <div style="padding-top: .2rem">
                     <div class="headerbar-button">
                         <i class="material-icons">star</i>
-                    </div>
+                    </div> <!-- start button -->
                 </div>
-                <div>
+                <!-- noti button -->
+                <div style="padding-right: 1rem; padding-top: .2rem">
                     <div class="headerbar-button">
                         <i class="material-icons">notifications</i>
-                    </div>
+                    </div> <!-- noti button -->
                 </div>
+                <!-- avatar -->
+                <div style="padding-left: 1rem; padding-right: .6rem; padding-top: .2rem">
+                    <router-link :to="`/account/${authUser.Id}`">
+                        <div class="circle-avatar-container">
+                            <img class="circle-avatar" v-bind:src="getUserAvatar()"/>
+                        </div>
+                    </router-link>
+                </div> <!-- avatar -->
+                <!-- account username & logout -->
+                <div>
+                    <div style="display: grid; grid-template-rows: auto auto">
+                        <div>
+                            <router-link :to="`/account/${authUser.Id}`">
+                                <a style="font-size: 1rem; color: var(--primary-color) !important">
+                                    {{ authUser.Username }}
+                                </a>
+                            </router-link>
+                        </div>
+                        <div style="text-align: left; width: 100%">
+                            <a style="color: var(--dark-background-color) !important; font-size: 0.8rem; position: relative; top: -.4rem" v-on:click="logout()">Logout</a>
+                        </div>
+                    </div>
+                </div> <!-- account username & logout -->
             </div>
         </div>
     </div>
@@ -45,6 +73,9 @@ export default {
         title: sync('title'),
         searchValue: sync('searchValue'),
         showSearchBar: sync('showSearchBar'),
+        authUser() {
+            return JSON.parse(window.localStorage.getItem("user"));
+        }
     },
     methods: {
         search() {
@@ -60,7 +91,19 @@ export default {
                 }
 
             }
-        }
+        },
+        getUserAvatar() {
+            if (this.authUser.AvatarImage) {
+                return this.authUser.AvatarImage;
+            } else {
+                return require("@/assets/avatar-user.png");
+            }
+        },
+        logout() {
+            this.$store.state.isLoggedIn = false;
+            window.localStorage.removeItem("user");
+            this.$router.push("/");
+        },
     }
 }
 </script>
@@ -68,22 +111,24 @@ export default {
 <style scoped>
     .headerbar {
         display: grid;
-        grid-template-columns: auto 50% auto;
-        height: 4rem;
+        grid-template-columns: auto auto;
+        /* height: 4rem; */
         /* background-color: var(--light-background); */
         /* background-color: #b0bec5; */
         background-color: #eeeeee;
         z-index: 2;
         width: 100%;
+        padding: 0rem 2rem;
         /* border-bottom: 2px solid var(--dark-background); */
     }
 
     .headerbar-title {
-        padding-top: 0.6rem;
-        padding-left: 2rem;
-        font-size: 2rem;
+        /* padding-top: 0.6rem;
+        padding-left: 2rem; */
+        font-size: 1.6rem;
         color: var(--dark-background);
         height: 100%;
+        padding-top: .5rem
         /* width: 30rem; */
         /* font-weight: bold; */
     }
@@ -91,7 +136,8 @@ export default {
     .headerbar-end {
         display: flex;
         justify-content: flex-end;
-        padding: .9rem 1.3rem .9rem 0;
+        padding-top: .4rem;
+        /* padding: .9rem 1.3rem .9rem 0; */
         /* display: grid;
         grid-template-columns: 70% 15% 15%; */
         /* grid-column-gap: 10px; */
@@ -144,8 +190,8 @@ export default {
         border: 1px solid black;
         /* background-color: #e0e0e0; */
         text-align: center;
-        width: 35px;
-        height: 35px;
+        width: 2.25rem;
+        height: 2.2rem;
         border-radius: 50%;
         box-shadow: 0px 0px 0px #e0e0e0;
         transition: all .25s ease-in;
@@ -166,5 +212,27 @@ export default {
     }
 
     .headerbar-button:hover i {
-        color: white;    }
+        color: white;    
+    }
+    .circle-avatar-container {
+        /* position: fixed;
+        left: 5rem;
+        bottom: 0.8rem; */
+        border-radius: 50%;
+        border: 1px solid var(--shadow);
+        width: 2.25rem;
+        height: 2.2rem;
+    }
+    .circle-avatar-container:hover {
+        cursor: pointer;
+    }
+
+    .circle-avatar {
+        /* position: relative; */
+        border-radius: 50%;
+        /* left: 5rem;
+            bottom: .8rem; */
+        width: 100%;
+        height: 100%;
+    }
 </style>
