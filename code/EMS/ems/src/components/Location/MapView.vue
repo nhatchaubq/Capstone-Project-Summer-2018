@@ -5,7 +5,7 @@
         </router-link>
         <div v-if="mapViewSelectedLocation">
             <div v-if="!mapViewSelectedLocation.Blocks" style="margin-top: 1rem">
-            This location has no block yet. <router-link :to="`/location/${$route.params.locationId}/add_block_floor_tile`"><a style="margin-left: .5rem; user-select: none;"><i class="fa fa-plus-circle"></i> Add new block</a></router-link>
+            This location has no block yet. <router-link v-if="authUser.RoleID == 2" :to="`/location/${$route.params.locationId}/add_block_floor_tile`"><a style="margin-left: .5rem; user-select: none;"><i class="fa fa-plus-circle"></i> Add new block</a></router-link>
             </div>
             <div v-else>
             <div :key="'mapViewBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks">
@@ -37,6 +37,11 @@ export default {
             .catch((error) => {
                 console.log(error);
             })
+    },
+    computed: {
+        authUser() {
+            return JSON.parse(window.localStorage.getItem('user'));
+        }
     },
     data() {
         return {

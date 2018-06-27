@@ -15,8 +15,12 @@
         <div class="form-content">
             <div class="form-field is-horizonal">
                 <div class="form-field-title">Category: </div>
-                <label class="radio" :key="category.Id" v-for="(category, index) in categories" v-on:click="workOrderCategory = category.Id" style="margin-right: 1rem;">
-                    <input required type="radio" name="category" :checked="index == 0">
+                <label class="radio" :key="'category' + category.Id" v-for="category in categories" style="margin-right: 1rem;">
+                    <input required type="radio" name="category" 
+                    :disabled="authUser.RoleID == 6 && category.Name != 'Maintain'
+                              || authUser.RoleID == 5 && category.Name != 'Working'"
+                    :checked="authUser.RoleID == 6 && category.Name == 'Maintain' 
+                              || authUser.RoleID == 5 && category.Name == 'Working'">
                     {{ category.Name }}
                 </label>
             </div>
@@ -134,7 +138,6 @@ export default {
       workOrderTitle: "",
       workOrderDescription: "",
       workOrderPriority: -1,
-      workOrderCategory: -1,
       selectedEquipmentQuantity: 1,
       selectedEquipmentFromDate: "",
       selectedEquipmentToDate: "",
@@ -160,12 +163,24 @@ export default {
       teamOptions: []
     };
   },
+  computed: {
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    },
+    workOrderCategory() {
+      if (this.authUser.RoleID == 5) {
+        return 2; // working order
+      } else if (this.authUser.RoleID == 6) {
+        return 1; // maintain order
+      }
+    }
+  },
   created() {
     this.axios.get(Server.WORKORDER_CATEGORIES_API_PATH).then(res => {
       if (res.data) {
         let data = res.data;
         this.categories = data;
-        this.workOrderCategory = data[0].Id;
+        // this.workOrderCategory = data[0].Id;
       }
     });
     this.axios.get(Server.EQUIPMENT_API_PATH).then(res => {
@@ -273,13 +288,12 @@ export default {
           if (res.data.Id) {
             let result = res.data.Id;
             let workOrderApi = Server.WORKORDER_API_PATH;
-            let authUser = JSON.parse(window.localStorage.getItem("user"));
 
             context.axios
               .post(workOrderApi, {
                 name: context.workOrderTitle,
                 description: context.workOrderDescription,
-                requestUserId: authUser.Id,
+                requestUserId: this.authUser.Id,
                 createDate: new Date(),
                 priorityId: context.workOrderPriority,
                 statusId: 1,
@@ -289,8 +303,9 @@ export default {
               .then(function(res) {
                 if (res.data.NewWorkOrderId) {
                   let newWorkOrderId = res.data.NewWorkOrderId;
-                  context.selectedEquipments.forEach(equipment => {
-                    for (var i = 0; i < equipment.quantity; i++) {
+                  for (var i = 0; i < context.selectedEquipments.length; i++) {
+                    let equipment = context.selectedEquipments[i];
+                    for (var j = 0; j < equipment.quantity; j++) {
                       // alert('loopin');
                       context.axios
                         .post(Server.WORKORDER_DETAIL_API_PATH, {
@@ -302,15 +317,18 @@ export default {
                           description: null
                         })
                         .then(function(res) {
-                          if (i + 1 == equipment.quantity) {
-                            context.$router.push("/work_order");
+                          if (res.status == 200) {
+                            if ((i + 1) == context.selectedEquipments.length 
+                                  && (j + 1) == equipment.quantity) {
+                              context.$router.push("/work_order");
+                            }
                           }
                         })
                         .catch(error => {
-                          alert(error);
+                          console.log(error);
                         });
                     }
-                  });
+                  }
                 } else {
                   alert("No new work order id returned");
                 }
