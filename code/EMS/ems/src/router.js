@@ -50,11 +50,11 @@ let router = new Router({
         showSearchBar: false
       }
     },
-    // {
-    //     path: '/login',
-    //     name: 'login',
-    //     component: LoginComponent,
-    // },
+    {
+        path: '/login',
+        name: 'login',
+        // component: LoginComponent,
+    },
     {
       path: "/equipment",
       component: EquipmentComponent,
@@ -97,6 +97,7 @@ let router = new Router({
       }
     },
     {
+      name: 'create_work_order',
       path: "/work_order/create",
       component: CreateOrderComponent,
       beforeEnter: (to, from, next) => {

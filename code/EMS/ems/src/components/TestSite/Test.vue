@@ -74,11 +74,11 @@
 </template>
 
 <script>
-// import fileBase64 from 'vue-file-base64';
+import fileBase64 from 'vue-file-base64';
 
 export default {
   components: {
-    // fileBase64,
+    fileBase64,
   },
   data() {
     return {

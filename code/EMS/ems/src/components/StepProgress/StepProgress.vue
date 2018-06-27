@@ -39,7 +39,7 @@ export default {
         margin-right: 4%;
         text-align: center;
         font-size: 13px;
-        z-index: 1;
+        z-index: 3;
         /* border: 1px solid var(--primary-color);
         border-radius: 10px; */
         padding: .2rem .4rem;
@@ -54,7 +54,7 @@ export default {
         width: 40%;
         height: 3px;
         background: #F5F5F5;
-        z-index: -1;
+        z-index: 1;
         position: absolute;
         top: .6rem;
         margin-left: 0;
