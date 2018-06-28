@@ -1,9 +1,9 @@
 import {
-    Doughnut
-} from "../../../node_modules/vue-chartjs/es/BaseCharts/doughnut";
+    Pie
+} from "vue-chartjs";
 
 export default {
-    extends: Doughnut,
+    extends: Pie,
     data() {
         return {
             work1: null,
