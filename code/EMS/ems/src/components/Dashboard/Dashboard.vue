@@ -78,9 +78,9 @@
                                     <strong>Work Order by Category</strong>
                                 </div>
 
-                                      <!-- <div style="width:100%" class="Chart">
-                        <doughnut-chart styles="height: 40vh" ref="canvas"></doughnut-chart>
-                    </div>  -->
+         <div style="width:100%" class="Chart">
+                        <pie-chart styles="height: 43vh" ref="canvas"></pie-chart>
+                    </div>
                   
                         </div>
                 </div>          
@@ -222,12 +222,12 @@
 <script>
 import Server from "@/config/config.js";
 import BarChart from "../../components/chartTest/bar-chart.js";
-// import PieChart from "../../components/chartTest/pie-chart.js.js";
+import PieChart from "../../components/chartTest/pie-chart.js";
 
 export default {
   components: {
-    BarChart
-    // PieChart
+    BarChart,
+    PieChart
   },
   created() {
     let URL = Server.DASHBOARD_API_PATH;

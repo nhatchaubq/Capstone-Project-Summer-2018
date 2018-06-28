@@ -17,9 +17,9 @@ export default {
 
 
 
-        this.work1.addColorStop(0, 'rgba(255, 0,0, 0.5)')
-        this.work1.addColorStop(0.5, 'rgba(255, 0, 0, 0.25)');
-        this.work1.addColorStop(1, 'rgba(255, 0, 0, 0)');
+        this.work1.addColorStop(0, 'rgba(201, 89, 170, 0.3)')
+        this.work1.addColorStop(0.5, 'rgba(201, 89, 170, 0.2)');
+        this.work1.addColorStop(1, 'rgba(201, 89, 170, 0.01)');
 
         this.work2.addColorStop(0, 'rgba(0, 231, 255, 0.9)')
         this.work2.addColorStop(0.5, 'rgba(0, 231, 255, 0.25)');
@@ -27,15 +27,11 @@ export default {
 
         // Overwriting base render method with actual data.
         this.renderChart({
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            labels: ['AVAILABLE', 'WORKING REQUESTING', 'MAINTAINANCE REQUESTING', 'WORKING', 'DAMAGED', 'MAINTAINING', 'LOST'],
             datasets: [{
                 label: 'Data 3',
-                backgroundColor: this.work1,
+                backgroundColor: ["#00aac1", "#304ffe", "#00c853", "#ab47bc", "#ffd600", "#2ebaac", "#fafafa"],
                 data: [40, 39, 10, 40, 39, 80, 40]
-            }, {
-                label: 'Data 4',
-                backgroundColor: this.work2,
-                data: [60, 55, 32, 10, 2, 12, 53]
             }, ]
         }, {
             responsive: true,
