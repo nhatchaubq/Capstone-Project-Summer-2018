@@ -7,30 +7,23 @@
                         Filter:
                     </div> -->
                   <div class="filter" style="width: 100%">
-                      <!-- <div class="select">
-                          <select v-model="selectedFilter">
-                              <option disabled :value=null>Choose a filter</option>
-                              <optgroup label="Status">
-                                  <option :disabled="filterValues.includes(status)" :key="status.id" v-for="status in options.status" :value="status">{{ status.name }}</option>
-                              </optgroup>
-                              <optgroup label="Priorities">
-                                  <option :disabled="filterValues.includes(priority)" :key="priority.id" v-for="priority in options.priorities" :value="priority">{{ priority.name }}</option>
-                              </optgroup>
-                          </select>
-                      </div> -->
-                      <div style="user-select: none">
-                          Priority:
-                          <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: 1rem;">
-                              <input type="checkbox" v-on:change="addFilter(priority, $event)">
-                              {{ priority.name }}
-                          </label>
+                      <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
+                            <div>Priority:</div>
+                            <div>
+                                <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: .5rem;">
+                                    <input type="checkbox" v-on:change="addFilter(priority, $event)">
+                                    {{ priority.name }}
+                                </label>                              
+                            </div>                        
                       </div>
-                      <div style="user-select: none">
-                          Status:
-                          <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
-                              <input type="checkbox" v-on:change="addFilter(status, $event)">
-                              {{ status.name }}
-                          </label>
+                      <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
+                            <div>Status:</div>
+                            <div>
+                                <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
+                                    <input type="checkbox" v-on:change="addFilter(status, $event)">
+                                    {{ status.name }}
+                                </label>
+                            </div>
                       </div>
                   </div>
                   <div style="width: 100%"></div>
@@ -69,21 +62,11 @@
                               {{ selectedOrder.Name }}
                           </span>
                       </div>
-                      <!-- manager approve / reject -->
-                      <div v-if="authUser.RoleID == 2 && selectedOrder.WorkOrderStatus == 'Checked'" style="margin-top: 1rem; width: 100%">
-                            <div style="float: right; display: inline">
-                                <button class="button btn-primary material-shadow-animate" style="margin-right: .5rem" v-on:click="() => {
-                                    showApproveRejectDialog = true;
-                                    approveWorkOrder = true;
-                                }">Approve</button>
-                                <button class="button btn-danger material-shadow-animate" v-on:click="() => {
-                                    showApproveRejectDialog = true;
-                                    approveWorkOrder = false;    
-                                }">Reject</button>
-                            </div>
-                        </div> <!-- manager approve / reject -->
+                                           
+                  </div>
+                  <div style="">                        
                         <!-- edit/cancel work order -->
-                        <div style="position: relative; top: .8rem; display: grid; grid-template-rows: auto auto; grid-row-gap: .3rem; text-align: right; user-select: none;" >
+                        <div style="margin-top: .5rem; user-select: none;" >
                             <!-- edit work order -->
                             <!-- <div class="" v-if="authUser.RoleID == 4">
                                 <a v-on:click="editMode = !editMode">
@@ -96,11 +79,9 @@
                                 <a v-on:click="showCancelDialog = true">Cancel this order</a>
                             </div> <!-- cancel work order -->
                         </div> <!-- edit/cancel work order -->
-                  </div>
-                  <div style="width: 100%">
-                      <div class="detail-contents" style="margin-top: 1rem;">
-                          <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :statusList="options.status.slice(0, 5)"></step-progress>
-                      </div>
+                        <div class="detail-contents" style="margin-top: 1rem;">
+                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :statusList="options.status.slice(0, 5)"></step-progress>
+                        </div>
                           <!-- <div v-if="editMode" style="margin-top: 1rem;">
                               <span class="detail-label" style="position: relative; top: .4rem; margin-right: 1rem;">Change status to:</span>
                               <div class="select">
@@ -111,6 +92,19 @@
                                   </select>
                               </div>
                           </div> -->
+                          <!-- manager approve / reject -->
+                        <div v-if="authUser.RoleID == 2 && selectedOrder.WorkOrderStatus == 'Checked'" class="" style="margin-top: 1.5rem; margin-bottom: .5rem; display: flex; justify-content: flex-end; align-content: center">
+                            <div>
+                                <button class="button btn-primary material-shadow-animate" style="margin-right: .5rem" v-on:click="() => {
+                                    showApproveRejectDialog = true;
+                                    approveWorkOrder = true;
+                                }">Approve</button>
+                                <button class="button btn-danger material-shadow-animate" v-on:click="() => {
+                                    showApproveRejectDialog = true;
+                                    approveWorkOrder = false;    
+                                }">Reject</button>
+                            </div>
+                        </div> <!-- manager approve / reject -->   
                         <div class="detail-contents">
                             <div style="width: 100%; text-align: right;" v-if="authUser.RoleID == 4 && selectedOrder.WorkOrderStatus == 'Requested'">
                                 <button class="button btn-blue material-shadow-animate" v-on:click="() => {
@@ -366,7 +360,7 @@ export default {
     },
     // when click on an orderblock, add 'is-active-block' class to it
     isActive(orderId) {
-      if (this.selectedOrder != null && orderId != this.selectedOrder.Id) {
+      if (this.selectedOrder && orderId != this.selectedOrder.Id) {
         return "is-active-block";
       }
       return "";
@@ -532,7 +526,7 @@ export default {
     //   });
     // },
     searchValues: function() {
-      if (this.searchValues.length == 0) {
+      if (this.searchValues && this.searchValues.length == 0) {
         this.getWorkOrders();
         this.searchMode = false;
       } else {
@@ -636,8 +630,8 @@ export default {
   /* background-color: #e0e0e0 !important; */
   background-color: #bdbdbd !important;
   /* border: 1px solid #e0e0e0 !important; */
-  border: 1px solid #bdbdbd!important;
-  box-shadow: 1px 1px 1px #bdbdbd !important;
+  border: 1px solid #bdbdbd !important;
+  box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
 .order-detail {
@@ -654,8 +648,8 @@ export default {
 }
 
 .detail-header {
-    display: grid;
-    grid-template-columns: 55% 45%;
+    /* display: grid;
+    grid-template-columns: 55% 45%; */
 }
 
 .detail-title {

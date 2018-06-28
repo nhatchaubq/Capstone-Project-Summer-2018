@@ -56,6 +56,7 @@ export default {
   --status-approved: #00c853;
   --status-delivered: #ab47bc;
   --status-closed: #ffd600;
+  --blue: #2196f3;
 }
 
 :focus {
@@ -162,6 +163,14 @@ a:active {
   transition: all .15s ease-in-out;
 }
 
+.button.btn-green {
+  border: 0;
+  color: white !important;
+  background-color: #00e676;
+  z-index: 99;
+  transition: all .15s ease-in-out;
+}
+
 button.btn-primary:hover {
   cursor: pointer;
   color: white !important;
@@ -174,11 +183,16 @@ button.btn-danger:hover {
   background-color: var(--lighten-danger-color);
 }
 
-
 button.btn-blue:hover {
   cursor: pointer;
   color: white !important;
   background-color: #328BE5;
+}
+
+button.btn-green:hover {
+  cursor: pointer;
+  color: white !important;
+  background-color: #59BC5C;
 }
 
 button.btn-primary:active {
@@ -193,10 +207,15 @@ button.btn-danger:active {
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
-
 button.btn-blue:active {
   color: white !important;
   background-color: #1471CD !important;
+  box-shadow: 1px 1px 1px var(--shadow) !important;
+}
+
+button.btn-green:active {
+  color: white !important;
+  background-color: #3EA542 !important;
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
