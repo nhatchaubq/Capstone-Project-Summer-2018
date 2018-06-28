@@ -11,33 +11,42 @@
   <!-- <button class="button " style="background-color:green;   position: fixed;
   top: 6rem;
   right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
-<img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem; ">
+<img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; ">
 <div class="material-box">
 <div class="row" style="margin: 0 !important">
-  <h2 class="col-11" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong> </h2>
-  <button class="button btn-edit btn-primary material-shadow-animate col-1" v-on:click="editMode = !editMode">Edit</button>
-</div>
-<div  class="row" style="height: 36px" >
-  <!-- <span class="icon is-small is-left">
-    <i class="fa fa-user"></i>
-  </span> -->
-  <div class="col-3" style="margin-top:0.5rem" >
-    Full name:  
+  <h2 class="col-9" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong> </h2>
+  <div class="col-3 ">
+    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode">Edit</button>
   </div>
+</div>
+<div  class="row " style="height: 36px" >
+    <div class="col-3" style="margin-top:0.5rem" >
+      Full name:  
+    </div>
+
 
   <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
 
 
 
-  </div>
-<div class="row" style="margin-top:0.5rem;  height: 36px">
+</div>
+<div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
+    <div class="col-3" style="margin-top:0.5rem">Password: </div>
+
+    <!-- <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled"> -->
+    <!-- <input v-if="editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" > -->
+    <input v-if="editMode" v-model ="account.Password"  class="input col-7 " type="password"  placeholder="Text input">
+    <div>One Way binding as text {{account.Password}}</div>
+
+</div>
+<!-- <div class="row" style="margin-top:0.5rem;  height: 36px">
     <div class="col-3" style="margin-top:0.5rem">Password: </div>
 
     <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
     <input v-else v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input">
 
-</div>
+</div> -->
 
 <div class="row" style="margin-top:0.5rem; height: 36px">
   <div class=" col-3" style="margin-top:0.5rem">
