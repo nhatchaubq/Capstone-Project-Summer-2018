@@ -32,6 +32,10 @@ import LocationMapViewComponent from './components/Location/MapView.vue';
 import AddBlockFloorTileComponent from './components/Location/AddBlockFloorTile.vue';
 // chaubqn - end
 
+//Dien -test- start
+import DienComponent from './components/chartTest/test1.vue'
+//Dien -test- end
+
 Vue.use(Router)
 
 import store from "./store";
@@ -51,9 +55,9 @@ let router = new Router({
       }
     },
     {
-        path: '/login',
-        name: 'login',
-        // component: LoginComponent,
+      path: '/login',
+      name: 'login',
+      // component: LoginComponent,
     },
     {
       path: "/equipment",
@@ -273,44 +277,59 @@ let router = new Router({
         showSearchBar: true
       },
     },
-        // chaubqn - start
+    // chaubqn - start
     {
       path: '/test',
       component: TestComponent,
 
       beforeEnter: (to, from, next) => {
-          store.set('title', 'Test area');
-          next();
+        store.set('title', 'Test area');
+        next();
       },
       meta: {
-          showSearchBar: false,
+        showSearchBar: false,
       }
     },
     {
-        path: '/location/mapview/:locationId',
-        component: LocationMapViewComponent,
+      path: '/location/mapview/:locationId',
+      component: LocationMapViewComponent,
 
-        beforeEnter: (to, from, next) => {
-            store.set('title', menu.Location);
-            next();
-        },
-        meta: {
-            showSearchBar: true,
-        }
+      beforeEnter: (to, from, next) => {
+        store.set('title', menu.Location);
+        next();
+      },
+      meta: {
+        showSearchBar: true,
+      }
     },
     {
-        path: '/location/:locationId/add_block_floor_tile',
-        component: AddBlockFloorTileComponent,
+      path: '/location/:locationId/add_block_floor_tile',
+      component: AddBlockFloorTileComponent,
 
-        beforeEnter: (to, from, next) => {
-            store.set('title', menu.Location);
-            next();
-        },
-        meta: {
-            showSearchBar: false,
-        }
+      beforeEnter: (to, from, next) => {
+        store.set('title', menu.Location);
+        next();
+      },
+      meta: {
+        showSearchBar: false,
+      }
     },
-      // chaubqn - end
+    // chaubqn - end
+
+    // Dien -test -start
+    {
+      path: '/1',
+      component: DienComponent,
+
+      beforeEnter: (to, from, next) => {
+        store.set('title', menu.Test);
+        next();
+      },
+      meta: {
+        showSearchBar: false,
+      }
+    },
+    // Dien -test -end
   ]
 });
 
