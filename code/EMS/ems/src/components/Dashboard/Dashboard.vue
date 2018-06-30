@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div v-if="Dashboard">
         <div>
             <div class="" style="width: 100%; margin-bottom: 1rem">
             <!-- <div class="viewgraph " > -->
                 <!-- line chart -->
                     <strong>Number of Work Order Completed</strong>
                     <div style="width:100%" class="Chart">
-                        <bar-chart styles="height: 40vh" ref="canvas"></bar-chart>
+                        <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
                     </div>
             </div> <!-- line chart -->
             <div>
@@ -44,7 +44,7 @@
                                 <div class="status column">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
-                                        <strong>Approve</strong>
+                                        <strong>Approved</strong>
                                         </div>
 
                                     </div>
@@ -78,13 +78,12 @@
                                     <strong>Work Order by Category</strong>
                                 </div>
 
-                                      <!-- <div style="width:100%" class="Chart">
-                        <doughnut-chart styles="height: 40vh" ref="canvas"></doughnut-chart>
-                    </div>  -->
+                        <div style="width:100%" class="Chart1">
+                            <pie-chart styles="height: 43vh" :data="pieChartData"></pie-chart>
+                        </div>
                   
                         </div>
-                </div>          
-
+                </div>
                 <!-- test -->
                 <!-- <div class="statusworkorder columns">
                     <div class="status column">
@@ -222,24 +221,153 @@
 <script>
 import Server from "@/config/config.js";
 import BarChart from "../../components/chartTest/bar-chart.js";
-// import PieChart from "../../components/chartTest/pie-chart.js.js";
+import PieChart from "../../components/chartTest/pie-chart.js";
 
 export default {
   components: {
-    BarChart
-    // PieChart
+    BarChart,
+    PieChart
   },
   created() {
     let URL = Server.DASHBOARD_API_PATH;
     this.axios.get(URL).then(res => {
-      // alert("alao alo");
-      let data = res.data;
-      this.Dashboard = data.Dashboard;
+      if (res.status == 200) {
+        // alert("alao alo");
+        let data = res.data;
+        this.Dashboard = data.Dashboard;
+        this.pieChartData.labels.push(data.PieChartData.Availble.Name);
+        this.pieChartData.labels.push(data.PieChartData.WokingRequesting.Name);
+        this.pieChartData.labels.push(
+          data.PieChartData.MaintainanceRequesting.Name
+        );
+        this.pieChartData.labels.push(data.PieChartData.Working.Name);
+        this.pieChartData.labels.push(data.PieChartData.Damaged.Name);
+        this.pieChartData.labels.push(data.PieChartData.Maintaining.Name);
+        this.pieChartData.labels.push(data.PieChartData.Lost.Name);
+
+        this.pieChartData.values.push(data.PieChartData.Availble.Quantity);
+        this.pieChartData.values.push(
+          data.PieChartData.WokingRequesting.Quantity
+        );
+        this.pieChartData.values.push(
+          data.PieChartData.MaintainanceRequesting.Quantity
+        );
+        this.pieChartData.values.push(data.PieChartData.Working.Quantity);
+        this.pieChartData.values.push(data.PieChartData.Damaged.Quantity);
+        this.pieChartData.values.push(data.PieChartData.Maintaining.Quantity);
+        this.pieChartData.values.push(data.PieChartData.Lost.Quantity);
+
+        // line chart data - start
+        this.lineChartData.workingLabel = data.LineChart.WorkingName;
+        this.lineChartData.maintainLabel = data.LineChart.MaintainName;
+
+        // months labels
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last11Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last10Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last9Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last8Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last7Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last6Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last5Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last4Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last3Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last2Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.LastMonth);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.ThisMonth);
+
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last11Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last10Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last9Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last8Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last7Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last6Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last5Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last4Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last3Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last2Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.LastMonth
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.ThisMonth
+        );
+
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last11Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last10Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last9Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last8Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last7Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last6Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last5Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last4Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last3Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last2Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.LastMonth
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.ThisMonth
+        );
+        // line chart data - end
+      }
     });
   },
   data() {
     return {
-      Dashboard: null
+      Dashboard: null,
+      pieChartData: {
+        labels: [],
+        values: []
+      },
+      lineChartData: {
+        workingLabel: "",
+        maintainLabel: "",
+        monthLabels: [],
+        monthData: {
+          working: [],
+          maintain: []
+        }
+      }
     };
   }
 };
@@ -280,7 +408,6 @@ export default {
   margin-bottom: 0.3rem;
 }
 .status {
-  /* width: 25%; */
   background-color: white;
   margin-right: 1.2rem;
 }
@@ -317,7 +444,17 @@ p {
   height: 250px !important;
 }
 .Chart {
-  background: #212733;
+  background: #ffffff;
+  /* background: #1e5ad1; */
+  border-radius: 15px;
+  box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27);
+  /* margin: 25px 0; */
+  margin: 0em !important;
+  padding: 1rem;
+}
+.Chart1 {
+  /* background: #212733; */
+  background: #ffffff;
   border-radius: 15px;
   box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27);
   /* margin: 25px 0; */
