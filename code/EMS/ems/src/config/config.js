@@ -52,19 +52,28 @@ const TEAM_BY_LOCATION_ID_API_PATH = TEAM_API_PATH + "/getTeamByLocation";
 // vendor api section -start
 const VENDOR_API_PATH = SERVER_DEFAULT + "/vendor";
 
-
 // vendor api section -end
 
 // dashBoard
 const DASHBOARD_API_PATH = SERVER_DEFAULT + "/dashboard";
 // /dashBoard
 
+//api report -start
+const REPORT_API_PATH = SERVER_DEFAULT + "/report";
+const REPORT_EQUIPMENT_API_PATH = REPORT_API_PATH + "/getEquipmentOverview";
+const REPORT_USING_EQUIPMENT_API_PATH = REPORT_API_PATH + "/getUsingEquipment";
+const REPORT_STATUS_EQUIPMENT_API_PATH =
+  REPORT_API_PATH + "/getStatusEquipment";
+const REPORT_MAINTENANCE_CALENDAR_EQUIPMENT_API_PATH =
+  REPORT_API_PATH + "/getMaintenanceCalendar";
+//api report -end
 
 export default {
   LOGIN_API_PATH,
   ACCOUNT_API_PATH,
   CREATE_ACCOUNT_API_PATH,
   EQUIPMENT_API_PATH,
+  REPORT_API_PATH,
 
   EQUIPMENTITEM_API_PATH,
   EQUIPMENTITEM_BY_ID_LOCATION_API_PATH,
@@ -90,5 +99,9 @@ export default {
 
   VENDOR_API_PATH,
 
-  DASHBOARD_API_PATH
+  DASHBOARD_API_PATH,
+  REPORT_EQUIPMENT_API_PATH,
+  REPORT_USING_EQUIPMENT_API_PATH,
+  REPORT_STATUS_EQUIPMENT_API_PATH,
+  REPORT_MAINTENANCE_CALENDAR_EQUIPMENT_API_PATH
 };
