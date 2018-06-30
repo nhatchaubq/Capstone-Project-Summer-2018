@@ -9,12 +9,16 @@
                         <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
                     </div>
             </div> <!-- line chart -->
+            <div class="col-12 row">
+                <div class="col-6">&#8203</div>
+                <div class="col-6" style="padding-left:2rem"><strong>Equipment items by status</strong></div>
+            </div>
             <div>
                 <div class="row">
                     <!-- test -->
-                    <div class="col-6 ">
+                    <div class="col-6" style="padding: 0px !important">
                         <div class="statusworkorder row">
-                            <div class="row col-12" style="margin-bottom: 1rem">
+                            <div class="row col-12" style="margin-bottom: 1rem;padding-right: 0px; padding-left: 25px !important">
                                 <div class="status column material-shadow-animate">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
@@ -27,7 +31,7 @@
                                         <p style="font-size:15px;" >Work Orders</p>
                                     </div>
                                 </div>
-                                <div class="status column material-shadow-animate">
+                                <div class="status column material-shadow-animate" >
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
                                         <strong>Checked</strong>
@@ -40,7 +44,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row col-12" >
+                            <div class="row col-12" style="padding-right: 0px; padding-left: 25px !important" >
                                 <div class="status column material-shadow-animate">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
@@ -74,12 +78,12 @@
 
                         <div class="col-6 ">
                             <!-- <div class="workordergraph viewgraph"> -->
-                                <div class="titlediv">
+                                <!-- <div class="titlediv">
                                     <strong>Equipment items by status</strong>
-                                </div>
+                                </div> -->
 
                         <div style="width:100%" class="Chart1">
-                            <pie-chart styles="height: 38vh" :data="pieChartData"></pie-chart>
+                            <pie-chart styles="height: 45.5vh" :data="pieChartData"></pie-chart>
                         </div>
                   
                         </div>
@@ -140,7 +144,7 @@
                 <!-- /test -->
 
                 <div class="divrow3 columns" style="margin-right:0rem !important">
-                    <div class="column" style="padding: 0 !important; margin-right:1.3rem;">
+                    <div class="column" style="padding: 0 !important; margin-right: 1.8rem;">
                         <div class="row3childs">
                         <!-- <div> -->
                             <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
@@ -401,7 +405,7 @@ export default {
   width: 100%;
   margin: 0.3rem;
   margin-right: 0.3rem !important;
-  margin-top: 1rem;
+
   padding: 0rem;
 }
 .titlediv {
@@ -447,7 +451,7 @@ p {
 .Chart {
   background: #ffffff;
   /* background: #1e5ad1; */
-  border-radius: 15px;
+  border-radius: 0px;
   box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27);
   /* margin: 25px 0; */
   margin: 0em !important;
@@ -456,7 +460,7 @@ p {
 .Chart1 {
   /* background: #212733; */
   background: #ffffff;
-  border-radius: 15px;
+  border-radius: 0px;
   box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27);
   /* margin: 25px 0; */
   margin: 0em !important;
