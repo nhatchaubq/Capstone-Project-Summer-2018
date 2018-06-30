@@ -50,6 +50,7 @@ server.use("/api/equipmentItem", require("./routes/equipmentItem"));
 server.use("/api/team_location", require("./routes/team_location"));
 server.use("/api/team/id", require("./routes/teamDetails"));
 server.use("/api/dashboard", require("./routes/dashBoard"));
+server.use("/api/report",require("./routes/report"));
 
 // server.use('/api/account/edit/id', require('./routes/account'));
 // server.use('/api/account', require('./routes/account'));
