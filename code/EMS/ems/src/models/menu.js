@@ -14,6 +14,7 @@ let menu = {
     AccountsTeams: 'Accounts & Teams',
     Project: 'Project',
     Department: 'Department',
+    Test: 'test'
 }
 
 export default menu;

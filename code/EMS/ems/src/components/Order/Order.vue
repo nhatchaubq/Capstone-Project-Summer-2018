@@ -52,7 +52,7 @@
                     There is no orders to display.
                 </div>
                 <div v-else>
-                    <order-block :key="'order' + order.Id" :order="order" :class="isActive(order.Id)" v-for="(order, index) in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
+                    <order-block :key="'order' + order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
                 </div>
             </div>
         </div>
@@ -183,7 +183,11 @@
               </div>            
           </div>
         </div>
-        <router-link to="/work_order/create" tag="button" id="btn-add-work-order" class="button is-primary material-shadow-animate">Add Work Order</router-link>
+        <router-link to="/work_order/create" v-if="authUser.RoleID == 5 || authUser.RoleID == 6">
+            <button id="btn-add-work-order" class="button is-primary material-shadow-animate">
+                Add Work Order
+            </button>
+        </router-link>
       <!-- equipment detail dialog -->
       <vodal height="500" :show="equipmentItem != null" @hide="equipmentItem = null" animation="slideUp">
         <equipment-detail-popup :equipment="equipmentItem" class=""></equipment-detail-popup>
@@ -362,7 +366,7 @@ export default {
     },
     // when click on an orderblock, add 'is-active-block' class to it
     isActive(orderId) {
-      if (this.selectedOrder != null && orderId === this.selectedOrder.Id) {
+      if (this.selectedOrder != null && orderId != this.selectedOrder.Id) {
         return "is-active-block";
       }
       return "";
@@ -629,8 +633,10 @@ export default {
 }
 
 .is-active-block {
-  background-color: #e0e0e0 !important;
-  border: 1px solid #e0e0e0 !important;
+  /* background-color: #e0e0e0 !important; */
+  background-color: #bdbdbd !important;
+  /* border: 1px solid #e0e0e0 !important; */
+  border: 1px solid #bdbdbd!important;
   box-shadow: 1px 1px 1px #bdbdbd !important;
 }
 

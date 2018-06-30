@@ -40,6 +40,12 @@ import EquipmentMaintenanceCalendarReportComponent from "./components/Report/Equ
 // hau - end
 
 Vue.use(Router);
+//Dien -test- start
+import DienComponent from './components/chartTest/test1.vue'
+//Dien -test- end
+
+Vue.use(Router)
+
 
 import store from "./store";
 import menu from "./models/menu";
@@ -58,11 +64,11 @@ let router = new Router({
         showSearchBar: false
       }
     },
-    // {
-    //     path: '/login',
-    //     name: 'login',
-    //     component: LoginComponent,
-    // },
+    {
+      path: '/login',
+      name: 'login',
+      // component: LoginComponent,
+    },
     {
       path: "/equipment",
       component: EquipmentComponent,
@@ -105,6 +111,7 @@ let router = new Router({
       }
     },
     {
+      name: 'create_work_order',
       path: "/work_order/create",
       component: CreateOrderComponent,
       beforeEnter: (to, from, next) => {
@@ -366,8 +373,23 @@ let router = new Router({
       meta: {
         showSearchBar: false
       }
-    }
+    },
     // hau - end
+
+    // Dien -test -start
+    {
+      path: '/1',
+      component: DienComponent,
+
+      beforeEnter: (to, from, next) => {
+        store.set('title', menu.Test);
+        next();
+      },
+      meta: {
+        showSearchBar: false,
+      }
+    },
+    // Dien -test -end
   ]
 });
 

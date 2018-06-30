@@ -1,184 +1,216 @@
 <template>
-    <div>
+    <div v-if="Dashboard">
         <div>
-            <div class="viewgraph columns">
-                <div class=" workordergraph column">
-                <div class="titlediv">
+            <div class="" style="width: 100%; margin-bottom: 1rem">
+            <!-- <div class="viewgraph " > -->
+                <!-- line chart -->
                     <strong>Number of Work Order Completed</strong>
-                    <strong> {{Dashboard.Requested}}</strong>
-                </div>
-                <div>
-                    <img :src="require('@/assets/linegraph.png')" style="width:100%; height: 200px"/>
-                </div>
-                </div>
-                <div class="workordergraph column">
-                    <div class="titlediv">
-                        <strong>Work Order by Category</strong>
+                    <div style="width:100%" class="Chart">
+                        <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
                     </div>
-                    <div>
-                        <img :src="require('@/assets/piegraph.jpg')" style="width:100%; height: 200px"/>
-                    </div>
-                </div>
-            </div>
-            <div class="statusworkorder columns">
-                <div class="status column">
-                    <div class="headerstatus columns">
-                        <div style="width:40%" class="column">
-                        <strong>Requested</strong>
-                        </div>
-
-                    </div>
-                    <div class="contentstatus" >
-                        <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">1</p>
-                        <p style="font-size:15px;" >Work Orders</p>
-                    </div>
-                </div>
-                <div class="status column">
-                    <div class="headerstatus columns">
-                        <div style="width:40%" class="column">
-                        <strong>Checked</strong>
-                        </div>
-
-                    </div>
-                    <div class="contentstatus">
-                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">3</p>
-                        <p style="font-size:15px;">Work Orders</p>
-                    </div>
-                </div>
+            </div> <!-- line chart -->
+            <div>
+                <div class="row">
+                    <!-- test -->
+                    <div class="col-6 ">
+                        <div class="statusworkorder row">
+                            <div class="row col-12" style="margin-bottom: 1rem">
                                 <div class="status column">
-                    <div class="headerstatus columns">
-                        <div style="width:40%" class="column">
-                        <strong>Approve</strong>
-                        </div>
+                                    <div class="headerstatus columns">
+                                        <div style="width:40%" class="column">
+                                        <strong>Requested</strong>
+                                        </div>
 
-                    </div>
-                    <div class="contentstatus">
-                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">3</p>
-                        <p style="font-size:15px;">Work Orders</p>
-                    </div>
-                </div>
+                                    </div>
+                                    <div class="contentstatus" >
+                                        <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
+                                        <p style="font-size:15px;" >Work Orders</p>
+                                    </div>
+                                </div>
                                 <div class="status column">
-                    <div class="headerstatus columns">
-                        <div style="width:40%" class="column">
-                        <strong>In Progress</strong>
-                        </div>
+                                    <div class="headerstatus columns">
+                                        <div style="width:40%" class="column">
+                                        <strong>Checked</strong>
+                                        </div>
 
-                    </div>
-                    <div class="contentstatus">
-                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">3</p>
-                        <p style="font-size:15px;">Work Orders</p>
-                    </div>
-                </div>
-                <div class="status column">
-                    <div class="headerstatus columns">
-                        <div style="width:40%" class="column">
-                        <strong>Closed</strong>
-                        </div>
-
-                    </div>
-                    <div class="contentstatus">
-                        <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">3</p>
-                        <p style="font-size:15px;">Work Orders</p>
-                    </div>
-                </div>
-                <div class="status column">
-                    <div class="headerstatus columns">
-                        <div style="width:40%;" class="column">
-                        <strong>Rejected</strong>
-                        </div>
-
-
-                    </div>
-                    <div class="contentstatus">
-                        <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">3</p>
-                        <p style="font-size:15px;">Work Orders</p>
-                    </div>
-                </div>
-                <div class="status column" style="margin-right:0 !important">
-                    <div class="headerstatus columns">
-                        <div style="width:40%" class="column">
-                        <strong>Cancelled</strong>
-                        </div>
-
-                    </div>
-                    <div class="contentstatus">
-                        <p style="color: var(--status-closed); font-size:38px; text-align: center;font-weight: bold;">3</p>
-                        <p style="font-size:15px;">Work Orders</p>
-                    </div>
-                </div>
-                
-            </div>
-            <div class="divrow3 columns" style="margin-right:0rem !important">
-                <div class="column" style="padding: 0 !important; margin-right:1.3rem;">
-                    <div class="row3childs">
-                        <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
-                            <strong>Maintain</strong>
-                        </div>
-                        <div class="row3child">                            
-                            <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
-                                <div class="column">
-                                    <strong>Today: 2 maintain order</strong>
-                                </div> 
-                                <div class="numItem column" style="text-align:right;">
-                                    <strong>5</strong> items
+                                    </div>
+                                    <div class="contentstatus">
+                                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
+                                        <p style="font-size:15px;">Work Orders</p>
+                                    </div>
                                 </div>
                             </div>
-                            
-                            <div class="contentstatus" style="padding: 0.5rem">
-                                
-                            </div>    
-                        </div>
-                         <div class="row3child">                            
-                            <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
-                                <div class="column">
-                                    <strong>Tomorrow: 2 maintain order</strong>
-                                </div> 
-                                <div class="numItem column" style="text-align:right;">
-                                    <strong>4</strong> items
+                            <div class="row col-12" >
+                                <div class="status column">
+                                    <div class="headerstatus columns">
+                                        <div style="width:40%" class="column">
+                                        <strong>Approved</strong>
+                                        </div>
+
+                                    </div>
+                                    <div class="contentstatus">
+                                        <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
+                                        <p style="font-size:15px;">Work Orders</p>
+                                    </div>
+                                </div>
+                                <div class="status column" >
+                                    <div class="headerstatus columns">
+                                        <div style="width:40%" class="column">
+                                        <strong>In Progress</strong>
+                                        </div>
+
+                                    </div>
+                                    <div class="contentstatus" >
+                                        <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
+                                        <p style="font-size:15px; ">Work Orders</p>
+                                    </div>
                                 </div>
                             </div>
-                            
-                            <div class="contentstatus" style="padding: 0.5rem">
-                                
-                            </div>    
-                        </div>
 
+                            
+                        </div>
                     </div>
-                </div>
-                <div class="column" style="padding: 0 !important">
-                    <div class="row3childs">
-                        <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
-                            <strong>Returns</strong>
-                        </div>
-                        <div class="row3child">                            
-                            <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
-                                <div class="column is-9">
-                                    <strong>Today: 2 orders to be returned</strong>
-                                </div> 
-                                <div class="numItem column" style="text-align:right;">
-                                    <strong>5</strong> items
-                                </div>
-                            </div>
-                            
-                            <div class="contentstatus" style="padding: 0.5rem">
-                                
-                            </div>    
-                        </div>
-                         <div class="row3child">                            
-                            <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
-                                <div class=" column is-9">
-                                    <strong>Tomorrow: 2 orders to be returned</strong>
-                                </div> 
-                                <div class="numItem column" style="text-align:right;">
-                                    <strong>4</strong> items
-                                </div>
-                            </div>
-                            
-                            <div class="contentstatus" style="padding: 0.5rem">
-                                
-                            </div>    
-                        </div>
+                    <!-- /test -->
 
+                        <div class="col-6 ">
+                            <!-- <div class="workordergraph viewgraph"> -->
+                                <div class="titlediv">
+                                    <strong>Work Order by Category</strong>
+                                </div>
+
+                        <div style="width:100%" class="Chart1">
+                            <pie-chart styles="height: 43vh" :data="pieChartData"></pie-chart>
+                        </div>
+                  
+                        </div>
+                </div>
+                <!-- test -->
+                <!-- <div class="statusworkorder columns">
+                    <div class="status column">
+                        <div class="headerstatus columns">
+                            <div style="width:40%" class="column">
+                            <strong>Requested</strong>
+                            </div>
+
+                        </div>
+                        <div class="contentstatus" >
+                            <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
+                            <p style="font-size:15px;" >Work Orders</p>
+                        </div>
+                    </div>
+                    <div class="status column">
+                        <div class="headerstatus columns">
+                            <div style="width:40%" class="column">
+                            <strong>Checked</strong>
+                            </div>
+
+                        </div>
+                        <div class="contentstatus">
+                            <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
+                            <p style="font-size:15px;">Work Orders</p>
+                        </div>
+                    </div>
+                                    <div class="status column">
+                        <div class="headerstatus columns">
+                            <div style="width:40%" class="column">
+                            <strong>Approve</strong>
+                            </div>
+
+                        </div>
+                        <div class="contentstatus">
+                            <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
+                            <p style="font-size:15px;">Work Orders</p>
+                        </div>
+                    </div>
+                                    <div class="status column" style="margin-right:0rem !important">
+                        <div class="headerstatus columns" >
+                            <div style="width:40%" class="column">
+                            <strong>In Progress</strong>
+                            </div>
+
+                        </div>
+                        <div class="contentstatus" >
+                            <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
+                            <p style="font-size:15px; ">Work Orders</p>
+                        </div>
+                    </div>
+
+                    
+                </div> -->
+                <!-- /test -->
+
+                <div class="divrow3 columns" style="margin-right:0rem !important">
+                    <div class="column" style="padding: 0 !important; margin-right:1.3rem;">
+                        <div class="row3childs">
+                            <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
+                                <strong>Maintain</strong>
+                            </div>
+                            <div class="row3child">                            
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                    <div class="column">
+                                        <strong>Today: {{Dashboard.MaintainCountToday}} maintain order</strong>
+                                    </div> 
+                                    <div class="numItem column" style="text-align:right;">
+                                        <strong>{{Dashboard.MaintainCountTodayQItem}}</strong> items
+                                    </div>
+                                </div>
+                                
+                                <div class="contentstatus" style="padding: 0.5rem">
+                                    
+                                </div>    
+                            </div>
+                            <div class="row3child">                            
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                    <div class="column">
+                                        <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} maintain order</strong>
+                                    </div> 
+                                    <div class="numItem column" style="text-align:right;">
+                                        <strong>{{Dashboard.MaintainCountTomorrowQItem}}</strong> items
+                                    </div>
+                                </div>
+                                
+                                <!-- <div class="contentstatus" style="padding: 0.5rem">
+                                     <bar></bar> 
+                                </div>     -->
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="column" style="padding: 0 !important">
+                        <div class="row3childs">
+                            <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
+                                <strong>Returns</strong>
+                            </div>
+                            <div class="row3child">                            
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                    <div class="column is-9">
+                                        <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong>
+                                    </div> 
+                                    <div class="numItem column" style="text-align:right;">
+                                        <strong>{{Dashboard.ReturnCountTodayQItem}}</strong> items
+                                    </div>
+                                </div>
+                                
+                                <div class="contentstatus" style="padding: 0.5rem">
+                                    
+                                </div>    
+                            </div>
+                            <div class="row3child">                            
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                    <div class=" column is-9">
+                                        <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong>
+                                    </div> 
+                                    <div class="numItem column" style="text-align:right;">
+                                        <strong>{{Dashboard.ReturnCountTomorrowQItem}}</strong> items
+                                    </div>
+                                </div>
+                                
+                                <div class="contentstatus" style="padding: 0.5rem">
+                                    
+                                </div>    
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -188,18 +220,154 @@
 
 <script>
 import Server from "@/config/config.js";
+import BarChart from "../../components/chartTest/bar-chart.js";
+import PieChart from "../../components/chartTest/pie-chart.js";
+
 export default {
+  components: {
+    BarChart,
+    PieChart
+  },
   created() {
     let URL = Server.DASHBOARD_API_PATH;
     this.axios.get(URL).then(res => {
-      // alert("alao alo");
-      let data = res.data;
-      this.Dashboard = data;
+      if (res.status == 200) {
+        // alert("alao alo");
+        let data = res.data;
+        this.Dashboard = data.Dashboard;
+        this.pieChartData.labels.push(data.PieChartData.Availble.Name);
+        this.pieChartData.labels.push(data.PieChartData.WokingRequesting.Name);
+        this.pieChartData.labels.push(
+          data.PieChartData.MaintainanceRequesting.Name
+        );
+        this.pieChartData.labels.push(data.PieChartData.Working.Name);
+        this.pieChartData.labels.push(data.PieChartData.Damaged.Name);
+        this.pieChartData.labels.push(data.PieChartData.Maintaining.Name);
+        this.pieChartData.labels.push(data.PieChartData.Lost.Name);
+
+        this.pieChartData.values.push(data.PieChartData.Availble.Quantity);
+        this.pieChartData.values.push(
+          data.PieChartData.WokingRequesting.Quantity
+        );
+        this.pieChartData.values.push(
+          data.PieChartData.MaintainanceRequesting.Quantity
+        );
+        this.pieChartData.values.push(data.PieChartData.Working.Quantity);
+        this.pieChartData.values.push(data.PieChartData.Damaged.Quantity);
+        this.pieChartData.values.push(data.PieChartData.Maintaining.Quantity);
+        this.pieChartData.values.push(data.PieChartData.Lost.Quantity);
+
+        // line chart data - start
+        this.lineChartData.workingLabel = data.LineChart.WorkingName;
+        this.lineChartData.maintainLabel = data.LineChart.MaintainName;
+
+        // months labels
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last11Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last10Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last9Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last8Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last7Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last6Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last5Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last4Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last3Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.Last2Month);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.LastMonth);
+        this.lineChartData.monthLabels.push(data.LineChart.Month.ThisMonth);
+
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last11Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last10Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last9Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last8Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last7Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last6Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last5Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last4Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last3Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.Last2Month
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.LastMonth
+        );
+        this.lineChartData.monthData.maintain.push(
+          data.LineChart.Maintain.ThisMonth
+        );
+
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last11Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last10Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last9Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last8Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last7Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last6Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last5Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last4Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last3Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.Last2Month
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.LastMonth
+        );
+        this.lineChartData.monthData.working.push(
+          data.LineChart.Working.ThisMonth
+        );
+        // line chart data - end
+      }
     });
   },
   data() {
     return {
-      Dashboard: null
+      Dashboard: null,
+      pieChartData: {
+        labels: [],
+        values: []
+      },
+      lineChartData: {
+        workingLabel: "",
+        maintainLabel: "",
+        monthLabels: [],
+        monthData: {
+          working: [],
+          maintain: []
+        }
+      }
     };
   }
 };
@@ -240,7 +408,6 @@ export default {
   margin-bottom: 0.3rem;
 }
 .status {
-  width: 14.28%;
   background-color: white;
   margin-right: 1.2rem;
 }
@@ -275,5 +442,29 @@ p {
   background-color: white;
   padding: 0.7rem 1rem 0.3rem 1rem;
   height: 250px !important;
+}
+.Chart {
+  background: #ffffff;
+  /* background: #1e5ad1; */
+  border-radius: 15px;
+  box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27);
+  /* margin: 25px 0; */
+  margin: 0em !important;
+  padding: 1rem;
+}
+.Chart1 {
+  /* background: #212733; */
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27);
+  /* margin: 25px 0; */
+  margin: 0em !important;
+  padding: 1rem;
+}
+.Chart h2 {
+  margin-top: 0;
+  padding: 15px 0;
+  color: rgba(255, 0, 0, 0.5);
+  border-bottom: 1px solid #323d54;
 }
 </style>
