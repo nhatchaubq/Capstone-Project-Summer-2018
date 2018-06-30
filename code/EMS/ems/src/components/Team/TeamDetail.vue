@@ -62,11 +62,11 @@
 
 <script>
 import { sync } from "vuex-pathify";
-import VueBase64FileUpload from "vue-base64-file-upload";
+// import VueBase64FileUpload from "vue-base64-file-upload";
 import { BasicSelect, MultiSelect, ModelSelect } from "vue-search-select";
 export default {
   components: {
-    VueBase64FileUpload,
+    // VueBase64FileUpload,
     MultiSelect,
     BasicSelect,
     ModelSelect
@@ -77,7 +77,7 @@ export default {
     }`;
 
     this.axios.get(teamApiUrl).then(response => {
-      let data = response.data.Team;
+      let data = response.data.team;
       this.team = data;
 
       // data.forEach(member => {
@@ -115,26 +115,27 @@ export default {
     //     this.toLeaderOptions.push(option);
     //   });
     // });
-    this.axios
-      .get(
-        `http://localhost:3000/api/team/id/getMembersInTeam/${
-          this.$route.params.id
-        }`
-      )
-      .then(response => {
-        let data = response.data;
-        data.forEach(element => {
-          let option = {
-            value: element.Id,
-            text: element.Fullname
-          };
-          this.toLeaderOptions.push(option);
-          console.log(this.toLeaderOptions.length);
-        });
-      })
-      .catch(error => {
-        alert(error);
-      });
+    //   this.axios
+    //     .get(
+    //       `http://localhost:3000/api/team/id/getMembersInTeam/${
+    //         this.$route.params.id
+    //       }`
+    //     )
+    //     .then(response => {
+    //       let data = response.data;
+    //       data.forEach(element => {
+    //         let option = {
+    //           value: element.Id,
+    //           text: element.Fullname
+    //         };
+    //         this.toLeaderOptions.push(option);
+    //         console.log(this.toLeaderOptions.length);
+    //       });
+    //     })
+    //     .catch(error => {
+    //       alert("false");
+    //       alert(error);
+    //     });
   },
 
   data() {

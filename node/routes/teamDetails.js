@@ -2,16 +2,16 @@ var router = require('express').Router();
 var TYPES = require('tedious').TYPES;
 
 router.get('/:id', (request, response) => {
-    request.sql("exec [dbo].GetTeamDetailsByTeamId @teamId")
-        .param('teamId', request.params.id, TYPES.Int)
+    request.sql("exec [dbo].[GetTeamDetailsByTeamId] @Id")
+        .param('Id', request.params.id, TYPES.Int)
         .into(response);
 });
-router.get("/getMembersInTeam/:id", (request, response) => {
-    request
-        .sql("exec [dbo].[GetAllMemberInteam] @id")
-        .param('id', request.params.id, TYPES.Int)
-        .into(response);
-});
+// router.get("/getMembersInTeam/:id", (request, response) => {
+//     request
+//         .sql("exec [dbo].[GetTeamDetailsByTeamId] @id")
+//         .param('id', request.params.id, TYPES.Int)
+//         .into(response);
+// });
 
 /* DELETE request, for delete */
 router.delete("/:id/:accountId", (request, response) => {

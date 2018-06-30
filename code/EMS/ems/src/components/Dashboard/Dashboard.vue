@@ -9,13 +9,17 @@
                         <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
                     </div>
             </div> <!-- line chart -->
+            <div class="col-12 row">
+                <div class="col-6">&#8203</div>
+                <div class="col-6" style="padding-left:2rem"><strong>Equipment items by status</strong></div>
+            </div>
             <div>
                 <div class="row">
                     <!-- test -->
-                    <div class="col-6 ">
+                    <div class="col-6" style="padding: 0px !important">
                         <div class="statusworkorder row">
-                            <div class="row col-12" style="margin-bottom: 1rem">
-                                <div class="status column">
+                            <div class="row col-12" style="margin-bottom: 1rem;padding-right: 0px; padding-left: 25px !important">
+                                <div class="status column material-shadow-animate">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
                                         <strong>Requested</strong>
@@ -27,21 +31,21 @@
                                         <p style="font-size:15px;" >Work Orders</p>
                                     </div>
                                 </div>
-                                <div class="status column">
+                                <div class="status column material-shadow-animate" >
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
                                         <strong>Checked</strong>
                                         </div>
 
                                     </div>
-                                    <div class="contentstatus">
+                                    <div class="contentstatus ">
                                         <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
                                         <p style="font-size:15px;">Work Orders</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row col-12" >
-                                <div class="status column">
+                            <div class="row col-12" style="padding-right: 0px; padding-left: 25px !important" >
+                                <div class="status column material-shadow-animate">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
                                         <strong>Approved</strong>
@@ -53,7 +57,7 @@
                                         <p style="font-size:15px;">Work Orders</p>
                                     </div>
                                 </div>
-                                <div class="status column" >
+                                <div class="status column material-shadow-animate" >
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
                                         <strong>In Progress</strong>
@@ -74,12 +78,12 @@
 
                         <div class="col-6 ">
                             <!-- <div class="workordergraph viewgraph"> -->
-                                <div class="titlediv">
-                                    <strong>Work Order by Category</strong>
-                                </div>
+                                <!-- <div class="titlediv">
+                                    <strong>Equipment items by status</strong>
+                                </div> -->
 
                         <div style="width:100%" class="Chart1">
-                            <pie-chart styles="height: 43vh" :data="pieChartData"></pie-chart>
+                            <pie-chart styles="height: 45.5vh" :data="pieChartData"></pie-chart>
                         </div>
                   
                         </div>
@@ -140,12 +144,13 @@
                 <!-- /test -->
 
                 <div class="divrow3 columns" style="margin-right:0rem !important">
-                    <div class="column" style="padding: 0 !important; margin-right:1.3rem;">
+                    <div class="column" style="padding: 0 !important; margin-right: 1.8rem;">
                         <div class="row3childs">
+                        <!-- <div> -->
                             <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
                                 <strong>Maintain</strong>
                             </div>
-                            <div class="row3child">                            
+                            <div class="row3child material-shadow-animate1">                            
                                 <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
                                     <div class="column">
                                         <strong>Today: {{Dashboard.MaintainCountToday}} maintain order</strong>
@@ -159,7 +164,7 @@
                                     
                                 </div>    
                             </div>
-                            <div class="row3child">                            
+                            <div class="row3child material-shadow-animate1">                            
                                 <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
                                     <div class="column">
                                         <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} maintain order</strong>
@@ -181,7 +186,7 @@
                             <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
                                 <strong>Returns</strong>
                             </div>
-                            <div class="row3child">                            
+                            <div class="row3child material-shadow-animate1">                            
                                 <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
                                     <div class="column is-9">
                                         <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong>
@@ -195,7 +200,7 @@
                                     
                                 </div>    
                             </div>
-                            <div class="row3child">                            
+                            <div class="row3child material-shadow-animate1">                            
                                 <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
                                     <div class=" column is-9">
                                         <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong>
@@ -400,7 +405,7 @@ export default {
   width: 100%;
   margin: 0.3rem;
   margin-right: 0.3rem !important;
-  margin-top: 1rem;
+
   padding: 0rem;
 }
 .titlediv {
@@ -446,7 +451,7 @@ p {
 .Chart {
   background: #ffffff;
   /* background: #1e5ad1; */
-  border-radius: 15px;
+  border-radius: 0px;
   box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27);
   /* margin: 25px 0; */
   margin: 0em !important;
@@ -455,7 +460,7 @@ p {
 .Chart1 {
   /* background: #212733; */
   background: #ffffff;
-  border-radius: 15px;
+  border-radius: 0px;
   box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27);
   /* margin: 25px 0; */
   margin: 0em !important;
@@ -466,5 +471,16 @@ p {
   padding: 15px 0;
   color: rgba(255, 0, 0, 0.5);
   border-bottom: 1px solid #323d54;
+}
+.material-shadow-animate {
+  box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27) !important;
+  transition: all 0.2s ease-in-out;
+}
+.material-shadow-animate:hover {
+  box-shadow: 1px 4px 30px rgba(25, 25, 25, 0.27) !important;
+}
+.material-shadow-animate1 {
+  box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27) !important;
+  transition: all 0.2s ease-in-out;
 }
 </style>
