@@ -63,6 +63,7 @@
                             }"><i class="fa fa-plus-circle"></i> Add new block</a>
                         </div>
                     <div v-if="floorPlanImageFile && newBlock">
+                        <!-- paint helper tool -->
                         <div class="form-field">
                             <div>
                                 Paint helper tool:
@@ -79,6 +80,7 @@
                                     By hand
                                 </label>
                             </div>
+                            <!-- select grid preset -->
                             <div class="field is-horizontal">
                                 <div class="select" v-if="currentPaintToolMode == paintToolMode.Preset">
                                     <select v-model="selectedGridPreset">
@@ -102,8 +104,8 @@
                                     <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="customColumns"> </span>
                                     <span style="position: relative; top: .5rem; margin-left: 1rem;"> Row: </span>
                                     <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="customRows"> </span>
-                                </div>
-                            </div>
+                                </div>                            
+                            </div> <!-- select grid preset -->
                             <div>
                                 <div v-if="currentPaintToolMode == paintToolMode.Hand">
                                     <button class="button" :disabled="newBlock.points.length == 0" v-on:click="() => {
@@ -148,7 +150,8 @@
                                     </div>
                                 </div>
                             </div>    
-                        </div>
+                        </div> <!-- paint helper tool -->
+                        <!-- naming and describe block -->
                         <div v-if="newBlock">
                             <div class="form-field">
                                 <div class="form-field-title">
@@ -183,7 +186,7 @@
                                     }"><i class="fa fa-check-circle"></i> {{ currentPaintToolMode == paintToolMode.Preset ? 'Save changes' : 'Create block' }}</a>
                                 </div>
                             </div>
-                        </div>                        
+                        </div> <!-- naming and describe block -->
                     </div>
                     <!-- back, next button -->
                     <div class="form-field">
@@ -272,14 +275,106 @@
                         <div class="form-field">
                             <div style="display: grid; grid-template-columns: 20% 80%">
                                 <div>
-                                    <div :key="'blockFloors' + index" v-for="(floor, index) in blocks[createFloorCurrentBlock].floors">
-                                        <button class="button" style="text-align: center; width: 4rem" v-on:click="currentFloorIndex = index">{{ floor.name }}</button>
+                                    <div :key="'blockFloors' + index" v-for="(floor, index) in blocks[createFloorCurrentBlock].floors" style="padding-bottom: .3rem">
+                                        <button class="button" :class="{'btn-primary': (index == blocks[createFloorCurrentBlock].floors.length - totalBasementFloor - 1)}" style="text-align: center; width: 4rem" v-on:click="currentFloorIndex = index">{{ floor.name }}</button>
                                     </div>
                                 </div>
                                 <div>
                                     <span v-if="currentFloorIndex >= 0">
                                         Floor {{ blocks[createFloorCurrentBlock].floors[currentFloorIndex].name }} selected.
                                     </span>
+                                    <div>
+                                        <div v-if="blocks[createFloorCurrentBlock].floors.fileBase64.length == 0">
+                                            <file-base64></file-base64>
+                                        </div>
+                                        <div class="" v-else>
+                                            <div>
+                                                Paint helper tool:
+                                                <label class="radio" v-on:click="currentPaintToolMode = paintToolMode.Preset">
+                                                    <input name="paintToolMode" :checked="currentPaintToolMode == paintToolMode.Preset" type="radio">
+                                                    Preset
+                                                </label>
+                                                <label class="radio" v-on:click="currentPaintToolMode = paintToolMode.Rectangle">
+                                                    <input name="paintToolMode" :checked="currentPaintToolMode == paintToolMode.Rectangle" type="radio">
+                                                    Rectangle tool
+                                                </label>
+                                                <label class="radio" v-on:click="currentPaintToolMode = paintToolMode.Hand">
+                                                    <input name="paintToolMode" :checked="currentPaintToolMode == paintToolMode.Hand" type="radio">
+                                                    By hand
+                                                </label>
+                                            </div>
+                                            <!-- select grid preset -->
+                                            <div class="field is-horizontal">
+                                                <div class="select" v-if="currentPaintToolMode == paintToolMode.Preset">
+                                                    <select v-model="selectedGridPreset">
+                                                        <option value="null" disabled selected="true">Select a preset</option>
+                                                        <option :value="{column: 1, row: 1}">1 x 1</option>
+                                                        <option :value="{column: 1, row: 2}">1 x 2</option>
+                                                        <option :value="{column: 2, row: 1}">2 x 1</option>
+                                                        <option :value="{column: 2, row: 2}">2 x 2</option>
+                                                        <option :value="{column: 3, row: 1}">3 x 1</option>
+                                                        <option :value="{column: 3, row: 2}">3 x 2</option>
+                                                        <option :value="{column: 3, row: 3}">3 x 3</option>
+                                                        <option :value="{column: 5, row: 2}">5 x 2</option>
+                                                        <option :value="{column: 5, row: 3}">5 x 3</option>
+                                                        <option :value="{column: 6, row: 2}">6 x 2</option>
+                                                        <option :value="{column: 6, row: 3}">6 x 3</option>
+                                                        <option value="custom">Custom</option>
+                                                    </select>
+                                                </div>
+                                                <div v-if="selectedGridPreset == 'custom'">
+                                                    <span style="position: relative; top: .5rem; margin-left: 1rem; align-text: right;">Column: </span>
+                                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="customColumns"> </span>
+                                                    <span style="position: relative; top: .5rem; margin-left: 1rem;"> Row: </span>
+                                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="customRows"> </span>
+                                                </div>                            
+                                            </div> <!-- select grid preset -->
+                                            <div>
+                                                <div v-if="currentPaintToolMode == paintToolMode.Hand">
+                                                    <button class="button" :disabled="newBlock.points.length == 0" v-on:click="() => {
+                                                        newBlock.points.pop(); 
+                                                        if(newBlock.points.length > 0) {
+                                                            drawPoints();
+                                                        } else {
+                                                            clearCanvas();
+                                                        }
+                                                    }">Undo</button>
+                                                    <button class="button" :disabled="selectingPointIndex == -1" v-on:click="() => {
+                                                        newBlock.points.splice(selectingPointIndex, 1); 
+                                                        if(newBlock.points.length > 0) {
+                                                            drawPoints();
+                                                        } else {
+                                                            clearCanvas();
+                                                        }
+                                                        selectingPointIndex = -1;
+                                                    }">Remove</button>
+                                                    <button class="button" :disabled="newBlock.points.length == 0 || blocks.length == 0" v-on:click="() => {
+                                                        newBlock = {name: '', points: [], floor: []};    
+                                                        blocks = [];
+                                                        selectingPointIndex = -1;
+                                                        clearCanvas();
+                                                    }">Remove All</button>
+                                                    <div>
+                                                        <div class="field is-horizontal">
+                                                            <label>Tile name: </label>
+                                                            <input type="text" class="input" v-model="newBlock.name">
+                                                        </div>
+                                                        <button class="button" :disabled="newBlock.points.length < 2" v-on:click="() => {
+                                                        // polyList.push(newBlock);
+                                                            //newBlock = {name: '', points: []};
+                                                            //selectingPointIndex = -1;
+                                                            //drawPoints();
+                                                        }">Save tile</button>
+                                                        <div>
+                                                            <button class="button" v-on:click="() => {                            
+                                                                showAlert(JSON.stringify(polyList));
+                                                            }">Finish</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>    
+                                        </div> <!-- paint helper tool -->
+                                    </div>
                                 </div>
                             </div>
                         </div><!-- display floors visually -->

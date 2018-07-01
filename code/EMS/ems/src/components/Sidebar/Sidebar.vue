@@ -78,11 +78,11 @@
 
       </ul>
     </div>
-    <div class="sidebar-end">
+    <!-- <div class="sidebar-end">
       <div class="circle-avatar-container" v-on:click="logout()">
         <img class="circle-avatar" v-bind:src="getUserAvatar()"/>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -106,19 +106,19 @@ export default {
       }
       return "";
     },
-    getUserAvatar() {
-      const authUser = JSON.parse(window.localStorage.getItem("user"));
-      if (authUser && authUser.AvatarImage) {
-        return authUser.AvatarImage;
-      } else {
-        return require("@/assets/avatar-user.png");
-      }
-    },
-    logout() {
-      this.$store.state.isLoggedIn = false;
-      window.localStorage.removeItem("user");
-      this.$router.push("/");
-    }
+    // getUserAvatar() {
+    //   const authUser = JSON.parse(window.localStorage.getItem("user"));
+    //   if (authUser && authUser.AvatarImage) {
+    //     return authUser.AvatarImage;
+    //   } else {
+    //     return require("@/assets/avatar-user.png");
+    //   }
+    // },
+    // logout() {
+    //   this.$store.state.isLoggedIn = false;
+    //   window.localStorage.removeItem("user");
+    //   this.$router.push("/");
+    // }
   }
 };
 </script>
