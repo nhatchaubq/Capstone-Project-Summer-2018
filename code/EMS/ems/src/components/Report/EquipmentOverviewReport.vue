@@ -85,7 +85,7 @@
                             </tr>                            
                         </thead>  
                         <tbody>
-                            <tr :key="equipment.Id" v-for="equipment in equipments">                            
+                            <tr :key="equipment.Id" v-for="equipment in equipments" v-on:click="selectedEquipment(equipment.Detail)">                            
                                 <td>{{equipment.Name}}</td>    
                                 <td>{{equipment.Quantity}}</td>  
                                 <td>{{equipment.Vendor}}</td> 
@@ -156,20 +156,60 @@
                 </div> -->
             </div>
         </div>
+        <vodal :show="showEquipmentItemPopup" @hide="showEquipmentItemPopup = false" animation="slideUp" :height='400'>
+            <div  v-if="equipmentItems.length > 0" style="max-height:355px;overflow-y:auto;margin-top: 20px">
+                <div style="display: grid; grid-template-columns: 25% auto; border-bottom:1px solid">
+                                    <div style="display: flex">
+                                        <img v-show="equipmentItems[0].Image" :src="equipmentItems[0].Image" style="width: 3rem; height: 3rem;">
+                                    </div>
+                                    <div style="display: grid; grid-template-rows: auto auto;">
+                                        <div>
+                                            Name: {{ equipmentItems[0].Name }}
+                                        </div>                                            
+                                        <div style="font-size: .9rem">
+                                            Made In: {{equipmentItems[0].Category}}
+                                        </div>
+                                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 15% auto auto;">
+                    <div>
+                        Item:
+                    </div>
+                    <div >
+                           <div :key="eqti.Id" v-for="eqti in equipmentItems">{{eqti.SerialNumber}}</div> 
+                    </div>
+                    <div >
+                           <div :key="eqti.Id" v-for="eqti in equipmentItems">{{eqti.Status}}</div> 
+                    </div>
+                </div>                    
+                                       
+            </div>
+        </vodal>
     </div>
 </template>
 
 <script>
 import Server from "@/config/config.js";
+import "vodal/common.css";
+import "vodal/slide-up.css";
+import Vodal from "vodal";
 export default {
+  components: {
+    Vodal
+  },
   data() {
     return {
-      equipments: []
+      equipments: [],
+      equipmentItems: [],
+      showEquipmentItemPopup: false
     };
   },
   methods: {
-    setViewMode(mode) {
-      this.currentViewMode = mode;
+    selectedEquipment(Items) {
+      if (Items) {
+        this.equipmentItems = Items;
+        this.showEquipmentItemPopup = true;
+      }
     }
   },
   created() {
