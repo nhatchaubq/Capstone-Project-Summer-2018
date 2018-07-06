@@ -174,9 +174,18 @@
                                     </div>
                                 </div>
                                 
-                                <!-- <div class="contentstatus" style="padding: 0.5rem">
-                                     <bar></bar> 
-                                </div>     -->
+                                <div class="contentstatus" style="padding: 0.5rem">
+                                     <div class="order-blocks">
+                                        <div>
+                                            <div class="emtpy-text" v-if="workOrders.length == 0">
+                                                There is no orders to display.
+                                            </div>
+                                            <div v-else>
+                                                <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrders" ></order-block>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>    
                             </div>
 
                         </div>
@@ -197,7 +206,7 @@
                                 </div>
                                 
                                 <div class="contentstatus" style="padding: 0.5rem">
-                                    
+                                
                                 </div>    
                             </div>
                             <div class="row3child material-shadow-animate1">                            
@@ -227,11 +236,12 @@
 import Server from "@/config/config.js";
 import BarChart from "../../components/chartTest/bar-chart.js";
 import PieChart from "../../components/chartTest/pie-chart.js";
-
+import OrderBlock from "./OrderBlock/OrderBlock";
 export default {
   components: {
     BarChart,
-    PieChart
+    PieChart,
+    OrderBlock
   },
   created() {
     let URL = Server.DASHBOARD_API_PATH;
@@ -372,7 +382,8 @@ export default {
           working: [],
           maintain: []
         }
-      }
+      },
+      workOrders: [] // orders data to display in orderblocks <order-block></order-block>
     };
   }
 };
@@ -483,4 +494,164 @@ p {
   box-shadow: 0px 2px 15px rgba(25, 25, 25, 0.27) !important;
   transition: all 0.2s ease-in-out;
 }
+
+/* chow- start*/
+.filter {
+  display: grid;
+  /* grid-template-columns: 18% auto; */
+  grid-template-rows: auto auto;
+  margin-bottom: 1rem;
+}
+
+.tag i {
+  color: #757575;
+  margin-left: 0.3rem;
+  font-size: 1rem;
+  transition: all 0.1s ease-in-out;
+  display: none;
+}
+
+.tag:hover i {
+  display: block;
+}
+
+.tag i:hover {
+  color: #9e9e9e;
+}
+
+.tag i:active {
+  color: #616161;
+}
+
+.filters-bar {
+  width: 100%;
+  padding-top: 0.7rem;
+}
+
+.order-navigator-buttons > button {
+  width: 7rem;
+  margin: 0 1rem 0 1rem;
+  padding: 0.5rem 0 0.5rem 0;
+  /* background-color: aqua; */
+  font-size: 1.2rem;
+}
+
+.is-active {
+  border-bottom: 1px solid black;
+  font-weight: bold;
+}
+
+#btn-add-work-order {
+  position: fixed;
+  right: 3rem;
+  bottom: 2rem;
+  background-color: var(--primary-color);
+  /* padding: 13px;
+        color: white;
+        border-radius: 10px; */
+  z-index: 99;
+  transition: all 0.2s ease-in-out;
+}
+
+#btn-add-work-order:hover {
+  cursor: pointer;
+  background-color: var(--lighten-primary-color);
+}
+
+#btn-add-work-order:active {
+  background-color: var(--darken-primary-color);
+  box-shadow: 1px 1px 1px var(--shadow) !important;
+}
+
+.order-content {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.orders-view {
+  width: 30rem !important;
+  /* z-index: 2; */
+}
+
+.order-blocks {
+  position: fixed;
+  height: 77%;
+  padding-right: 0.5rem;
+  width: 38%;
+  overflow-y: auto;
+}
+
+.is-active-block {
+  /* background-color: #e0e0e0 !important; */
+  background-color: #bdbdbd !important;
+  /* border: 1px solid #e0e0e0 !important; */
+  border: 1px solid #bdbdbd !important;
+  box-shadow: 1px 1px 1px #bdbdbd !important;
+}
+
+.order-detail {
+  position: fixed;
+  left: 60%;
+  max-height: 77%;
+  overflow-y: auto;
+  width: 38%;
+  z-index: 2;
+}
+
+.detail {
+  padding: 0.5rem 1rem;
+}
+
+.detail-header {
+  display: grid;
+  grid-template-columns: 55% 45%;
+}
+
+.detail-title {
+  font-size: 2rem;
+}
+
+.detail-label {
+  font-size: 0.98rem;
+}
+
+.detail-contents {
+  margin-bottom: 1rem;
+}
+
+.vodal-confirm-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 4rem;
+  font-size: 0.9rem;
+}
+
+.vodal-cancel-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 5.5rem;
+  width: 4rem;
+  font-size: 0.9rem;
+}
+
+.my-dialog-title {
+  padding: 0.7rem 1rem 0.5rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 500;
+}
+
+.my-dialog-content {
+  padding: 1rem;
+}
+
+.chip-btn {
+  text-align: center;
+  padding: 0.2rem 0.25rem 0.1rem 0.25rem;
+  border-radius: 20px;
+  background-color: #f5f5f5;
+}
+
+/*Chow- end */
 </style>
