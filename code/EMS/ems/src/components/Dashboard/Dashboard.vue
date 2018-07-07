@@ -4,15 +4,15 @@
             <div class="" style="width: 100%; margin-bottom: 1rem">
             <!-- <div class="viewgraph " > -->
                 <!-- line chart -->
-                    <strong>Number of Work Order Completed</strong>
                     <div style="width:100%" class="Chart">
+                      <strong>Number of Work Order Completed</strong>
                         <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
                     </div>
             </div> <!-- line chart -->
-            <div class="col-12 row">
+            <!-- <div class="col-12 row">
                 <div class="col-6">&#8203</div>
                 <div class="col-6" style="padding-left:2rem"><strong>Equipment items by status</strong></div>
-            </div>
+            </div> -->
             <div>
                 <div class="row">
                     <!-- test -->
@@ -26,7 +26,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="contentstatus" >
+                                    <div class="contentstatus1" >
                                         <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
                                         <p style="font-size:15px;" >Work Orders</p>
                                     </div>
@@ -38,7 +38,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="contentstatus ">
+                                    <div class="contentstatus1 ">
                                         <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
                                         <p style="font-size:15px;">Work Orders</p>
                                     </div>
@@ -52,7 +52,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="contentstatus">
+                                    <div class="contentstatus1">
                                         <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
                                         <p style="font-size:15px;">Work Orders</p>
                                     </div>
@@ -64,7 +64,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="contentstatus" >
+                                    <div class="contentstatus1" >
                                         <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
                                         <p style="font-size:15px; ">Work Orders</p>
                                     </div>
@@ -83,7 +83,8 @@
                                 </div> -->
 
                         <div style="width:100%" class="Chart1">
-                            <pie-chart styles="height: 45.5vh" :data="pieChartData"></pie-chart>
+                            <strong>Equipment items by status</strong>  
+                            <pie-chart styles="height: 42vh" :data="pieChartData"></pie-chart>
                         </div>
                   
                         </div>
@@ -144,14 +145,14 @@
                 <!-- /test -->
 
                 <div class="divrow3 columns" style="margin-right:0rem !important">
-                    <div class="column" style="padding: 0 !important; margin-right: 1.8rem;">
+                    <div class="column " style="padding: 0 !important; margin-right: 1.8rem;">
                         <div class="row3childs">
                         <!-- <div> -->
-                            <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
+                            <div style="font-size:17px; margin:0.8rem 0rem">
                                 <strong>Maintain</strong>
                             </div>
-                            <div class="row3child material-shadow-animate1">                            
-                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                            <div class="row3child material-shadow-animate1 ">                            
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom:0rem ">
                                     <div class="column">
                                         <strong>Today: {{Dashboard.MaintainCountToday}} maintain order</strong>
                                     </div> 
@@ -160,12 +161,31 @@
                                     </div>
                                 </div>
                                 
-                                <div class="contentstatus" style="padding: 0.5rem">
-                                    
+                                <div class="contentstatus" style="padding: 0.2rem;" >
+                                    <div v-if="workOrders"> 
+                                      <div :key="workOrder.Id" v-for="workOrder in workOrders" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                        
+                                        <div class="col-10" style="padding: 0rem">
+                                          <div class="row">
+                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
+                                          </div>
+                                          <div class="row" >
+                                            <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
+                                            <div class="col-1" >#{{workOrder.Id}} </div>
+                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
+                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
+                                          </div>
+                                        </div>
+                                        <div class="col-2">
+                                          <i class="fa fa-archive closed fa-2x"></i>
+                                          <div>archive</div>
+                                        </div>
+                                      </div>
+                                    </div>
                                 </div>    
                             </div>
                             <div class="row3child material-shadow-animate1">                            
-                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0rem; margin-bottom:0rem ">
                                     <div class="column">
                                         <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} maintain order</strong>
                                     </div> 
@@ -174,18 +194,28 @@
                                     </div>
                                 </div>
                                 
-                                <div class="contentstatus" style="padding: 0.5rem">
-                                     <div class="order-blocks">
-                                        <div>
-                                            <div class="emtpy-text" v-if="workOrders.length == 0">
-                                                There is no orders to display.
-                                            </div>
-                                            <div v-else>
-                                                <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrders" ></order-block>
-                                            </div>
+                                <div class="contentstatus" style="padding: 0.2rem;" >
+                                    <div v-if="workOrders"> 
+                                      <div :key="workOrder.Id" v-for="workOrder in workOrdersMaintainToday" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                        
+                                        <div class="col-10" style="padding: 0rem">
+                                          <div class="row">
+                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
+                                          </div>
+                                          <div class="row" >
+                                            <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
+                                            <div class="col-1" >#{{workOrder.Id}} </div>
+                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
+                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
+                                          </div>
                                         </div>
+                                        <div class="col-2">
+                                          <i class="fa fa-archive closed fa-2x"></i>
+                                          <div>archive</div>
+                                        </div>
+                                      </div>
                                     </div>
-                                </div>    
+                                </div>  
                             </div>
 
                         </div>
@@ -196,7 +226,7 @@
                                 <strong>Returns</strong>
                             </div>
                             <div class="row3child material-shadow-animate1">                            
-                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom:0rem ">
                                     <div class="column is-9">
                                         <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong>
                                     </div> 
@@ -205,12 +235,31 @@
                                     </div>
                                 </div>
                                 
-                                <div class="contentstatus" style="padding: 0.5rem">
-                                
-                                </div>    
+                                <div class="contentstatus" style="padding: 0.2rem;" >
+                                    <div v-if="workOrders"> 
+                                      <div :key="workOrder.Id" v-for="workOrder in workOrders" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                        
+                                        <div class="col-10" style="padding: 0rem">
+                                          <div class="row">
+                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
+                                          </div>
+                                          <div class="row" >
+                                            <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
+                                            <div class="col-1" >#{{workOrder.Id}} </div>
+                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
+                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
+                                          </div>
+                                        </div>
+                                        <div class="col-2">
+                                          <i class="fa fa-archive closed fa-2x"></i>
+                                          <div>archive</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>  
                             </div>
                             <div class="row3child material-shadow-animate1">                            
-                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom:0rem ">
                                     <div class=" column is-9">
                                         <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong>
                                     </div> 
@@ -219,9 +268,28 @@
                                     </div>
                                 </div>
                                 
-                                <div class="contentstatus" style="padding: 0.5rem">
-                                    
-                                </div>    
+                                <div class="contentstatus" style="padding: 0.2rem;" >
+                                    <div v-if="workOrders"> 
+                                      <div :key="workOrder.Id" v-for="workOrder in workOrders" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                        
+                                        <div class="col-10" style="padding: 0rem">
+                                          <div class="row">
+                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
+                                          </div>
+                                          <div class="row" >
+                                            <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
+                                            <div class="col-1" >#{{workOrder.Id}} </div>
+                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
+                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
+                                          </div>
+                                        </div>
+                                        <div class="col-2">
+                                          <i class="fa fa-archive closed fa-2x"></i>
+                                          <div>archive</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>   
                             </div>
 
                         </div>
@@ -236,12 +304,13 @@
 import Server from "@/config/config.js";
 import BarChart from "../../components/chartTest/bar-chart.js";
 import PieChart from "../../components/chartTest/pie-chart.js";
-import OrderBlock from "./OrderBlock/OrderBlock";
+import moment from "moment";
+// import OrderBlock from "./OrderBlock/OrderBlock";
 export default {
   components: {
     BarChart,
-    PieChart,
-    OrderBlock
+    PieChart
+    // OrderBlock
   },
   created() {
     let URL = Server.DASHBOARD_API_PATH;
@@ -366,6 +435,13 @@ export default {
         // line chart data - end
       }
     });
+    let workOrderdb = "http://localhost:3000/api/dashboard/workorderdb";
+    this.axios.get(workOrderdb).then(response => {
+      let data = response.data.todayMaintainOrder;
+      this.workOrders = data;
+      // let data1 = response.data.todayWokingOrder;
+      // this.todayWokingOrder = data1;
+    });
   },
   data() {
     return {
@@ -384,7 +460,15 @@ export default {
         }
       },
       workOrders: [] // orders data to display in orderblocks <order-block></order-block>
+      // workOrdersMaintainTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
+      // workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
+      //workOrdersWokingTomorrow: [] // orders data to display in orderblocks <order-block></order-block>
     };
+  },
+  methods: {
+    getDate(date) {
+      return moment(date).format("L");
+    }
   }
 };
 </script>
@@ -450,14 +534,15 @@ p {
 }
 
 .row3childs {
-  display: grid;
-  grid-row-gap: 1rem;
+  /* display: grid; */
+  /* grid-row-gap: 1rem; */
 }
 
 .row3child {
   background-color: white;
   padding: 0.7rem 1rem 0.3rem 1rem;
-  height: 250px !important;
+  margin-bottom: 2rem;
+  max-height: 25rem !important;
 }
 .Chart {
   background: #ffffff;
@@ -574,14 +659,6 @@ p {
   /* z-index: 2; */
 }
 
-.order-blocks {
-  position: fixed;
-  height: 77%;
-  padding-right: 0.5rem;
-  width: 38%;
-  overflow-y: auto;
-}
-
 .is-active-block {
   /* background-color: #e0e0e0 !important; */
   background-color: #bdbdbd !important;
@@ -651,6 +728,11 @@ p {
   padding: 0.2rem 0.25rem 0.1rem 0.25rem;
   border-radius: 20px;
   background-color: #f5f5f5;
+}
+.contentstatus {
+  max-height: 20rem;
+  width: 100%;
+  overflow-y: auto;
 }
 
 /*Chow- end */
