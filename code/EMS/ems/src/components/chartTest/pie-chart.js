@@ -34,13 +34,13 @@ export default {
             datasets: [{
                 // label: "Data 3",
                 backgroundColor: [
-                    "#E74C3C",
-                    "#8E44AD",
-                    "#3498DB",
-                    "#16A085",
-                    "#2ECC71",
-                    "#F39C12",
-                    "#D35400"
+                    "#f44336",
+                    "#9C27B0",
+                    "#3F51B5",
+                    "#009688",
+                    "#8BC34A",
+                    "#FFC107",
+                    "#795548"
                 ],
                 data: this.data.values
             }]
