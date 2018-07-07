@@ -145,6 +145,80 @@
                 <!-- /test -->
 
                 <div class="divrow3 columns" style="margin-right:0rem !important">
+                                      <div class="column" style="padding: 0 !important; margin-right: 1.8rem;">
+                        <div class="row3childs">
+                            <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
+                                <strong>Working</strong>
+                            </div>
+                            <div class="row3child material-shadow-animate1">                            
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom:0rem ">
+                                    <div class="column is-9">
+                                        <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong>
+                                    </div> 
+                                    <div class="numItem column" style="text-align:right;">
+                                        <strong>{{Dashboard.ReturnCountTodayQItem}}</strong> items
+                                    </div>
+                                </div>
+                                
+                                <div class="contentstatus" style="padding: 0.2rem;" >
+                                    <div v-if="workOrdersWokingToday"> 
+                                      <div :key="workOrderW.Id" v-for="workOrderW in workOrdersWokingToday" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                        
+                                        <div class="col-10" style="padding: 0rem">
+                                          <div class="row">
+                                            <div class="col-10" style="text-align:center"> <strong>{{workOrderW.Name}}</strong> </div>
+                                          </div>
+                                          <div class="row" >
+                                            <div class="col-2"> <strong>{{workOrderW.Priority}}</strong> </div>
+                                            <div class="col-1" >#{{workOrderW.Id}} </div>
+                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrderW.RequestUsername}} </div>
+                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrderW.CreateDate)}} </div>                                
+                                          </div>
+                                        </div>
+                                        <div class="col-2">
+                                          <i class="fa fa-archive closed fa-2x"></i>
+                                          <div>archive</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>  
+                            </div>
+                            <div class="row3child material-shadow-animate1">                            
+                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom:0rem ">
+                                    <div class=" column is-9">
+                                        <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong>
+                                    </div> 
+                                    <div class="numItem column" style="text-align:right;">
+                                        <strong>{{Dashboard.ReturnCountTomorrowQItem}}</strong> items
+                                    </div>
+                                </div>
+                                
+                                <div class="contentstatus" style="padding: 0.2rem;" >
+                                    <div v-if="workOrdersWokingTomorrow"> 
+                                      <div :key="workOrder3.Id" v-for="workOrder3 in workOrdersWokingTomorrow" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                        
+                                        <div class="col-10" style="padding: 0rem">
+                                          <div class="row">
+                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder3.Name}}</strong> </div>
+                                          </div>
+                                          <div class="row" >
+                                            <div class="col-2"> <strong>{{workOrder3.Priority}}</strong> </div>
+                                            <div class="col-1" >#{{workOrder3.Id}} </div>
+                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder3.RequestUsername}} </div>
+                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder3.CreateDate)}} </div>                                
+                                          </div>
+                                        </div>
+                                        <div class="col-2">
+                                          <i class="fa fa-archive closed fa-2x"></i>
+                                          <div>archive</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>   
+                            </div>
+
+                        </div>
+                    </div>
                     <div class="column " style="padding: 0 !important; margin-right: 1.8rem;">
                         <div class="row3childs">
                         <!-- <div> -->
@@ -153,8 +227,8 @@
                             </div>
                             <div class="row3child material-shadow-animate1 ">                            
                                 <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom:0rem ">
-                                    <div class="column">
-                                        <strong>Today: {{Dashboard.MaintainCountToday}} maintain order</strong>
+                                    <div class="column is-9">
+                                        <strong>Today: {{Dashboard.MaintainCountToday}} order to be returned</strong>
                                     </div> 
                                     <div class="numItem column" style="text-align:right;">
                                         <strong>{{Dashboard.MaintainCountTodayQItem}}</strong> items
@@ -186,8 +260,8 @@
                             </div>
                             <div class="row3child material-shadow-animate1">                            
                                 <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0rem; margin-bottom:0rem ">
-                                    <div class="column">
-                                        <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} maintain order</strong>
+                                    <div class="column is-9">
+                                        <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} order to be returned</strong>
                                     </div> 
                                     <div class="numItem column" style="text-align:right;">
                                         <strong>{{Dashboard.MaintainCountTomorrowQItem}}</strong> items
@@ -195,18 +269,18 @@
                                 </div>
                                 
                                 <div class="contentstatus" style="padding: 0.2rem;" >
-                                    <div v-if="workOrders"> 
-                                      <div :key="workOrder.Id" v-for="workOrder in workOrdersMaintainToday" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                    <div v-if="workOrdersMaintainTomorrow"> 
+                                      <div :key="workOrder2.Id" v-for="workOrder2 in workOrdersMaintainTomorrow" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
                                         
                                         <div class="col-10" style="padding: 0rem">
                                           <div class="row">
-                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
+                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder2.Name}}</strong> </div>
                                           </div>
                                           <div class="row" >
-                                            <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
-                                            <div class="col-1" >#{{workOrder.Id}} </div>
-                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
-                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
+                                            <div class="col-2"> <strong>{{workOrder2.Priority}}</strong> </div>
+                                            <div class="col-1" >#{{workOrder2.Id}} </div>
+                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder2.RequestUsername}} </div>
+                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder2.CreateDate)}} </div>                                
                                           </div>
                                         </div>
                                         <div class="col-2">
@@ -220,80 +294,7 @@
 
                         </div>
                     </div>
-                    <div class="column" style="padding: 0 !important">
-                        <div class="row3childs">
-                            <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
-                                <strong>Returns</strong>
-                            </div>
-                            <div class="row3child material-shadow-animate1">                            
-                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom:0rem ">
-                                    <div class="column is-9">
-                                        <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong>
-                                    </div> 
-                                    <div class="numItem column" style="text-align:right;">
-                                        <strong>{{Dashboard.ReturnCountTodayQItem}}</strong> items
-                                    </div>
-                                </div>
-                                
-                                <div class="contentstatus" style="padding: 0.2rem;" >
-                                    <div v-if="workOrders"> 
-                                      <div :key="workOrder.Id" v-for="workOrder in workOrders" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
-                                        
-                                        <div class="col-10" style="padding: 0rem">
-                                          <div class="row">
-                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
-                                          </div>
-                                          <div class="row" >
-                                            <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
-                                            <div class="col-1" >#{{workOrder.Id}} </div>
-                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
-                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
-                                          </div>
-                                        </div>
-                                        <div class="col-2">
-                                          <i class="fa fa-archive closed fa-2x"></i>
-                                          <div>archive</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                </div>  
-                            </div>
-                            <div class="row3child material-shadow-animate1">                            
-                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom:0rem ">
-                                    <div class=" column is-9">
-                                        <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong>
-                                    </div> 
-                                    <div class="numItem column" style="text-align:right;">
-                                        <strong>{{Dashboard.ReturnCountTomorrowQItem}}</strong> items
-                                    </div>
-                                </div>
-                                
-                                <div class="contentstatus" style="padding: 0.2rem;" >
-                                    <div v-if="workOrders"> 
-                                      <div :key="workOrder.Id" v-for="workOrder in workOrders" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
-                                        
-                                        <div class="col-10" style="padding: 0rem">
-                                          <div class="row">
-                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
-                                          </div>
-                                          <div class="row" >
-                                            <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
-                                            <div class="col-1" >#{{workOrder.Id}} </div>
-                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
-                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
-                                          </div>
-                                        </div>
-                                        <div class="col-2">
-                                          <i class="fa fa-archive closed fa-2x"></i>
-                                          <div>archive</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                </div>   
-                            </div>
 
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -439,8 +440,12 @@ export default {
     this.axios.get(workOrderdb).then(response => {
       let data = response.data.todayMaintainOrder;
       this.workOrders = data;
-      // let data1 = response.data.todayWokingOrder;
-      // this.todayWokingOrder = data1;
+      let data2 = response.data.tomorrowMaintainOrder;
+      this.workOrdersMaintainTomorrow = data2;
+      let data1 = response.data.todayWokingOrder;
+      this.workOrdersWokingToday = data1;
+      let data3 = response.data.tomorrowWokingOrder;
+      this.workOrdersWokingTomorrow = data3;
     });
   },
   data() {
@@ -459,10 +464,10 @@ export default {
           maintain: []
         }
       },
-      workOrders: [] // orders data to display in orderblocks <order-block></order-block>
-      // workOrdersMaintainTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
-      // workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
-      //workOrdersWokingTomorrow: [] // orders data to display in orderblocks <order-block></order-block>
+      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
+      workOrdersMaintainTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
+      workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
+      workOrdersWokingTomorrow: [] // orders data to display in orderblocks <order-block></order-block>
     };
   },
   methods: {
@@ -733,6 +738,7 @@ p {
   max-height: 20rem;
   width: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /*Chow- end */
