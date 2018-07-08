@@ -1,14 +1,29 @@
 <template>
     <div v-if="Dashboard">
         <div>
-            <div class="" style="width: 100%; margin-bottom: 1rem">
-            <!-- <div class="viewgraph " > -->
+            <div class="row " style="width: 100%; margin-bottom: 1rem; margin-right: 0rem ; margin-left:0rem !important">
+              <div class="col-8" style="padding-left:0Rem !important">
                 <!-- line chart -->
-                    <div style="width:100%" class="Chart">
-                      <strong>Number of Work Order Completed</strong>
-                        <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
-                    </div>
-            </div> <!-- line chart -->
+                <div  class="Chart col-12">
+                  <strong>Number of Work Order Completed</strong>
+                    <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
+                </div>
+                <!-- line chart- end -->
+              </div>
+              <div class="col-4" style="padding:0rem !important">
+                <!-- DoughnutChart  -->
+                <!-- <div style=" margin-left: 2rem !important" class="Chart col-4" > -->
+                <div class="Chart col-12" >
+                  <strong>Doughnut!!</strong>
+                    <doughnut-chart :data="doughnutChartData" styles="height: 40vh"></doughnut-chart>
+                </div>
+                <!-- DoughnutChart- end -->
+
+              </div>
+            </div> 
+            
+            
+
             <!-- <div class="col-12 row">
                 <div class="col-6">&#8203</div>
                 <div class="col-6" style="padding-left:2rem"><strong>Equipment items by status</strong></div>
@@ -16,9 +31,10 @@
             <div>
                 <div class="row">
                     <!-- test -->
-                    <div class="col-6" style="padding: 0px !important">
-                        <div class="statusworkorder row">
-                            <div class="row col-12" style="margin-bottom: 1rem;padding-right: 0px; padding-left: 25px !important">
+                    <div class="col-6 " style="padding-left: 0.3rem !important; padding-right: 0rem !important">
+
+                            <!-- <div class="row col-12" style="margin-bottom: 1rem;padding-right: 0px; padding-left: 25px !important"> -->
+                            <div class="row col-12" style="margin-bottom: 0.5rem;  padding-right: 0px; padding-left: 25px !important">
                                 <div class="status column material-shadow-animate">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
@@ -31,7 +47,7 @@
                                         <p style="font-size:15px;" >Work Orders</p>
                                     </div>
                                 </div>
-                                <div class="status column material-shadow-animate" >
+                                <div class="status column material-shadow-animate" style="margin-right: 0rem !important">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
                                         <strong>Checked</strong>
@@ -44,7 +60,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row col-12" style="padding-right: 0px; padding-left: 25px !important" >
+                            <div class="row col-12" style="margin-bottom: 0.5rem;  padding-right: 0px; padding-left: 25px !important">
                                 <div class="status column material-shadow-animate">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
@@ -57,7 +73,7 @@
                                         <p style="font-size:15px;">Work Orders</p>
                                     </div>
                                 </div>
-                                <div class="status column material-shadow-animate" >
+                                <div class="status column material-shadow-animate" style="margin-right: 0rem !important">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
                                         <strong>In Progress</strong>
@@ -73,10 +89,10 @@
 
                             
                         </div>
-                    </div>
+
                     <!-- /test -->
 
-                        <div class="col-6 ">
+                        <div class="col-6 " style="padding-left: 0rem !important">
                             <!-- <div class="workordergraph viewgraph"> -->
                                 <!-- <div class="titlediv">
                                     <strong>Equipment items by status</strong>
@@ -84,7 +100,7 @@
 
                         <div style="width:100%" class="Chart1">
                             <strong>Equipment items by status</strong>  
-                            <pie-chart styles="height: 42vh" :data="pieChartData"></pie-chart>
+                            <pie-chart styles="height: 40vh" :data="pieChartData"></pie-chart>
                         </div>
                   
                         </div>
@@ -143,221 +159,200 @@
                     
                 </div> -->
                 <!-- /test -->
-
-                <div class="divrow3 columns" style="margin-right:0rem !important">
-                                      <div class="column" style="padding: 0 !important; margin-right: 1.8rem;">
-                        <div class="row3childs">
-                            <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
-                                <strong>Working</strong>
-                            </div>
-                            <div class=" material-shadow-animate1" style="margin-bottom: 2rem">                            
-                                <div class="headerstatus1 columns"  style="padding: 0.5rem 0rem 0.5rem 0; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
-                                    <div class="column is-9">
-                                        <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong>
-                                    </div> 
-                                    <div class="numItem column" style="text-align:right;">
-                                        <strong>{{Dashboard.ReturnCountTodayQItem}}</strong> items
-                                    </div>
-                                </div>
-                                
-                                <div class="contentstatus" style="padding: 0.2rem;" >
-                                        <!-- chow- start -->
-                                        <div class="order-blocks">
-                                            <div>
-                                                <!-- <div class="emtpy-text" v-if="workOrdersWokingToday.length == 0"> -->
-                                                <div class="emtpy-text" v-if="workOrdersWokingToday && workOrdersWokingToday.length == 0">
-                                                    There is no orders to display.
-                                                </div>
-                                                <div v-else>
-                                                    <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingToday" ></order-block>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- chow-end -->
-
-                                        <!-- dien-start -->
-                                    <!--<div v-if="workOrdersWokingToday"> 
-                                       <div :key="workOrderW.Id" v-for="workOrderW in workOrdersWokingToday" class="material-box material-shadow-animate row" style="margin-bottom:0.5rem; padding-left:1.5rem">
-         
-                                        <div class="col-12" style="padding: 0rem">
-                                          <div class="row">
-                                            <div class="col-2"> <strong>{{workOrderW.Priority}}</strong> </div>
-                                            <div class="col-1" >#{{workOrderW.Id}} </div>
-                                        
-                                            <div class="col-5" > <strong>{{workOrderW.Name}}</strong> </div>
-                                            <div class="col-4"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0; color:#616161"></i>{{workOrderW.RequestUsername}} </div>
-                                          </div>
-                                          <div class="row" >
-
-                                          </div>
-                                            <div class="col-12"  ><i class="material-icons" style="margin:0.2rem 0.1rem 0 0; color:#616161">location_on</i>{{workOrderW.Location.Address}} </div>
-                                        </div>
-
+                <div class=" row"  >
+                  <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Working</strong></div>
+                  <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Maintain</strong></div>
+                  <div class="divrow3 columns " style="margin-right:0rem !important">
+                    <div class="col-6" style="padding: 0 1rem 0 0.7rem  !important; margin-right: 0rem ">
+                              <div class=" material-shadow-animate1" style="margin-bottom: 1rem">                            
+                                  <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
+                                      <div class="column is-9">
+                                          <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong>
                                       </div> 
-                                    </div>-->
-                                      <!-- dien-end -->
-                                </div>  
-                            </div>
-                            <div class=" material-shadow-animate1" style="margin-bottom: 1rem">                            
-                                <div class="headerstatus1 columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
-                                    <div class=" column is-9">
-                                        <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong>
-                                    </div> 
-                                    <div class="numItem column" style="text-align:right;">
-                                        <strong>{{Dashboard.ReturnCountTomorrowQItem}}</strong> items
-                                    </div>
-                                </div>
-                                
-                                <div class="contentstatus" style="padding: 0.2rem;" >
-                                  <!-- dien-start -->
-                                    <!-- <div v-if="workOrdersWokingTomorrow"> 
-                                      <div :key="workOrder3.Id" v-for="workOrder3 in workOrdersWokingTomorrow" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
-                                        
-                                        <div class="col-10" style="padding: 0rem">
-                                          <div class="row">
-                                            <div class="col-2"> <strong>{{workOrder3.Priority}}</strong> </div>
-                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder3.Name}}</strong> </div>
-                                          </div>
-                                          <div class="row" >
-                                            <div class="col-1" >#{{workOrder3.Id}} </div>
-                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder3.RequestUsername}} </div>
-                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder3.CreateDate)}} </div>                                
-                                          </div>
-                                        </div>
-                                        <div class="col-2">
-                                          <i class="fa fa-archive closed fa-2x"></i>
-                                          <div>archive</div>
-                                        </div>
+                                      <div class="numItem column" style="text-align:right;">
+                                          <strong>{{Dashboard.ReturnCountTodayQItem}}</strong> items
                                       </div>
-                                    </div> -->
-                                    <!-- dien-end -->
-                                        <!-- chow- start -->
-                                        <div class="order-blocks">
-                                            <div>
-                                                <div class="emtpy-text" v-if="workOrdersWokingTomorrow && workOrdersWokingTomorrow.length == 0">
-                                                <!-- <div class="emtpy-text" v-if="workOrdersWokingTomorrow"> -->
-                                                    There is no orders to display.
-                                                </div>
-                                                <div v-else>
-                                                    <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingTomorrow"></order-block>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- chow-end -->
-
-                                </div>   
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="column " style="padding: 0 !important; margin-right: 1.8rem;">
-                        <div class="row3childs">
-                        <!-- <div> -->
-                            <div style="font-size:17px; margin:0.8rem 0rem">
-                                <strong>Maintain</strong>
-                            </div>
-                            <div class=" material-shadow-animate1 " style="margin-bottom: 2rem">                            
-                                <div class="headerstatus1 columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
-                                    <div class="column is-9">
-                                        <strong>Today: {{Dashboard.MaintainCountToday}} order to be returned</strong>
-                                    </div> 
-                                    <div class="numItem column" style="text-align:right;">
-                                        <strong>{{Dashboard.MaintainCountTodayQItem}}</strong> items
-                                    </div>
-                                </div>
-                                
-                                <div class="contentstatus" style="padding: 0.2rem;" >
-                                  <!-- dien-start -->
-                                    <!-- <div v-if="workOrders"> 
-                                      <div :key="workOrder.Id" v-for="workOrder in workOrders" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
-                                        
-                                        <div class="col-10" style="padding: 0rem">
-                                          <div class="row">
-                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
+                                  </div>
+                                  <div class="contentstatus" style="padding: 0.2rem;" >
+                                          <!-- chow- start -->
+                                          <div class="order-blocks">
+                                              <div>
+                                                  <!-- <div class="emtpy-text" v-if="workOrdersWokingToday.length == 0"> -->
+                                                  <div class="emtpy-text" v-if="workOrdersWokingToday && workOrdersWokingToday.length == 0">
+                                                      There is no orders to display.
+                                                  </div>
+                                                  <div v-else>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingToday" ></order-block>
+                                                  </div>
+                                              </div>
                                           </div>
-                                          <div class="row" >
-                                            <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
-                                            <div class="col-1" >#{{workOrder.Id}} </div>
-                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
-                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
-                                          </div>
-                                        </div>
-                                        <div class="col-2">
-                                          <i class="fa fa-archive closed fa-2x"></i>
-                                          <div>archive</div>
-                                        </div>
+                                          <!-- chow-end -->
+                                  </div>  
+                              </div>
+                              <div class=" material-shadow-animate1" style="margin-bottom: 1rem">                            
+                                  <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
+                                      <div class=" column is-9">
+                                          <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong>
+                                      </div> 
+                                      <div class="numItem column" style="text-align:right;">
+                                          <strong>{{Dashboard.ReturnCountTomorrowQItem}}</strong> items
                                       </div>
-                                    </div> -->
-                                    <!-- dien-end -->
-                                    <!-- chow- start -->
-                                        <div class="order-blocks">
-                                            <div>
-                                                <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
-                                                <div class="emtpy-text" v-if="workOrders && workOrders.length == 0" >
-                                                    There is no orders to display.
-                                                </div>
-                                                <div v-else>
-                                                    <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrders" ></order-block>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- chow-end -->
-                                </div>    
-                            </div>
-                            <div class=" material-shadow-animate1" style="margin-bottom: 1rem">                            
-                                <div class="headerstatus1 columns"  style="padding: 0.5rem 0 0.5rem 0rem; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
-                                    <div class="column is-9">
-                                        <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} order to be returned</strong>
-                                    </div> 
-                                    <div class="numItem column" style="text-align:right;">
-                                        <strong>{{Dashboard.MaintainCountTomorrowQItem}}</strong> items
-                                    </div>
-                                </div>
-                                
-                                <div class="contentstatus" style="padding: 0.2rem;" >
+                                  </div>
                                   
-                                  <!-- dien-start -->
-                                    <!-- <div v-if="workOrdersMaintainTomorrow"> 
-                                      <div :key="workOrder2.Id" v-for="workOrder2 in workOrdersMaintainTomorrow" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
-                                        
-                                        <div class="col-10" style="padding: 0rem">
-                                          <div class="row">
-                                            <div class="col-10" style="text-align:center"> <strong>{{workOrder2.Name}}</strong> </div>
-                                          </div>
-                                          <div class="row" >
-                                            <div class="col-2"> <strong>{{workOrder2.Priority}}</strong> </div>
-                                            <div class="col-1" >#{{workOrder2.Id}} </div>
-                                            <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder2.RequestUsername}} </div>
-                                            <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder2.CreateDate)}} </div>                                
-                                          </div>
-                                        </div>
-                                        <div class="col-2">
-                                          <i class="fa fa-archive closed fa-2x"></i>
-                                          <div>archive</div>
-                                        </div>
-                                      </div>
-                                    </div> -->
-                                    <!-- dien-end -->
-                                     <!-- chow- start -->
-                                        <div class="order-blocks">
-                                            <div>
-                                                <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
-                                                <div class="emtpy-text" v-if="workOrdersMaintainTomorrow && workOrdersMaintainTomorrow.length == 0">
-                                                    There is no orders to display.
-                                                </div>
-                                                <div v-else>
-                                                    <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersMaintainTomorrow" ></order-block>
-                                                </div>
+                                  <div class="contentstatus" style="padding: 0.2rem;" >
+                                    <!-- dien-start -->
+                                      <!-- <div v-if="workOrdersWokingTomorrow"> 
+                                        <div :key="workOrder3.Id" v-for="workOrder3 in workOrdersWokingTomorrow" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                          
+                                          <div class="col-10" style="padding: 0rem">
+                                            <div class="row">
+                                              <div class="col-2"> <strong>{{workOrder3.Priority}}</strong> </div>
+                                              <div class="col-10" style="text-align:center"> <strong>{{workOrder3.Name}}</strong> </div>
                                             </div>
+                                            <div class="row" >
+                                              <div class="col-1" >#{{workOrder3.Id}} </div>
+                                              <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder3.RequestUsername}} </div>
+                                              <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder3.CreateDate)}} </div>                                
+                                            </div>
+                                          </div>
+                                          <div class="col-2">
+                                            <i class="fa fa-archive closed fa-2x"></i>
+                                            <div>archive</div>
+                                          </div>
                                         </div>
-                                        <!-- chow-end -->
-                                </div>  
-                            </div>
+                                      </div> -->
+                                      <!-- dien-end -->
+                                          <!-- chow- start -->
+                                          <div class="order-blocks">
+                                              <div>
+                                                  <div class="emtpy-text" v-if="workOrdersWokingTomorrow && workOrdersWokingTomorrow.length == 0">
+                                                  <!-- <div class="emtpy-text" v-if="workOrdersWokingTomorrow"> -->
+                                                      There is no orders to display.
+                                                  </div>
+                                                  <div v-else>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingTomorrow"></order-block>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          <!-- chow-end -->
 
-                        </div>
-                    </div>
+                                  </div>   
+                              </div>
 
+
+                      </div>
+                      <div class="column " style="padding: 0 !important; " >
+                          <div class="row3childs">
+                          <!-- <div> -->
+                              <!-- <div style="font-size:17px; margin:0.8rem 0rem">
+                                  <strong>Maintain</strong>
+                              </div> -->
+                              <div class=" material-shadow-animate1 " style="margin-bottom: 1rem; margin-right: 0.9rem">                            
+                                  <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
+                                      <div class="column is-9">
+                                          <strong>Today: {{Dashboard.MaintainCountToday}} order to be returned</strong>
+                                      </div> 
+                                      <div class="numItem column" style="text-align:right;">
+                                          <strong>{{Dashboard.MaintainCountTodayQItem}}</strong> items
+                                      </div>
+                                  </div>
+                                  
+                                  <div class="contentstatus" style="padding: 0.2rem;" >
+                                    <!-- dien-start -->
+                                      <!-- <div v-if="workOrders"> 
+                                        <div :key="workOrder.Id" v-for="workOrder in workOrders" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                          
+                                          <div class="col-10" style="padding: 0rem">
+                                            <div class="row">
+                                              <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
+                                            </div>
+                                            <div class="row" >
+                                              <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
+                                              <div class="col-1" >#{{workOrder.Id}} </div>
+                                              <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
+                                              <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
+                                            </div>
+                                          </div>
+                                          <div class="col-2">
+                                            <i class="fa fa-archive closed fa-2x"></i>
+                                            <div>archive</div>
+                                          </div>
+                                        </div>
+                                      </div> -->
+                                      <!-- dien-end -->
+                                      <!-- chow- start -->
+                                          <div class="order-blocks">
+                                              <div>
+                                                  <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
+                                                  <div class="emtpy-text" v-if="workOrders && workOrders.length == 0" >
+                                                      There is no orders to display.
+                                                  </div>
+                                                  <div v-else>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrders" ></order-block>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          <!-- chow-end -->
+                                  </div>    
+                              </div>
+                              <div class=" material-shadow-animate1" style="margin-bottom: 1rem; margin-right: 0.9rem">                            
+                                  <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
+                                      <div class="column is-9">
+                                          <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} order to be returned</strong>
+                                      </div> 
+                                      <div class="numItem column" style="text-align:right;">
+                                          <strong>{{Dashboard.MaintainCountTomorrowQItem}}</strong> items
+                                      </div>
+                                  </div>
+                                  
+                                  <div class="contentstatus" style="padding: 0.2rem;" >
+                                    
+                                    <!-- dien-start -->
+                                      <!-- <div v-if="workOrdersMaintainTomorrow"> 
+                                        <div :key="workOrder2.Id" v-for="workOrder2 in workOrdersMaintainTomorrow" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
+                                          
+                                          <div class="col-10" style="padding: 0rem">
+                                            <div class="row">
+                                              <div class="col-10" style="text-align:center"> <strong>{{workOrder2.Name}}</strong> </div>
+                                            </div>
+                                            <div class="row" >
+                                              <div class="col-2"> <strong>{{workOrder2.Priority}}</strong> </div>
+                                              <div class="col-1" >#{{workOrder2.Id}} </div>
+                                              <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder2.RequestUsername}} </div>
+                                              <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder2.CreateDate)}} </div>                                
+                                            </div>
+                                          </div>
+                                          <div class="col-2">
+                                            <i class="fa fa-archive closed fa-2x"></i>
+                                            <div>archive</div>
+                                          </div>
+                                        </div>
+                                      </div> -->
+                                      <!-- dien-end -->
+                                      <!-- chow- start -->
+                                          <div class="order-blocks">
+                                              <div>
+                                                  <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
+                                                  <div class="emtpy-text" v-if="workOrdersMaintainTomorrow && workOrdersMaintainTomorrow.length == 0">
+                                                      There is no orders to display.
+                                                  </div>
+                                                  <div v-else>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersMaintainTomorrow" ></order-block>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          <!-- chow-end -->
+                                  </div>  
+                              </div>
+
+                          </div>
+                      </div>
+
+                  </div>
+                
                 </div>
+  
+
             </div>
         </div>
     </div>
@@ -367,13 +362,16 @@
 import Server from "@/config/config.js";
 import BarChart from "../../components/chartTest/bar-chart.js";
 import PieChart from "../../components/chartTest/pie-chart.js";
+import DoughnutChart from "../../components/chartTest/Doughnut-chart.js";
 import moment from "moment";
 import OrderBlock from "../Dashboard/OrderBlock/OrderBlock";
+
 export default {
   components: {
     BarChart,
     PieChart,
-    OrderBlock
+    OrderBlock,
+    DoughnutChart
   },
   created() {
     let URL = Server.DASHBOARD_API_PATH;
@@ -496,6 +494,17 @@ export default {
           data.LineChart.Working.ThisMonth
         );
         // line chart data - end
+        // doughnut chart data - start
+        this.doughnutChartData.TodayLabels.push(data.Doughnut.Available.Name);
+        this.doughnutChartData.TodayLabels.push(data.Doughnut.Unavailable.Name);
+        this.doughnutChartData.TodayData.push(
+          data.Doughnut.Today.AvailableItemCount
+        );
+        this.doughnutChartData.TodayData.push(
+          data.Doughnut.Today.UnavailableItemCount
+        );
+
+        // doughnut chart data - end
       }
     });
     let workOrderdb = "http://localhost:3000/api/dashboard/workorderdb";
@@ -516,6 +525,10 @@ export default {
       pieChartData: {
         labels: [],
         values: []
+      },
+      doughnutChartData: {
+        TodayLabels: [],
+        TodayData: []
       },
       lineChartData: {
         workingLabel: "",
