@@ -90,7 +90,11 @@ router.get("/", (request, response) => {
         // get name of month end(new)
 
         "(SELECT Name from [WorkOrderCategory] where Id =1) as 'LineChart.MaintainName'," +
-        "(SELECT Name from [WorkOrderCategory] where Id =2) as 'LineChart.WorkingName'" +
+        "(SELECT Name from [WorkOrderCategory] where Id =2) as 'LineChart.WorkingName'," +
+        "(SELECT count(*) FROM [Equipment] as e JOIN [EquipmentItem] as ei ON ei.EquipmentID =e.Id WHERE StatusId !=1) as 'Doughnut.Today.UnavailableItemCount'," +
+        "(SELECT count(*) FROM [Equipment] as e JOIN [EquipmentItem] as ei ON ei.EquipmentID =e.Id WHERE StatusId =1) as 'Doughnut.Today.AvailableItemCount'," +
+        "(select [Name] from EquipmentStatus where Id = 1) as 'Doughnut.Available.Name'," +
+        "(select [Name] from EquipmentStatus where Id = 2) as 'Doughnut.Unavailable.Name'" +
         //line chart(line's name ) end
 
         //work order start(old)

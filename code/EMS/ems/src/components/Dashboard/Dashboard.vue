@@ -14,8 +14,8 @@
                 <!-- DoughnutChart  -->
                 <!-- <div style=" margin-left: 2rem !important" class="Chart col-4" > -->
                 <div class="Chart col-12" >
-                  <strong>Number of Work Order Completed</strong>
-                    <doughnut-chart :data="pieChartData" styles="height: 40vh"></doughnut-chart>
+                  <strong>Doughnut!!</strong>
+                    <doughnut-chart :data="doughnutChartData" styles="height: 40vh"></doughnut-chart>
                 </div>
                 <!-- DoughnutChart- end -->
 
@@ -494,6 +494,17 @@ export default {
           data.LineChart.Working.ThisMonth
         );
         // line chart data - end
+        // doughnut chart data - start
+        this.doughnutChartData.TodayLabels.push(data.Doughnut.Available.Name);
+        this.doughnutChartData.TodayLabels.push(data.Doughnut.Unavailable.Name);
+        this.doughnutChartData.TodayData.push(
+          data.Doughnut.Today.AvailableItemCount
+        );
+        this.doughnutChartData.TodayData.push(
+          data.Doughnut.Today.UnavailableItemCount
+        );
+
+        // doughnut chart data - end
       }
     });
     let workOrderdb = "http://localhost:3000/api/dashboard/workorderdb";
@@ -514,6 +525,10 @@ export default {
       pieChartData: {
         labels: [],
         values: []
+      },
+      doughnutChartData: {
+        TodayLabels: [],
+        TodayData: []
       },
       lineChartData: {
         workingLabel: "",
