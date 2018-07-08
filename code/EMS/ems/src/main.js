@@ -11,6 +11,8 @@ import router from './router';
 import store from './store';
 import "./styles/style.scss";
 import * as VueGoogleMaps from 'vue2-google-maps';
+import iView from 'iview';
+import 'iview/dist/styles/iview.css';
 
 Vue.use(VueGoogleMaps, {
   load: {
@@ -21,6 +23,7 @@ Vue.use(VueGoogleMaps, {
 
 Vue.use(VueAxios, axios);
 Vue.use(Vuetify);
+Vue.use(iView);
 Vue.component('v-bar', VueBar);
 
 Vue.config.productionTip = false;
@@ -28,13 +31,15 @@ Vue.config.productionTip = false;
 router.beforeEach((to, from, next) => {
   store.state.showSearchBar = to.meta.showSearchBar;
   let authUser = JSON.parse(window.localStorage.getItem('user'));
-  if (to.name == 'login') {
-    next('/');
-  } else if (to.name == 'create_work_order' && authUser.RoleID != 5 && authUser.RoleID != 6) {
-    next('/work_order');
-  } 
-  else {
-    next();
+  if (authUser) {
+    if (to.name == 'login') {
+      next('/');
+    } else if (to.name == 'create_work_order' && authUser.RoleID != 5 && authUser.RoleID != 6) {
+      next('/work_order');
+    } 
+    else {
+      next();
+    }
   }
 });
 
