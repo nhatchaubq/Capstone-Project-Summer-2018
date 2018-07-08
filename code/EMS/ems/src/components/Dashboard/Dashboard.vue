@@ -1,14 +1,29 @@
 <template>
     <div v-if="Dashboard">
         <div>
-            <div class="" style="width: 100%; margin-bottom: 1rem">
-            <!-- <div class="viewgraph " > -->
+            <div class="row " style="width: 100%; margin-bottom: 1rem; margin-right: 0rem ; margin-left:0rem !important">
+              <div class="col-8" style="padding-left:0Rem !important">
                 <!-- line chart -->
-                    <div style="width:100%" class="Chart">
-                      <strong>Number of Work Order Completed</strong>
-                        <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
-                    </div>
-            </div> <!-- line chart -->
+                <div  class="Chart col-12">
+                  <strong>Number of Work Order Completed</strong>
+                    <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
+                </div>
+                <!-- line chart- end -->
+              </div>
+              <div class="col-4" style="padding:0rem !important">
+                <!-- DoughnutChart  -->
+                <!-- <div style=" margin-left: 2rem !important" class="Chart col-4" > -->
+                <div class="Chart col-12" >
+                  <strong>Number of Work Order Completed</strong>
+                    <doughnut-chart :data="pieChartData" styles="height: 40vh"></doughnut-chart>
+                </div>
+                <!-- DoughnutChart- end -->
+
+              </div>
+            </div> 
+            
+            
+
             <!-- <div class="col-12 row">
                 <div class="col-6">&#8203</div>
                 <div class="col-6" style="padding-left:2rem"><strong>Equipment items by status</strong></div>
@@ -16,9 +31,10 @@
             <div>
                 <div class="row">
                     <!-- test -->
-                    <div class="col-6" style="padding: 0px !important">
-                        <div class="statusworkorder row">
-                            <div class="row col-12" style="margin-bottom: 1rem;padding-right: 0px; padding-left: 25px !important">
+                    <div class="col-6 " style="padding-left: 0.3rem !important; padding-right: 0rem !important">
+
+                            <!-- <div class="row col-12" style="margin-bottom: 1rem;padding-right: 0px; padding-left: 25px !important"> -->
+                            <div class="row col-12" style="margin-bottom: 1rem;  padding-right: 0px; padding-left: 25px !important">
                                 <div class="status column material-shadow-animate">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
@@ -31,7 +47,7 @@
                                         <p style="font-size:15px;" >Work Orders</p>
                                     </div>
                                 </div>
-                                <div class="status column material-shadow-animate" >
+                                <div class="status column material-shadow-animate" style="margin-right: 0rem !important">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
                                         <strong>Checked</strong>
@@ -44,7 +60,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row col-12" style="padding-right: 0px; padding-left: 25px !important" >
+                            <div class="row col-12" style="margin-bottom: 1rem;  padding-right: 0px; padding-left: 25px !important">
                                 <div class="status column material-shadow-animate">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
@@ -57,7 +73,7 @@
                                         <p style="font-size:15px;">Work Orders</p>
                                     </div>
                                 </div>
-                                <div class="status column material-shadow-animate" >
+                                <div class="status column material-shadow-animate" style="margin-right: 0rem !important">
                                     <div class="headerstatus columns">
                                         <div style="width:40%" class="column">
                                         <strong>In Progress</strong>
@@ -73,10 +89,10 @@
 
                             
                         </div>
-                    </div>
+
                     <!-- /test -->
 
-                        <div class="col-6 ">
+                        <div class="col-6 " style="padding-left: 0rem !important">
                             <!-- <div class="workordergraph viewgraph"> -->
                                 <!-- <div class="titlediv">
                                     <strong>Equipment items by status</strong>
@@ -84,7 +100,7 @@
 
                         <div style="width:100%" class="Chart1">
                             <strong>Equipment items by status</strong>  
-                            <pie-chart styles="height: 42vh" :data="pieChartData"></pie-chart>
+                            <pie-chart styles="height: 41vh" :data="pieChartData"></pie-chart>
                         </div>
                   
                         </div>
@@ -143,13 +159,16 @@
                     
                 </div> -->
                 <!-- /test -->
-
+                <div class="col-12 row" style="margin-bottom: 1rem" >
+                  <div class="col-6" style="padding-left: 2rem"><strong>Working</strong></div>
+                  <div class="col-6" style="padding-left: 2rem"><strong>Maintain</strong></div>
+                </div>
                 <div class="divrow3 columns" style="margin-right:0rem !important">
                                       <div class="column" style="padding: 0 !important; margin-right: 1.8rem;">
                         <div class="row3childs">
-                            <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
+                            <!-- <div style="font-size:17px; margin:0.8rem 0rem 0.8rem 0rem;">
                                 <strong>Working</strong>
-                            </div>
+                            </div> -->
                             <div class=" material-shadow-animate1" style="margin-bottom: 2rem">                            
                                 <div class="headerstatus1 columns"  style="padding: 0.5rem 0rem 0.5rem 0; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
                                     <div class="column is-9">
@@ -250,12 +269,12 @@
 
                         </div>
                     </div>
-                    <div class="column " style="padding: 0 !important; margin-right: 1.8rem;">
+                    <div class="column " >
                         <div class="row3childs">
                         <!-- <div> -->
-                            <div style="font-size:17px; margin:0.8rem 0rem">
+                            <!-- <div style="font-size:17px; margin:0.8rem 0rem">
                                 <strong>Maintain</strong>
-                            </div>
+                            </div> -->
                             <div class=" material-shadow-animate1 " style="margin-bottom: 2rem">                            
                                 <div class="headerstatus1 columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
                                     <div class="column is-9">
@@ -367,13 +386,16 @@
 import Server from "@/config/config.js";
 import BarChart from "../../components/chartTest/bar-chart.js";
 import PieChart from "../../components/chartTest/pie-chart.js";
+import DoughnutChart from "../../components/chartTest/Doughnut-chart.js";
 import moment from "moment";
 import OrderBlock from "../Dashboard/OrderBlock/OrderBlock";
+
 export default {
   components: {
     BarChart,
     PieChart,
-    OrderBlock
+    OrderBlock,
+    DoughnutChart
   },
   created() {
     let URL = Server.DASHBOARD_API_PATH;
