@@ -10,11 +10,11 @@
             <div>#{{ order.Id }}</div>
             <div>
                 <i class="fa fa-user"></i>
-                {{ order.RequestUsername }}
+                {{ authUser.Id == order.RequestUserID ? 'ChauBQN123456' : order.RequestUsername }}
             </div>
             <div>
                 <i class="fa fa-calendar"></i>
-                {{ order.CreateDate }}
+                {{ getFormatDate(order.CreateDate) }}
             </div>
         </div>
         <div class="order-status" :class="statusColor(order)">
@@ -28,10 +28,16 @@
 </template>
 
 <script>
+import moment from 'moment';
 export default {
     name: 'order-block',
     props: {
         order: null,
+    },
+    computed: {
+        authUser() {
+            return JSON.parse(window.localStorage.getItem('user'));
+        }
     },
     methods: {
         priorityBadgeColor(order) {
@@ -50,13 +56,13 @@ export default {
                     return 'fa-thumbs-up approved';
                 }
                 case 4: { // InProgress
-                    return 'fa-handshake-o in-progress';
+                    return 'fa-thumbs-down rejected';
                 }
                 case 5: { // Closed
-                    return 'fa-archive closed';
+                    return 'fa-tasks in-progress';
                 }
                 case 6: { // Rejected
-                    return 'fa-check-square-o rejected';
+                    return 'fa-archive closed';
                 }
                 case 1002: { // Cancelled
                     return 'fa-ban cancelled';
@@ -75,19 +81,22 @@ export default {
                     return 'approved';
                 }
                 case 4: { // InProgress
-                    return 'in-progress';
+                    return 'rejected';
                 }
                 case 5: { // Closed
-                    return 'closed';
+                    return 'in-progress';
                 }
                 case 6: { // Rejected
-                    return 'rejected';
+                    return 'closed';
                 }
                 case 1002: { // Cancelled
                     return 'cancelled';
                 }
             }
-        }
+        },
+        getFormatDate(date) {
+            return moment(date).format('L');
+        },
     }
 }
 </script>
@@ -97,7 +106,6 @@ export default {
         display: grid;
         grid-template-columns: 80% 20%;
         grid-template-rows: 1 1 1;        
-        margin-bottom: 1rem;
     }
 
     .order-block:hover {
@@ -175,30 +183,30 @@ export default {
     }
 
     .requested {
-        color: #ef6c00;
+        color: var(--status-requested);
     }
 
     .checked {
-        color: #2196f3;
+        color: var(--status-checked);
     }
 
     .approved {
-        color: #43a047;
+        color: var(--status-approved);
     }
 
     .rejected {
-        color: var(--danger-color);
+        color: var(--status-rejected);
     }
 
     .in-progress {
-        color: #795548;
+        color: var(--status-in-progress);
     }
 
     .closed {
-        color: #424242;
+        color: var(--status-closed);
     }
 
-    .cancel {
-        color: var(--shadow);
+    .cancelled {
+        color: var(--status-cancelled);
     }
 </style>

@@ -7,30 +7,23 @@
                         Filter:
                     </div> -->
                   <div class="filter" style="width: 100%">
-                      <!-- <div class="select">
-                          <select v-model="selectedFilter">
-                              <option disabled :value=null>Choose a filter</option>
-                              <optgroup label="Status">
-                                  <option :disabled="filterValues.includes(status)" :key="status.id" v-for="status in options.status" :value="status">{{ status.name }}</option>
-                              </optgroup>
-                              <optgroup label="Priorities">
-                                  <option :disabled="filterValues.includes(priority)" :key="priority.id" v-for="priority in options.priorities" :value="priority">{{ priority.name }}</option>
-                              </optgroup>
-                          </select>
-                      </div> -->
-                      <div style="user-select: none">
-                          Priority:
-                          <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: 1rem;">
-                              <input type="checkbox" v-on:change="addFilter(priority, $event)">
-                              {{ priority.name }}
-                          </label>
+                      <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
+                            <div>Priority:</div>
+                            <div>
+                                <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: .5rem;">
+                                    <input type="checkbox" v-on:change="addFilter(priority, $event)">
+                                    {{ priority.name }}
+                                </label>                              
+                            </div>                        
                       </div>
-                      <div style="user-select: none">
-                          Status:
-                          <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
-                              <input type="checkbox" v-on:change="addFilter(status, $event)">
-                              {{ status.name }}
-                          </label>
+                      <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
+                            <div>Status:</div>
+                            <div>
+                                <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
+                                    <input type="checkbox" v-on:change="addFilter(status, $event)">
+                                    {{ status.name }}
+                                </label>
+                            </div>
                       </div>
                   </div>
                   <div style="width: 100%"></div>
@@ -46,32 +39,51 @@
                 </div>             
             <!-- </div>             -->
         </div>
+        <!-- order block -->
         <div class="order-blocks">
-            <div>
-                <div class="emtpy-text" v-if="workOrders.length == 0">
-                    There is no orders to display.
-                </div>
-                <div v-else>
-                    <order-block :key="'order' + order.Id" :order="order" :class="isActive(order.Id)" v-for="order in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
-                </div>
+            <div class="emtpy-text" v-if="workOrders.length == 0">
+                There is no orders to display.
             </div>
-        </div>
+            <div v-else>        
+                <order-block :style="(index != workOrders.length - 1) ? 'margin-bottom: 1rem;' : ''" :key="'order' + order.Id" :order="order" :class="isActive(order.Id)" v-for="(order, index) in workOrders" v-on:click.native="setSelectedOrder(order)"></order-block>
+            </div>
+        </div><!-- order block -->
+        <!-- order detail -->
         <div id="order-detail-view">
             <!-- <order-detail class="order-detail" :order="selectedOrder" :statusList="options.status"></order-detail> -->
-            <div v-if="selectedOrder != null" class="order-detail material-box material-shadow">
+            <div v-if="selectedOrder" class="order-detail material-box material-shadow">
               <div class="detail">
-                  <div class="detail-header">
-                      <div>
-                          <span :style="`background-color: ${selectedOrder.PriorityColor}`" class="tag" style="position: relative; top: -.3rem; color: white">
-                          {{ selectedOrder.Priority }}
-                          </span>
-                          <span class="detail-title">
-                              {{ selectedOrder.Name }}
-                          </span>
-                      </div>
-                      <!-- manager approve / reject -->
-                      <div v-if="authUser.RoleID == 2 && selectedOrder.WorkOrderStatus == 'Checked'" style="margin-top: 1rem; width: 100%">
-                            <div style="float: right; display: inline">
+                  <div class="detail-header" :style="(selectedOrder.StatusID < 3 && authUser.Id == selectedOrder.RequestUserID) ? 
+                                                            'display: grid; grid-template-columns: auto 25%;' : ''">
+                    <div>
+                        <span :style="`background-color: ${selectedOrder.PriorityColor}`" class="tag" style="position: relative; top: -.3rem; color: white">
+                        {{ selectedOrder.Priority }}
+                        </span>
+                        <span class="detail-title">
+                            {{ selectedOrder.Name }}
+                        </span>
+                    </div>
+                    <!-- edit/cancel work order -->
+                    <div style="margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="selectedOrder.StatusID < 3 && authUser.Id == selectedOrder.RequestUserID">
+                        <div class="" style="">
+                            <!-- cancel work order -->
+                            <a v-on:click="() => {
+                                showChangeStatusDialog = true;
+                                newStatusName = 'Cancelled';
+                            }">Cancel</a> <!-- cancel work order -->
+                            <span> | </span>
+                            <!-- cancel work order -->
+                            <a v-on:click="showEditDialog = true">Edit</a> <!-- cancel work order -->
+                        </div> 
+                    </div> <!-- edit/cancel work order -->
+                  </div>
+                  <div style="">                        
+                        <div class="detail-contents" style="margin-top: 1rem;">
+                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :statusList="options.status.filter(status => status.name != 'Cancelled')"></step-progress>
+                        </div>          
+                          <!-- manager approve / reject -->
+                        <div v-if="authUser.Role === 'Manager' && selectedOrder.WorkOrderStatus == 'Checked'" class="" style="margin-top: 1.5rem; margin-bottom: .5rem; display: flex; justify-content: flex-end; align-content: center">
+                            <div>
                                 <button class="button btn-primary material-shadow-animate" style="margin-right: .5rem" v-on:click="() => {
                                     showApproveRejectDialog = true;
                                     approveWorkOrder = true;
@@ -81,134 +93,109 @@
                                     approveWorkOrder = false;    
                                 }">Reject</button>
                             </div>
-                        </div> <!-- manager approve / reject -->
-                        <!-- edit/cancel work order -->
-                        <div style="position: relative; top: .8rem; display: grid; grid-template-rows: auto auto; grid-row-gap: .3rem; text-align: right; user-select: none;" >
-                            <!-- edit work order -->
-                            <!-- <div class="" v-if="authUser.RoleID == 4">
-                                <a v-on:click="editMode = !editMode">
-                                    <i class="fa" :class="{'fa-pencil-square-o': !editMode, 'fa-check-circle-o': editMode}" style=" font-size: 1rem; margin-right: 2px"></i>
-                                    {{ editMode ? 'Done' : 'Edit' }}
-                                </a>
-                            </div> edit work order -->
-                            <!-- cancel work order -->
-                            <div class="" style="margin-bottom: 1rem;" v-if="selectedOrder.StatusID < 3 && authUser.Id == selectedOrder.RequestUserID">
-                                <a v-on:click="showCancelDialog = true">Cancel this order</a>
-                            </div> <!-- cancel work order -->
-                        </div> <!-- edit/cancel work order -->
-                  </div>
-                  <div style="width: 100%">
-                      <div class="detail-contents" style="margin-top: 1rem;">
-                          <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :statusList="options.status.slice(0, 5)"></step-progress>
-                      </div>
-                          <!-- <div v-if="editMode" style="margin-top: 1rem;">
-                              <span class="detail-label" style="position: relative; top: .4rem; margin-right: 1rem;">Change status to:</span>
-                              <div class="select">
-                                  <select>
-                                      <option :disabled="status.id <= selectedOrder.StatusID" :selected="status.id == (selectedOrder.StatusID)" :key="'editStatus' + status.id" value="" v-for="status in options.status">
-                                          {{ status.name }}
-                                      </option>
-                                  </select>
-                              </div>
-                          </div> -->
+                        </div> <!-- manager approve / reject -->   
                         <div class="detail-contents">
-                            <div style="width: 100%; text-align: right;" v-if="authUser.RoleID == 4 && selectedOrder.WorkOrderStatus == 'Requested'">
-                                <button class="button btn-blue material-shadow-animate" v-on:click="() => {
-                                    newStatusId = 2;
+                            <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Requested'">
+                                <button class="button btn-primary material-shadow-animate" v-on:click="() => {
                                     newStatusName = 'Checked';
                                     showChangeStatusDialog = true;
                                 }">Change status to Checked</button>
                             </div>
-                            <div style="width: 100%; text-align: right;" v-if="authUser.RoleID == 4 && selectedOrder.WorkOrderStatus == 'Approved'">
-                                <button class="button btn-blue material-shadow-animate" v-on:click="() => {
-                                    newStatusId = 4;
+                            <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Approved'">
+                                <button class="button btn-primary material-shadow-animate" v-on:click="() => {
                                     newStatusName = 'In Progress';
                                     showChangeStatusDialog = true;
                                 }">Change status to In Progress</button>
                             </div>
-                            <div style="width: 100%; text-align: right;" v-if="authUser.RoleID == 4 && selectedOrder.WorkOrderStatus == 'In Progress'">
-                                <button class="button btn-blue material-shadow-animate" v-on:click="() => {
-                                    newStatusId = 5;
+                            <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'In Progress'">
+                                <button class="button btn-primary material-shadow-animate" v-on:click="() => {
                                     newStatusName = 'Closed';
                                     showChangeStatusDialog = true;
                                 }">Close this work order</button>
                             </div>
                       </div>
-                      <div class="detail-contents" style="width: 100%;">
-                          <span class="detail-label">Equipments:</span>
-                          <v-flex>
-                              <v-expansion-panel popout>
-                                  <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
-                                      <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
-                                          <div style="display: flex">
-                                              <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
-                                          </div>
-                                          <div style="display: grid; grid-template-rows: auto auto;">
-                                              <div>
-                                                  {{ equipment.Name }}
-                                              </div>                                            
-                                              <div style="font-size: .9rem">
-                                                  Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
-                                              </div>
-                                          </div>
-                                      </div>
-                                      <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
-                                          <v-card-text style="font-size: .9rem">
-                                              Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a> | 
-                                              <a>View position</a>
-                                          </v-card-text>
-                                      </v-card>
-                                  </v-expansion-panel-content>
-                              </v-expansion-panel>
-                          </v-flex>
-                      </div>
-                      <div class="detail-contents">
-                            <span class="detail-label">Location: {{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
-                            <!-- <img src="http://images.indianexpress.com/2016/11/hazaribagh-759.jpg" /> -->
-                            <GmapMap
-                                :center="{lat:selectedOrder.Location.Latitude, lng:selectedOrder.Location.Longitude}"
-                                :zoom="16"
-                                map-type-id="terrain"
-                                style="width: 100%; height:25rem"
-                            >
-                            <GmapMarker
-                                :position="google && new google.maps.LatLng(selectedOrder.Location.Latitude, selectedOrder.Location.Longitude)"
-                                :clickable="true"
-                                :draggable="true"
-                                @click="showAlert(selectedOrder.Location.Name + ' - ' + selectedOrder.Location.Address)"
-                                />
-                            </GmapMap>
-                      </div>
+                      <!-- order detail view mode -->
+                      <div style="display: grid; grid-template-columns: 50% 50%; margin: 2rem 0;">
+                          <div class="view-mode" :class="{'view-mode-active': viewDetailMode}" v-on:click="viewDetailMode = true">Detail</div>
+                          <div class="view-mode" :class="{'view-mode-active': !viewDetailMode}" v-on:click="viewDetailMode = false">History</div>                                    
+                      </div><!-- order detail view mode -->
+                      <!-- detail view mode -->
+                      <div v-if="viewDetailMode">
+                            <div class="detail-contents" style="width: 100%;">
+                                <span class="detail-label">Equipments:</span>
+                                <v-flex>
+                                    <v-expansion-panel popout>
+                                        <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
+                                            <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
+                                                <div style="display: flex">
+                                                    <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
+                                                </div>
+                                                <div style="display: grid; grid-template-rows: auto auto;">
+                                                    <div>
+                                                        {{ equipment.Name }}
+                                                    </div>                                            
+                                                    <div style="font-size: .9rem">
+                                                        Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
+                                                <v-card-text style="font-size: .9rem">
+                                                    Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a> | 
+                                                    <a>View position</a>
+                                                </v-card-text>
+                                            </v-card>
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                </v-flex>
+                            </div>
+                            <div class="detail-contents">
+                                    <span class="detail-label">Location: {{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
+                                    <!-- <img src="http://images.indianexpress.com/2016/11/hazaribagh-759.jpg" /> -->
+                                    <GmapMap
+                                        :center="{lat:selectedOrder.Location.Latitude, lng:selectedOrder.Location.Longitude}"
+                                        :zoom="16"
+                                        map-type-id="terrain"
+                                        style="width: 100%; height:25rem"
+                                    >
+                                    <GmapMarker
+                                        :position="google && new google.maps.LatLng(selectedOrder.Location.Latitude, selectedOrder.Location.Longitude)"
+                                        :clickable="true"
+                                        :draggable="true"
+                                        @click="showAlert(selectedOrder.Location.Name + ' - ' + selectedOrder.Location.Address)"
+                                        />
+                                    </GmapMap>
+                            </div>
+                      </div><!-- detail view mode -->
+                      <!-- history view mode -->
+                      <div v-else>
+                            <div class="detail-contents" v-if="selectedOrder.WorkOrderRecord">
+                                <div style="font-size: .95rem;" :key="'orderRecord' + orderRecord.Id" v-for="(orderRecord, index) in selectedOrder.WorkOrderRecord">
+                                    <span class="tag" :class="getStatusColorClass(orderRecord.NewStatus.Name)">{{ orderRecord.NewStatus.Name }}</span> 
+                                        by <span class="tag">{{ orderRecord.ModifiedUser.Id == authUser.Id ? 'You' :  `${orderRecord.ModifiedUser.Role} ${orderRecord.ModifiedUser.Username}` }}</span> on {{ getFormatDate(orderRecord.ModifiedByDateTime) }}
+                                        <div style="margin-left: 2rem; padding: 1rem 1rem;" :style="((index != (selectedOrder.WorkOrderRecord.length - 1)) || (index == (selectedOrder.WorkOrderRecord.length - 1) && orderRecord.Description)) ? 
+                                                                                                    `border-left: 2px solid ${getStatusColor(orderRecord.NewStatus.Name)}` : ''">
+                                            <span v-if="orderRecord.Description" class="quote">&ldquo;{{ orderRecord.Description }}&rdquo;</span>
+                                        </div> 
+                                </div>
+                            </div>
+                      </div><!-- history view mode -->
                   </div>
               </div>            
           </div>
-        </div>
-        <router-link to="/work_order/create" v-if="authUser.RoleID == 5 || authUser.RoleID == 6">
+        </div> <!-- order detail -->
+        <router-link to="/work_order/create" v-if="authUser.Role === 'Staff' || authUser.Role === 'Maintainer'">
             <button id="btn-add-work-order" class="button is-primary material-shadow-animate">
                 Add Work Order
             </button>
         </router-link>
       <!-- equipment detail dialog -->
-      <vodal height="500" :show="equipmentItem != null" @hide="equipmentItem = null" animation="slideUp">
+      <vodal :height="500" :show="equipmentItem != null" @hide="equipmentItem = null" animation="slideUp">
         <equipment-detail-popup :equipment="equipmentItem" class=""></equipment-detail-popup>
       </vodal> <!-- equipment detail dialog -->
-      <!-- cancel dialog -->
-      <vodal :show="showCancelDialog" :height="170" @hide="showCancelDialog = false" animation="slideUp" :closeButton="false">
-          <div v-if="selectedOrder">
-              <div class="my-dialog">
-                <div class="my-dialog-title">
-                    Confirm
-                </div>
-                <div class="my-dialog-content">
-                    <span>Are you sure to cancel this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
-                    <button class="button vodal-cancel-btn" @click="showCancelDialog = false">No</button>
-                    <button class="button btn-primary vodal-confirm-btn" @click="cancelOrder(selectedOrder.Id)">Yes</button>
-                </div>
-              </div>
-          </div>
-      </vodal> <!-- cancel dialog -->
+
       <!-- approve / reject dialog -->
-      <vodal :show="showApproveRejectDialog" :height="170" @hide="showApproveRejectDialog = false" animation="slideUp" :closeButton="false">
+      <vodal :show="showApproveRejectDialog" :height="Errors.RejectedDescriptionNotProvided != '' ? 390 : 350" @hide="showApproveRejectDialog = false" animation="slideUp" :closeButton="false">
           <div v-if="selectedOrder">
               <div class="my-dialog">
                 <div class="my-dialog-title">
@@ -216,6 +203,14 @@
                 </div>
                 <div class="my-dialog-content">
                     <span>Are you sure to {{ approveWorkOrder ? 'approve' : 'reject' }} this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
+                    <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
+                        <span v-if="approveWorkOrder">Description (optional)</span>
+                        <span v-else>Describe the reason you reject this order (required)</span>
+                    </div>
+                    <textarea v-model="changeStatusDescription" class="input" style="min-height: 7rem; max-height: 7rem; overflow-y: auto" cols="30" rows="10"></textarea>
+                    <div style="color: var(--danger-color); font-weight: 500; font-size: .95rem; margin-top: 1rem" v-if="Errors.RejectedDescriptionNotProvided != ''">
+                        {{ Errors.RejectedDescriptionNotProvided }}
+                    </div>
                     <button class="button vodal-cancel-btn" @click="showApproveRejectDialog = false">Cancel</button>
                     <button :class="{'btn-primary': approveWorkOrder, 'btn-danger': !approveWorkOrder}" class="button vodal-confirm-btn" @click="approveRejectWorkOrder(selectedOrder.Id)">{{ approveWorkOrder ? 'Approve' : 'Reject' }}</button>
                 </div>
@@ -223,31 +218,81 @@
           </div>
       </vodal> <!-- approve / reject dialog -->
       <!-- change status dialog -->
-      <vodal :show="showChangeStatusDialog" :height="170" @hide="showChangeStatusDialog = false" animation="slideUp" :closeButton="false">
+      <vodal :show="showChangeStatusDialog" :height="350" @hide="showChangeStatusDialog = false" animation="slideUp" :closeButton="false">
           <div v-if="selectedOrder">
               <div class="my-dialog">
                 <div class="my-dialog-title">
                     Confirm
                 </div>
                 <div class="my-dialog-content">
-                    <span v-if="newStatusName != 'Closed'">
-                        Are you sure to change status of this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }} to {{ newStatusName }}?
-                    </span>
-                    <span v-else>
-                        Are you sure to close this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?
-                    </span>
+                    <div v-if="newStatusName != 'Closed'">
+                        <span v-if="newStatusName != 'Cancelled'">Are you sure to change status of this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }} to {{ newStatusName }}?</span>
+                        <span v-if="newStatusName == 'Cancelled'">Are you sure to cancel this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
+                        <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
+                            Description (optional):
+                        </div>
+                    <textarea v-model="changeStatusDescription" class="input" style="min-height: 7rem; max-height: 7rem; overflow-y: auto" cols="30" rows="10"></textarea>
+                    </div>
+                    <div v-else>
+                        <div>
+                            Please recheck the equipments' status of this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }} before closing
+                        </div>
+                    </div>
                     <button class="button vodal-cancel-btn" @click="showChangeStatusDialog = false">No</button>
-                    <button class="btn-primary button vodal-confirm-btn" @click="changeWorkOrderStatus(selectedOrder.Id, newStatusId, newStatusName)">Yes</button>
+                    <button class="btn-primary button vodal-confirm-btn" @click="changeWorkOrderStatus(selectedOrder.Id, newStatusName)">Yes</button>
                 </div>
               </div>
           </div>
       </vodal> <!-- change status dialog -->
+      <modal v-if="selectedOrder" v-model="showEditDialog" @on-ok="showEditDialog = false" @on-cancel="showEditDialog = false"
+        ok-text="Save changes" cancel-text="Cancel">
+          <div slot="header">
+              <span :style="{
+                  'background-color': selectedOrder.PriorityColor,
+                  'color': 'white',                  
+                  'margin-right': '0.5rem',
+                  'position': 'relative',
+                  'top': '-.2rem'
+                  }" class="tag">{{selectedOrder.Priority}}</span> <span style="font-size: 1.5rem;">{{ selectedOrder.Name }}</span>
+          </div>
+          <div :style="{
+              'max-height': '50vh',
+              'overflow-y': 'auto',
+          }">
+            <v-flex>
+                <v-expansion-panel popout>
+                    <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
+                        <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
+                            <div style="display: flex">
+                                <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
+                            </div>
+                            <div style="display: grid; grid-template-rows: auto auto;">
+                                <div>
+                                    {{ equipment.Name }}
+                                </div>                                            
+                                <div style="font-size: .9rem">
+                                    Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
+                                </div>
+                            </div>
+                        </div>
+                        <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
+                            <v-card-text style="font-size: .9rem">
+                                Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a> | 
+                                <a>View position</a>
+                            </v-card-text>
+                        </v-card>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-flex>
+          </div>
+      </modal>
     </div>
 </template>
 
 <script>
 // import Vue from "vue";
 import { sync } from "vuex-pathify";
+import moment from 'moment';
 import Server from "@/config/config.js";
 import OrderBlock from "./OrderBlock/OrderBlock";
 import StepProgress from '@/components/StepProgress/StepProgress.vue';
@@ -269,11 +314,12 @@ export default {
   created() {
     // this.sortOrdersByDate(this.orders);
     // alert(this.$store.state.workOrderPage.orders.length);
-    if (this.$store.state.workOrderPage.searchValues.length != 0) {
-        this.workOrders = this.$store.state.workOrderPage.searchValues;
-    } else {
-      this.getWorkOrders();
-    }
+    // if (this.$store.state.workOrderPage.searchValues.length != 0) {
+    //     this.workOrders = this.$store.state.workOrderPage.searchValues;
+    // } else {
+    //   this.getWorkOrders();
+    // }
+    this.getWorkOrders();
     this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
       let data = response.data;
       data.forEach(element => {
@@ -326,6 +372,12 @@ export default {
         newStatusId: -1,
         newStatusName: '',
         approveWorkOrder: false,
+        changeStatusDescription: '',
+        viewDetailMode: true,
+        Errors: {
+            RejectedDescriptionNotProvided: '',
+        },
+        showEditDialog: false
     };
   },
   computed: {
@@ -338,15 +390,21 @@ export default {
   methods: {
     getWorkOrders() {
         this.axios.get(Server.WORKORDER_API_PATH).then(response => {
-            let data = response.data.WorkOrders;
-            this.$store.state.workOrderPage.orders = data;
-            this.workOrders = data;
+            if (response.data.WorkOrders) {
+                let data = response.data.WorkOrders;
+                this.$store.state.workOrderPage.orders = data;
+                this.workOrders = data;
+                if (this.selectedOrder) {
+                    this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
+                }
+            }
         });
     },
     setSelectedOrder(order) {
       if (this.selectedOrder == order) {
         this.selectedOrder = null;
       } else {
+        // this.viewDetailMode = true;
         this.selectedOrder = order;
         // get equipments in the selected work order - start
         this.equipments = [];
@@ -366,7 +424,7 @@ export default {
     },
     // when click on an orderblock, add 'is-active-block' class to it
     isActive(orderId) {
-      if (this.selectedOrder != null && orderId != this.selectedOrder.Id) {
+      if (this.selectedOrder && orderId != this.selectedOrder.Id) {
         return "is-active-block";
       }
       return "";
@@ -469,30 +527,35 @@ export default {
         alert(msg);
     },
     cancelOrder(orderId) {
-        this.changeWorkOrderStatus(orderId, 1002, 'Cancelled');
+        this.changeWorkOrderStatus(orderId, 'Cancelled');
     },
     approveRejectWorkOrder(orderId) {
-        let newStatusId = this.approveWorkOrder ? 3 : 6;
-        let newStatusName = this.approveWorkOrder ? 'Approved' : 'Rejected';
+        if (this.approveRejectWorkOrder && this.changeStatusDescription != '') {
+            let newStatusName = this.approveWorkOrder ? 'Approved' : 'Rejected';
 
-        this.changeWorkOrderStatus(orderId, newStatusId, newStatusName);
+            this.changeWorkOrderStatus(orderId, newStatusName);
+        } else {
+            this.Errors.RejectedDescriptionNotProvided = 'You must explain why you reject this order';
+        }
+
         // let authUser = JSON.parse(window.localStorage.getItem('user'));
         
     },
-    changeWorkOrderStatus(orderId, newStatusId, newStatusName) {
+    changeWorkOrderStatus(orderId, newStatusName) {
         let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
         this.axios.put(url, {
             userId: this.authUser.Id,
-            oldWorkOrderStatusId: this.selectedOrder.StatusID,
-            newWorkOrderStatusId: newStatusId,
+            newStatusName: newStatusName,
+            description: this.changeStatusDescription != '' ? this.changeStatusDescription : null
         })
             .then((res) => {
                 if (res.status == 200) {
                     this.showCancelDialog = false;
                     this.showApproveRejectDialog = false;
                     this.showChangeStatusDialog = false;
-                    this.selectedOrder.StatusID = newStatusId;
-                    this.selectedOrder.WorkOrderStatus = `${newStatusName}`;
+                    this.getWorkOrders();
+                    // this.selectedOrder.StatusID = newStatusId;
+                    // this.selectedOrder.WorkOrderStatus = `${newStatusName}`;
                     // if (newStatusName == 'Closed' || newStatusId == 'Cancelled') {
                     //     url = `${Server.EQUIPMENTITEM_API_PATH}/status/${}`
                     // }
@@ -501,6 +564,31 @@ export default {
             .catch((error) => {
                 console.log(error);
             })
+    },
+    getStatusColorClass(statusName) {
+        switch(statusName) {
+            case 'Requested': return 'requested';
+            case 'Checked': return 'checked';
+            case 'Approved': return 'approved';
+            case 'Rejected': return 'rejected';
+            case 'In Progress': return 'in-progress';
+            case 'Closed': return 'closed';
+            case 'Cancelled': return 'cancelled';
+        }
+    },
+    getStatusColor(statusName) {
+        switch(statusName) {
+            case 'Requested': return 'var(--status-requested)';
+            case 'Checked': return 'var(--status-checked)';
+            case 'Approved': return 'var(--status-approved)';
+            case 'Rejected': return 'var(--status-rejected)';
+            case 'In Progress': return 'var(--status-in-progress)';
+            case 'Closed': return 'var(--status-closed)';
+            case 'Cancelled': return 'var(--status-cancelled)';
+        }
+    },
+    getFormatDate(date) {
+        return moment(date).format('L');
     }
   },
   watch: {
@@ -531,15 +619,20 @@ export default {
     //     }
     //   });
     // },
-    searchValues: function() {
-      if (this.searchValues.length == 0) {
-        this.getWorkOrders();
-        this.searchMode = false;
-      } else {
-        this.workOrders = this.searchValues;
-        this.searchMode = true;
-      }
-      this.reset();
+    // searchValues: function() {
+    //   if (this.searchValues && this.searchValues.length == 0) {
+    //     this.getWorkOrders();
+    //     this.searchMode = false;
+    //   } else {
+    //     this.workOrders = this.searchValues;
+    //     this.searchMode = true;
+    //   }
+    //   this.reset();
+    // },
+    changeStatusDescription: function() {
+        if (this.showApproveRejectDialog && !this.approveWorkOrder && this.changeStatusDescription != '') {
+            this.Errors.RejectedDescriptionNotProvided = '';
+        }
     }
   }
 };
@@ -625,25 +718,20 @@ export default {
 }
 
 .order-blocks {
-  position: fixed;
-  height: 77%;
-  padding-right: 0.5rem;
-  width: 38%;
-  overflow-y: auto;
-}
-
-.is-active-block {
-  /* background-color: #e0e0e0 !important; */
-  background-color: #bdbdbd !important;
-  /* border: 1px solid #e0e0e0 !important; */
-  border: 1px solid #bdbdbd!important;
-  box-shadow: 1px 1px 1px #bdbdbd !important;
+    position: fixed;
+    height: 71.5%;
+    max-height: 71.5%;
+    padding-right: 0.5rem;
+    width: 38%;
+    overflow-y: auto;
+    padding-bottom: .5rem;
 }
 
 .order-detail {
   position: fixed;
   left: 60%;
-  max-height: 77%;
+  height: 70%;
+  max-height: 70%;
   overflow-y: auto;
   width: 38%;
   z-index: 2;
@@ -654,8 +742,7 @@ export default {
 }
 
 .detail-header {
-    display: grid;
-    grid-template-columns: 55% 45%;
+    
 }
 
 .detail-title {
@@ -703,4 +790,36 @@ export default {
     border-radius: 20px;
     background-color: #f5f5f5;
 }
+
+.view-mode {
+    text-align: center;
+    background-color: white;
+    padding: 0.2rem 0.6rem;
+    font-size: .95rem;
+    color: var(--primary-color);
+    border-top: 1px solid var(--primary-color);
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.view-mode:first-child {
+    border-left: 1px solid var(--primary-color);
+    border-radius: 5px 0 0 5px;
+}
+
+.view-mode:last-child {
+    border-right: 1px solid var(--primary-color);
+    border-radius: 0 5px 5px 0;
+}
+
+.view-mode:hover {
+    color: white;
+    background-color: var(--darken-primary-color);
+    cursor: pointer;
+}
+
+.view-mode-active {
+    color: white;
+    background-color: var(--primary-color);
+}
+
 </style>
