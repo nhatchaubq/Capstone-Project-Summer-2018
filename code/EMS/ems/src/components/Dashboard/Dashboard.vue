@@ -164,7 +164,8 @@
                                         <!-- chow- start -->
                                         <div class="order-blocks">
                                             <div>
-                                                <div class="emtpy-text" v-if="workOrdersWokingToday.length == 0">
+                                                <!-- <div class="emtpy-text" v-if="workOrdersWokingToday.length == 0"> -->
+                                                <div class="emtpy-text" v-if="workOrdersWokingToday && workOrdersWokingToday.length == 0">
                                                     There is no orders to display.
                                                 </div>
                                                 <div v-else>
@@ -233,11 +234,12 @@
                                         <!-- chow- start -->
                                         <div class="order-blocks">
                                             <div>
-                                                <div class="emtpy-text" v-if="workOrdersWokingTomorrow.length == 0">
+                                                <div class="emtpy-text" v-if="workOrdersWokingTomorrow && workOrdersWokingTomorrow.length == 0">
+                                                <!-- <div class="emtpy-text" v-if="workOrdersWokingTomorrow"> -->
                                                     There is no orders to display.
                                                 </div>
                                                 <div v-else>
-                                                    <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingTomorrow" ></order-block>
+                                                    <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingTomorrow"></order-block>
                                                 </div>
                                             </div>
                                         </div>
@@ -255,7 +257,7 @@
                                 <strong>Maintain</strong>
                             </div>
                             <div class=" material-shadow-animate1 " style="margin-bottom: 2rem">                            
-                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
+                                <div class="headerstatus1 columns"  style="padding: 0.5rem 0 0.5rem 0; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
                                     <div class="column is-9">
                                         <strong>Today: {{Dashboard.MaintainCountToday}} order to be returned</strong>
                                     </div> 
@@ -290,7 +292,8 @@
                                     <!-- chow- start -->
                                         <div class="order-blocks">
                                             <div>
-                                                <div class="emtpy-text" v-if="workOrders.length == 0">
+                                                <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
+                                                <div class="emtpy-text" v-if="workOrders && workOrders.length == 0" >
                                                     There is no orders to display.
                                                 </div>
                                                 <div v-else>
@@ -302,7 +305,7 @@
                                 </div>    
                             </div>
                             <div class=" material-shadow-animate1" style="margin-bottom: 1rem">                            
-                                <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0rem; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
+                                <div class="headerstatus1 columns"  style="padding: 0.5rem 0 0.5rem 0rem; margin-bottom: 0.5rem;margin-left:0.1rem; width:490px ">
                                     <div class="column is-9">
                                         <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} order to be returned</strong>
                                     </div> 
@@ -338,7 +341,8 @@
                                      <!-- chow- start -->
                                         <div class="order-blocks">
                                             <div>
-                                                <div class="emtpy-text" v-if="workOrders.length == 0">
+                                                <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
+                                                <div class="emtpy-text" v-if="workOrdersMaintainTomorrow && workOrdersMaintainTomorrow.length == 0">
                                                     There is no orders to display.
                                                 </div>
                                                 <div v-else>
@@ -364,7 +368,7 @@ import Server from "@/config/config.js";
 import BarChart from "../../components/chartTest/bar-chart.js";
 import PieChart from "../../components/chartTest/pie-chart.js";
 import moment from "moment";
-import OrderBlock from "../Order/OrderBlock/OrderBlock";
+import OrderBlock from "../Dashboard/OrderBlock/OrderBlock";
 export default {
   components: {
     BarChart,
@@ -583,7 +587,7 @@ export default {
   background-color: #f5f5f5;
 }
 .headerstatus1 {
-  /* border-bottom: 1px #cfd8dc solid; */
+  border-bottom: 1px #cfd8dc solid;
   background-color: #f5f5f5;
 }
 p {
@@ -803,7 +807,6 @@ p {
   overflow-x: hidden;
   padding: 0 1rem;
 }
-
 /*Chow- end */
 /* .order-block :hover {
   background-color: silver;
