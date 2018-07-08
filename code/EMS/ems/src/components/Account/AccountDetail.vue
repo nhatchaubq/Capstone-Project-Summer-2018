@@ -37,7 +37,7 @@
     <!-- <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled"> -->
     <!-- <input v-if="editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" > -->
     <input v-if="editMode" v-model ="account.Password"  class="input col-7 " type="password"  placeholder="Text input">
-    <div>One Way binding as text {{account.Password}}</div>
+    <!-- <div>One Way binding as text {{account.Password}}</div> -->
 
 </div>
 <!-- <div class="row" style="margin-top:0.5rem;  height: 36px">
@@ -136,11 +136,7 @@ export default {
     //     });
     //   });
     // },
-    let URL = `http://localhost:3000/api/account/id/${this.$route.params.id}`;
-    this.axios.get(URL).then(response => {
-      let data = response.data;
-      this.account = data;
-    });
+    this.getAccountDetail(this.$route.params.id);
   },
 
   data() {
@@ -157,8 +153,19 @@ export default {
           account: this.account
         })
         .then(res => {
-          this.$router.push("/account");
+          // this.$router.push("/account");
+          if (res.status == 200) {
+            this.getAccountDetail(this.$route.params.id);
+            this.editMode = false;
+          }
         });
+    },
+    getAccountDetail(accountId) {
+      let URL = `http://localhost:3000/api/account/id/${accountId}`;
+      this.axios.get(URL).then(response => {
+        let data = response.data;
+        this.account = data;
+      });
     }
   }
 };

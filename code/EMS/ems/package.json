@@ -26,6 +26,7 @@
     "vue-base64-file-upload": "^1.0.4",
     "vue-base64-upload": "^1.0.1",
     "vue-bulma-modal": "^2.0.0-alpha.2",
+    "vue-chartjs": "^3.3.2",
     "vue-chartkick": "^0.3.3",
     "vue-file-base64": "^1.0.2",
     "vue-fullcalendar": "^1.0.9",

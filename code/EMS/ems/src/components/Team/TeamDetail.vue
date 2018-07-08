@@ -6,7 +6,7 @@
       </div>
       <div>
         <h2>Create date: {{team.CreatedDate}} </h2>
-  
+
         <strong >Leader</strong>
         
         <div >
@@ -30,19 +30,22 @@
             <strong>Members</strong>
             <div :key="member.Id" v-for="member in team.MemberAccounts">
               <div class="row" style="height:40px; ">
-                <div class="col-8">
-                    <span>-</span>
-                    <router-link :to="`/account/${member.Id}`">
-                      {{member.Fullname ? member.Fullname :'N/A' }}
-                    </router-link>
-                      <span>({{member.Username}})</span>
+                <div class="col-12 row">
+                  <div class="col-8">
+                      <span>-</span>
+                      <router-link :to="`/account/${member.Id}`">
+                        {{member.Fullname ? member.Fullname :'N/A' }}
+                      </router-link>
+                        <span>({{member.Username}})</span>
+                  </div>
+                  <div class="col-3" >
+                    <!-- <button v-if="editMode" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="changeToLeader(member.Id)">Set to leader</button> -->
+                    <button v-if="editMode" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id)">Set to leader</button>
+                  </div>
+                  <div class="col-1">
+                    <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px; margin-top: 4px" v-on:click="kick(member.Id)">close</button>
+                  </div>
                 </div >
-                <div class="col-3" >
-                  <button v-if="editMode" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="changeToLeader(member.Id)">Set to leader</button>
-                </div>
-                <div class="col-1">
-                  <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px; margin-top: 4px" v-on:click="kick(member.Id)">close</button>
-                </div>
               </div>
             </div>
         </div>
@@ -53,6 +56,18 @@
         <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 4px" v-on:click="addNew()">add new</button> 
 
     </div>
+    <!-- <button v-on:click="gotoDetail">1</button> -->
+    <vodal :show="show" animation="rotate" @hide="show = false">
+    <div>Are your sure to change new leader??</div>
+    <div class="row !important" style="margin-top:2rem">
+      <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 5rem" v-on:click="changeToLeader(SelectedMemberId)">Change</button>
+
+        <button class="button btn-edit material-shadow-animate "  style="background-color:silver; margin-left: 3rem; border: none" v-on:click="cancel" >Cancel</button>
+
+      
+
+    </div>
+  </vodal>
 
   </div>
          
@@ -62,14 +77,18 @@
 
 <script>
 import { sync } from "vuex-pathify";
-import VueBase64FileUpload from "vue-base64-file-upload";
+import "vodal/common.css";
+import "vodal/slide-up.css";
+import Vodal from "vodal";
+// import VueBase64FileUpload from "vue-base64-file-upload";
 import { BasicSelect, MultiSelect, ModelSelect } from "vue-search-select";
 export default {
   components: {
-    VueBase64FileUpload,
+    // VueBase64FileUpload,
     MultiSelect,
     BasicSelect,
-    ModelSelect
+    ModelSelect,
+    Vodal
   },
   created() {
     let teamApiUrl = `http://localhost:3000/api/team/id/${
@@ -77,7 +96,7 @@ export default {
     }`;
 
     this.axios.get(teamApiUrl).then(response => {
-      let data = response.data.Team;
+      let data = response.data.team;
       this.team = data;
 
       // data.forEach(member => {
@@ -115,26 +134,27 @@ export default {
     //     this.toLeaderOptions.push(option);
     //   });
     // });
-    this.axios
-      .get(
-        `http://localhost:3000/api/team/id/getMembersInTeam/${
-          this.$route.params.id
-        }`
-      )
-      .then(response => {
-        let data = response.data;
-        data.forEach(element => {
-          let option = {
-            value: element.Id,
-            text: element.Fullname
-          };
-          this.toLeaderOptions.push(option);
-          console.log(this.toLeaderOptions.length);
-        });
-      })
-      .catch(error => {
-        alert(error);
-      });
+    //   this.axios
+    //     .get(
+    //       `http://localhost:3000/api/team/id/getMembersInTeam/${
+    //         this.$route.params.id
+    //       }`
+    //     )
+    //     .then(response => {
+    //       let data = response.data;
+    //       data.forEach(element => {
+    //         let option = {
+    //           value: element.Id,
+    //           text: element.Fullname
+    //         };
+    //         this.toLeaderOptions.push(option);
+    //         console.log(this.toLeaderOptions.length);
+    //       });
+    //     })
+    //     .catch(error => {
+    //       alert("false");
+    //       alert(error);
+    //     });
   },
 
   data() {
@@ -142,12 +162,14 @@ export default {
       team: null,
       memberOptions: [],
       toLeaderOptions: [],
+      SelectedMemberId: null,
       selectedMember: {
         value: "",
         text: ""
       },
       selectedMemberList: [],
-      lastSelectItem: {}
+      lastSelectItem: {},
+      show: false
       // selectedToLeader: {
       //   value: "",
       //   text: ""
@@ -206,20 +228,30 @@ export default {
           location.reload();
         });
     },
-    changeToLeader(memberID) {
+    changeToLeader(SelectedMemberId) {
       let leaderId = null;
       if (this.team.LeaderAccount) {
         leaderId = this.team.LeaderAccount.Id;
       }
+
       this.axios
         .put(
           `http://localhost:3000/api/team/id/${
             this.$route.params.id
-          }/${memberID}/${leaderId}`
+          }/${SelectedMemberId}/${leaderId}`
         )
         .then(res => {
-          location.reload();
+          (this.show = false), location.reload();
         });
+    },
+    cancel() {
+      this.show = false;
+    },
+    gotoDetail(memberID) {
+      this.show = true;
+      //alert(this.team.LeaderAccount.Id);
+      this.SelectedMemberId = memberID;
+      // alert(memberID);
     }
     // changeNewLeader(leaderId, memberID) {
     //   this.axios.push(
