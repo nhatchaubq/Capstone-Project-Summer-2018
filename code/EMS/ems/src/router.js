@@ -33,19 +33,24 @@ import AddBlockFloorTileComponent from "./components/Location/AddBlockFloorTile.
 // chaubqn - end
 
 // hau - start
-import EquipmentOverviewReportComponent from "./components/Report/EquipmentOverviewReport.vue";
-import EquipmentStatusReportComponent from "./components/Report/EquipmentStatusReport.vue";
-import EquipmentUsingReportComponent from "./components/Report/EquipmentUsingReport.vue";
-import EquipmentMaintenanceCalendarReportComponent from "./components/Report/EquipmentMaintenanceCalendarReport.vue";
+import EquipmentOverviewReportComponent from "./components/Report/Equipment/EquipmentOverviewReport.vue";
+import EquipmentStatusReportComponent from "./components/Report/Equipment/EquipmentStatusReport.vue";
+import EquipmentUsingReportComponent from "./components/Report/Equipment/EquipmentUsingReport.vue";
+import EquipmentMaintenanceCalendarReportComponent from "./components/Report/Equipment/EquipmentMaintenanceCalendarReport.vue";
+import AvailableEquipmentReportComponent from "./components/Report/Equipment/AvailableEquipmentReport.vue";
+
+import WorkorderOverviewReportComponent from "./components/Report/Workorder/WorkOrderOverviewReport.vue";
+import LateWorkorderReportComponent from "./components/Report/Workorder/LateWorkorderReport.vue";
+import ReturnedWorkorderReportComponent from "./components/Report/Workorder/ClosedWorkorderReport.vue";
+
 // hau - end
 
 Vue.use(Router);
 //Dien -test- start
-import DienComponent from './components/chartTest/test1.vue'
+import DienComponent from "./components/chartTest/test1.vue";
 //Dien -test- end
 
-Vue.use(Router)
-
+Vue.use(Router);
 
 import store from "./store";
 import menu from "./models/menu";
@@ -65,8 +70,8 @@ let router = new Router({
       }
     },
     {
-      path: '/login',
-      name: 'login',
+      path: "/login",
+      name: "login"
       // component: LoginComponent,
     },
     {
@@ -111,7 +116,7 @@ let router = new Router({
       }
     },
     {
-      name: 'create_work_order',
+      name: "create_work_order",
       path: "/work_order/create",
       component: CreateOrderComponent,
       beforeEnter: (to, from, next) => {
@@ -327,7 +332,7 @@ let router = new Router({
     // chaubqn - end
     // hau - start
     {
-      path: "/report/equipment_overview",
+      path: "/report/equipment/equipment_overview",
       component: EquipmentOverviewReportComponent,
 
       beforeEnter: (to, from, next) => {
@@ -339,7 +344,7 @@ let router = new Router({
       }
     },
     {
-      path: "/report/equipment_status",
+      path: "/report/equipment/equipment_status",
       component: EquipmentStatusReportComponent,
 
       beforeEnter: (to, from, next) => {
@@ -351,7 +356,7 @@ let router = new Router({
       }
     },
     {
-      path: "/report/equipment_using",
+      path: "/report/equipment/equipment_using",
       component: EquipmentUsingReportComponent,
 
       beforeEnter: (to, from, next) => {
@@ -363,7 +368,7 @@ let router = new Router({
       }
     },
     {
-      path: "/report/equipment_maintenance_calendar",
+      path: "/report/equipment/equipment_maintenance_calendar",
       component: EquipmentMaintenanceCalendarReportComponent,
 
       beforeEnter: (to, from, next) => {
@@ -374,21 +379,70 @@ let router = new Router({
         showSearchBar: false
       }
     },
+    {
+      path: "/report/equipment/equipment_available",
+      component: AvailableEquipmentReportComponent,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", "Equipment Report");
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      path: "/report/workorder/workorder_overview",
+      component: WorkorderOverviewReportComponent,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", "Work Order Report");
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      path: "/report/workorder/late_workorder",
+      component: LateWorkorderReportComponent,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", "Work Order Report");
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      path: "/report/workorder/returned_workorder",
+      component: ReturnedWorkorderReportComponent,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", "Work Order Report");
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    
     // hau - end
 
     // Dien -test -start
     {
-      path: '/1',
+      path: "/1",
       component: DienComponent,
 
       beforeEnter: (to, from, next) => {
-        store.set('title', menu.Test);
+        store.set("title", menu.Test);
         next();
       },
       meta: {
-        showSearchBar: false,
+        showSearchBar: false
       }
-    },
+    }
     // Dien -test -end
   ]
 });

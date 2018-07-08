@@ -67,7 +67,7 @@
         <div class="columnright">
             <div class="btncotrol">
                 <div class="field is-grouped view-mode">
-                    <button class="btn-view-mode">Equipments</button>
+                    <button class="btn-view-mode">Available Equipments</button>
                     <!-- <button class="btn-view-mode" :class='{"is-active": currentViewMode == viewModes.STOCK}' v-on:click="setViewMode(viewModes.STOCK)">Stock</button>
                     <button class="btn-view-mode" :class='{"is-active": currentViewMode == viewModes.DOWNTIME}' v-on:click="setViewMode(viewModes.DOWNTIME)">Downtime History</button> -->
                 </div>
@@ -77,20 +77,20 @@
                     <table class="mytable">
                         <thead>
                             <tr>                            
-                                <th><strong>name</strong></th>
-                                <th><strong>Quantity </strong></th>
-                                <th><strong>Vendor</strong></th>
-                                <th><strong>Made In</strong></th>
-                                <th><strong>Category</strong></th>                                
+                                <th><strong>Name</strong></th>
+                                <th><strong>Serial Number </strong></th>                                
+                                <th><strong>Maintenance Date</strong></th>                                                                  
+                                <th><strong>Location</strong></th>   
+                                <th><strong>Description</strong></th>                                   
                             </tr>                            
                         </thead>  
                         <tbody>
                             <tr :key="equipment.Id" v-for="equipment in equipments">                            
                                 <td>{{equipment.Name}}</td>    
-                                <td>{{equipment.Quantity}}</td>  
-                                <td>{{equipment.Vendor}}</td> 
-                                <td>{{equipment.MadeIn}}</td>                                  
-                                <td>{{equipment.Category}}</td>                                 
+                                <td>{{equipment.SerialNumber}}</td>  
+                                <td>{{equipment.NextMaintainDate}}</td>                                                                                                   
+                                <td>{{equipment.Location}}</td>   
+                                <td>{{equipment.Description}}</td>                                                                
                             </tr>                                                        
                         </tbody>
                     </table>
@@ -167,14 +167,10 @@ export default {
       equipments: []
     };
   },
-  methods: {
-    setViewMode(mode) {
-      this.currentViewMode = mode;
-    }
-  },
+  methods: {},
   created() {
     this.axios
-      .get(Server.REPORT_EQUIPMENT_API_PATH)
+      .get(Server.REPORT_AVAILABLE_EQUIPMENT_API_PATH)
       .then(res => {
         let data = res.data;
         data.forEach(equipment => {
@@ -287,7 +283,7 @@ td {
   vertical-align: middle;
   height: 25px;
   line-height: 25px;
-  padding: 0.5rem;
+  padding-left: 0.75rem !important;
 
   /* text-align: justify; */
 }

@@ -4,23 +4,28 @@
             <div class="header-children">Equipment</div>
             <div class="content-children">
                 <li>
-                    <router-link to="/report/equipment_overview">
+                    <router-link to="/report/equipment/equipment_overview">
                         Equipment Overview Reports
                     </router-link>                
                 </li>
                 <li>
-                    <router-link to="/report/equipment_status">                    
+                    <router-link to="/report/equipment/equipment_status">                    
                         Equipment Status Reports
                     </router-link>
                 </li>
                 <li>
-                 <router-link to="/report/equipment_using">                    
+                 <router-link to="/report/equipment/equipment_using">                    
                         Equipment Using Reports
                     </router-link>               
                 </li>
                 <li>
-                 <router-link to="/report/equipment_maintenance_calendar">                    
+                 <router-link to="/report/equipment/equipment_maintenance_calendar">                    
                         Equipment Maintenance Calender Reports
+                    </router-link> 
+                </li>
+                <li>
+                 <router-link to="/report/equipment/equipment_available">                    
+                        Available Equipment Reports
                     </router-link> 
                 </li>
             </div>
@@ -29,51 +34,38 @@
             <div class="header-children" style="background-color:#E57373">Work Order</div>
             <div class="content-children">
                 <li>
-                Equipment Overview Reports
+                    <router-link to="/report/workorder/workorder_overview">
+                         Work Order Overview Reports
+                    </router-link>               
                 </li>
                 <li>
-                Damaged, Archived, Lost, Equipment Items Reports
+                    <router-link to="/report/workorder/late_workorder">
+                        Late Work Order Reports
+                    </router-link>
                 </li>
                 <li>
-                Using Equipment Items Reports                
+                    <router-link to="/report/workorder/returned_workorder">
+                        Returned Work Order Reports
+                    </router-link>
                 </li>
-                <li>
-                Available Equipment Items Reports
-                </li>
+               
             </div>
         </div>
         <div class="children material-shadow-animate" style="background-color:#FFE0B2">
             <div class="header-children" style="background-color:#FFB74D">Location</div>
             <div class="content-children">
                 <li>
-                Equipment Overview Reports
+                Coming Soon
                 </li>
-                <li>
-                Damaged, Archived, Lost, Equipment Items Reports
-                </li>
-                <li>
-                Using Equipment Items Reports                
-                </li>
-                <li>
-                Available Equipment Items Reports
-                </li>
+                
             </div>
         </div>
         <div class="children material-shadow-animate" style="background-color:#C5CAE9">
             <div class="header-children" style="background-color:#7986CB">Account/Team</div>
             <div class="content-children">
                 <li>
-                Equipment Overview Reports
-                </li>
-                <li>
-                Damaged, Archived, Lost, Equipment Items Reports
-                </li>
-                <li>
-                Using Equipment Items Reports                
-                </li>
-                <li>
-                Available Equipment Items Reports
-                </li>
+                    Coming Soon
+                </li>                
             </div>
         </div>
     </div>
