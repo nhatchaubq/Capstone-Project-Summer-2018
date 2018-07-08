@@ -1,8 +1,10 @@
 <template>
-  <div v-if="team" class="material-box" style="width: 50%">
+<div>
     <router-link to="/team">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams</a>
     </router-link>
+  <div v-if="team" class="material-box" style="width: 50%">
+
       <div class="row">
         <h2 class="col-10" style="font-size: 30px; color: #3960A4">{{team.Name}}</h2>
         <button class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
@@ -103,6 +105,7 @@
   <!-- confirm kick popup-end -->
 
   </div>
+</div>
          
 
 
