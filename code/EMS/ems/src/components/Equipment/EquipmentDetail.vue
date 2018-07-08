@@ -304,7 +304,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .btn-edit:hover {
   cursor: pointer;
   background-color: #009688;

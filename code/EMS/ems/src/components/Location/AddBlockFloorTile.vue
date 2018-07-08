@@ -1,8 +1,8 @@
 <template>
     <div v-if="location" style="padding: 0 !important">
         <div style="padding: 1rem 2rem 0rem 2rem">
-            <router-link to="/location">
-                <a><span class="fa fa-chevron-left"></span> Back to Location</a>
+            <router-link :to="{path: '/location', meta: {viewMode: 'MapView'}, params: {locationId: location.Id}}">
+                <a><span class="fa fa-chevron-left"></span> Back to Map View</a>
             </router-link>
         </div>
         <div class="form">
@@ -213,220 +213,182 @@
                     </div> <!-- back, next button -->
                 </div>
                 <!-- this step is to create floors info of blocks -->
-                <div v-if="currentStep === Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS">
+                <div v-if="currentStep === Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS" style="width: 100%">
                     <!-- currently, there is a block is selecting to create/edit floors info -->
-                    <div v-if="createFloorCurrentBlock >= 0">
-                        <div class="form-field">
-                            <!-- creating block floor -->
-                            <div class="form-field-title" v-if="!editingBlockFloor">
-                                Please provide some information that help create floors for Block {{ newLocation.blocks[createFloorCurrentBlock].name }}.                        
+                    <div v-if="createFloorCurrentBlock >= 0" class="row" style="padding: 0 !important;">
+                        <!-- define floor info -->
+                        <div class="col-6">
+                            <div class="form-field">
+                                <!-- creating block floor -->
+                                <div class="form-field-title" v-if="!editingBlockFloor">
+                                    Please provide some information that help create floors for Block {{ newLocation.blocks[createFloorCurrentBlock].name }}.                        
+                                </div>
+                                <!-- editing block floor -->
+                                <div class="form-field-title" v-else>
+                                    Editing floors information for Block {{ newLocation.blocks[createFloorCurrentBlock].name }}.                        
+                                </div>
                             </div>
-                            <!-- editing block floor -->
-                            <div class="form-field-title" v-else>
-                                Editing floors information for Block {{ newLocation.blocks[createFloorCurrentBlock].name }}.                        
+                            <div class="form-field">
+                                <div class="form-field-title">
+                                    <span style="position: relative; top: .5rem">Block {{ newLocation.blocks[createFloorCurrentBlock].name }} has </span>
+                                    <span>
+                                        <!-- creating block floor -->
+                                        <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="1" v-model="totalFloor" v-if="!editingBlockFloor">
+                                        <!-- editing block floor -->
+                                        <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="1" v-model="newLocation.blocks[createFloorCurrentBlock].totalFloor" v-else>
+                                    </span>
+                                    <span style="position: relative; top: .5rem">floor<span v-if="totalFloor > 1">s</span>,</span>
+                                    <span style="position: relative; top: .5rem"> and has </span>
+                                    <span>
+                                        <!-- creating block floor -->
+                                        <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="0" v-model="totalBasementFloor" v-if="!editingBlockFloor">
+                                        <!-- editing block floor -->
+                                        <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="0" v-model="newLocation.blocks[createFloorCurrentBlock].totalBasementFloor" v-else>
+                                    </span>
+                                    <span style="position: relative; top: .5rem"> basement floor<span v-if="totalBasementFloor > 1">s</span>.</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-field">
-                            <div class="form-field-title">
-                                <span style="position: relative; top: .5rem">Block {{ newLocation.blocks[createFloorCurrentBlock].name }} has </span>
-                                <span>
-                                    <!-- creating block floor -->
-                                    <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="1" v-model="totalFloor" v-if="!editingBlockFloor">
-                                    <!-- editing block floor -->
-                                    <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="1" v-model="newLocation.blocks[createFloorCurrentBlock].totalFloor" v-else>
-                                </span>
-                                <span style="position: relative; top: .5rem">floor<span v-if="totalFloor > 1">s</span>,</span>
-                                <span style="position: relative; top: .5rem"> and has </span>
-                                <span>
-                                    <!-- creating block floor -->
-                                    <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="0" v-model="totalBasementFloor" v-if="!editingBlockFloor">
-                                    <!-- editing block floor -->
-                                    <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="0" v-model="newLocation.blocks[createFloorCurrentBlock].totalBasementFloor" v-else>
-                                </span>
-                                <span style="position: relative; top: .5rem"> basement floor<span v-if="totalBasementFloor > 1">s</span>.</span>
+                            <div class="form-field">
+                                <div class="form-field-title">
+                                    What would you call the first floor of Block {{ newLocation.blocks[createFloorCurrentBlock].name }} ?  
+                                </div>
+                                <!-- creating block floor -->
+                                <div class="form-field-input" v-if="!editingBlockFloor">
+                                    <label class="radio" v-on:click="() => {selectedFirstFloorType = FirstFloorType.Ground}">
+                                        <input type="radio" name="firstFloorType" :checked="selectedFirstFloorType == FirstFloorType.Ground">
+                                        Ground
+                                    </label>
+                                    <label class="radio" v-on:click="() => {selectedFirstFloorType = FirstFloorType.FloorOne}">
+                                        <input type="radio" name="firstFloorType" :checked="selectedFirstFloorType == FirstFloorType.FloorOne">
+                                        Floor 1
+                                    </label>
+                                </div>
+                                <!-- editing block floor -->
+                                <div class="form-field-input" v-else>
+                                    <label class="radio" v-on:click="() => {newLocation.blocks[createFloorCurrentBlock].firstFloorType = FirstFloorType.Ground}">
+                                        <input type="radio" name="firstFloorType" :checked="newLocation.blocks[createFloorCurrentBlock].firstFloorType == FirstFloorType.Ground">
+                                        Ground
+                                    </label>
+                                    <label class="radio" v-on:click="() => {newLocation.blocks[createFloorCurrentBlock].firstFloorType = FirstFloorType.FloorOne}">
+                                        <input type="radio" name="firstFloorType" :checked="newLocation.blocks[createFloorCurrentBlock].firstFloorType == FirstFloorType.FloorOne">
+                                        Floor 1
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-field">
-                            <div class="form-field-title">
-                                What would you call the first floor of Block {{ newLocation.blocks[createFloorCurrentBlock].name }} ?  
-                            </div>
-                            <!-- creating block floor -->
-                            <div class="form-field-input" v-if="!editingBlockFloor">
-                                <label class="radio" v-on:click="() => {selectedFirstFloorType = FirstFloorType.Ground}">
-                                    <input type="radio" name="firstFloorType" :checked="selectedFirstFloorType == FirstFloorType.Ground">
-                                    Ground
-                                </label>
-                                <label class="radio" v-on:click="() => {selectedFirstFloorType = FirstFloorType.FloorOne}">
-                                    <input type="radio" name="firstFloorType" :checked="selectedFirstFloorType == FirstFloorType.FloorOne">
-                                    Floor 1
-                                </label>
-                            </div>
-                            <!-- editing block floor -->
-                            <div class="form-field-input" v-else>
-                                <label class="radio" v-on:click="() => {newLocation.blocks[createFloorCurrentBlock].firstFloorType = FirstFloorType.Ground}">
-                                    <input type="radio" name="firstFloorType" :checked="newLocation.blocks[createFloorCurrentBlock].firstFloorType == FirstFloorType.Ground">
-                                    Ground
-                                </label>
-                                <label class="radio" v-on:click="() => {newLocation.blocks[createFloorCurrentBlock].firstFloorType = FirstFloorType.FloorOne}">
-                                    <input type="radio" name="firstFloorType" :checked="newLocation.blocks[createFloorCurrentBlock].firstFloorType == FirstFloorType.FloorOne">
-                                    Floor 1
-                                </label>
-                            </div>
-                        </div>
-                        <!-- display floors visually -->
-                        <div class="form-field">
-                            <div class="form-field-title" style="margin: .5rem 0 !important">Please press visual floors below to setup floor plan image for each floor.</div>
-                            <div style="display: grid; grid-template-columns: 10% auto">
-                                <!-- display floors -->
-                                <div style="">
-                                    <div :key="'blockFloors' + index" v-for="(floor, index) in newLocation.blocks[createFloorCurrentBlock].floors" style="padding-bottom: .3rem">
-                                        <!-- button to select a floor -->
-                                        <button class="button" :class="{'btn-primary': (index == newLocation.blocks[createFloorCurrentBlock].floors.length - totalBasementFloor - 1)}" 
-                                                style="text-align: center; width: 4rem" 
-                                                v-on:click="() => {
-                                                    currentFloorIndex = index;
-                                                    let floor = newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex];
-                                                    
-                                                    //consoleLog();
-                                                    //if (floor.imageFile) {
-                                                    //    floorFile.files.push(floor.imageFile);
-                                                    //}
-                                                    clearCanvas();
-                                                }">
-                                            {{ floor.name }}
-                                        </button> <!-- button to select a floor -->
-                                    </div>
-                                </div><!-- display floors -->
-                                <!-- after selected a floor -->
-                                <div v-if="currentFloorIndex >= 0">
-                                    <div v-if="newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].imageFile == null">
-                                        Floor {{ newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].name }} has no floor plan image yet, please upload.
-                                    </div>
-                                    <!-- select file -->
-                                    <file-base64 ref="floorSelectFile" :done="getFile"></file-base64>
-                                    <!-- floor canvas -->
-                                    <div v-show="newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].imageFile != null">
-                                        <canvas ref="floorCanvas"></canvas> 
-                                    </div> <!-- floor canvas -->
-                                    <div v-if="newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].imageFile != null">
-                                        <div class="">
-                                            <div>
-                                                Paint helper tool:
-                                                <label class="radio" v-on:click="currentLocationPaintToolMode = paintToolMode.Preset">
-                                                    <input name="paintToolMode" :checked="currentLocationPaintToolMode == paintToolMode.Preset" type="radio">
-                                                    Preset
-                                                </label>
-                                                <label class="radio" v-on:click="currentLocationPaintToolMode = paintToolMode.Rectangle">
-                                                    <input name="paintToolMode" :checked="currentLocationPaintToolMode == paintToolMode.Rectangle" type="radio">
-                                                    Rectangle tool
-                                                </label>
-                                                <label class="radio" v-on:click="currentLocationPaintToolMode = paintToolMode.Hand">
-                                                    <input name="paintToolMode" :checked="currentLocationPaintToolMode == paintToolMode.Hand" type="radio">
-                                                    By hand
-                                                </label>
-                                            </div>
-                                            <!-- select grid preset -->
-                                            <div class="field is-horizontal">
-                                                <div class="select" v-if="currentLocationPaintToolMode == paintToolMode.Preset">
-                                                    <select v-model="locationSelectedGridPresetOption">
-                                                        <option value="null" disabled selected="true">Select a preset</option>
-                                                        <option :value="{column: 1, row: 1}">1 x 1</option>
-                                                        <option :value="{column: 1, row: 2}">1 x 2</option>
-                                                        <option :value="{column: 2, row: 1}">2 x 1</option>
-                                                        <option :value="{column: 2, row: 2}">2 x 2</option>
-                                                        <option :value="{column: 3, row: 1}">3 x 1</option>
-                                                        <option :value="{column: 3, row: 2}">3 x 2</option>
-                                                        <option :value="{column: 3, row: 3}">3 x 3</option>
-                                                        <option :value="{column: 5, row: 2}">5 x 2</option>
-                                                        <option :value="{column: 5, row: 3}">5 x 3</option>
-                                                        <option :value="{column: 6, row: 2}">6 x 2</option>
-                                                        <option :value="{column: 6, row: 3}">6 x 3</option>
-                                                        <option value="custom">Custom</option>
-                                                    </select>
-                                                </div>
-                                                <div v-if="locationSelectedGridPresetOption == 'custom'">
-                                                    <span style="position: relative; top: .5rem; margin-left: 1rem; align-text: right;">Column: </span>
-                                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="locationGridCustomColumns"> </span>
-                                                    <span style="position: relative; top: .5rem; margin-left: 1rem;"> Row: </span>
-                                                    <span><input style="width: 4rem; text-align: right;" class="input" type="number" min="1" v-model="locationGridCustomRows"> </span>
-                                                </div>                            
-                                            </div> <!-- select grid preset -->
-                                            <div>
-                                                <div v-if="currentLocationPaintToolMode == paintToolMode.Hand">
-                                                    <button class="button" :disabled="newBlock.points.length == 0" v-on:click="() => {
-                                                        newBlock.points.pop(); 
-                                                        if(newBlock.points.length > 0) {
-                                                            drawPoints($refs.floorCanvas);
-                                                        } else {
-                                                            clearCanvas();
-                                                        }
-                                                    }">Undo</button>
-                                                    <button class="button" :disabled="locationSelectingPointIndex== -1" v-on:click="() => {
-                                                        newBlock.points.splice(locationSelectingPointIndex, 1); 
-                                                        if(newBlock.points.length > 0) {
-                                                            drawPoints($refs.floorCanvas);
-                                                        } else {
-                                                            clearCanvas();
-                                                        }
-                                                        locationSelectingPointIndex= -1;
-                                                    }">Remove</button>
-                                                    <button class="button" :disabled="newBlock.points.length == 0 || newLocation.blocks.length == 0" v-on:click="() => {
-                                                        newBlock = {name: '', points: [], floor: []};    
-                                                        newLocation.blocks = [];
-                                                        locationSelectingPointIndex= -1;
-                                                        clearCanvas();
-                                                    }">Remove All</button>
-                                                    <div>
-                                                        <div class="field is-horizontal">
-                                                            <label>Tile name: </label>
-                                                            <input type="text" class="input" v-model="newBlock.name">
-                                                        </div>
-                                                        <button class="button" :disabled="newBlock.points.length < 2" v-on:click="() => {
-                                                        // polyList.push(newBlock);
-                                                            //newBlock = {name: '', points: []};
-                                                            //locationSelectingPointIndex= -1;
-                                                            //drawPoints();
-                                                        }">Save tile</button>
-                                                        <div>
-                                                            <button class="button" v-on:click="() => {                            
-                                                                showAlert(JSON.stringify(polyList));
-                                                            }">Finish</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>    
-                                        </div> <!-- paint helper tool -->
-                                    </div>
-                                </div> <!-- after selected a floor -->
-                            </div>
-                        </div><!-- display floors visually -->
-                        <div class="form-field">
-                            <!-- click this <a> to create/edit floors info of a block -->
-                            <a v-on:click="() => {                                
-                                if (!editingBlockFloor) {
-                                    newLocation.blocks[createFloorCurrentBlock].totalFloor = totalFloor;
-                                    newLocation.blocks[createFloorCurrentBlock].totalBasementFloor = totalBasementFloor;
-                                    newLocation.blocks[createFloorCurrentBlock].firstFloorType = selectedFirstFloorType;
-                                    // resetting values - start
-                                    totalFloor = 1;
-                                    totalBasementFloor = 0;
-                                    selectedFirstFloorType = FirstFloorType.Ground;
-                                    // resetting values - end
-                                    ++createFloorCurrentBlock;
-                                    locationSelectedTileIndex = createFloorCurrentBlock;
-                                    // at the end of block list, no need move to next block to create more floor
-                                    if (createFloorCurrentBlock >= newLocation.blocks.length) {
-                                        createFloorCurrentBlock = -1; // createFloorCurrentBlock = -1 to display the review
-                                        locationSelectedTileIndex = -1; // no more block hightlight on the canvas
+                            <!-- define tile name style -->
+                            <div class="form-field">
+                                <div class="form-field-title">
+                                    Define your room name style (leave blank if you do not want to use custom name)
+                                </div>
+                                <div style="margin: .5rem 0 !important" class="row form-field-input">
+                                    Prefix:
+                                    <label class="radio">
+                                        <input :checked="tilePrefix == 'none'" v-on:click="tilePrefix = 'none'" class="radio" type="radio">
+                                        None
+                                    </label>
+                                    <label class="radio">
+                                        <input :checked="tilePrefix == 'floororder'" v-on:click="tilePrefix = 'floororder'" class="radio" type="radio">
+                                        Floor number
+                                    </label>
+                                    <label class="radio">
+                                        <input :checked="tilePrefix == 'custom'" v-on:click="tilePrefix = 'custom'" class="radio" type="radio">
+                                        Custom
+                                    </label>
+                                    <input style="margin-left: .5rem" v-if="tilePrefix == 'custom'" v-model="tilePrefixCustom" class="input" type="text" placeholder="A, B, C">
+                                </div>
+                            </div> <!-- define tile name style -->
+                            
+                            <div class="form-field">
+                                <!-- click this <a> to create/edit floors info of a block -->
+                                <a v-on:click="() => {
+                                    if (!editingBlockFloor) {
+                                        newLocation.blocks[createFloorCurrentBlock].totalFloor = totalFloor;
+                                        newLocation.blocks[createFloorCurrentBlock].totalBasementFloor = totalBasementFloor;
+                                        newLocation.blocks[createFloorCurrentBlock].firstFloorType = selectedFirstFloorType;
+                                        // resetting values - start
+                                        totalFloor = 1;
+                                        totalBasementFloor = 0;
+                                        selectedFirstFloorType = FirstFloorType.Ground;
+                                        // resetting values - end
+                                        ++createFloorCurrentBlock;
+                                        locationSelectedTileIndex = createFloorCurrentBlock;
+                                        // at the end of block list, no need move to next block to create more floor
+                                        if (createFloorCurrentBlock >= newLocation.blocks.length) {
+                                            createFloorCurrentBlock = -1; // createFloorCurrentBlock = -1 to display the review
+                                            locationSelectedTileIndex = -1; // no more block hightlight on the canvas
+                                        }
+                                        // repaint the canvas the display the next block to create floors info
+                                        paintCanvas(null, null);
+                                    } else {
+                                        createFloorCurrentBlock = -1;
+                                        editingBlockFloor = false;
                                     }
-                                    // repaint the canvas the display the next block to create floors info
-                                    paintCanvas(null, null);
-                                } else {
-                                    createFloorCurrentBlock = -1;
-                                    editingBlockFloor = false;
-                                }
-                            }"><i class="fa fa-check-circle"></i> {{ editingBlockFloor ? 'Save changes ' : 'Finish creating floors for '}} Block {{ newLocation.blocks[createFloorCurrentBlock].name }}</a>
-                        </div>
+                                }"><i class="fa fa-check-circle"></i> {{ editingBlockFloor ? 'Save changes ' : 'Finish creating floors for '}} Block {{ newLocation.blocks[createFloorCurrentBlock].name }}</a>
+                            </div>
+                        </div> <!-- define floor info -->
+                        <!-- display floors visually -->
+                        <div class="col-6">
+                            <div class="form-field">
+                                <div class="form-field-title" style="margin: .5rem 0 !important">
+                                    Please click on visual floors below to setup rooms for each floor.
+                                </div>
+                                <div class="row" style="margin: .5rem 0 !important">
+                                    <!-- display floors -->
+                                    <div style="width: 15%;">
+                                        <div :key="'blockFloors' + index" v-for="(floor, index) in newLocation.blocks[createFloorCurrentBlock].floors" style="padding-bottom: .3rem">
+                                            <!-- button to select a floor -->
+                                            <button class="button material-shadow" 
+                                                    :class="{'btn-primary': (index == newLocation.blocks[createFloorCurrentBlock].floors.length - totalBasementFloor - 1),
+                                                            'is-active-block': currentFloorIndex == index,
+                                                            }" 
+                                                    style="text-align: center; width: 100%;" 
+                                                    :style="((index == newLocation.blocks[createFloorCurrentBlock].floors.length - totalBasementFloor - 1) 
+                                                                && currentFloorIndex == index) ? 
+                                                                'background: var(--darken-primary-color) !important; border: none !important' : ''"
+                                                    v-on:click="() => {
+                                                        currentFloorIndex = index;
+                                                        currentTileIndex = -1;
+                                                        if (newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles.length == 0) {
+                                                            totalTiles = 1;
+                                                            makeTiles();
+                                                        } else {
+                                                            totalTiles = newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles.length;
+                                                        }
+                                                        //let floor = newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex];
+
+                                                    }">
+                                                {{ floor.name }}
+                                            </button> <!-- button to select a floor -->
+                                        </div>
+                                    </div><!-- display floors -->
+                                    <!-- after selected a floor -->
+                                    <div v-if="currentFloorIndex >= 0" style="width: 75%; margin-left: 5%; padding: 0 !important;">
+                                        <div style="margin: 0 !important;" class="row">
+                                            <span style="position: relative; top: .5rem">Floor {{ newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].name }} has:</span>
+                                            <input style="margin: 0 .5rem; text-align: right;" class="input col-2" type="number" min='1' v-model="totalTiles">
+                                            <span style="position: relative; top: .5rem"> room<span v-if="totalTiles > 1">s</span></span>
+                                        </div>
+                                        <div v-if="newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles.length > 0">
+                                            <span><strong>Click on the rooms below to edit its name.</strong></span>
+                                        </div>
+                                        <div :key="'tile' + index" v-for="(tile, index) in newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles">
+                                            <a v-if="index != currentTileIndex" v-on:click="() => {
+                                                if (currentTileIndex == index) {
+                                                    currentTileIndex = -1;
+                                                } else {
+                                                    currentTileIndex = index;
+                                                }
+                                            }">Tile {{tile.name}}</a>
+                                            <input v-if="index == currentTileIndex" class="input" type="text" v-model="newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles[index].name">
+                                            <a v-if="index == currentTileIndex" v-on:click="currentTileIndex = -1;">
+                                                <i class="fa fa-check-circle"></i>
+                                                Save changes
+                                            </a>
+                                        </div>
+                                    </div> <!-- after selected a floor -->
+                                </div>
+                            </div>
+                        </div> <!-- display floors visually -->
                     </div>
                     <!-- else, this happens after created floors for all the newLocation.blocks or save changes of an editing block -->
                     <div v-else>
@@ -530,18 +492,21 @@ export default {
                 imageBase64: '',
                 tiles: [],
             },
-            selectedFirstFloorType: 'Ground',
+            selectedFirstFloorType: 'G',
             FirstFloorType: {
-                Ground: 'Ground',
+                Ground: 'G',
                 FloorOne: '1',
             },
             totalFloor: -1,
             totalBasementFloor: -1,
             newTile: {
                 name: '',
-                points: [],
             },
             currentFloorIndex: -1,
+            tilePrefix: 'none',
+            tilePrefixCustom: '',
+            totalTiles: -1,
+            currentTileIndex: -1,
             // step data - start
             currentStep: 0,
             createFloorCurrentBlock: 0,
@@ -553,7 +518,7 @@ export default {
                 CREATE_FLOOR_FOR_BLOCKS: 2.2,
             },
             haveLocationFloorPlanImage: true,
-            havaFloorFloorPlanImage: true,
+            // havaFloorFloorPlanImage: true,
             editingBlockFloor: false,
             // step data - end
 
@@ -575,13 +540,13 @@ export default {
             locationGridCustomColumns: 1,
             locationGridCustomRows: 1,
             locationSelectedTileIndex: -1,
-            // location - start
-            floorSelectingPointIndex: -1,
-            floorGridPreset: null,
-            floorSelectedGridPresetOption: null,
-            floorGridCustomColumns: 1,
-            floorGridCustomRows: 1,
-            floorSelectedTileIndex: -1,
+            // location - end
+            // floorSelectingPointIndex: -1,
+            // floorGridPreset: null,
+            // floorSelectedGridPresetOption: null,
+            // floorGridCustomColumns: 1,
+            // floorGridCustomRows: 1,
+            // floorSelectedTileIndex: -1,
             // paint tool data - end
         }
     },
@@ -617,20 +582,21 @@ export default {
                         blocks: [],
                         background: background,
                     };
-                } else if (this.currentStep == this.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
-                    canvas = this.$refs.floorCanvas;
-                    canvasContext = canvas.getContext('2d');
-                    this.floorSelectingPointIndex = -1;
-                    this.floorGridPreset = null;
-                    this.floorSelectedGridPresetOption = null;
-                    this.floorGridCustomColumns = 1;
-                    this.floorGridCustomRows = 1;
-                    this.floorSelectedTileIndex = -1;
+                } 
+                // else if (this.currentStep == this.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
+                //     canvas = this.$refs.floorCanvas;
+                //     canvasContext = canvas.getContext('2d');
+                //     this.floorSelectingPointIndex = -1;
+                //     this.floorGridPreset = null;
+                //     this.floorSelectedGridPresetOption = null;
+                //     this.floorGridCustomColumns = 1;
+                //     this.floorGridCustomRows = 1;
+                //     this.floorSelectedTileIndex = -1;
 
-                    let floor = this.newLocation.blocks[this.createFloorCurrentBlock].floors[this.currentFloorIndex];
-                    floor.imageFile = file;
-                    floor.background = background;
-                }
+                //     let floor = this.newLocation.blocks[this.createFloorCurrentBlock].floors[this.currentFloorIndex];
+                //     floor.imageFile = file;
+                //     floor.background = background;
+                // }
 
                 background.onload = () => {
                     canvas.width = background.width;
@@ -705,18 +671,18 @@ export default {
             canvasContext.clearRect(0, 0, canvas.width, canvas.height);
             canvasContext.drawImage(this.newLocation.background, 0, 0);
 
-            if (this.currentStep == this.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS 
-                    && this.currentFloorIndex >= 0
-                    && this.newLocation.blocks[this.createFloorCurrentBlock].floors[this.currentFloorIndex].background) {
-                canvas = this.$refs.floorCanvas;
-                canvasContext = canvas.getContext('2d');
-                canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+            // if (this.currentStep == this.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS 
+            //         && this.currentFloorIndex >= 0
+            //         && this.newLocation.blocks[this.createFloorCurrentBlock].floors[this.currentFloorIndex].background) {
+            //     canvas = this.$refs.floorCanvas;
+            //     canvasContext = canvas.getContext('2d');
+            //     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 
-                let floor = this.newLocation.blocks[this.createFloorCurrentBlock].floors[this.currentFloorIndex];
-                canvas.width = floor.background.width;
-                canvas.height = floor.background.height;
-                canvasContext.drawImage(floor.background, 0, 0);
-            }
+            //     let floor = this.newLocation.blocks[this.createFloorCurrentBlock].floors[this.currentFloorIndex];
+            //     canvas.width = floor.background.width;
+            //     canvas.height = floor.background.height;
+            //     canvasContext.drawImage(floor.background, 0, 0);
+            // }
             // canvasContext.beginPath();
             // canvasContext.moveTo(0,0);
             // canvasContext.stroke();
@@ -881,9 +847,6 @@ export default {
             for (var i = 0; i < this.totalFloor; i++) {
                 let floor = {
                     name: '',
-                    imageFile: null,
-                    background: null,
-                    paintToolMode: 0,
                     tiles: [],
                 }
                 if (i == 0) {
@@ -899,9 +862,6 @@ export default {
                 for (var i = 1; i <= this.totalBasementFloor; i++) {
                     let floor = {
                         name: `B${i}`,
-                        imageFile: null,
-                        background: null,
-                        paintToolMode: 0,
                         tiles: [],
                     }
                     floors.unshift(floor); // add to the head of list
@@ -912,9 +872,63 @@ export default {
         // consoleLog() {
         //     console.log(this.$refs.floorSelectFile);
         // }
+        makeTiles() {
+            let floor = this.newLocation.blocks[this.createFloorCurrentBlock].floors[this.currentFloorIndex];
+            let prefix = '';
+            switch (this.tilePrefix) {
+                case 'none': {
+                    prefix = '';
+                    break;
+                }
+                case 'floororder': {
+                    prefix = floor.name;
+                    break;
+                }
+                case 'custom': {
+                    prefix = this.tilePrefixCustom;
+                    break;
+                }
+            }
+            if (this.totalTiles != floor.tiles.length) {
+                if (this.totalTiles > floor.tiles.length) {
+                    while(floor.tiles.length != this.totalTiles) {
+                        let newTile = {
+                            name: `${prefix}${floor.tiles.length + 1}`,
+                        }
+                        floor.tiles.push(newTile);
+                    }
+                } else if (this.totalTiles < floor.tiles.length) {
+                    while(floor.tiles.length != this.totalTiles) {
+                        floor.tiles.pop();
+                    }
+                }
+            }
+        },
+        changeNameAllTiles() {
+            this.newLocation.blocks[this.createFloorCurrentBlock].floors.forEach(floor => {
+                let prefix = '';
+                switch (this.tilePrefix) {
+                    case 'none': {
+                        prefix = '';
+                        break;
+                    }
+                    case 'floororder': {
+                        prefix = floor.name;
+                        break;
+                    }
+                    case 'custom': {
+                        prefix = this.tilePrefixCustom;
+                        break;
+                    }
+                }
+                for (var i = 0; i < floor.tiles.length; i++) {
+                    floor.tiles[i].name = `${prefix}${i + 1}`
+                }
+            });
+        }
     },    
     watch: {
-        locationSelectedGridPresetOption: function() {
+        'locationSelectedGridPresetOption': function() {
             if (this.currentStep === this.Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION) {
                 if (this.locationSelectedGridPresetOption) {
                     if (this.locationSelectedGridPresetOption == 'custom') {
@@ -931,7 +945,7 @@ export default {
                 }
             }
         },
-        currentLocationPaintToolMode: function() {
+        'currentLocationPaintToolMode': function() {
             this.clearCanvas();
             if (this.currentLocationPaintToolMode == this.paintToolMode.Preset && this.locationSelectedGridPresetOption) {
                 this.paintCanvas(this.$refs.locationCanvas, null, null);
@@ -946,7 +960,7 @@ export default {
             }
             this.drawPoints(this.$refs.locationCanvas);
         },
-        locationGridCustomColumns: function() {
+        'locationGridCustomColumns': function() {
             this.locationGridPreset = {
                 column: this.locationGridCustomColumns,
                 row: this.locationGridCustomRows,
@@ -955,24 +969,48 @@ export default {
             this.newLocation.blocks = [];    
             this.paintCanvas(this.$refs.locationCanvas, null, null);
         },
-        locationGridCustomRows: function() {
+        'locationGridCustomRows': function() {
             this.locationGridPreset = {
                 column: this.locationGridCustomColumns,
                 row: this.locationGridCustomRows,
             }
             this.clearCanvas();
-            this.newLocation.blocks = [];    
+            this.newLocation.blocks = [];
             this.paintCanvas(this.$refs.locationCanvas, null, null);
         },
-        totalFloor: function() {
+        'totalFloor': function() {
+            this.currentFloorIndex = -1;
+            this.currentTileIndex = -1;
+            if (this.totalFloor == '' || this.totalFloor <= 0) {
+                this.totalFloor = 1;
+            } else {
+                this.createBlockFloors(this.createFloorCurrentBlock);
+            }
+        },
+        'totalBasementFloor': function() {
+            this.currentFloorIndex = -1;
+            this.currentTileIndex = -1;
             this.createBlockFloors(this.createFloorCurrentBlock);
         },
-        totalBasementFloor: function() {
+        'selectedFirstFloorType': function() {
             this.createBlockFloors(this.createFloorCurrentBlock);
         },
-        selectedFirstFloorType: function() {
-            this.createBlockFloors(this.createFloorCurrentBlock);
+        'totalTiles': function() {
+            if (this.totalTiles == '' || this.totalTiles <= 0) {
+                this.totalTiles = 1;
+            } else {
+                this.makeTiles();
+            }
         },
+        'tilePrefix': function() {
+            this.changeNameAllTiles();
+        },
+        'tilePrefixCustom': function() {
+            if (this.newLocation.blocks[this.createFloorCurrentBlock].floors[this.currentFloorIndex].tiles.length > 0 
+                    && this.tilePrefix == 'custom') {
+                this.changeNameAllTiles(); 
+            }
+        }
     }
 }
 </script>

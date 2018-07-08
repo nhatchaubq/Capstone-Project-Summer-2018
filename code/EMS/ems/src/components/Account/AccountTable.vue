@@ -78,7 +78,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 th {
   text-align: left;
   background-color: #cfd8dc;

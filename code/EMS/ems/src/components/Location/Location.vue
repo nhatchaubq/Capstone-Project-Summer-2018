@@ -173,24 +173,8 @@
             </div>
             <div v-else>position</div>
       </div>
-      <div v-else>
-        <div>
-          <GmapMap          
-            :center="{lat:medianLatitude, lng:medianLongitude}"
-            :zoom="13"
-            map-type-id="terrain"
-            style="width: 100%; height:31rem"
-            >
-            <GmapMarker
-              v-for="location in locations" :key="'mapViewMarker' + location.Id"
-              :position="google && new google.maps.LatLng(location.Latitude, location.Longitude)"
-              :clickable="true"
-              :draggable="true"
-              @click="() => {$router.push(`/location/mapview/${location.Id}`);}"
-            />
-            <!-- <gmap-info-window :key="'mapViewLocationInfoWindow' + location.Id" v-for="location in locations">{{ location.Name }}</gmap-info-window> -->
-          </GmapMap>
-        </div>       
+      <div v-else style="height: 100% !important">
+        <map-view :locations="locations" :medianLatitude="medianLatitude" :medianLongitude="medianLongitude" :backFromAddBlock="$route.meta && $route.meta.viewMode === 'MapView'"></map-view>     
       </div>       
   </div>
 </template>
@@ -199,7 +183,12 @@
 import Server from "@/config/config.js";
 import { gmapApi } from "vue2-google-maps";
 
+import MapView from './MapView';
+
 export default {
+  components: {
+    MapView,
+  },
   computed: {
     google: gmapApi
   },
@@ -332,6 +321,12 @@ export default {
         this.medianLongitude = (minLongitude + maxLongitude) / 2;
         this.medianLatitude = (minLatitude + maxLatitude) / 2;
         // this.selectedLocation(this.locations[0]);
+        if (this.$route.meta && this.$route.viewMode && this.$route.viewMode === 'MapView') {
+          let locationId = this.$route.params.locationId;
+          let location = data.filter(l => l.Id = locationId)[0];
+          this.setSelectedLocation(location);
+          this.isListViewMode = false;
+        }
       })
       .catch(error => {
         console.log(error);

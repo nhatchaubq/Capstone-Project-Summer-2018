@@ -2,13 +2,13 @@
     <div>
         <ul class="progressbar">
             <!-- workOrderStatus rejected - 6 or cancelled - 1002 -->
-            <div v-if="workOrderStatus.name == 'Cancelled' || workOrderStatus.name == 'Rejected'">
-                <li class="tag" :class="{'danger': workOrderStatus.name == 'Rejected'}">
+            <div v-if="workOrderStatus.name == 'Cancelled'">
+                <li class="tag" :class="getStatusColorClass(workOrderStatus.name)">
                     {{ workOrderStatus.name }}
                 </li>
             </div> <!-- workOrderStatus rejected - 6 or cancelled - 1002 -->
             <div v-else>
-                <li class="tag" :class='{"active": status.id <= workOrderStatus.id}' :key="'step' + status.id" v-for="status in statusList" :value="status.name">
+                <li class="tag" :class="status.id <= workOrderStatus.id ? getStatusColorClass(status.name) : ''" :key="'step' + status.id" v-for="status in statuses" :value="status.name">
                     {{ status.name }}
                 </li>
             </div>
@@ -23,6 +23,38 @@ export default {
         workOrderStatus: null,
         statusList: null,
     },
+    data() {
+        return {
+            statuses: []
+        }
+    },
+    created() {
+        
+    },
+    methods: {
+        getStatusColorClass(statusName) {
+            switch(statusName) {
+                case 'Requested': return 'requested';
+                case 'Checked': return 'checked';
+                case 'Approved': return 'approved';
+                case 'Rejected': return 'rejected';
+                case 'In Progress': return 'in-progress';
+                case 'Closed': return 'closed';
+                case 'Cancelled': return 'cancelled';
+            }
+        },
+    },
+    watch: {
+        statusList: function() {
+            if (this.statusList) {
+                if (this.workOrderStatus && this.workOrderStatus.name == 'Rejected') {
+                this.statuses = this.statusList.filter(status => status.name != 'Approved');
+                } else {
+                    this.statuses = this.statusList.filter(status => status.name != 'Rejected');
+                }
+            }
+        }
+    }
 }
 </script>
 
@@ -65,22 +97,52 @@ export default {
     }
 
     li.active {
-        background-color: var(--primary-color) !important;
+        /* background-color: var(--primary-color) !important;
         border: 1px solid var(--primary-color) !important;        
-        color: white;
+        color: white; */
     }
 
-    li.rejected {
-        background-color: var(--danger-color) !important;
-        border: 1px solid var(--danger-color) !important;        
-        color: white;
+    li.requested:after {
+        background: var(--status-requested);        
     }
 
-    li.active:after {
-        background: var(--primary-color);        
+    li.requested:after {
+        background: var(--status-requested);        
     }
 
-    li.active + li {
-        border: 1px solid var(--primary-color) !important;
+    li.checked:after {
+        background: var(--status-checked);        
+    }
+
+    li.approved:after {
+        background: var(--status-approved);        
+    }
+
+    li.in-progress:after {
+        background: var(--status-in-progress);        
+    }
+
+    li.closed:after {
+        background: var(--status-closed);        
+    }
+
+    li.cancelled:after {
+        background: var(--status-cancelled);        
+    }
+
+    li.requested + li {
+        border: 1px solid var(--status-checked) !important;
+    }
+
+    li.checked + li.approved {
+        border: 1px solid var(--status-approved) !important;
+    }
+
+    li.approved + li {
+        border: 1px solid var(--status-in-progress) !important;
+    }
+    
+    li.in-progress + li {
+        border: 1px solid var(--status-closed) !important;
     }
 </style>
