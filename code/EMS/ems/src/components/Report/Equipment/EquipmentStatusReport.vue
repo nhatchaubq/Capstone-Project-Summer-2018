@@ -67,7 +67,7 @@
         <div class="columnright">
             <div class="btncotrol">
                 <div class="field is-grouped view-mode">
-                    <button class="btn-view-mode">Equipments</button>
+                    <button class="btn-view-mode">Inactive Equipments</button>
                     <!-- <button class="btn-view-mode" :class='{"is-active": currentViewMode == viewModes.STOCK}' v-on:click="setViewMode(viewModes.STOCK)">Stock</button>
                     <button class="btn-view-mode" :class='{"is-active": currentViewMode == viewModes.DOWNTIME}' v-on:click="setViewMode(viewModes.DOWNTIME)">Downtime History</button> -->
                 </div>
@@ -78,27 +78,20 @@
                         <thead>
                             <tr>                            
                                 <th><strong>Name</strong></th>
-                                <th><strong>Made In </strong></th>
-                                <th><strong>Available</strong></th>
-                                <th><strong>Working</strong></th>
-                                <th><strong>Maintaining</strong></th>   
-                                <th><strong>Woking Requesting</strong></th>                                
-                                <th><strong>Maintaining Requesting</strong></th>                                
+                                <th><strong>Made In </strong></th>                                                                
                                 <th><strong>Damaged</strong></th>                                
-                                <th><strong>Lost</strong></th>                                
+                                <th><strong>Lost</strong></th> 
+                                <th><strong>Archive</strong></th> 
+
                             </tr>                            
                         </thead>  
                         <tbody>
                             <tr :key="equipment.Id" v-for="equipment in equipments">                            
                                 <td>{{equipment.Name}}</td>    
-                                <td>{{equipment.MadeIn}}</td>  
-                                <td v-on:click="selectedStatus(equipment.AVAILABLE.Detail)">{{equipment.AVAILABLE.Quantity}}</td> 
-                                <td v-on:click="selectedStatus(equipment.WORKING.Detail)">{{equipment.WORKING.Quantity}}</td>                                  
-                                <td v-on:click="selectedStatus(equipment.MAINTAINING.Detail)">{{equipment.MAINTAINING.Quantity}}</td>  
-                                <td v-on:click="selectedStatus(equipment.WORKINGREQUESTING.Detail)">{{equipment.WORKINGREQUESTING.Quantity}}</td>   
-                                <td v-on:click="selectedStatus(equipment.MAINTAINANCEREQUESTING.Detail)">{{equipment.MAINTAINANCEREQUESTING.Quantity}}</td>   
+                                <td>{{equipment.MadeIn}}</td>                                  
                                 <td v-on:click="selectedStatus(equipment.DAMAGED.Detail)">{{equipment.DAMAGED.Quantity}}</td>   
                                 <td v-on:click="selectedStatus(equipment.LOST.Detail)">{{equipment.LOST.Quantity}}</td>                                  
+                                <td v-on:click="selectedStatus(equipment.ARCHIVE.Detail)">{{equipment.ARCHIVE.Quantity}}</td>                                  
                             </tr>                                                        
                         </tbody>
                     </table>

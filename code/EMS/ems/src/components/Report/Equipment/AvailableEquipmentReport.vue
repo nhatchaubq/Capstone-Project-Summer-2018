@@ -67,7 +67,7 @@
         <div class="columnright">
             <div class="btncotrol">
                 <div class="field is-grouped view-mode">
-                    <button class="btn-view-mode">Equipments</button>
+                    <button class="btn-view-mode">Available Equipments</button>
                     <!-- <button class="btn-view-mode" :class='{"is-active": currentViewMode == viewModes.STOCK}' v-on:click="setViewMode(viewModes.STOCK)">Stock</button>
                     <button class="btn-view-mode" :class='{"is-active": currentViewMode == viewModes.DOWNTIME}' v-on:click="setViewMode(viewModes.DOWNTIME)">Downtime History</button> -->
                 </div>
@@ -77,20 +77,20 @@
                     <table class="mytable">
                         <thead>
                             <tr>                            
-                                <th><strong>name</strong></th>
-                                <th><strong>Quantity </strong></th>
-                                <th><strong>Vendor</strong></th>
-                                <th><strong>Made In</strong></th>
-                                <th><strong>Category</strong></th>                                
+                                <th><strong>Name</strong></th>
+                                <th><strong>Serial Number </strong></th>                                
+                                <th><strong>Maintenance Date</strong></th>                                                                  
+                                <th><strong>Location</strong></th>   
+                                <th><strong>Description</strong></th>                                   
                             </tr>                            
                         </thead>  
                         <tbody>
-                            <tr :key="equipment.Id" v-for="equipment in equipments" v-on:click="selectedEquipment(equipment.Detail)">                            
+                            <tr :key="equipment.Id" v-for="equipment in equipments">                            
                                 <td>{{equipment.Name}}</td>    
-                                <td>{{equipment.Quantity}}</td>  
-                                <td>{{equipment.Vendor}}</td> 
-                                <td>{{equipment.MadeIn}}</td>                                  
-                                <td>{{equipment.Category}}</td>                                 
+                                <td>{{equipment.SerialNumber}}</td>  
+                                <td>{{equipment.NextMaintainDate}}</td>                                                                                                   
+                                <td>{{equipment.Location}}</td>   
+                                <td>{{equipment.Description}}</td>                                                                
                             </tr>                                                        
                         </tbody>
                     </table>
@@ -156,65 +156,21 @@
                 </div> -->
             </div>
         </div>
-        <vodal :show="showEquipmentItemPopup" @hide="showEquipmentItemPopup = false" animation="slideUp" :height='400'>
-            <div  v-if="equipmentItems.length > 0" style="max-height:355px;overflow-y:auto;margin-top: 20px">
-                <div style="display: grid; grid-template-columns: 25% auto; border-bottom:1px solid">
-                                    <div style="display: flex">
-                                        <img v-show="equipmentItems[0].Image" :src="equipmentItems[0].Image" style="width: 3rem; height: 3rem;">
-                                    </div>
-                                    <div style="display: grid; grid-template-rows: auto auto;">
-                                        <div>
-                                            Name: {{ equipmentItems[0].Name }}
-                                        </div>                                            
-                                        <div style="font-size: .9rem">
-                                            Made In: {{equipmentItems[0].Category}}
-                                        </div>
-                                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 15% auto auto;">
-                    <div>
-                        Item:
-                    </div>
-                    <div >
-                           <div :key="eqti.Id" v-for="eqti in equipmentItems">{{eqti.SerialNumber}}</div> 
-                    </div>
-                    <div >
-                           <div :key="eqti.Id" v-for="eqti in equipmentItems">{{eqti.Status}}</div> 
-                    </div>
-                </div>                    
-                                       
-            </div>
-        </vodal>
     </div>
 </template>
 
 <script>
 import Server from "@/config/config.js";
-import "vodal/common.css";
-import "vodal/slide-up.css";
-import Vodal from "vodal";
 export default {
-  components: {
-    Vodal
-  },
   data() {
     return {
-      equipments: [],
-      equipmentItems: [],
-      showEquipmentItemPopup: false
+      equipments: []
     };
   },
-  methods: {
-    selectedEquipment(Items) {
-      if (Items) {
-        this.equipmentItems = Items;
-        this.showEquipmentItemPopup = true;
-      }
-    }
-  },
+  methods: {},
   created() {
     this.axios
-      .get(Server.REPORT_EQUIPMENT_API_PATH)
+      .get(Server.REPORT_AVAILABLE_EQUIPMENT_API_PATH)
       .then(res => {
         let data = res.data;
         data.forEach(equipment => {
@@ -327,7 +283,7 @@ td {
   vertical-align: middle;
   height: 25px;
   line-height: 25px;
-  padding: 0.5rem;
+  padding-left: 0.75rem !important;
 
   /* text-align: justify; */
 }
