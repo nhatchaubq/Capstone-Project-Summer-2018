@@ -5,7 +5,7 @@
                 <div class=" workordergraph column">
                 <div class="titlediv">
                     <strong>Number of Work Order Completed</strong>
-                    <strong> {{Dashboard.Requested}}</strong>
+
                 </div>
                 <div>
                     <img :src="require('@/assets/linegraph.png')" style="width:100%; height: 200px"/>
@@ -53,23 +53,23 @@
 
                     </div>
                     <div class="contentstatus">
-                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
+                        <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
                 </div>
-                                <div class="status column">
-                    <div class="headerstatus columns">
+                                <div class="status column" style="margin-right:0rem !important">
+                    <div class="headerstatus columns" >
                         <div style="width:40%" class="column">
                         <strong>In Progress</strong>
                         </div>
 
                     </div>
-                    <div class="contentstatus">
-                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
-                        <p style="font-size:15px;">Work Orders</p>
+                    <div class="contentstatus" >
+                        <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
+                        <p style="font-size:15px; ">Work Orders</p>
                     </div>
                 </div>
-                <div class="status column">
+                <!-- <div class="status column">
                     <div class="headerstatus columns">
                         <div style="width:40%" class="column">
                         <strong>Closed</strong>
@@ -80,8 +80,8 @@
                         <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Closed}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
-                </div>
-                <div class="status column">
+                </div> -->
+                <!-- <div class="status column">
                     <div class="headerstatus columns">
                         <div style="width:40%;" class="column">
                         <strong>Rejected</strong>
@@ -93,8 +93,8 @@
                         <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Rejected}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
-                </div>
-                <div class="status column" style="margin-right:0 !important">
+                </div> -->
+                <!-- <div class="status column" style="margin-right:0 !important">
                     <div class="headerstatus columns">
                         <div style="width:40%" class="column">
                         <strong>Cancelled</strong>
@@ -105,7 +105,7 @@
                         <p style="color: var(--status-closed); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Cancelled}}</p>
                         <p style="font-size:15px;">Work Orders</p>
                     </div>
-                </div>
+                </div> -->
                 
             </div>
             <div class="divrow3 columns" style="margin-right:0rem !important">
@@ -117,10 +117,10 @@
                         <div class="row3child">                            
                             <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
                                 <div class="column">
-                                    <strong>Today: 2 maintain order</strong>
+                                    <strong>Today: {{Dashboard.MaintainCountToday}} maintain order</strong>
                                 </div> 
                                 <div class="numItem column" style="text-align:right;">
-                                    <strong>5</strong> items
+                                    <strong>{{Dashboard.MaintainCountTodayQItem}}</strong> items
                                 </div>
                             </div>
                             
@@ -131,10 +131,10 @@
                          <div class="row3child">                            
                             <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
                                 <div class="column">
-                                    <strong>Tomorrow: 2 maintain order</strong>
+                                    <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} maintain order</strong>
                                 </div> 
                                 <div class="numItem column" style="text-align:right;">
-                                    <strong>4</strong> items
+                                    <strong>{{Dashboard.MaintainCountTomorrowQItem}}</strong> items
                                 </div>
                             </div>
                             
@@ -153,10 +153,10 @@
                         <div class="row3child">                            
                             <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
                                 <div class="column is-9">
-                                    <strong>Today: 2 orders to be returned</strong>
+                                    <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong>
                                 </div> 
                                 <div class="numItem column" style="text-align:right;">
-                                    <strong>5</strong> items
+                                    <strong>{{Dashboard.ReturnCountTodayQItem}}</strong> items
                                 </div>
                             </div>
                             
@@ -167,10 +167,10 @@
                          <div class="row3child">                            
                             <div class="headerstatus columns"  style="padding: 0.5rem 0 0.5rem 0">
                                 <div class=" column is-9">
-                                    <strong>Tomorrow: 2 orders to be returned</strong>
+                                    <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong>
                                 </div> 
                                 <div class="numItem column" style="text-align:right;">
-                                    <strong>4</strong> items
+                                    <strong>{{Dashboard.ReturnCountTomorrowQItem}}</strong> items
                                 </div>
                             </div>
                             
@@ -240,7 +240,7 @@ export default {
   margin-bottom: 0.3rem;
 }
 .status {
-  width: 14.28%;
+  /* width: 25%; */
   background-color: white;
   margin-right: 1.2rem;
 }
