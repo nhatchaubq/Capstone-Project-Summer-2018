@@ -74,7 +74,7 @@
 </div>
 <div class="row" style="margin-top:0.5rem; height: 36px">
   <div class="col-3">Start date: </div>
-  <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? account.StartDate: 'N/A' }}</div>
+  <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? getDate(account.StartDate): 'N/A' }}</div>
 </div>
 <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
 <div class="row" style="margin-top:0.5rem; height: 36px">
@@ -124,7 +124,11 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
+  components: {
+    moment
+  },
   created() {
     //   let URL = "http://localhost:3000/api/account/id/:id";
     //   this.axios.get(URL).then(response => {
@@ -166,6 +170,9 @@ export default {
         let data = response.data;
         this.account = data;
       });
+    },
+    getDate(date) {
+      return moment(date).format("L");
     }
   }
 };

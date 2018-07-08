@@ -1,5 +1,6 @@
 <template>
-    <div class="material-box material-shadow-animate odbl">
+    <div class="material-box  odbl">
+    <!-- <div class="material-box material-shadow-animate odbl"> -->
         <div class="row">
             <div class="col-9" style="  font-size: 25px; font-weight: 500; margin-bottom: 5px;">{{ order.Name }}</div>
             <div class="col-3" style="margin-top:0.6rem; text-align: right"><strong>{{order.Detail.Quantity}}</strong> items</div>

@@ -5,7 +5,7 @@
         <button class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
       </div>
       <div>
-        <h2>Create date: {{team.CreatedDate}} </h2>
+        <h2>Create date: {{getDate(team.CreatedDate)}} </h2>
 
         <strong >Leader</strong>
         
@@ -80,6 +80,7 @@ import { sync } from "vuex-pathify";
 import "vodal/common.css";
 import "vodal/slide-up.css";
 import Vodal from "vodal";
+import moment from "moment";
 // import VueBase64FileUpload from "vue-base64-file-upload";
 import { BasicSelect, MultiSelect, ModelSelect } from "vue-search-select";
 export default {
@@ -88,7 +89,8 @@ export default {
     MultiSelect,
     BasicSelect,
     ModelSelect,
-    Vodal
+    Vodal,
+    moment
   },
   created() {
     let teamApiUrl = `http://localhost:3000/api/team/id/${
@@ -252,6 +254,9 @@ export default {
       //alert(this.team.LeaderAccount.Id);
       this.SelectedMemberId = memberID;
       // alert(memberID);
+    },
+    getDate(date) {
+      return moment(date).format("L");
     }
     // changeNewLeader(leaderId, memberID) {
     //   this.axios.push(
