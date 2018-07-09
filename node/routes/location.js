@@ -29,9 +29,9 @@ router.put("/edit", (req, res) => {
 
 router.put('/update_location_floor_plan/:locationId', (req, res) => {
   console.log(req.body.imageBase64);
-  req.sql('update [Location] set [Image] = @imageBase64 where Id = @locationId')
+  req.sql('update [Location] set [Image] = @imageUrl where Id = @locationId')
     .param('locationId', req.params.locationId, TYPES.Int)
-    .param('imageBase64', req.body.imageBase64, TYPES.VarChar)
+    .param('imageUrl', req.body.imageUrl, TYPES.VarChar)
     .exec(res);
 });
 

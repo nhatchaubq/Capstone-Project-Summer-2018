@@ -484,6 +484,7 @@
 import Server from '@/config/config';
 import Utils from "@/utils.js";
 import fileBase64 from 'vue-file-base64';
+import moment from 'moment';
 
 export default {
     components: {
@@ -597,13 +598,12 @@ export default {
                         longitude: this.location.Longitude,
                         latitude: this.location.Latitude,
                         paintToolMode: this.currentLocationPaintToolMode,
-                        imageBase64: file.base64,
+                        imageFile: file,
                         blocks: [],
                         background: background,
                     };
-
-                    console.log(this.newLocation.imageBase64.length);
-                } 
+                }
+                console.log(file)
                 // else if (this.currentStep == this.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
                 //     canvas = this.$refs.floorCanvas;
                 //     canvasContext = canvas.getContext('2d');
@@ -959,10 +959,25 @@ export default {
             let tileApi = `${Server.SERVER_DEFAULT}/tile`;
             let newBlockApi  = `${blockApi}/${context.newLocation.id}`;
             context.sending = true;
-            if (this.newLocation.imageBase64) {
-                await this.axios.put(`${Server.LOCATION_API_PATH}/update_location_floor_plan/${this.newLocation.id}`, {
-                    imageBase64: context.newLocation.imageBase64,
-                });
+            if (this.newLocation.imageFile) {
+                let formData = new FormData();
+                formData.append('api_key', '982394881563116');
+                formData.append('file', this.newLocation.imageFile.file);
+                formData.append("public_id", this.newLocation.imageFile.name);
+                formData.append("timestamp", moment().valueOf());
+                formData.append("upload_preset", 'ursbvd4a');
+
+                let url = 'https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload';
+                try {
+                    let uploadRespose = await this.axios.post(url, formData);
+                    if (uploadRespose.status == 200) {
+                        await this.axios.put(`${Server.LOCATION_API_PATH}/update_location_floor_plan/${this.newLocation.id}`, {
+                            imageUrl: uploadRespose.data.url,
+                        });
+                    }
+                } catch(error) {
+                    console.log(error);
+                }
             }
             this.newLocation.blocks.forEach(async block => {
                 try {

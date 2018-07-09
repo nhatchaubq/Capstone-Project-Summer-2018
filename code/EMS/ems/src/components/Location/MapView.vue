@@ -15,11 +15,7 @@
                 @mouseover="hoverLocation = location"
                 @mouseout="hoverLocation = null"
                 @click="() => {
-                    if (selectedLocation && selectedLocation.Id == location.Id) {
-                        selectedLocation = null;
-                    } else {
-                        selectedLocation = location;
-                    }
+                    setSelectedLocation(location);
                 }"
             >
              <GmapInfoWindow v-if="((hoverLocation && hoverLocation.Id == location.Id)
@@ -46,13 +42,18 @@
                 </div>
                 <div class="content">
                     <div>
-                        <span>{{ mapViewSelectedLocation.Blocks ? 'Yes' : 'This location has no blocks yet. ' }}
+                        <span v-if="!mapViewSelectedLocation.Blocks">{{  'This location has no blocks yet. ' }}
                             <a style="font-weight: 500" v-if="authUser.Role === 'Manager' && !mapViewSelectedLocation.Blocks"
                                 v-on:click="$router.push(`/location/${selectedLocation.Id}/add_block_floor_tile`)">
                                 <i class="fa fa-plus-circle"></i>
                                 <span> Create new block now</span>
                             </a>
                         </span>
+                        <div v-if="mapViewSelectedLocation.Blocks">
+                            <div v-if="selectedLocation.Image">
+                                <canvas ref="floorPlanCanvas"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,6 +82,18 @@ export default {
             mapViewSelectedLocation: null,
             selectedLocation: null,
             hoverLocation: null,
+        }
+    },
+    methods: {
+        setSelectedLocation(location) {
+            if (this.selectedLocation && this.selectedLocation.Id == location.Id) {
+                this.selectedLocation = null;
+            } else {
+                this.selectedLocation = location;
+                if (location.Image) {
+                    let canvas = this.$refs.floorPlanCanvas;
+                }
+            }
         }
     },
     watch: {
