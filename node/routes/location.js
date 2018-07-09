@@ -27,6 +27,14 @@ router.put("/edit", (req, res) => {
     .exec(res);
 });
 
+router.put('/update_location_floor_plan/:locationId', (req, res) => {
+  console.log(req.body.imageBase64);
+  req.sql('update [Location] set [Image] = @imageBase64 where Id = @locationId')
+    .param('locationId', req.params.locationId, TYPES.Int)
+    .param('imageBase64', req.body.imageBase64, TYPES.VarChar)
+    .exec(res);
+});
+
 router.get("/floor_block_tile/:locationId", (req, res) => {
   req
     .sql("select lo.*, (select bl.*, (select fl.*, (select ti.* "
@@ -64,6 +72,7 @@ router.post("/create", (request, response) => {
     .param("latitude", request.body.newLocation.latitude, TYPES.Float)
     .into(response);
 });
+
 router.get("/editLocation/:id", (request, response) => {
   request
     .sql("exec Get1LocationById @locationId")
