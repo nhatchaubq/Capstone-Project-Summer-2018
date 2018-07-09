@@ -22,14 +22,33 @@ router.get("/chau/:id", (req, res) => {
 /* Get all Item of an equipment by EquipmentID */
 router.get("/:id", (req, res) => {
     req
-        .sql("exec GetAllItemOfAnEquipment @id")
+        .sql("SELECT ei.ID, ei.EquipmentID, ei.SerialNumber, ei.Price,CONVERT(date, ImportDate) as [ImportDate], " +
+            "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as [NextMaintainDate], " +
+            "ei.WarrantyDuration, ei.RuntimeDays, es.Name as Status, ei.Description " +
+            "From EquipmentItem as ei " +
+            "JOIN EquipmentStatus as es ON ei.StatusId = es.Id " +
+            "Where ei.EquipmentID = @id " +
+            "for json path")
         .param("id", req.params.id, TYPES.Int)
         .into(res);
 });
 /* GET AN ITEM of an Equipment */
 router.get("/Item/:id", (request, response) => {
     request
-        .sql("exec GetAnItem @id")
+        .sql("select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
+            "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, (select wo.* " +
+            "from WorkOrder as wo " +
+            "where wo.StatusID < 5 and wo.Id in (select wod.WorkOrderID " +
+            "from WorkOrderDetail as wod " +
+            "where wod.EquipmentItemID = (select ei.Id as [EquipmentItemId] " +
+            "from EquipmentItem as ei " +
+            "where ei.Id = @id)) " +
+            "for json path) as [WorkOrders] " +
+            "from EquipmentItem as ei " +
+            "JOIN EquipmentStatus as es on es.Id = ei.StatusId " +
+            "where ei.Id = @id for json path, without_array_wrapper)) " +
+            ") as [Item] " +
+            "for json path, without_array_wrapper")
         .param("id", request.params.id, TYPES.Int)
         .into(response);
 });
@@ -37,7 +56,16 @@ router.get("/Item/:id", (request, response) => {
 /* GET all Work Order of an Item */
 router.get("/allworkorder/:id", (req, res) => {
     req
-        .sql("exec GetAllWorkOrderOfAnItem_Tien @id")
+        .sql("select wo.Id, wo.Name, acc.Fullname as [RequestUser], wos.Name as [Status] " +
+            "from WorkOrder as wo " +
+            "JOIN WorkOrderStatus as wos on wo.StatusID = wos.Id " +
+            "JOIN Account as acc on acc.Id = wo.RequestUserID " +
+            "where wo.Id IN " +
+            "(select wod.WorkOrderID " +
+            "from WorkOrderDetail as wod " +
+            "where wod.EquipmentItemID = @id) " +
+            "order by wo.CreateDate desc " +
+            "for json path")
         .param("id", req.params.id, TYPES.Int)
         .into(res);
 });
@@ -81,7 +109,11 @@ router.get("/getByEquipmentId/:id", (request, response) => {
 
 router.put("/status/:id", (req, res) => {
     req
-        .sql("exec [dbo].[UpdateEquipmentItemStatus] @itemId, @userId, @newStatus, @description")
+        .sql("declare @currentItemStatusId int; " +
+            "set @currentItemStatusId = (select StatusId from EquipmentItem where Id = @itemId); " +
+            "update EquipmentItem set StatusId = @newStatus where Id = @itemId; " +
+            "insert into EquipmentItemHistory(EquipmentItemID, ByUserID, OldStatusID, NewStatusID, [Date], [Description]) " +
+            "values(@itemId, @userId, @currentItemStatusId, @newStatus, getdate(), @description)")
         .param("itemId", req.params.id, TYPES.Int)
         .param("userId", req.body.userId, TYPES.Int)
         .param("newStatus", req.body.newStatus, TYPES.Int)
@@ -94,7 +126,7 @@ router.put("/:eid", (req, res) => {
         .sql(
             "Update EquipmentItem " +
             "SET WarrantyDuration = @warrantyDuration, RuntimeDays = @runtimeDays, Price = @price, ImportDate = @importdate, " +
-            "LastMaintainDate = @lastmaintaindate, NextMaintainDate =@nextmaintaindate, StatusId = @statusId, Description = @description " +
+            "LastMaintainDate = @lastmaintaindate, NextMaintainDate =@nextmaintaindate, Description = @description " +
             "WHERE Id = @id"
         )
         .param("warrantyDuration", req.body.warrantyDuration, TYPES.Int)
@@ -103,7 +135,7 @@ router.put("/:eid", (req, res) => {
         .param("importdate", req.body.importdate, TYPES.NVarChar)
         .param("lastmaintaindate", req.body.lastmaintaindate, TYPES.NVarChar)
         .param("nextmaintaindate", req.body.nextmaintaindate, TYPES.NVarChar)
-        .param("statusId", req.body.statusId, TYPES.Int)
+        // .param("statusId", req.body.statusId, TYPES.Int)
         .param("description", req.body.description, TYPES.NVarChar)
         .param("id", req.params.eid, TYPES.Int)
         .exec(res);

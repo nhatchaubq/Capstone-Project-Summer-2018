@@ -108,7 +108,7 @@
                 </tr>
             </tbody>
         </table>
-        <vodal class="no-padding" height="600" width="400" :show="addPopUp" @hide="() => {
+        <vodal class="no-padding"  height="600" :show="addPopUp" @hide="() => {
                                                                                       
                                                                                       addPopUp = false;
                                                                                     }" animation="slideUp">
@@ -121,19 +121,10 @@
               <input type="number" min="1" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" >
               <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">Barcode</button>
           </div>
-          <div v-show="showingBarcode" style="max-height: 300px; overflow-y: auto">
+          <div v-show="showingBarcode" style="max-height: 80px; overflow-y: auto">
               <ul>
-                  <li v-for="i in randomNumbers" :key="i">{{i}}</li>
+                  <li v-for="(i,index) in randomNumbers" :key="i"> {{index+1}}. {{i}}</li>
               </ul>
-          </div>
-          <div class="form-field-title">
-              Location
-          </div>
-          <div>
-          <model-select style="width: 100% !important" :options="locationOptions" v-model="selectedLocation" v-on:click="changeLocation" placeholder="Select a location"></model-select>  
-          </div>
-           <div>
-          <model-select style="width: 100% !important" :options="blockOptions" v-model="selectedBlock" placeholder="Select a block  "></model-select>  
           </div>
           <div class="field" style="display: grid; grid-template-columns: 50% 50%">
             <div>
@@ -141,7 +132,7 @@
                   Price
                 </div>
                 <div class="field is-horizontal" style="margin-right:1rem">
-                  <input type="text" class="input" placeholder="Price" v-model="form.price">
+                  <input type="number" class="input" placeholder="Price" v-model="form.price">
                 </div>
             </div>
             <div >
@@ -149,12 +140,39 @@
                   Warranty
                 </div>
                 <div class="field is-horizontal" >
-                  <input type="number" class="input" placeholder="Warranty Months" v-model="form.Warranty">
+                  <input type="number" min="1" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration">
                 </div> 
             </div>
           </div>
+          <div class="form-field-title">
+              Location
           </div>
-          <button id="" class="button is-rounded is-primary" v-on:click="createNewEquipentItem">Create New Items</button>  
+          <div>
+          <model-select style="width: 100% !important" :options="locationOptions" v-model="selectedLocation" v-on:click="changeLocation" placeholder="Select a location"></model-select>  
+          </div>
+          <div class="form-field-title">
+              Block
+          </div>
+           <div>
+          <model-select style="width: 100% !important" :options="blockOptions" v-model="selectedBlock" placeholder="Select a block  "></model-select>  
+          </div>
+           <div class="form-field-title">
+              Floor
+          </div>
+           <div>
+          <model-select style="width: 100% !important" :options="floorOptions" v-model="selectedFloor" placeholder="Select a floor  "></model-select>  
+          </div>
+
+           <div class="form-field-title">
+              Tile
+          </div>
+           <div>
+          <model-select style="width: 100% !important" :options="tileOptions" v-model="selectedTile" placeholder="Select a tile  "></model-select>  
+          </div>
+          </div>
+          <div class="" style="align-items: center; display: flex; justify-content: center;">
+          <button id="" class="button is-rounded is-primary" style="margin-top: 10px" v-on:click="createNewEquipentItem">Create New Items</button>  
+          </div>
         </vodal>
        
         <vodal class="no-padding" height="600" width="540" :show="selectedItem != null" :closeButton='false' @hide="() => {
@@ -321,54 +339,6 @@
         </vodal>
         </div>
   </div>
-        <vodal class="no-padding" height="500" :show="selectedItem != null" @hide="selectedItem = null" animation="slideUp">
-          <!-- <equipment-detail-popup :equipment="selectedItem" class="" v-show="selectedItem != null"></equipment-detail-popup> -->
-            <div v-if="selectedItem!=null" >
-            <div class="field" style=" display: grid; grid-template-columns: 85% 15%">
-              <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a">{{EquimentByID.Name}}</strong>
-              <button class="btn-edit" v-on:click="editMode = !editMode">Edit</button>
-            </div>
-            <div class="row" style="height: 36px" >
-              <div class="" style="margin-top:0.5rem" >
-                  Serial Number:  
-              </div>
-                <input v-model="selectedItem.SerialNumber" class="input col-7 " type="text" disabled="disabled"> 
-                <!-- <input v-model="EquimentByID.Name" class="input col-7 " type="text"  > -->
-            </div>
-            <div class="row" style="height: 36px" >
-              <div class="" style="margin-top:0.5rem" >
-                  Price:  
-              </div>
-                <input v-model="selectedItem.Price" class="input col-7 " type="text" disabled="disabled"> 
-            </div>
-            <div class="row" style="height: 36px" >
-              <div class="" style="margin-top:0.5rem" >
-                  Warranty:  
-              </div>
-                <input v-model="selectedItem.WarrantyDuration" class="input col-7 " type="text" disabled="disabled"> 
-            </div>
-            <div class="row" style="height: 36px" >
-              <div class="" style="margin-top:0.5rem" >
-                  Run-times:  
-              </div>
-                <input v-model="selectedItem.RuntimeDays" class="input col-7 " type="text" disabled="disabled"> 
-            </div>
-            <div class="row" style="height: 36px" >
-              <div class="" style="margin-top:0.5rem" >
-                  Import-Date:  
-              </div>
-                <input v-model="selectedItem.ImportDate" class="input col-7 " type="text" disabled="disabled"> 
-            </div>
-            <div class="row" style="height: 36px" >
-              <div class="" style="margin-top:0.5rem" >
-                  Status:  
-              </div>
-                <input v-model="selectedItem.Status" class="input col-7 " type="text" disabled="disabled"> 
-            </div>
-            </div>
-        </vodal>
-    </div>
-    </div>
 </template>
 
 <script>
@@ -380,8 +350,7 @@ import EquipmentDetailPopup from "./EquipmentDetailPopup";
 import Vodal from "vodal";
 
 export default {
-
-  name: "ConditionalModal",
+  // name: "ConditionalModal",
 
   components: {
     ModelSelect,
@@ -475,9 +444,13 @@ export default {
         alert(error);
       });
   },
+  // data() {
+  //   return {
+  //     JsBarcode("#code128", "Hi!");
+
+  // },
   data() {
     return {
-      // JsBarcode("#code128", "Hi!");
       showingBarcode: false,
       changeItemSttDescription: "",
       show: false,
@@ -485,11 +458,6 @@ export default {
       selectedItem: null,
       itemId: "",
       workOrder: null,
-  },
-  data() {
-    return {
-      selectedItem: null,
-
       EquimentByID: null,
       equipmentId: "",
       quality: 0,
@@ -497,7 +465,6 @@ export default {
       files: "",
       quantity: 1,
       editMode: false,
-
       editItemMode: false,
       statusOptions: [],
       randomNumbers: [],
@@ -517,7 +484,16 @@ export default {
         value: ""
       },
       blockOptions: [],
-
+      selectedFloor: {
+        text: "",
+        value: ""
+      },
+      floorOptions: [],
+      selectedTile: {
+        text: "",
+        value: ""
+      },
+      tileOptions: [],
       vendorOptions: [],
       selectedVendor: {
         text: "",
@@ -529,8 +505,8 @@ export default {
         value: ""
       },
       form: {
-        warrantyDuration: "",
-        price: "",
+        warrantyDuration: 1,
+        price: 50000,
         description: ""
       },
       currentViewMode: 0,
@@ -573,28 +549,38 @@ export default {
       if (this.form.price == "") {
         alert("Please enter price");
       } else {
-        for (var i = 0; i < this.quantity; i++) {
-          this.axios
-            .post("http://localhost:3000/api/equipmentItem", {
-              equipmentID: this.EquimentByID.Id,
-              serialNumber: this.randomNumbers[i],
-              warrantyDuration: this.form.Warranty,
-              price: this.form.price,
-              statusId: 1,
-              description: "No description",
-              tileID: 1
-            })
-            .then(function(respone) {
-              result = true;
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        }
-        if ((result = true)) {
-          alert("Add successfully!");
+        if (this.form.warrantyDuration == "") {
+          alert("Please enter warranty duration");
+        } else {
+          if (this.randomNumbers.length == 0) {
+            alert("Please create barcode to add");
+          } else {
+            for (var i = 0; i < this.quantity; i++) {
+              this.axios
+                .post("http://localhost:3000/api/equipmentItem", {
+                  equipmentID: this.EquimentByID.Id,
+                  serialNumber: this.randomNumbers[i],
+                  warrantyDuration: this.form.warrantyDuration,
+                  price: this.form.price,
+                  statusId: 1,
+                  description: "No description",
+                  tileID: this.selectedTile.value
+                })
+                .then(function(respone) {
+                  result = true;
+                  location.reload();
+                })
+                .catch(function(error) {
+                  console.log(error);
+                });
+            }
+            if ((result = true)) {
+              alert("Add " + this.quantity + " items successfully!");
+            }
+          }
         }
       }
+      this.created();
     },
     getRandomNumber() {
       if (this.form.Category == "") {
@@ -658,8 +644,7 @@ export default {
             .catch(error => {
               alert(error);
             });
-          alert(this.selectedItem.SerialNumber);
-          
+          //  alert(this.selectedItem.SerialNumber);
         })
         .catch(error => {
           console.log(error);
@@ -671,7 +656,6 @@ export default {
       this.editMode = !this.addPopUp;
       // alert(this.addPopUp);
     },
-
 
     getFilePath(file) {
       return window.URL.createObjectURL(file);
@@ -711,7 +695,7 @@ export default {
     },
     changeItemStatus() {
       let authUser = JSON.parse(window.localStorage.getItem("user"));
-      alert(this.changeItemSttDescription);
+      // alert(this.changeItemSttDescription);
       this.axios
         .put(
           "http://localhost:3000/api/equipmentItem/status/" +
@@ -731,32 +715,99 @@ export default {
         });
     },
     updateItem() {
-      if (this.selectedStatus.value == "") {
-        alert("Please choose Status for this Item");
-      } else {
-        // alert(this.selectedItem.Item.Id);
+      // if (this.selectedStatus.value == "") {
+      //   alert("Please choose Status for this Item");
+      // } else {
+      // alert(this.selectedItem.Item.Id);
+      this.axios
+        .put(
+          "http://localhost:3000/api/equipmentItem/" +
+            this.selectedItem.Item.Id,
+          {
+            // id: this.selectedItem.Item.Id,
+            warrantyDuration: this.selectedItem.Item.WarrantyDuration,
+            runtimeDays: this.selectedItem.Item.RuntimeDays,
+            price: this.selectedItem.Item.Price,
+            importdate: this.selectedItem.Item.ImportDate,
+            lastmaintaindate: this.selectedItem.Item.LastMaintainDate,
+            nextmaintaindate: this.selectedItem.Item.NextMaintainDate,
+            description: this.selectedItem.Item.Description
+          }
+        )
+        .then(function(respone) {
+          alert("Update successfully");
+          this.created();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      // }
+    }
+  },
+  watch: {
+    selectedLocation: function() {
+      if (this.selectedLocation.value != "") {
+        this.blockOptions = [];
         this.axios
-          .put(
-            "http://localhost:3000/api/equipmentItem/" +
-              this.selectedItem.Item.Id,
-            {
-              // id: this.selectedItem.Item.Id,
-              warrantyDuration: this.selectedItem.Item.WarrantyDuration,
-              runtimeDays: this.selectedItem.Item.RuntimeDays,
-              price: this.selectedItem.Item.Price,
-              importdate: this.selectedItem.Item.ImportDate,
-              lastmaintaindate: this.selectedItem.Item.LastMaintainDate,
-              nextmaintaindate: this.selectedItem.Item.NextMaintainDate,
-              statusId: this.selectedStatus.value,
-              description: this.selectedItem.Item.Description
-            }
+          .get(
+            `http://localhost:3000/api/block/location/${
+              this.selectedLocation.value
+            }`
           )
-          .then(function(respone) {
-            alert("Update successfully");
-            this.created();
-          })
-          .catch(function(error) {
-            console.log(error);
+          .then(res => {
+            if (res.status == 200) {
+              let blocks = res.data;
+              blocks.forEach(block => {
+                let option = {
+                  value: block.Id,
+                  text: block.Name
+                };
+                this.blockOptions.push(option);
+              });
+            }
+          });
+      }
+    },
+    selectedBlock: function() {
+      if (this.selectedBlock.value != "") {
+        this.floorOptions = [];
+        this.axios
+          .get(
+            `http://localhost:3000/api/floor/block/${this.selectedBlock.value}`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let floors = res.data;
+              floors.forEach(floor => {
+                let option = {
+                  value: floor.Id,
+                  text: floor.Name
+                };
+                this.floorOptions.push(option);
+              });
+            }
+          });
+      }
+    },
+    selectedFloor: function() {
+      // alert(this.selectedFloor.value);
+      if (this.selectedFloor.value != "") {
+        this.tileOptions = [];
+        this.axios
+          .get(
+            `http://localhost:3000/api/tile/floor/${this.selectedFloor.value}`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let tiles = res.data;
+              tiles.forEach(tile => {
+                let option = {
+                  value: tile.Id,
+                  text: tile.Name
+                };
+                this.tileOptions.push(option);
+              });
+            }
           });
       }
     }
@@ -829,7 +880,7 @@ export default {
   height: 36px;
   width: 130px;
 }
-.btn-changestt: hover {
+.btn-changestt:hover {
   cursor: pointer;
   background-color: #009688;
 }
@@ -847,8 +898,7 @@ export default {
 .btn-Cancel:hover {
   cursor: pointer;
   background-color: #bdbdbda1;
-  margin-left: 150px;
-
+  /* margin-left: 150px; */
 }
 .btn-Cancel:hover {
   cursor: pointer;
@@ -901,7 +951,7 @@ export default {
 table {
   /* border: 1px solid black; */
   width: 100%;
-  font-size: 30px;
+  font-size: 14px;
   /* text-align: left; */
 }
 

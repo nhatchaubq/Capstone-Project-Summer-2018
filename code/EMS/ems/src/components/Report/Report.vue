@@ -28,8 +28,7 @@
                         Available Equipment Reports
                     </router-link> 
                 </li>
-            </div>
-                </div>                                      
+            </div>                                      
         </div>
         <div class="children material-shadow-animate" style="background-color:#FFCDD2">
             <div class="header-children" style="background-color:#E57373">Work Order</div>
@@ -69,7 +68,7 @@
                 </li>                
             </div>
         </div>
-    </div>
+</div>
 </template>
 
 <script>
