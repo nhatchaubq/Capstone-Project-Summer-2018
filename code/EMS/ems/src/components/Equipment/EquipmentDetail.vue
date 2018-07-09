@@ -310,6 +310,7 @@
               </div>
               <div v-if="currentViewMode ==  viewModes.Position">
                 <p>This is position tab - Coming soon</p>
+                
               </div>
               <div v-if="currentViewMode ==  viewModes.WorkOrder">
                 <div class="wrap-table" style="max-height: 300px; overflow-y: auto">
@@ -470,6 +471,7 @@ export default {
       randomNumbers: [],
       statusHistories: [],
       allworkorder: [],
+      tiles:[],
       selectedStatus: {
         text: "",
         value: ""
@@ -614,6 +616,7 @@ export default {
       }
     },
     setSelectedItem(itemId) {
+
       this.axios
         .get("http://localhost:3000/api/equipmentItem/Item/" + itemId)
         .then(response => {
@@ -644,7 +647,6 @@ export default {
             .catch(error => {
               alert(error);
             });
-          //  alert(this.selectedItem.SerialNumber);
         })
         .catch(error => {
           console.log(error);
