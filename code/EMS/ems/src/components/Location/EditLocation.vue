@@ -1,13 +1,17 @@
 <template>
 
     <div v-if="location">
-        <div class="title">          
-            Edit Location 
+        <div class="form-title">          
+            <div class="form-title-start">
+               Edit Location 
+            </div>
+            <div class="form-title-end">
+              <button id="" class="button is-rounded is-primary" style="margin-right: .6rem" v-on:click="updateLocation()">Save Changes</button>
+                <button id="" class="button is-rounded"  v-on:click="$router.push('/location')">Cancel</button>
+              
+            </div>
         </div>
-        <div class="form-old">
-
-
-        </div>
+       
         <div class="form-new">
             <div class="field">
                 <div>
@@ -22,8 +26,8 @@
                 <strong>  New Address <span style="color:red;">*</span></strong>
                 </div>
                 <div>
-                    <input  class="input " type="text"  v-model="location.Address" :disabled="location.WorkOrderQuantity> 0" >
-                    <label v-if="location.WorkOrderQuantity >0" style="color: red">This location have working Work Oders.So you can't edit address!!! </label>
+                    <input  class="input " type="text"  v-model="location.Address" disabled="disabled" >
+                    <!-- <label v-if="location.WorkOrderQuantity >0" style="color: red">This location have working Work Oders.So you can't edit address!!! </label> -->
                 </div>
             </div>  
             <div class="field">
@@ -45,8 +49,8 @@
                             <option v-bind:key='team.Id' v-for='team in unselectedTeams' :value="team">{{team.Name}}</option>
                         </select>
                     </div>
-                    <div class="selected-team" v-if="selectedTeams != null" >
-                        <label class="lb-team"   :key='team.Id' v-for="team in selectedTeams">
+                    <div class="selected-team" v-if="selectedTeams != null" style="padding-top:0.5rem">
+                        <label class="lb-team"   :key='team.Id' v-for="team in selectedTeams" style="margin-right :0.5rem">
                         {{team.Name}} <div class="delete" v-on:click="removeTeam(team)"></div>
                         </label> 
                         <!-- <label v-if="tmpTeam != null">{{tmpTeam.Name}}</label> -->
@@ -56,12 +60,10 @@
                 
             </div>
         </div>
-        <div class="end">
-            <button id="btn-add" class="button" v-on:click="updateLocation()">Edit</button>
-            <router-link to='/location'>
-                        <button id="btn-cancel" class="button" >Cancel</button>
-            </router-link>
-        </div>
+        <!-- <div class="end">
+            <button id="btn-add" class="button" v-on:click="updateLocation()">Save Changes</button>           
+            <button id="btn-cancel" class="button" v-on:click="$router.push('/location')">Cancel</button>
+        </div> -->
 
     </div>
 </template>
@@ -233,6 +235,24 @@ export default {
 </script>
 
 <style scoped>
+.form-title {
+  display: grid;
+  grid-template-columns: 78% auto;
+  border-bottom: 0.02px solid;
+
+  height: 50px;
+  line-height: 50px;
+
+  top: 10px;
+  /* font-weight: bold; */
+  font-size: 20px;
+  color: #616161;
+}
+.form-title-end {
+}
+.form-new {
+  padding-top: 2rem;
+}
 .field {
   padding-bottom: 0.5rem;
 }
