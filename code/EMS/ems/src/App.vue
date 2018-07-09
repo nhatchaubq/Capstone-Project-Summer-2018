@@ -29,11 +29,10 @@ export default {
     Login
   },
   computed: {
-      isLoggedIn: sync('isLoggedIn'),
+    isLoggedIn: sync("isLoggedIn")
   },
   data() {
-    return {
-    };
+    return {};
   }
 };
 </script>
@@ -48,8 +47,8 @@ export default {
   --dark-background: #263238;
   --success-color: #00c853;
   --danger-color: #ef5350;
-  --lighten-danger-color: #FF6762;
-  --darken-danger-color: #DA3630;
+  --lighten-danger-color: #ff6762;
+  --darken-danger-color: #da3630;
   --shadow: #9e9e9e;
   --status-request: #f44336;
   --status-checked: #304ffe;
@@ -59,7 +58,7 @@ export default {
 }
 
 :focus {
-  outline: 0;
+  outline: 0 !important;
 }
 
 html,
@@ -143,7 +142,7 @@ a:active {
   color: white !important;
   background-color: var(--primary-color);
   z-index: 99;
-  transition: all .15s ease-in-out;
+  transition: all 0.15s ease-in-out;
 }
 
 .button.btn-danger {
@@ -151,7 +150,7 @@ a:active {
   color: white !important;
   background-color: var(--danger-color);
   z-index: 99;
-  transition: all .15s ease-in-out;
+  transition: all 0.15s ease-in-out;
 }
 
 .button.btn-blue {
@@ -159,7 +158,7 @@ a:active {
   color: white !important;
   background-color: #1976d2;
   z-index: 99;
-  transition: all .15s ease-in-out;
+  transition: all 0.15s ease-in-out;
 }
 
 button.btn-primary:hover {
@@ -174,11 +173,10 @@ button.btn-danger:hover {
   background-color: var(--lighten-danger-color);
 }
 
-
 button.btn-blue:hover {
   cursor: pointer;
   color: white !important;
-  background-color: #328BE5;
+  background-color: #328be5;
 }
 
 button.btn-primary:active {
@@ -193,10 +191,9 @@ button.btn-danger:active {
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
-
 button.btn-blue:active {
   color: white !important;
-  background-color: #1471CD !important;
+  background-color: #1471cd !important;
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 

@@ -60,8 +60,8 @@
                         <button class="exportbtn"> Export to Excel</button>
                         <button class="exportbtn"> Export to CSV</button>
                     </div>
-                </div>                                      
             </div>
+                </div>                                      
         </div>
             
         <div class="columnright">

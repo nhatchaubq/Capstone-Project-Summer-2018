@@ -385,11 +385,11 @@
 <script>
 // import Vue from 'vue';
 import Server from '@/config/config';
-import fileBase64 from 'vue-file-base64';
+// import fileBase64 from 'vue-file-base64';
 
 export default {
     components: {
-        fileBase64
+        // fileBase64
     },
     created() {
         let url = `${Server.LOCATION_API_PATH}/${this.$route.params.locationId}`;
