@@ -1,62 +1,49 @@
 <template>
-
-    <div class="">
-      <div class="field is-grouped view-mode">
-        <!-- <router-link to='/account/'>     
-        <button class="btn-view-mode-left" >Table view</button>
-
-        <button class="btn-view-mode-right" >Card view</button>
-        </router-link> -->
+  <div v-if ="!teams">
+    There is no team yet.
+  </div>
+  <div v-else>
+    <div class="field is-grouped view-mode">
       <router-link to='/account/'>  
         <button class="btn-view-mode" >Account view</button>
       </router-link>
       <router-link to='/team/'>  
         <button class="btn-view-mode" disabled="disabled">Team view</button>
       </router-link>
-
-      </div>
-        <!-- <div v-if="!teams">
-      There is no team yet.
-    </div> -->
-        <!-- <div v-else> -->
-            <div>
-<div >
-        <table class="mytable">
-             <thead>
-                <tr>
-                    <th><strong>ID</strong></th>
-                    <th><strong>User name</strong></th>
-                    <th><strong>Create date </strong></th>
-
-                    <!-- <th><strong>Department</strong></th> -->
-                </tr>
-            </thead>  
-            <tbody>
-                <tr v-bind:key="team.Id" v-for="team in teams" v-on:click="gotoDetail(team.Id)">
-                    <td>{{team.Id}}</td>    
-                    <!-- <router-link :to="`/team/${team.Id}`">   -->
-                      <td>{{team.Name}}</td>
-                    <!-- </router-link> -->
-                    <td>{{team.CreatedDate}}</td>
-
-
-                </tr>
-            </tbody>
-        </table>
     </div>
-    </div>
-  
-    <router-link to='/team/add/'>
-      <button id="btn-add-account" class=" material-shadow-animate">Add Team</button>
-    </router-link>
+    <table class="mytable">
+          <thead>
+            <tr>
+                <th><strong>ID</strong></th>
+                <th><strong>User name</strong></th>
+                <th><strong>Create date </strong></th>
 
-          <!-- <button id="btn-add-account" class=" material-shadow-animate">Add Team</button> -->
+                <!-- <th><strong>Department</strong></th> -->
+            </tr>
+        </thead>  
+        <tbody>
+            <tr v-bind:key="team.Id" v-for="team in teams" v-on:click="gotoDetail(team.Id)">
+                <td>{{team.Id}}</td>    
+                <!-- <router-link :to="`/team/${team.Id}`">   -->
+                  <td>{{team.Name}}</td>
+                <!-- </router-link> -->
+                <td>{{getDate(team.CreatedDate)}}</td>
+
+            </tr>
+        </tbody>
+    </table>
+    <button v-on:click="$router.push('/team/add')" id="btn-add-account" class=" material-shadow-animate">Add Team</button>
+
 
 </div>
 </template>
 
 <script>
+import moment from "moment";
 export default {
+  components: {
+    moment
+  },
   name: "team",
   created() {
     let URL = "http://localhost:3000/api/team";
@@ -77,6 +64,9 @@ export default {
   methods: {
     gotoDetail(teamId) {
       this.$router.push(`/team/${teamId}`);
+    },
+    getDate(date) {
+      return moment(date).format("L");
     }
   }
 };
@@ -87,45 +77,6 @@ export default {
   margin-bottom: 2rem;
 }
 
-.btn-view-mode-left {
-  background-color: white;
-  padding: 0.4rem 0.6rem;
-  /* height: 2rem; */
-  font-size: 15px;
-  /* line-height: 2rem; */
-  color: var(--primary-color);
-  border-radius: 5px 0 0 5px;
-  border: 1px solid #26a69a;
-  z-index: 1;
-  /* padding-right: 20px;
-      padding-left: 20px; */
-}
-
-.btn-view-mode-left:hover {
-  background-color: #26a69a;
-  color: white;
-  cursor: pointer;
-}
-.btn-view-mode-right {
-  background-color: white;
-  padding: 0.4rem 0.6rem;
-  /* height: 2rem; */
-  font-size: 15px;
-  /* line-height: 2rem; */
-  color: var(--primary-color);
-  border-radius: 0 5px 5px 0;
-  border: 1px solid #26a69a;
-  z-index: 1;
-  /* padding-right: 20px;
-      padding-left: 20px; */
-  margin-right: 5px;
-}
-
-.btn-view-mode-right:hover {
-  background-color: #26a69a;
-  color: white;
-  cursor: pointer;
-}
 .btn-view-mode {
   background-color: white;
   padding: 0.4rem 0.6rem;
@@ -200,5 +151,61 @@ td:hover {
   cursor: pointer;
   background-color: var(--primary-color);
   color: white;
+}
+th {
+  text-align: left;
+  background-color: #cfd8dc;
+  height: 30px;
+  line-height: 30px;
+  padding: 0.5rem !important;
+}
+td {
+  vertical-align: middle;
+  height: 40px;
+  line-height: 25px;
+  padding: 0.5rem;
+}
+td:hover {
+  cursor: pointer;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+  color: #263238;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+  color: #263238;
+}
+
+#th1:curve {
+  text-align: justify;
+
+  background-color: #b0bec5;
+}
+
+tr:hover {
+  background-color: #eceff1;
+}
+
+.txtText {
+  text-align: left;
+
+  /*margin: 0.3rem;*/
+
+  padding: 0.5rem;
+
+  background-color: #cfd8dc;
+}
+
+table {
+  /* border: 1px solid black; */
+
+  width: 100%;
+
+  font-size: 15px;
+
+  /* text-align: right; */
 }
 </style>
