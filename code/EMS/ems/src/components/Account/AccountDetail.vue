@@ -3,7 +3,6 @@
   <div v-if="account">
     <router-link to="/account">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Accounts</a>
-    
     </router-link>
    <!-- <form @submit.prevent="editAccount()"> -->
 <div class="grid-wrapper1">
@@ -37,7 +36,7 @@
     <!-- <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled"> -->
     <!-- <input v-if="editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" > -->
     <input v-if="editMode" v-model ="account.Password"  class="input col-7 " type="password"  placeholder="Text input">
-    <div>One Way binding as text {{account.Password}}</div>
+    <!-- <div>One Way binding as text {{account.Password}}</div> -->
 
 </div>
 <!-- <div class="row" style="margin-top:0.5rem;  height: 36px">
@@ -74,7 +73,7 @@
 </div>
 <div class="row" style="margin-top:0.5rem; height: 36px">
   <div class="col-3">Start date: </div>
-  <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? account.StartDate: 'N/A' }}</div>
+  <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? getDate(account.StartDate): 'N/A' }}</div>
 </div>
 <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
 <div class="row" style="margin-top:0.5rem; height: 36px">
@@ -124,7 +123,11 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
+  components: {
+    moment
+  },
   created() {
     //   let URL = "http://localhost:3000/api/account/id/:id";
     //   this.axios.get(URL).then(response => {
@@ -136,11 +139,7 @@ export default {
     //     });
     //   });
     // },
-    let URL = `http://localhost:3000/api/account/id/${this.$route.params.id}`;
-    this.axios.get(URL).then(response => {
-      let data = response.data;
-      this.account = data;
-    });
+    this.getAccountDetail(this.$route.params.id);
   },
 
   data() {
@@ -157,8 +156,22 @@ export default {
           account: this.account
         })
         .then(res => {
-          this.$router.push("/account");
+          // this.$router.push("/account");
+          if (res.status == 200) {
+            this.getAccountDetail(this.$route.params.id);
+            this.editMode = false;
+          }
         });
+    },
+    getAccountDetail(accountId) {
+      let URL = `http://localhost:3000/api/account/id/${accountId}`;
+      this.axios.get(URL).then(response => {
+        let data = response.data;
+        this.account = data;
+      });
+    },
+    getDate(date) {
+      return moment(date).format("L");
     }
   }
 };

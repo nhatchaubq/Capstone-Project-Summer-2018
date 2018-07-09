@@ -22,7 +22,7 @@
             <td style="width:15rem">{{vendor.BusinessName}}</td>
             <!-- </router-link> -->
             <td style="width:20rem">{{vendor.BusinessAddress}}</td>
-            <td style="width:20rem">{{vendor.Website}}</td>
+            <td style="width:15rem">{{vendor.Website}}</td>
             <td>{{vendor.ContactName}}</td>
           </tr>
       </tbody>

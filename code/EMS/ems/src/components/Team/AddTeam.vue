@@ -29,7 +29,7 @@
                 
             </div>
             
-                        <div>
+            <div>
                 <div class="form-field">
                     <div class="form-field-title">
                         Create date <strong><span style="color:red;">*</span></strong>
@@ -50,7 +50,24 @@
                 </div>
                 
             </div>
-            
+            <!-- teset -->
+            <div class="form-field">
+              <div class="form-field-title">
+                Member 
+              </div>
+              <div class="select" style="margin-left:0.5rem; margin-bottom:1rem">
+                <select v-model="selectedAccount" style="width:62rem">
+                  <option :disabled="selectedAccounts.length > 0"  value="null">No account is selected</option>
+                  <option v-bind:key='account.Id' v-for='account in accounts' :value="account">{{account.Fullname}}</option>
+                </select>
+              </div>
+              <div class="selected-account" >
+                <label class="lb-account" :key='account.Id' v-for="account in selectedAccounts">
+                  {{account.Fullname}} <div class="delete" v-on:click="removeSelectedAccount(account)"></div>
+                </label> 
+              </div>
+            </div>
+            <!-- test-end -->
 
     
     
@@ -78,14 +95,34 @@
 </template>
 
 <script>
+import Server from "@/config/config.js";
 export default {
   data() {
     return {
       team: {
         name: "",
         createdDate: ""
-      }
+      },
+      accounts: [],
+      selectedAccount: null,
+      tempAccounts: [],
+      selectedAccounts: []
     };
+  },
+  created() {
+    let url = Server.ACCOUNT_API_PATH;
+    this.axios
+      .get(url)
+      .then(response => {
+        let data = response.data;
+        data.forEach(element => {
+          let account = element.Account;
+          this.accounts.push(account);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
   },
   methods: {
     createTeam() {
@@ -94,8 +131,47 @@ export default {
           team: this.team
         })
         .then(res => {
+          if (this.selectedAccounts.length > 0) {
+            if (res.data.NewTeamId) {
+              // alert(res.data.NewTeamId);
+              this.selectedAccounts.forEach(account => {
+                this.axios.post(Server.TEAM_ACCOUNT_CREATE_API_PATH, {
+                  teamId: res.data.NewTeamId,
+                  accountId: account.Id
+                });
+                // alert("Success!");
+              });
+            }
+          }
           this.$router.push("/team");
         });
+    },
+    removeSelectedAccount(tmpAccount) {
+      this.selectedAccounts = this.selectedAccounts.filter(
+        account => account.Id != tmpAccount.Id
+      );
+      // this.teams = this.tempTeams;
+      this.accounts = this.tempAccounts.filter(
+        account => !this.selectedAccounts.includes(account)
+      );
+
+      if (this.selectedAccounts.length == 0) {
+        this.accounts = this.tempAccounts;
+      }
+    }
+  },
+  watch: {
+    selectedAccount: function() {
+      if (this.selectedAccount) {
+        if (this.selectedAccounts.length == 0) {
+          this.tempAccounts = this.accounts;
+        }
+        this.accounts = this.accounts.filter(
+          account => account.Id != this.selectedAccount.Id
+        );
+        this.selectedAccounts.push(this.selectedAccount);
+        this.selectedAccount = null;
+      }
     }
   }
 };

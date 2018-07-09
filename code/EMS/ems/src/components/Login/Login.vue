@@ -1,12 +1,11 @@
 <template>
-  <div class="login-container">
-      
+  <div class="login-container">      
       <div class="columns">
         <div class="column"></div>
-        <div class="column is-one-quarter">            
+        <div class="column is-3">            
             <div class="login-form material-box material-shadow">
                 <h2 class="title is-2">Login</h2>
-                <span v-show="showNotification" class="has-text-danger">
+                <span v-show="showNotification" class="error-text">
                     {{ message }}
                 </span>
                 <form @submit.prevent="login">
@@ -112,11 +111,11 @@ export default {
 
 <style scoped>
 .login-container {
-  height: 100% !important;
+  /* height: 100% !important; */
 }
 
 .login-form {
-  margin-top: -3rem;
+  margin-top: -3%rem;
   padding: 2rem 2rem;
   position: relative;
   /* top: 50%; */

@@ -17,12 +17,12 @@ router.get("/", (request, response) => {
         // "(SELECT Count(Id) FROM [WorkOrder] WHERE CategoryID = 2 and  StatusID =4) as  'Dashboard.ReturnCountTomorrow'," +
         "(SELECT Count(Id) FROM [WorkOrder] WHERE CategoryID = 1 and convert(date, getdate()) = convert(date, DueDate)) as 'Dashboard.MaintainCountToday'," +
         "(SELECT Count(Id) FROM [WorkOrder] WHERE CategoryID = 1 and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate)) as 'Dashboard.MaintainCountTomorrow'," +
-        "(SELECT Count(Id) FROM [WorkOrder] WHERE CategoryID = 2 and  StatusID =4 and convert(date, getdate()) = convert(date, DueDate) ) as 'Dashboard.ReturnCountToday'," +
-        "(SELECT Count(Id) FROM [WorkOrder] WHERE CategoryID = 2 and  StatusID =4 and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate) ) as 'Dashboard.ReturnCountTomorrow'," +
-        "(SELECT Count(WorkOrderID) FROM [WorkOrderDetail] WHERE WorkOrderID IN (SELECT Id FROM [WorkOrder] WHERE CategoryID = 1 and StatusID =4 and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate))) as 'Dashboard.MaintainCountTodayQItem'," +
-        "(SELECT Count(WorkOrderID) FROM [WorkOrderDetail] WHERE WorkOrderID IN (SELECT Id FROM [WorkOrder] WHERE CategoryID = 1 and StatusID =4 and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate))) as 'Dashboard.MaintainCountTomorrowQItem'," +
-        "(SELECT Count(WorkOrderID) FROM [WorkOrderDetail] WHERE WorkOrderID IN (SELECT Id FROM [WorkOrder] WHERE CategoryID = 2 and StatusID =4 and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate))) as 'Dashboard.ReturnCountTodayQItem'," +
-        "(SELECT Count(WorkOrderID) FROM [WorkOrderDetail] WHERE WorkOrderID IN (SELECT Id FROM [WorkOrder] WHERE CategoryID = 2 and StatusID =4 and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate))) as 'Dashboard.ReturnCountTomorrowQItem'," +
+        "(SELECT Count(Id) FROM [WorkOrder] WHERE CategoryID = 2  and convert(date, getdate()) = convert(date, DueDate) ) as 'Dashboard.ReturnCountToday'," +
+        "(SELECT Count(Id) FROM [WorkOrder] WHERE CategoryID = 2  and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate) ) as 'Dashboard.ReturnCountTomorrow'," +
+        "(SELECT Count(WorkOrderID) FROM [WorkOrderDetail] WHERE WorkOrderID IN (SELECT Id FROM [WorkOrder] WHERE CategoryID = 1   and convert(date, getdate()) = convert(date, DueDate))) as 'Dashboard.MaintainCountTodayQItem'," +
+        "(SELECT Count(WorkOrderID) FROM [WorkOrderDetail] WHERE WorkOrderID IN (SELECT Id FROM [WorkOrder] WHERE CategoryID = 1   and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate))) as 'Dashboard.MaintainCountTomorrowQItem'," +
+        "(SELECT Count(WorkOrderID) FROM [WorkOrderDetail] WHERE WorkOrderID IN (SELECT Id FROM [WorkOrder] WHERE CategoryID = 2  and convert(date, getdate()) = convert(date, DueDate))) as 'Dashboard.ReturnCountTodayQItem'," +
+        "(SELECT Count(WorkOrderID) FROM [WorkOrderDetail] WHERE WorkOrderID IN (SELECT Id FROM [WorkOrder] WHERE CategoryID = 2  and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate))) as 'Dashboard.ReturnCountTomorrowQItem'," +
         // "(SELECT Count(WorkOrderID) FROM [WorkOrderDetail] WHERE WorkOrderID IN (SELECT Id FROM [WorkOrder] WHERE CategoryID = 2 and StatusID =4 and convert(date, dateadd(day, 1, getdate())) = convert(date, DueDate))) as 'Dashboard.ReturnCountTomorrowQItem'" +
         "(SELECT COUNT(StatusId)  FROM [EquipmentItem] WHERE StatusId =1) as 'PieChartData.Availble.Quantity', (select [Name] from EquipmentStatus where Id = 1) as 'PieChartData.Availble.Name'," +
         "(SELECT COUNT(StatusId)  FROM [EquipmentItem] WHERE StatusId =2) as 'PieChartData.WokingRequesting.Quantity', (select [Name] from EquipmentStatus where Id = 2) as 'PieChartData.WokingRequesting.Name'," +
@@ -90,10 +90,135 @@ router.get("/", (request, response) => {
         // get name of month end(new)
 
         "(SELECT Name from [WorkOrderCategory] where Id =1) as 'LineChart.MaintainName'," +
-        "(SELECT Name from [WorkOrderCategory] where Id =2) as 'LineChart.WorkingName'" +
+        "(SELECT Name from [WorkOrderCategory] where Id =2) as 'LineChart.WorkingName'," +
+        "(SELECT count(*) FROM [Equipment] as e JOIN [EquipmentItem] as ei ON ei.EquipmentID =e.Id WHERE StatusId !=1) as 'Doughnut.Today.UnavailableItemCount'," +
+        "(SELECT count(*) FROM [Equipment] as e JOIN [EquipmentItem] as ei ON ei.EquipmentID =e.Id WHERE StatusId =1) as 'Doughnut.Today.AvailableItemCount'," +
+        "(select [Name] from EquipmentStatus where Id = 1) as 'Doughnut.Available.Name'," +
+        "(select [Name] from EquipmentStatus where Id = 2) as 'Doughnut.Unavailable.Name'" +
+        //line chart(line's name ) end
+
+        //work order start(old)
+
+        // "json_query((select * from WorkOrder as wo where convert(date, wo.DueDate) = convert(date, getdate()) and wo.CategoryID=1 for json path)) as 'todayMaintainOrder'," +
+        // "json_query((select * from WorkOrder as wo where convert(date, wo.DueDate) = dateadd(day, 1, convert(date, getdate())) and wo.CategoryID=1 for json path)) as 'tomorrowMaintainOrder'," +
+        // "json_query((select * from WorkOrder as wo where convert(date, wo.DueDate) = convert(date, getdate()) and wo.CategoryID=2 for json path)) as 'todayWokingOrder'," +
+        // "json_query((select * from WorkOrder as wo where convert(date, wo.DueDate) = dateadd(day, 1, convert(date, getdate())) and wo.CategoryID=2 for json path)) as 'tomorrowWokingOrder'" +
+        //work order end(old)
+
+        //work order start(new)
+        /*
+      "json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor]," +
+      "                l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address], " +
+      "                t.Id as [Team.Id], t.[Name] as [Team.Name]" +
+      "        from WorkOrder as wo" +
+      "        join WorkOrderStatus as wos on wo.StatusID = wos.Id" +
+      "       join Account as acc on wo.RequestUserID = acc.Id" +
+      "        join [Priority] as p on wo.PriorityID = p.Id" +
+      "        join TeamLocation as tl on wo.TeamLocationID = tl.Id" +
+      "       join [Location] as l on tl.LocationID = l.Id" +
+      "       join Team as t on tl.TeamID = t.Id" +
+      "        where convert(date, wo.DueDate) = convert(date, getdate()) and wo.CategoryID=1 " +
+      "        order by wo.CreateDate desc" +
+      "       for json path)) as 'todayMaintainOrder'," +
+      "json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor]," +
+      "                  l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address], " +
+      "                t.Id as [Team.Id], t.[Name] as [Team.Name]" +
+      "      from WorkOrder as wo" +
+      "      join WorkOrderStatus as wos on wo.StatusID = wos.Id" +
+      "      join Account as acc on wo.RequestUserID = acc.Id" +
+      "      join [Priority] as p on wo.PriorityID = p.Id" +
+      "      join TeamLocation as tl on wo.TeamLocationID = tl.Id" +
+      "      join [Location] as l on tl.LocationID = l.Id" +
+      "      join Team as t on tl.TeamID = t.Id" +
+      "      where convert(date, wo.DueDate) = dateadd(day, 1, convert(date, getdate())) and wo.CategoryID=1 " +
+      "      order by wo.CreateDate desc" +
+      "      for json path)) as 'tomorrowMaintainOrder'," +
+      "json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor]," +
+      "                l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address], " +
+      "              t.Id as [Team.Id], t.[Name] as [Team.Name]" +
+      "    from WorkOrder as wo" +
+      "    join WorkOrderStatus as wos on wo.StatusID = wos.Id" +
+      "    join Account as acc on wo.RequestUserID = acc.Id" +
+      "    join [Priority] as p on wo.PriorityID = p.Id" +
+      "    join TeamLocation as tl on wo.TeamLocationID = tl.Id" +
+      "     join [Location] as l on tl.LocationID = l.Id" +
+      "    join Team as t on tl.TeamID = t.Id" +
+      "    where convert(date, wo.DueDate) = convert(date, getdate()) and wo.CategoryID=2 " +
+      "    order by wo.CreateDate desc" +
+      "    for json path)) as 'todayWokingOrder'," +
+      "json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor]," +
+      "                  l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address], " +
+      "                t.Id as [Team.Id], t.[Name] as [Team.Name]" +
+      "     from WorkOrder as wo" +
+      "     join WorkOrderStatus as wos on wo.StatusID = wos.Id" +
+      "     join Account as acc on wo.RequestUserID = acc.Id" +
+      "   join [Priority] as p on wo.PriorityID = p.Id" +
+      "    join TeamLocation as tl on wo.TeamLocationID = tl.Id" +
+      "    join [Location] as l on tl.LocationID = l.Id" +
+      "   join Team as t on tl.TeamID = t.Id" +
+      "   where convert(date, wo.DueDate) = dateadd(day, 1, convert(date, getdate())) and wo.CategoryID=2 " +
+      "   order by wo.CreateDate desc" +
+      "  for json path)) as 'tomorrowWokingOrder'" +
+      */
+        //work order end(new)
         "FOR JSON PATH,  without_array_wrapper"
     )
     .into(response);
 });
-
+router.get("/workorderdb", (request, response) => {
+  request
+    .sql(
+      "SELECT" +
+        "(json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor],  json_query((select count(wod.Id) as [Quantity] from WorkOrderDetail as wod join WorkOrder as wo1 on wod.WorkOrderId = wo1.Id where wo.Id = wo1.Id for json path, without_array_wrapper)) as [Detail], " +
+        "   l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address],  " +
+        "t.Id as [Team.Id], t.[Name] as [Team.Name] " +
+        "from WorkOrder as wo " +
+        " join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
+        " join Account as acc on wo.RequestUserID = acc.Id " +
+        "join [Priority] as p on wo.PriorityID = p.Id " +
+        "join TeamLocation as tl on wo.TeamLocationID = tl.Id " +
+        "join [Location] as l on tl.LocationID = l.Id " +
+        "join Team as t on tl.TeamID = t.Id " +
+        " where convert(date, wo.DueDate) = convert(date, getdate()) and wo.CategoryID=1  " +
+        " for json path))) as 'todayMaintainOrder', " +
+        " (json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor],  json_query((select count(wod.Id) as [Quantity] from WorkOrderDetail as wod join WorkOrder as wo1 on wod.WorkOrderId = wo1.Id where wo.Id = wo1.Id for json path, without_array_wrapper)) as [Detail],  " +
+        " l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address],  " +
+        "     t.Id as [Team.Id], t.[Name] as [Team.Name] " +
+        "from WorkOrder as wo " +
+        "  join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
+        "  join Account as acc on wo.RequestUserID = acc.Id " +
+        "   join [Priority] as p on wo.PriorityID = p.Id " +
+        "   join TeamLocation as tl on wo.TeamLocationID = tl.Id " +
+        "   join [Location] as l on tl.LocationID = l.Id " +
+        " join Team as t on tl.TeamID = t.Id " +
+        " where convert(date, wo.DueDate) = dateadd(day, 1, convert(date, getdate())) and wo.CategoryID=1  " +
+        "  for json path))) as 'tomorrowMaintainOrder', " +
+        "(json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor],  json_query((select count(wod.Id) as [Quantity] from WorkOrderDetail as wod join WorkOrder as wo1 on wod.WorkOrderId = wo1.Id where wo.Id = wo1.Id for json path, without_array_wrapper)) as [Detail], " +
+        "  l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address],  " +
+        "t.Id as [Team.Id], t.[Name] as [Team.Name] " +
+        " from WorkOrder as wo " +
+        " join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
+        " join Account as acc on wo.RequestUserID = acc.Id " +
+        " join [Priority] as p on wo.PriorityID = p.Id " +
+        "  join TeamLocation as tl on wo.TeamLocationID = tl.Id " +
+        "  join [Location] as l on tl.LocationID = l.Id " +
+        "  join Team as t on tl.TeamID = t.Id " +
+        "where convert(date, wo.DueDate) = convert(date, getdate()) and wo.CategoryID=2  " +
+        " for json path))) as 'todayWokingOrder', " +
+        " (json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], json_query((select count(wod.Id) as [Quantity] from WorkOrderDetail as wod join WorkOrder as wo1 on wod.WorkOrderId = wo1.Id where wo.Id = wo1.Id for json path, without_array_wrapper)) as [Detail], " +
+        "          l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address],  " +
+        "       t.Id as [Team.Id], t.[Name] as [Team.Name] " +
+        " from WorkOrder as wo " +
+        " join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
+        " join Account as acc on wo.RequestUserID = acc.Id " +
+        "join [Priority] as p on wo.PriorityID = p.Id " +
+        " join TeamLocation as tl on wo.TeamLocationID = tl.Id " +
+        " join [Location] as l on tl.LocationID = l.Id " +
+        " join Team as t on tl.TeamID = t.Id " +
+        "  where convert(date, wo.DueDate) = dateadd(day, 1, convert(date, getdate())) and wo.CategoryID=2  " +
+        " for json path))) as 'tomorrowWokingOrder' " +
+        " FOR JSON PATH,  without_array_wrapper"
+    )
+    .into(response);
+});
 module.exports = router;

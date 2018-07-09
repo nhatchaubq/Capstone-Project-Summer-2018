@@ -48,25 +48,33 @@ export default {
   --dark-background: #263238;
   --success-color: #00c853;
   --danger-color: #ef5350;
+  --warning-color: #ffc107;
+  --strong-warning-color: #FF7B07;
   --lighten-danger-color: #FF6762;
   --darken-danger-color: #DA3630;
   --shadow: #9e9e9e;
-  --status-request: #f44336;
-  --status-checked: #304ffe;
-  --status-approved: #00c853;
-  --status-delivered: #ab47bc;
-  --status-closed: #ffd600;
+  --status-requested: #7b1fa2;
+  --status-checked: #3f51b5;
+  --status-approved: #689f38;
+  --status-rejected: #b71c1c;
+  --status-in-progress: #ffc107;
+  --status-closed: #424242;
+  --status-cancelled: #9e9e9e;
+  --blue: #2196f3;
 }
 
-:focus {
-  outline: 0;
+*:focus {
+  /* outline: none !important; */
+  outline: 0 !important;
+  outline-style: none !important;
 }
 
 html,
 body {
   width: 100%;
   height: 100%;
-  /* background-color: var(--light-background);   */
+  font-size: 1rem !important;
+  /* background-color: var(--light-background) !important;   */
 }
 
 a {
@@ -117,12 +125,26 @@ a:active {
 }
 
 .material-box {
-  background-color: white;
+  background: white !important;
   border-radius: 3px;
   /* border-left: 4px solid #f44336; */
   border: 1px solid #eeeeee;
   padding: 0.3rem 0.6rem;
+  transition: all .2s;
   /* margin: 0 5rem .5rem 5rem; */
+}
+
+.is-active-block {
+  /* background-color: #e0e0e0 !important; */
+  background-color: #bdbdbd !important;
+  /* border: 1px solid #e0e0e0 !important; */
+  border: 1px solid #bdbdbd !important;
+  box-shadow: 1px 1px 1px var(--shadow) !important;
+}
+
+.is-active-block:hover {
+  background-color: #e0e0e0 !important;
+  box-shadow: 1px 1px 2px var(--shadow) !important;
 }
 
 .material-shadow {
@@ -162,6 +184,14 @@ a:active {
   transition: all .15s ease-in-out;
 }
 
+.button.btn-green {
+  border: 0;
+  color: white !important;
+  background-color: #00e676;
+  z-index: 99;
+  transition: all .15s ease-in-out;
+}
+
 button.btn-primary:hover {
   cursor: pointer;
   color: white !important;
@@ -174,11 +204,16 @@ button.btn-danger:hover {
   background-color: var(--lighten-danger-color);
 }
 
-
 button.btn-blue:hover {
   cursor: pointer;
   color: white !important;
   background-color: #328BE5;
+}
+
+button.btn-green:hover {
+  cursor: pointer;
+  color: white !important;
+  background-color: #59BC5C;
 }
 
 button.btn-primary:active {
@@ -193,10 +228,15 @@ button.btn-danger:active {
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
-
 button.btn-blue:active {
   color: white !important;
   background-color: #1471CD !important;
+  box-shadow: 1px 1px 1px var(--shadow) !important;
+}
+
+button.btn-green:active {
+  color: white !important;
+  background-color: #3EA542 !important;
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
@@ -207,9 +247,76 @@ button.btn-blue:active {
   padding: 0.2rem 0.3rem 0 0.3rem !important;
 }
 
+.error-text {
+  color: var(--danger-color);
+  font-size: .9rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.warning-text {
+  color: var(--warning-color);
+  font-size: .9rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.strong-warning-text {
+  color: var(--strong-warning-color);
+  font-size: .9rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
 .emtpy-text {
   font-size: 1.1em;
   color: #9e9e9e;
   /* font-style: italic; */
+}
+
+.tag {
+  user-select: none;
+}
+
+.tag.requested {
+    background-color: var(--status-requested);
+    border: 1px solid var(--status-requested) !important;
+    color: white;
+}
+
+.tag.checked {
+    background-color: var(--status-checked);
+    border: 1px solid var(--status-checked) !important;
+    color: white;
+}
+
+.tag.approved {
+    background-color: var(--status-approved);
+    border: 1px solid var(--status-approved) !important;
+    color: white;
+}
+
+.tag.rejected {
+    background-color: var(--status-rejected) !important;
+    border: 1px solid var(--status-rejected) !important;
+    color: white;
+}
+
+.tag.in-progress {
+    background-color: var(--status-in-progress);
+    border: 1px solid var(--status-in-progress) !important;
+    color: white;
+}
+
+.tag.closed {
+    background-color: var(--status-closed);
+    border: 1px solid var(--status-closed) !important;
+    color: white;
+}
+
+.tag.cancelled {
+    background-color: var(--status-cancelled);
+    border: 1px solid var(--status-cancelled) !important;
+    color: white;
 }
 </style>
