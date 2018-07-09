@@ -1,11 +1,24 @@
-const router = require('express').Router();
-const TYPES = require('tedious').TYPES;
+const router = require("express").Router();
+const TYPES = require("tedious").TYPES;
+
+router.get("/workorderbylocationId/:id", (request, response) => {
+  request
+    .sql(
+      "select distinct wo.*, (select COUNT(*) " +
+        " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
+        " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
+        " where tl.LocationID = @locationId) as Quantity " +
+        " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
+        " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
+        " where tl.LocationID = @locationId " +
+        " for json path"
+    )
+    .param("locationId", request.params.id, TYPES.Int)
 
 // router.get('/', (request, response) => {
 //     request.sql("exec GetWorkOrders")
 //         .into(response);
 // });
-
 router.get('/', (request, response) => {
     request.sql("select (select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], "
                 + "        json_query((select * from [Location] where tl.LocationID = Id for json path, without_array_wrapper)) as [Location], "
@@ -56,39 +69,26 @@ router.get('/:id/equipments', (request, response) => {
         .param('workOrderId', request.params.id, TYPES.Int)
         .into(response);
 });
-
-router.get('/workorderbylocationId/:id',(request,response) => {
-    request.sql("select distinct wo.*, (select COUNT(*) "
-                + " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID "
-                + "     join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID "
-                + " where tl.LocationID = @locationId) as Quantity "
-                + " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID "
-                + "     join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID "
-                + " where tl.LocationID = @locationId "
-                + " for json path")
-    .param('locationId', request.params.id, TYPES.Int)
     .into(response);
-})
-
-router.get('/status', (request, response) => {
-    request.sql("select * from WorkOrderStatus for json path")
-        .into(response);
 });
 
-router.get('/priorities', (request, response) => {
-    request.sql("select * from Priority for json path")
-        .into(response);
-})
-
-router.get('/search/:value', (req, res) => {
-    req.sql("exec [dbo].SearchWorkOrder @searchValue")
-        .param("searchValue", req.params.value, TYPES.NVarChar)
-        .into(res);
+router.get("/status", (request, response) => {
+  request.sql("select * from WorkOrderStatus for json path").into(response);
 });
 
-router.get('/categories', (req, res) => {
-    req.sql("select * from WorkOrderCategory for json path")
-        .into(res);
+router.get("/priorities", (request, response) => {
+  request.sql("select * from Priority for json path").into(response);
+});
+
+router.get("/search/:value", (req, res) => {
+  req
+    .sql("exec [dbo].SearchWorkOrder @searchValue")
+    .param("searchValue", req.params.value, TYPES.NVarChar)
+    .into(res);
+});
+
+router.get("/categories", (req, res) => {
+  req.sql("select * from WorkOrderCategory for json path").into(res);
 });
 
 router.get('/get_equipment_detail/:id', (req, res) => {
