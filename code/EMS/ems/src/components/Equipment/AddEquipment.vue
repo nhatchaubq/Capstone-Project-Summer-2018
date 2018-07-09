@@ -434,13 +434,13 @@ export default {
     },
     createNewEquipentItem() {
       // alert(this.checked);
-
+      var result = false;
        this.axios
-         .get("http://localhost:3000/api/equipment/" + this.form.EquipmentName)
+         .get("http://localhost:3000/api/equipment/byName/" + this.form.EquipmentName)
          .then(response => {
            for (var i = 0; i < this.quantity; i++) {
              let data = response.data;
-             alert(data.Id);
+            //  alert(data.Id);
             this.axios
               .post("http://localhost:3000/api/equipmentItem", {
                 equipmentID: data.Id,
@@ -452,13 +452,16 @@ export default {
                 tileID: this.selectedTile.value
               })
               .then(function(respone) {
-                alert("Add" + this.quantity + "item(s) successfully");
-                location.reload();
+                result = true;
               })
               .catch(function(error) {
                 console.log(error);
               });
           }
+          if(result = true){
+            alert("Add " + this.quantity + " item(s) successfully");
+          }
+           //location.reload();
         })
         .catch(function(error) {
           alert(this.form.EquipmentName)
