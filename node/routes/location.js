@@ -27,21 +27,29 @@ router.put("/edit", (req, res) => {
     .exec(res);
 });
 
+router.put('/update_location_floor_plan/:locationId', (req, res) => {
+  console.log(req.body.imageBase64);
+  req.sql('update [Location] set [Image] = @imageUrl where Id = @locationId')
+    .param('locationId', req.params.locationId, TYPES.Int)
+    .param('imageUrl', req.body.imageUrl, TYPES.VarChar)
+    .exec(res);
+});
+
 router.get("/floor_block_tile/:locationId", (req, res) => {
   req
-    .sql("select lo.*, (select bl.*, (select fl.*, (select ti.* "
-          + "      from Tile as ti "
-          + "       where ti.FloorID = fl.Id "
-          + "       for json path) as [Tiles] "
-          + " from [Floor] as fl "
-          + " where fl.BlockID = bl.Id "
-          + " for json path) as [Floors] "
-          + " from [Block] as bl "
-          + " where bl.LocationID = @locationId "
-          + " for json path) as [Blocks] "
-          + " from [Location] as lo "
-          + " where lo.Id = @locationId "
-          + " for json path, without_array_wrapper")
+    .sql("select lo.*, (select bl.*, (select fl.*, (select ti.* " +
+      "      from Tile as ti " +
+      "       where ti.FloorID = fl.Id " +
+      "       for json path) as [Tiles] " +
+      " from [Floor] as fl " +
+      " where fl.BlockID = bl.Id " +
+      " for json path) as [Floors] " +
+      " from [Block] as bl " +
+      " where bl.LocationID = @locationId " +
+      " for json path) as [Blocks] " +
+      " from [Location] as lo " +
+      " where lo.Id = @locationId " +
+      " for json path, without_array_wrapper")
     .param("locationId", req.params.locationId, TYPES.Int)
     .into(res);
 });
@@ -64,6 +72,7 @@ router.post("/create", (request, response) => {
     .param("latitude", request.body.newLocation.latitude, TYPES.Float)
     .into(response);
 });
+
 router.get("/editLocation/:id", (request, response) => {
   request
     .sql("exec Get1LocationById @locationId")

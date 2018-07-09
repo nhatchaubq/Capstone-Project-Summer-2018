@@ -13,7 +13,7 @@
       </div> -->
     
     <div >
-      <div class="field is-grouped view-mode" >
+      <div class="field is-grouped view-mode" style="margin-bottom:0rem !important">
         <!-- <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button> -->
         <router-link to='/account/'>  
@@ -24,9 +24,9 @@
         </router-link>
       </div>
     </div>
-    <div class="btncotrol" >
+    <div class="btncotrol" style="margin-bottom: 1rem">
       <div class="field is-grouped view-mode1">
-        <button class="btn-view-mode1" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
+        <button class="btn-view-mode1"  :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode1" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
       </div>
     </div>
@@ -53,11 +53,13 @@ import Server from "@/config/config.js";
 import { sync } from "vuex-pathify";
 import AccountCard from "./AccountCard";
 import AccountTable from "./AccountTable";
+import moment from "moment";
 
 export default {
   components: {
     AccountCard,
-    AccountTable
+    AccountTable,
+    moment
   },
   created() {
     let url = Server.ACCOUNT_API_PATH;
@@ -91,6 +93,9 @@ export default {
     },
     setTableMode(value) {
       this.$store.state.accountPage.isTableMode = value;
+    },
+    getDate(date) {
+      return moment(date).format("L");
     }
   }
 };
@@ -215,10 +220,10 @@ export default {
 
 /* test */
 
-.btn-view-mode1:hover {
+/* .btn-view-mode1:hover {
   color: #263238;
   cursor: pointer;
-}
+} */
 .btn-view-mode1 {
   background-color: white;
   padding: 0.4rem 0.4rem;
