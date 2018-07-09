@@ -1,5 +1,16 @@
-const router = require('express').Router();
-const TYPES = require('tedious').TYPES;
+
+var router = require("express").Router();
+var TYPES = require("tedious").TYPES;
+
+/* GET tile by floorID */
+router.get("/floor/:id", (req, res) => {
+    req
+        .sql("select * from Tile where FloorID = @id for json path")
+        .param("id", req.params.id, TYPES.Int)
+        .into(res);
+});
+
+
 
 router.post('/:floorId', (req, res) => {
     req.sql("insert into [Tile]([Name], FloorID, [Description]) values(@tileName, @floorId, @description);")
