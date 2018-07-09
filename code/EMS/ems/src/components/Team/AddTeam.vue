@@ -133,13 +133,13 @@ export default {
         .then(res => {
           if (this.selectedAccounts.length > 0) {
             if (res.data.NewTeamId) {
-              alert(res.data.NewTeamId);
+              // alert(res.data.NewTeamId);
               this.selectedAccounts.forEach(account => {
                 this.axios.post(Server.TEAM_ACCOUNT_CREATE_API_PATH, {
                   teamId: res.data.NewTeamId,
                   accountId: account.Id
                 });
-                alert("Success!");
+                // alert("Success!");
               });
             }
           }
