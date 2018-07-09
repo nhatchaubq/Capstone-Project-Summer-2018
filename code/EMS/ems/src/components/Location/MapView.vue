@@ -2,8 +2,8 @@
     <div class="row" style="margin: 0; padding: 0; height: 100% important" v-if="locations && medianLatitude && medianLongitude">
         <div class="material-box material-shadow" style="padding: 0; transition: all .25s ease-in-out" :style="{width: selectedLocation ? '49%' : '100%'}">
             <GmapMap          
-                :center="{lat: selectedLocation ? selectedLocation.Latitude : medianLatitude, 
-                          lng: selectedLocation ? selectedLocation.Longitude : medianLongitude}"
+                :center="google && new google.maps.LatLng(selectedLocation ? selectedLocation.Latitude : medianLatitude, 
+                          selectedLocation ? selectedLocation.Longitude : medianLongitude)"
                 :zoom="selectedLocation ? 16 : 13"
                 map-type-id="terrain"
                 style="width: 100%; height:80vh"
@@ -12,7 +12,8 @@
                 v-for="location in locations" :key="'mapViewMarker' + location.Id"
                 :position="google && new google.maps.LatLng(location.Latitude, location.Longitude)"
                 :clickable="true"
-                :draggable="true"
+                @mouseover="hoverLocation = location"
+                @mouseout="hoverLocation = null"
                 @click="() => {
                     if (selectedLocation && selectedLocation.Id == location.Id) {
                         selectedLocation = null;
@@ -20,7 +21,16 @@
                         selectedLocation = location;
                     }
                 }"
-            />
+            >
+             <GmapInfoWindow v-if="((hoverLocation && hoverLocation.Id == location.Id)
+                                    || (selectedLocation && selectedLocation.Id == location.Id))"
+                            :position="google && new google.maps.LatLng( hoverLocation ? hoverLocation.Latitude : selectedLocation.Latitude, 
+                                        hoverLocation ? hoverLocation.Longitud : selectedLocation.Longitude)">
+                {{ (hoverLocation && hoverLocation.Id == location.Id) ? hoverLocation.Name : selectedLocation.Name }}
+                  - 
+                {{ (hoverLocation && hoverLocation.Id == location.Id) ? hoverLocation.Address : selectedLocation.Address }}
+             </GmapInfoWindow>
+            </GmapMarker>
             <!-- <gmap-info-window :key="'mapViewLocationInfoWindow' + location.Id" v-for="location in locations">{{ location.Name }}</gmap-info-window> -->
             </GmapMap>
         </div>
@@ -70,6 +80,7 @@ export default {
         return {
             mapViewSelectedLocation: null,
             selectedLocation: null,
+            hoverLocation: null,
         }
     },
     watch: {
