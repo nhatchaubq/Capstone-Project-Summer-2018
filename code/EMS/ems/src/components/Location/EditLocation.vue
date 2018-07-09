@@ -7,7 +7,7 @@
             </div>
             <div class="form-title-end">
               <button id="" class="button is-rounded is-primary" style="margin-right: .6rem" v-on:click="updateLocation()">Save Changes</button>
-                <button id="" class="button is-rounded"  v-on:click="$router.push('/location')">Cancel</button>
+              <button id="" class="button is-rounded"  v-on:click="$router.push('/location')">Cancel</button>
               
             </div>
         </div>
