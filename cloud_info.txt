@@ -1,0 +1,4 @@
+Cloud name:dmlopvmdy
+API key:982394881563116
+API secret:CzqXt_0XDK-skOoyGJ1OGPO43mk
+Environment variable:cloudinary://982394881563116:CzqXt_0XDK-skOoyGJ1OGPO43mk@dmlopvmdy/
