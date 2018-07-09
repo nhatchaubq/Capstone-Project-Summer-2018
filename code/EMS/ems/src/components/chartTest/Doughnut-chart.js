@@ -20,7 +20,8 @@ export default {
                     "#00796B",
                     "#CFD8DC",
                 ],
-                data: this.data.TodayData
+                data: this.data.TodayData,
+
             }]
         }, {
             responsive: true,

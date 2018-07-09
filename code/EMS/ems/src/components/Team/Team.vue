@@ -29,18 +29,11 @@
                 <!-- </router-link> -->
                 <td>{{getDate(team.CreatedDate)}}</td>
 
-
             </tr>
         </tbody>
     </table>
+    <button v-on:click="$router.push('/team/add')" id="btn-add-account" class=" material-shadow-animate">Add Team</button>
 
-
-  
-    <router-link to='/team/add/'>
-      <button id="btn-add-account" class=" material-shadow-animate">Add Team</button>
-    </router-link>
-
-          <!-- <button id="btn-add-account" class=" material-shadow-animate">Add Team</button> -->
 
 </div>
 </template>
