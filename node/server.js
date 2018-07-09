@@ -9,7 +9,7 @@ server.use(cors());
 var connection = {
   server: "localhost",
   userName: "sa",
-  password: "123456",
+  password: "cCS94@bcnq836894",
   port: "1433",
   options: {
     // instanceName : "SQLEXPRESS",
@@ -51,7 +51,12 @@ server.use("/api/team_location", require("./routes/team_location"));
 server.use("/api/team_account", require("./routes/team_account"));
 server.use("/api/team/id", require("./routes/teamDetails"));
 server.use("/api/dashboard", require("./routes/dashBoard"));
-server.use("/api/report", require("./routes/report"));
+
+server.use("/api/report",require("./routes/report"));
+server.use("/api/block",require("./routes/block"));
+server.use("/api/floor",require("./routes/floor"));
+server.use("/api/tile",require("./routes/tile"));
+
 
 // server.use('/api/account/edit/id', require('./routes/account'));
 // server.use('/api/account', require('./routes/account'));
