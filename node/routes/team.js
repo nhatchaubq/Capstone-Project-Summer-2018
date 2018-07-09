@@ -12,21 +12,22 @@ router.get("/", (request, response) => {
 
     .into(response);
 });
-router.get("/getAllTeam",(request,response) =>{
+router.get("/getAllTeam", (request, response) => {
   request
-  .sql("select * from [Team] for json path")
-  .into(response);
+    .sql("select * from [Team] for json path")
+    .into(response);
 })
 router.post("/", (request, response) => {
   request
     .sql(
       "insert into [Team](Name, CreatedDate )" +
-      " values(@name, @createdDate )"
+      " values(@name, @createdDate ) " +
+      "select(select SCOPE_IDENTITY()) as [NewTeamId] for json path, without_array_wrapper"
     )
     .param("name", request.body.team.name, TYPES.NVarChar)
     .param("createdDate", request.body.team.createdDate, TYPES.NVarChar)
 
-    .exec(response);
+    .into(response);
 });
 router.get("/getTeamByLocation/:id", (request, response) => {
   request
