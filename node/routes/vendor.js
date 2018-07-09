@@ -12,7 +12,13 @@ router.get("/", (request, response) => {
 // });
 router.get("/:id", (request, response) => {
   request
-    .sql("exec [dbo].[GetVendorDetails(22/06)] @id")
+    .sql("	select v.*, " +
+      "json_query((SELECT * FROM [Equipment] WHERE Equipment.VendorID = @id for json path))as [Equipments] " +
+      "FROM [Vendor] as v  " +
+      "WHERE v.Id = @id " +
+      "for json path, without_array_wrapper "
+
+    )
     .param("id", request.params.id, TYPES.Int)
     .into(response);
 });

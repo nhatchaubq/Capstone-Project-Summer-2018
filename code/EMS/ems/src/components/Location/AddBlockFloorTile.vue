@@ -159,13 +159,16 @@
                                     <span style="color: transparent;">Notice: </span>- For hand tool, you must draw at least 3 points to be accepted as a legal block.
                                 </div>
                             </div>
-                            <div v-if="currentLocationPaintToolMode == paintToolMode.Preset && locationSelectedTileIndex >= 0">
+                            <div v-if="currentLocationPaintToolMode == paintToolMode.Preset 
+                                        && locationSelectedTileIndex >= 0">
                                 <div class="form-field">
                                     <div class="form-field-title">
                                         Name of this block
                                     </div>
                                     <div class="form-field-input" style="display: flex !important">
-                                        <input :disabled="newBlock.points.length < 3" v-model="newBlock.name" type="text" class="input" required placeholder="A, B, C">
+                                        <input :disabled="newBlock.points.length < 3" 
+                                                v-model="newBlock.name" type="text" 
+                                                class="input" required placeholder="A, B, C">
                                     </div>
                                 </div>
                                 <div class="form-field">
@@ -173,7 +176,9 @@
                                         Describe this block (optional)
                                     </div>
                                     <div class="form-field-input">
-                                        <textarea :disabled="newBlock.points.length < 3" class="input" rows="5"></textarea>
+                                        <textarea :disabled="newBlock.points.length < 3" 
+                                                v-model="newBlock.description"
+                                                class="input" rows="5"></textarea>
                                     </div>
                                 </div>
                                 <div class="form-field">
@@ -281,23 +286,31 @@
                                     Define your room name style (leave blank if you do not want to use custom name)
                                 </div>
                                 <div style="margin: .5rem 0 !important" class="row form-field-input">
-                                    Prefix:
-                                    <label class="radio">
-                                        <input :checked="tilePrefix == 'none'" v-on:click="tilePrefix = 'none'" class="radio" type="radio">
-                                        None
-                                    </label>
-                                    <label class="radio">
-                                        <input :checked="tilePrefix == 'floororder'" v-on:click="tilePrefix = 'floororder'" class="radio" type="radio">
-                                        Floor number
-                                    </label>
-                                    <label class="radio">
-                                        <input :checked="tilePrefix == 'custom'" v-on:click="tilePrefix = 'custom'" class="radio" type="radio">
-                                        Custom
-                                    </label>
-                                    <input style="margin-left: .5rem" v-if="tilePrefix == 'custom'" v-model="tilePrefixCustom" class="input" type="text" placeholder="A, B, C">
+                                    <div>
+                                        <span style="margin-right: 1rem;">Prefix:</span>
+                                        <label class="radio">
+                                            <input :checked="tilePrefix == 'none'" v-on:click="tilePrefix = 'none'" class="radio" type="radio">
+                                            None
+                                        </label>
+                                        <label class="radio">
+                                            <input :checked="tilePrefix == 'floororder'" v-on:click="tilePrefix = 'floororder'" class="radio" type="radio">
+                                            Floor number
+                                        </label>
+                                        <!-- <label class="radio">
+                                            <input :checked="tilePrefix == 'custom'" v-on:click="tilePrefix = 'custom'" class="radio" type="radio">
+                                            Custom
+                                        </label> -->
+                                        <!-- <input style="margin-left: .5rem" v-if="tilePrefix == 'custom'" v-model="tilePrefixCustom" class="input" type="text" placeholder="A, B, C"> -->
+                                    </div>
+                                    <!-- <div>
+                                        Define your room name style (leave blank if you do not want to use custom name)
+                                    </div> -->
                                 </div>
                             </div> <!-- define tile name style -->
-                            
+                            <!-- tile or room -->
+
+
+                            <!-- finish / save changes button -->
                             <div class="form-field">
                                 <!-- click this <a> to create/edit floors info of a block -->
                                 <a v-on:click="() => {
@@ -324,7 +337,7 @@
                                         editingBlockFloor = false;
                                     }
                                 }"><i class="fa fa-check-circle"></i> {{ editingBlockFloor ? 'Save changes ' : 'Finish creating floors for '}} Block {{ newLocation.blocks[createFloorCurrentBlock].name }}</a>
-                            </div>
+                            </div> <!-- finish / save changes button -->
                         </div> <!-- define floor info -->
                         <!-- display floors visually -->
                         <div class="col-6">
@@ -368,9 +381,9 @@
                                             <input style="margin: 0 .5rem; text-align: right;" class="input col-2" type="number" min='1' v-model="totalTiles">
                                             <span style="position: relative; top: .5rem"> room<span v-if="totalTiles > 1">s</span></span>
                                         </div>
-                                        <div v-if="newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles.length > 0">
+                                        <!-- <div v-if="newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles.length > 0">
                                             <span><strong>Click on the rooms below to edit its name.</strong></span>
-                                        </div>
+                                        </div> -->
                                         <div :key="'tile' + index" v-for="(tile, index) in newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles">
                                             <a v-if="index != currentTileIndex" v-on:click="() => {
                                                 if (currentTileIndex == index) {
@@ -379,11 +392,14 @@
                                                     currentTileIndex = index;
                                                 }
                                             }">Tile {{tile.name}}</a>
-                                            <input v-if="index == currentTileIndex" class="input" type="text" v-model="newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles[index].name">
-                                            <a v-if="index == currentTileIndex" v-on:click="currentTileIndex = -1;">
-                                                <i class="fa fa-check-circle"></i>
-                                                Save changes
-                                            </a>
+                                            <div v-if="index == currentTileIndex">
+                                                <input class="input" style="width: 15%; text-align: right; margin-right: 1rem" type="text" 
+                                                    v-model="newLocation.blocks[createFloorCurrentBlock].floors[currentFloorIndex].tiles[index].name">
+                                                <a style="padding-top: .5rem" v-on:click="currentTileIndex = -1;">
+                                                    <i class="fa fa-check-circle"></i>
+                                                    Save changes
+                                                </a>
+                                            </div>
                                         </div>
                                     </div> <!-- after selected a floor -->
                                 </div>
@@ -391,7 +407,7 @@
                         </div> <!-- display floors visually -->
                     </div>
                     <!-- else, this happens after created floors for all the newLocation.blocks or save changes of an editing block -->
-                    <div v-else>
+                    <div ref="daylaref" v-else>
                         <div class="form-field">
                             <div class="form-field-title">
                                 Please recheck the floors information of <span v-if="newLocation.blocks.length == 1">this block</span><span v-if="newLocation.blocks.length > 1">these newLocation.blocks</span> (click on a block to edit floor information):
@@ -427,11 +443,12 @@
                             <a :style="createFloorCurrentBlock >= 0 ? 'color: var(--shadow) !important; cursor: not-allowed;' : ''" 
                                 v-on:click="() => {
                                     if (createFloorCurrentBlock < 0) {
-                                        showAlert('you done');
+                                        createPostion();
                                     } else {
 
                                     }
-                                }">Next <i class="fa fa-chevron-circle-right"></i>
+                                }">Finish <i class="fa "  :class="{'fa-check-circle' : !sending,
+                                                                    'fa-circle-o-notch fa-spin': sending}"></i>
                             </a>
                         </div>                    
                     </div> <!-- back, next button -->
@@ -465,7 +482,13 @@
 <script>
 // import Vue from 'vue';
 import Server from '@/config/config';
+
 // import fileBase64 from 'vue-file-base64';
+
+import Utils from "@/utils.js";
+import fileBase64 from 'vue-file-base64';
+import moment from 'moment';
+
 
 export default {
     components: {
@@ -482,6 +505,7 @@ export default {
     },
     data() {
         return {
+            sending: false,
             location: null,
             newLocation: null,
             locationFloorPlanImage: null,
@@ -578,11 +602,12 @@ export default {
                         longitude: this.location.Longitude,
                         latitude: this.location.Latitude,
                         paintToolMode: this.currentLocationPaintToolMode,
-                        imageBase64: file.base64,
+                        imageFile: file,
                         blocks: [],
                         background: background,
                     };
-                } 
+                }
+                console.log(file)
                 // else if (this.currentStep == this.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
                 //     canvas = this.$refs.floorCanvas;
                 //     canvasContext = canvas.getContext('2d');
@@ -659,6 +684,10 @@ export default {
                         }
                     }
                 }); 
+                canvas.addEventListener('mouseout', (event) => {
+                    context.locationSelectedTileIndex = -1;
+                    context.paintCanvas(canvas, null, null);
+                })
             }
         },
         showAlert(msg) {
@@ -710,6 +739,7 @@ export default {
                                     firstFloorType: this.FirstFloorType.Ground,
                                     points: [],
                                     floors: [],
+                                    description: null,
                                 }
                                 this.newBlock.name = `${tileOrderNumber}`;
                                 this.newBlock.points.push({x: x, y: y});
@@ -925,6 +955,80 @@ export default {
                     floor.tiles[i].name = `${prefix}${i + 1}`
                 }
             });
+        },
+        async createPostion() {
+            let context = this;
+            let blockApi = `${Server.SERVER_DEFAULT}/block`;
+            let floorApi = `${Server.SERVER_DEFAULT}/floor`;
+            let tileApi = `${Server.SERVER_DEFAULT}/tile`;
+            let newBlockApi  = `${blockApi}/${context.newLocation.id}`;
+            context.sending = true;
+            if (this.newLocation.imageFile) {
+                let formData = new FormData();
+                formData.append('api_key', '982394881563116');
+                formData.append('file', this.newLocation.imageFile.file);
+                formData.append("public_id", this.newLocation.imageFile.name);
+                formData.append("timestamp", moment().valueOf());
+                formData.append("upload_preset", 'ursbvd4a');
+
+                let url = 'https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload';
+                try {
+                    let uploadRespose = await this.axios.post(url, formData);
+                    if (uploadRespose.status == 200) {
+                        await this.axios.put(`${Server.LOCATION_API_PATH}/update_location_floor_plan/${this.newLocation.id}`, {
+                            imageUrl: uploadRespose.data.url,
+                        });
+                    }
+                } catch(error) {
+                    console.log(error);
+                }
+            }
+            this.newLocation.blocks.forEach(async block => {
+                try {
+                    let newBlockResponse = await context.axios.post(newBlockApi, {
+                        blockName: block.name,
+                        description: block.description,
+                        coordinate: JSON.stringify(block.points),
+                    });
+                    if (newBlockResponse.status == 200 && newBlockResponse.data.NewBlockId) {
+                        let newBlockId = newBlockResponse.data.NewBlockId;
+                        let newFloorApi = `${floorApi}/${newBlockId}`;
+                        block.floors.forEach(async floor => {
+                            try {
+                                let newFloorResponse = await context.axios.post(newFloorApi, {
+                                    floorName: floor.name,
+                                    description: floor.description,
+                                });
+                                if (newFloorResponse.status == 200 && newFloorResponse.data.NewFloorId) {
+                                    let newFloorId = newFloorResponse.data.NewFloorId;
+                                    let newTileApi = `${tileApi}/${newFloorId}`;
+                                    floor.tiles.forEach(async tile => {
+                                        try {
+                                            await context.axios.post(newTileApi, {
+                                                tileName: tile.name,
+                                                description: floor.description,
+                                            });
+                                        } catch (error) {
+                                            console.log(error);
+                                        }
+                                    });
+                                } else {
+                                    alert('Error NewFloorId');
+                                }
+                            } catch (error) {
+                                console.log(error);
+                            }
+                        })
+                    } else {
+                        alert('Error NewBlockId');
+                    }
+                } catch(error) {
+                    console.log(error)
+                }
+            });
+            await Utils.sleep(1000);
+            context.sending = false;
+            context.$router.push('/location');
         }
     },    
     watch: {

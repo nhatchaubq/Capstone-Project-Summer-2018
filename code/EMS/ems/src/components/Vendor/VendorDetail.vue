@@ -102,9 +102,11 @@
               <div class="row" style="height:40px; ">
                 <!-- <div class="col-12 row"> -->
 
-                <span>-</span>
+                
                 <router-link :to="`/equipment/${Equipment.Id}`">
-                  {{Equipment.Name}}
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
                 </router-link>
 
                 <!-- </div > -->

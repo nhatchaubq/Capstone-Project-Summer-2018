@@ -1,11 +1,24 @@
-const router = require('express').Router();
-const TYPES = require('tedious').TYPES;
+const router = require("express").Router();
+const TYPES = require("tedious").TYPES;
+
+router.get("/workorderbylocationId/:id", (request, response) => {
+  request
+    .sql(
+      "select distinct wo.*, (select COUNT(*) " +
+        " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
+        " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
+        " where tl.LocationID = @locationId) as Quantity " +
+        " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
+        " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
+        " where tl.LocationID = @locationId " +
+        " for json path"
+    )
+    .param("locationId", request.params.id, TYPES.Int)
 
 // router.get('/', (request, response) => {
 //     request.sql("exec GetWorkOrders")
 //         .into(response);
 // });
-
 router.get('/', (request, response) => {
     request.sql("select (select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], "
                 + "        json_query((select * from [Location] where tl.LocationID = Id for json path, without_array_wrapper)) as [Location], "
@@ -56,46 +69,30 @@ router.get('/:id/equipments', (request, response) => {
         .param('workOrderId', request.params.id, TYPES.Int)
         .into(response);
 });
-
-router.get('/workorderbylocationId/:id',(request,response) => {
-    request.sql("select distinct wo.*, (select COUNT(*) "
-                + " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID "
-                + "     join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID "
-                + " where tl.LocationID = @locationId) as Quantity "
-                + " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID "
-                + "     join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID "
-                + " where tl.LocationID = @locationId "
-                + " for json path")
-    .param('locationId', request.params.id, TYPES.Int)
     .into(response);
-})
-
-router.get('/status', (request, response) => {
-    request.sql("select * from WorkOrderStatus for json path")
-        .into(response);
 });
 
-router.get('/priorities', (request, response) => {
-    request.sql("select * from Priority for json path")
-        .into(response);
-})
-
-router.get('/search/:value', (req, res) => {
-    req.sql("exec [dbo].SearchWorkOrder @searchValue")
-        .param("searchValue", req.params.value, TYPES.NVarChar)
-        .into(res);
+router.get("/status", (request, response) => {
+  request.sql("select * from WorkOrderStatus for json path").into(response);
 });
 
-router.get('/categories', (req, res) => {
-    req.sql("select * from WorkOrderCategory for json path")
-        .into(res);
+router.get("/priorities", (request, response) => {
+  request.sql("select * from Priority for json path").into(response);
+});
+
+router.get("/search/:value", (req, res) => {
+  req
+    .sql("exec [dbo].SearchWorkOrder @searchValue")
+    .param("searchValue", req.params.value, TYPES.NVarChar)
+    .into(res);
+});
+
+router.get("/categories", (req, res) => {
+  req.sql("select * from WorkOrderCategory for json path").into(res);
 });
 
 router.get('/get_equipment_detail/:id', (req, res) => {
     req.sql("select ei.*, es.[Name] as [Status], "
-            + " -- select all work orders the equipment item are currently in "
-            + " -- the order status must not be 'Cancelled', 'Closed' and 'Rejected' because those statuses do not effect the status of the equipment item "
-            + " -- if the item has not in any work orders at the time, the [WorkOrders] will be NULL in the returned result; "
             + " json_query((select wo.*, acc.[Username] as [RequestUsername], wos.[Name] as [Status], pri.[Name] as [Priority], pri.TagHexColor as [PriorityTagColor], "
             + "                             json_query((select wod.* "
             + "                                         from WorkOrderDetail as wod "
@@ -112,15 +109,11 @@ router.get('/get_equipment_detail/:id', (req, res) => {
             + "            where wo.StatusId = [status].Id and wo.Id = [workorderdetail].WorkOrderID "
             + "            order by wo.StatusID desc, wo.PriorityID desc "
             + "            for json path)) as [WorkOrders] "
-            + "from EquipmentItem as ei "
+            + " from EquipmentItem as ei "
             + "        join Equipment as e on ei.EquipmentID = e.Id "
             + "        join EquipmentStatus as es on ei.StatusId = es.Id "
-            + "where ei.EquipmentID = @equipmentId "
-            + "-- if an equipment item has not in any work order at the time, it must have more priority than others "
-            + "-- then we consider the runtime days, the less runtime days, the less the equipment item works in the construction site, so it must be choosen "
-            + "-- then we consider the last maintaince date, the farther the last maintaince, the more of chance the next maintaince happens, so we should choose the item that has last maintaince close from the current time "
-            + "-- last, from the time someone wants to create an work order, it's ideally to pick the item has next maintaince farther from the current time "
-            + "order by (select count(wo.Id) "
+            + " where ei.EquipmentID = @equipmentId "
+            + " order by (select count(wo.Id) "
             + "    from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
             + "    where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id "
             + "                                                        from WorkOrderStatus "

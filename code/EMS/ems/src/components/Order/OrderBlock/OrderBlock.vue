@@ -10,7 +10,7 @@
             <div>#{{ order.Id }}</div>
             <div>
                 <i class="fa fa-user"></i>
-                {{ authUser.Id == order.RequestUserID ? 'ChauBQN123456' : order.RequestUsername }}
+                {{ authUser.Id == order.RequestUserID ? 'You' : order.RequestUsername }}
             </div>
             <div>
                 <i class="fa fa-calendar"></i>
@@ -45,51 +45,51 @@ export default {
             return `border: 1px solid ${tagColor}; background-color: ${tagColor}`;
         },
         makeStatusIcon(order) {
-            switch(order.StatusID) {
-                case 1: { // Requested
+            switch(order.WorkOrderStatus) {
+                case 'Requested': { // Requested
                     return 'fa-level-up requested';
                 }
-                case 2: { // Checked
+                case 'Checked': { // Checked
                     return 'fa-check checked';
                 }
-                case 3: { // Approved
+                case 'Approved': { // Approved
                     return 'fa-thumbs-up approved';
                 }
-                case 4: { // InProgress
+                case 'In Progress': { // InProgress
                     return 'fa-thumbs-down rejected';
                 }
-                case 5: { // Closed
+                case 'Closed': { // Closed
                     return 'fa-tasks in-progress';
                 }
-                case 6: { // Rejected
+                case 'Rejected': { // Rejected
                     return 'fa-archive closed';
                 }
-                case 1002: { // Cancelled
+                case 'Cancelled': { // Cancelled
                     return 'fa-ban cancelled';
                 }
             }
         },
         statusColor(order) {
-            switch(order.StatusID) {
-                case 1: { // Requested
+            switch(order.WorkOrderStatus) {
+                case 'Requested': { // Requested
                     return 'requested';
                 }
-                case 2: { // Checked
+                case 'Checked': { // Checked
                     return 'checked';
                 }
-                case 3: { // Approved
+                case 'Approved': { // Approved
                     return 'approved';
                 }
-                case 4: { // InProgress
+                case 'In Progress': { // InProgress
                     return 'rejected';
                 }
-                case 5: { // Closed
+                case 'Closed': { // Closed
                     return 'in-progress';
                 }
-                case 6: { // Rejected
+                case 'Rejected': { // Rejected
                     return 'closed';
                 }
-                case 1002: { // Cancelled
+                case 'Cancelled': { // Cancelled
                     return 'cancelled';
                 }
             }

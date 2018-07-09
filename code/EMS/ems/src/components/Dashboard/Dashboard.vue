@@ -14,7 +14,7 @@
                 <!-- DoughnutChart  -->
                 <!-- <div style=" margin-left: 2rem !important" class="Chart col-4" > -->
                 <div class="Chart col-12" >
-                  <strong>Doughnut!!</strong>
+                  <strong>Available Equipment Percent</strong>
                     <doughnut-chart :data="doughnutChartData" styles="height: 40vh"></doughnut-chart>
                 </div>
                 <!-- DoughnutChart- end -->
@@ -43,7 +43,7 @@
 
                                     </div>
                                     <div class="contentstatus1" >
-                                        <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
+                                        <p style="color: #F44336; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
                                         <p style="font-size:15px;" >Work Orders</p>
                                     </div>
                                 </div>
@@ -55,7 +55,7 @@
 
                                     </div>
                                     <div class="contentstatus1 ">
-                                        <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
+                                        <p style="color: #1E88E5; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
                                         <p style="font-size:15px;">Work Orders</p>
                                     </div>
                                 </div>
@@ -69,7 +69,7 @@
 
                                     </div>
                                     <div class="contentstatus1">
-                                        <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
+                                        <p style="color: #00BFA5; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
                                         <p style="font-size:15px;">Work Orders</p>
                                     </div>
                                 </div>
@@ -81,7 +81,7 @@
 
                                     </div>
                                     <div class="contentstatus1" >
-                                        <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
+                                        <p style="color: #673AB7; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
                                         <p style="font-size:15px; ">Work Orders</p>
                                     </div>
                                 </div>
@@ -496,7 +496,7 @@ export default {
         // line chart data - end
         // doughnut chart data - start
         this.doughnutChartData.TodayLabels.push(data.Doughnut.Available.Name);
-        this.doughnutChartData.TodayLabels.push(data.Doughnut.Unavailable.Name);
+        this.doughnutChartData.TodayLabels.push("UNAVAILABLE");
         this.doughnutChartData.TodayData.push(
           data.Doughnut.Today.AvailableItemCount
         );
