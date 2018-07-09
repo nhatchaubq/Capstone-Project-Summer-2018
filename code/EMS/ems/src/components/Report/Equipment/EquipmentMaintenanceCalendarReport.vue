@@ -37,21 +37,7 @@
                     </select>
                     </div>
                 </div>
-                <div>
-                    <div class="txtText">
-                        Work Order Type 
-                    </div>                    
-                    <div class="control">
-                        <label class="radio">
-                        <input type="checkbox" name="wotypebar">
-                        Maintaining
-                        </label>
-                        <label class="radio" style="margin-left:0">
-                        <input type="checkbox" name="wotypebar">
-                        Working
-                        </label>
-                    </div>
-                </div>
+
                 <div>
                     <div class="txtText">
                         Export 
