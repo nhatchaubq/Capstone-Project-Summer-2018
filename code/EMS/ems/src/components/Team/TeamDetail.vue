@@ -201,6 +201,7 @@ export default {
       memberOptions: [],
       toLeaderOptions: [],
       SelectedMemberId: null,
+      // SelectedLeaderId: null,
       SelectedMemberName: "",
       selectedMember: {
         value: "",
@@ -271,9 +272,13 @@ export default {
     changeToLeader(SelectedMemberId) {
       let leaderId = null;
       if (this.team.LeaderAccount) {
+        // alert(this.team.LeaderAccount.Id);
         leaderId = this.team.LeaderAccount.Id;
+      } else {
+        //can chinh
+        leaderId = 1248753;
+        alert(leaderId);
       }
-
       this.axios
         .put(
           `http://localhost:3000/api/team/id/${
@@ -281,7 +286,8 @@ export default {
           }/${SelectedMemberId}/${leaderId}`
         )
         .then(res => {
-          (this.show = false), location.reload();
+          this.show = false;
+          location.reload();
         });
     },
     cancel() {
