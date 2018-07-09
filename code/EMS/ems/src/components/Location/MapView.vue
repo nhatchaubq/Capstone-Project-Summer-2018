@@ -1,51 +1,107 @@
 <template>
-    <div>
-        <router-link to="/location">
-            <a><i class="fa fa-chevron-left"></i> Back to Location</a>
-        </router-link>
-        <div v-if="mapViewSelectedLocation">
-            <div v-if="!mapViewSelectedLocation.Blocks" style="margin-top: 1rem">
-            This location has no block yet. <router-link :to="`/location/${$route.params.locationId}/add_block_floor_tile`"><a style="margin-left: .5rem; user-select: none;"><i class="fa fa-plus-circle"></i> Add new block</a></router-link>
+    <div class="row" style="margin: 0; padding: 0; height: 100% important" v-if="locations && medianLatitude && medianLongitude">
+        <div class="material-box material-shadow" style="padding: 0; transition: all .25s ease-in-out" :style="{width: selectedLocation ? '49%' : '100%'}">
+            <GmapMap          
+                :center="{lat: selectedLocation ? selectedLocation.Latitude : medianLatitude, 
+                          lng: selectedLocation ? selectedLocation.Longitude : medianLongitude}"
+                :zoom="selectedLocation ? 16 : 13"
+                map-type-id="terrain"
+                style="width: 100%; height:80vh"
+                >
+            <GmapMarker
+                v-for="location in locations" :key="'mapViewMarker' + location.Id"
+                :position="google && new google.maps.LatLng(location.Latitude, location.Longitude)"
+                :clickable="true"
+                :draggable="true"
+                @click="() => {
+                    if (selectedLocation && selectedLocation.Id == location.Id) {
+                        selectedLocation = null;
+                    } else {
+                        selectedLocation = location;
+                    }
+                }"
+            />
+            <!-- <gmap-info-window :key="'mapViewLocationInfoWindow' + location.Id" v-for="location in locations">{{ location.Name }}</gmap-info-window> -->
+            </GmapMap>
+        </div>
+        <div class="material-box material-shadow" v-if="selectedLocation && mapViewSelectedLocation" style="width: 49%; margin-left: 2%;">
+            <div>
+                <i v-on:click="selectedLocation = null" class="fa fa-times" style="cursor: pointer; color: var(--danger-color)"></i>
+                <a v-if="authUser.Role === 'Manager'" style="float: right; font-size: 0.95rem; font-weight: 500;">Edit</a>
             </div>
-            <div v-else>
-            <div :key="'mapViewBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks">
-                Block {{ block.Name }}
-                <div :key="'mapViewFloor' + floor.Id" v-for="floor in block.Floors" style="padding-left: 1rem">
-                Floor {{ floor.Name }}
-                <div :key="'mapViewTile' + tile.Id" v-for="tile in floor.Tiles" style="padding-left: 1rem">
-                    Tile {{ tile.Name }}
+            <div style="color: #424242">
+                <div class="header">
+                    <div style="font-size: 1.5rem; font-weight: 500; margin-bottom: .5rem">{{ selectedLocation.Name }}</div>
+                    <div style="font-size: 0.95rem">{{ selectedLocation.Address }}</div>
                 </div>
+                <div class="content">
+                    <div>
+                        <span>{{ mapViewSelectedLocation.Blocks ? 'Yes' : 'This location has no blocks yet. ' }}
+                            <a style="font-weight: 500" v-if="authUser.Role === 'Manager' && !mapViewSelectedLocation.Blocks"
+                                v-on:click="$router.push(`/location/${selectedLocation.Id}/add_block_floor_tile`)">
+                                <i class="fa fa-plus-circle"></i>
+                                <span> Create new block now</span>
+                            </a>
+                        </span>
+                    </div>
                 </div>
             </div>
-            </div>
-        </div>        
+        </div>
     </div>
 </template>
 
 <script>
 import Server from '@/config/config';
+import { gmapApi } from "vue2-google-maps";
+
 export default {
-    created() {
-        let locationId = this.$route.params.locationId;
-        let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
-        this.axios.get(url)
-            .then((res) => {
-                if (res.data) {
-                    this.mapViewSelectedLocation = res.data;
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            })
+    props: {
+        locations: null,
+        medianLatitude: null,
+        medianLongitude: null,
+    },
+    computed: {
+        authUser() {
+            return JSON.parse(window.localStorage.getItem('user'));
+        },
+        google: gmapApi,
     },
     data() {
         return {
             mapViewSelectedLocation: null,
+            selectedLocation: null,
+        }
+    },
+    watch: {
+        'selectedLocation': function() {
+            this.mapViewSelectedLocation = null;
+            if (this.selectedLocation) {
+                let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${this.selectedLocation.Id}`;
+                this.axios.get(url)
+                    .then((res) => {
+                        if (res.data) {
+                            this.mapViewSelectedLocation = res.data;
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            }
         }
     }
 }
 </script>
 
-<style>
+<style scoped>
+    .content {
+        font-size: 0.95rem;
+    }
+    
+    .header {
+        margin-bottom: 1rem;
+    }
 
+    .content > div {
+        margin-bottom: 1rem;
+    }
 </style>

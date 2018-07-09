@@ -1,12 +1,15 @@
 <template>
     <div>
-        edit worked!! 
+        Create position
     </div>
 </template>
 
 <script>
-export default {};
+export default {
+
+}
 </script>
 
 <style>
+
 </style>

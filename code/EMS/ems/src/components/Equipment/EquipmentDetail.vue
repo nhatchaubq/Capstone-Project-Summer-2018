@@ -321,6 +321,54 @@
         </vodal>
         </div>
   </div>
+        <vodal class="no-padding" height="500" :show="selectedItem != null" @hide="selectedItem = null" animation="slideUp">
+          <!-- <equipment-detail-popup :equipment="selectedItem" class="" v-show="selectedItem != null"></equipment-detail-popup> -->
+            <div v-if="selectedItem!=null" >
+            <div class="field" style=" display: grid; grid-template-columns: 85% 15%">
+              <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a">{{EquimentByID.Name}}</strong>
+              <button class="btn-edit" v-on:click="editMode = !editMode">Edit</button>
+            </div>
+            <div class="row" style="height: 36px" >
+              <div class="" style="margin-top:0.5rem" >
+                  Serial Number:  
+              </div>
+                <input v-model="selectedItem.SerialNumber" class="input col-7 " type="text" disabled="disabled"> 
+                <!-- <input v-model="EquimentByID.Name" class="input col-7 " type="text"  > -->
+            </div>
+            <div class="row" style="height: 36px" >
+              <div class="" style="margin-top:0.5rem" >
+                  Price:  
+              </div>
+                <input v-model="selectedItem.Price" class="input col-7 " type="text" disabled="disabled"> 
+            </div>
+            <div class="row" style="height: 36px" >
+              <div class="" style="margin-top:0.5rem" >
+                  Warranty:  
+              </div>
+                <input v-model="selectedItem.WarrantyDuration" class="input col-7 " type="text" disabled="disabled"> 
+            </div>
+            <div class="row" style="height: 36px" >
+              <div class="" style="margin-top:0.5rem" >
+                  Run-times:  
+              </div>
+                <input v-model="selectedItem.RuntimeDays" class="input col-7 " type="text" disabled="disabled"> 
+            </div>
+            <div class="row" style="height: 36px" >
+              <div class="" style="margin-top:0.5rem" >
+                  Import-Date:  
+              </div>
+                <input v-model="selectedItem.ImportDate" class="input col-7 " type="text" disabled="disabled"> 
+            </div>
+            <div class="row" style="height: 36px" >
+              <div class="" style="margin-top:0.5rem" >
+                  Status:  
+              </div>
+                <input v-model="selectedItem.Status" class="input col-7 " type="text" disabled="disabled"> 
+            </div>
+            </div>
+        </vodal>
+    </div>
+    </div>
 </template>
 
 <script>
@@ -332,7 +380,9 @@ import EquipmentDetailPopup from "./EquipmentDetailPopup";
 import Vodal from "vodal";
 
 export default {
+
   name: "ConditionalModal",
+
   components: {
     ModelSelect,
     Vodal,
@@ -395,6 +445,7 @@ export default {
       .catch(error => {
         alert(error);
       });
+
     this.axios
       .get("http://localhost:3000/api/location")
       .then(response => {
@@ -434,6 +485,11 @@ export default {
       selectedItem: null,
       itemId: "",
       workOrder: null,
+  },
+  data() {
+    return {
+      selectedItem: null,
+
       EquimentByID: null,
       equipmentId: "",
       quality: 0,
@@ -441,6 +497,7 @@ export default {
       files: "",
       quantity: 1,
       editMode: false,
+
       editItemMode: false,
       statusOptions: [],
       randomNumbers: [],
@@ -460,6 +517,7 @@ export default {
         value: ""
       },
       blockOptions: [],
+
       vendorOptions: [],
       selectedVendor: {
         text: "",
@@ -600,16 +658,21 @@ export default {
             .catch(error => {
               alert(error);
             });
+          alert(this.selectedItem.SerialNumber);
+          
         })
         .catch(error => {
           console.log(error);
         });
     },
+
     addItem() {
       this.addPopUp = true;
       this.editMode = !this.addPopUp;
       // alert(this.addPopUp);
     },
+
+
     getFilePath(file) {
       return window.URL.createObjectURL(file);
     },
@@ -701,7 +764,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .btn-edit:hover {
   cursor: pointer;
   color: black;
@@ -753,6 +816,7 @@ export default {
   /* margin-left: 0.25rem; */
   height: 36px;
   width: 100px;
+
   margin-left: 100px;
 }
 .btn-changeStt {
@@ -783,6 +847,8 @@ export default {
 .btn-Cancel:hover {
   cursor: pointer;
   background-color: #bdbdbda1;
+  margin-left: 150px;
+
 }
 .btn-Cancel:hover {
   cursor: pointer;
@@ -808,8 +874,8 @@ export default {
   /* margin-left: 0.25rem; */
   height: 36px;
   width: 100px;
-  /* margin-right: 25%; */
-  margin-left: 100px;
+  margin-right: 25%;
+  margin-left: 2rem;
 }
 .row {
   margin-left: 0.5rem;
@@ -818,6 +884,7 @@ export default {
   display: grid;
   grid-template-columns: 35% 65%;
 }
+
 .rowpu {
   margin-left: 0.5rem;
   margin-top: 0.75rem;
