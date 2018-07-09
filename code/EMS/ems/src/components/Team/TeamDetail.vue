@@ -136,14 +136,6 @@ export default {
     this.axios.get(teamApiUrl).then(response => {
       let data = response.data.team;
       this.team = data;
-
-      // data.forEach(member => {
-      //     let option = {
-      //       text: member.Name,
-      //       value: member.Id
-      //     };
-      //     this.memberOptions.push(option);
-      //   });
     });
 
     let outsideTeamApiUrl = `http://localhost:3000/api/AllAccExceptThatTeam/${
@@ -159,40 +151,6 @@ export default {
         this.memberOptions.push(option);
       });
     });
-    // let getMembersInTeamApiUrl = `http://localhost:3000/api/getMembersInTeam/${
-    //   this.$route.params.id
-    // }`;
-    // this.axios.get(getMembersInTeamApiUrl).then(res => {
-    //   let data = res.data;
-    //   data.forEach(element => {
-    //     let option = {
-    //       value: element.account.Id,
-    //       text: element.account.Fullname
-    //     };
-    //     this.toLeaderOptions.push(option);
-    //   });
-    // });
-    //   this.axios
-    //     .get(
-    //       `http://localhost:3000/api/team/id/getMembersInTeam/${
-    //         this.$route.params.id
-    //       }`
-    //     )
-    //     .then(response => {
-    //       let data = response.data;
-    //       data.forEach(element => {
-    //         let option = {
-    //           value: element.Id,
-    //           text: element.Fullname
-    //         };
-    //         this.toLeaderOptions.push(option);
-    //         console.log(this.toLeaderOptions.length);
-    //       });
-    //     })
-    //     .catch(error => {
-    //       alert("false");
-    //       alert(error);
-    //     });
   },
 
   data() {
@@ -201,7 +159,6 @@ export default {
       memberOptions: [],
       toLeaderOptions: [],
       SelectedMemberId: null,
-      // SelectedLeaderId: null,
       SelectedMemberName: "",
       selectedMember: {
         value: "",
@@ -211,10 +168,6 @@ export default {
       lastSelectItem: {},
       show: false,
       showConfirm: false
-      // selectedToLeader: {
-      //   value: "",
-      //   text: ""
-      // }
     };
   },
   computed: {

@@ -603,7 +603,6 @@ export default {
                         background: background,
                     };
                 }
-                console.log(file)
                 // else if (this.currentStep == this.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
                 //     canvas = this.$refs.floorCanvas;
                 //     canvasContext = canvas.getContext('2d');
