@@ -723,6 +723,7 @@ methods: {
             context.paintCanvas(canvas, null, null);
         })
     }
+
     },
     showAlert(msg) {
       alert(msg);

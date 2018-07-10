@@ -44,6 +44,12 @@ router.beforeEach((to, from, next) => {
       next("/location");
     } else if (to.name == "edit_location" && authUser.Role != "Manager") {
       next("/location");
+    } else if (
+      to.name == "report" &&
+      authUser.Role != "Manager" &&
+      authUser.Role != "Equipment Staff"
+    ) {
+      next("/");
     } else {
       next();
     }

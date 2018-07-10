@@ -310,7 +310,52 @@
               </div>
               <div v-if="currentViewMode ==  viewModes.Position">
                 <p>This is position tab - Coming soon</p>
-                
+                <div class="rowpu" style="height: 36px" >
+                  <div class="" style="margin-top:0.5rem" >
+                      Address:  
+                  </div>
+                  <div class="">
+                    <input v-if="!editItemMode" v-model="selectedItem.Item.Address" class="input col-7 " type="text" disabled="disabled">
+                    <!-- <input v-else v-model="selectedItem.Item.LastMaintainDate" class="input col-7 " type="date">   -->
+                  </div>
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="" style="margin-top:0.5rem" >
+                      Location:  
+                  </div>
+                  <div class="">
+                    <input v-if="!editItemMode" v-model="selectedItem.Item.Location" class="input col-7 " type="text" disabled="disabled">
+                    <!-- <input v-else v-model="selectedItem.Item.LastMaintainDate" class="input col-7 " type="date">   -->
+                  </div>
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="" style="margin-top:0.5rem" >
+                      Block:  
+                  </div>
+                  <div class="">
+                    <input v-if="!editItemMode" v-model="selectedItem.Item.Block" class="input col-7 " type="text" disabled="disabled">
+                    <!-- <input v-else v-model="selectedItem.Item.LastMaintainDate" class="input col-7 " type="date">   -->
+                  </div>
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="" style="margin-top:0.5rem" >
+                      Floor:  
+                  </div>
+                  <div class="">
+                    <input v-if="!editItemMode" v-model="selectedItem.Item.FLoor" class="input col-7 " type="text" disabled="disabled">
+                    <!-- <input v-else v-model="selectedItem.Item.LastMaintainDate" class="input col-7 " type="date">   -->
+                  </div>
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="" style="margin-top:0.5rem" >
+                      Tile:  
+                  </div>
+                  <div class="">
+                    <input v-if="!editItemMode" v-model="selectedItem.Item.Tile" value="selectedItem.Item.Tile ? selectedItem.Item.Tile : 'undefined'" class="input col-7 " type="text" disabled="disabled">
+                     
+                    <!-- <input v-else v-model="selectedItem.Item.LastMaintainDate" class="input col-7 " type="date">   -->
+                  </div>
+                </div>
               </div>
               <div v-if="currentViewMode ==  viewModes.WorkOrder">
                 <div class="wrap-table" style="max-height: 300px; overflow-y: auto">
@@ -369,6 +414,7 @@ export default {
           this.EquimentByID = element.Equipment;
         });
       });
+
     // this.axios
     //   .get("http://localhost:3000/api/equipmentItem/" + equipmentId)
     //   .then(response => {
@@ -473,6 +519,7 @@ export default {
       statusHistories: [],
       allworkorder: [],
       tiles: [],
+      oldstt : "",
       selectedStatus: {
         text: "",
         value: ""
@@ -621,6 +668,9 @@ export default {
         .get("http://localhost:3000/api/equipmentItem/Item/" + itemId)
         .then(response => {
           this.selectedItem = response.data;
+          // alert(this.selectedItem.Item.Tile);
+          this.oldstt = this.selectedItem.Item.StatusID;
+          
           this.statusHistories = [];
           this.allworkorder = [];
           this.axios
@@ -704,33 +754,47 @@ export default {
           })
           .then(function(respone) {
             alert("Update successfully");
+            location.reload();
           })
           .catch(function(error) {
             console.log(error);
           });
       }
-      location.reload();
     },
     changeItemStatus() {
       let authUser = JSON.parse(window.localStorage.getItem("user"));
       // alert(this.changeItemSttDescription);
-      this.axios
+      if (this.oldstt == this.selectedItem.Item.StatusID){
+        alert('Cannot updatde, please choose new status');
+      }else{
+        this.axios
         .put(
-          "http://localhost:3000/api/equipmentItem/status/" +
-            this.selectedItem.Item.Id,
-          {
+              "http://localhost:3000/api/equipmentItem/status/" +
+                this.selectedItem.Item.Id,
+              {
             newStatus: this.selectedItem.Item.StatusID,
             userId: authUser.Id,
             description: this.changeItemSttDescription
           }
         )
         .then(function(respone) {
-          alert("Update successfully");
-          this.created();
+           alert("Update successfully");
         })
         .catch(function(error) {
           console.log(error);
         });
+      }
+       if (this.selectedItem.Item.StatusID == 7){
+            alert(this.selectedItem.Item.Id);
+            this.axios
+            .put("http://localhost:3000/api/equipmentItem/tileId/"+this.selectedItem.Item.Id)
+            .then(function(respone){
+               location.reload();
+            })
+            .catch(function(error){
+              consonle.log(error);
+            })
+          }
     },
     updateItem() {
       // if (this.selectedStatus.value == "") {
