@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
   if (authUser) {
     if (to.name == 'login') {
       next('/');
-    } else if (to.name == 'create_work_order' && authUser.RoleID != 5 && authUser.RoleID != 6) {
+    } else if (to.name == 'create_work_order' && authUser.Role != 'Staff' && authUser.Role != 'Maintainer') {
       next('/work_order');
     } 
     else {

@@ -10,13 +10,13 @@
             :style="{width: selectedLocation ? '49%' : '100%'}"
             >
             <GmapMarker
-                v-for="location in locations" :key="'mapViewMarker' + location.Id"
+                v-for="(location, index) in locations" :key="'mapViewMarker' + location.Id"
                 :position="google && new google.maps.LatLng(location.Latitude, location.Longitude)"
                 :clickable="true"
                 @mouseover="hoverLocation = location"
                 @mouseout="hoverLocation = null"
                 @click="() => {
-                    setSelectedLocation(location);
+                    setSelectedLocation(location, index);
                 }"
             >
                 <GmapInfoWindow v-if="((hoverLocation && hoverLocation.Id == location.Id)
@@ -169,6 +169,16 @@ export default {
         medianLatitude: null,
         medianLongitude: null,
     },
+    mounted() {
+        if (this.locations) {
+            for(var i = 0; i < this.locations.length; i++) {
+                let cache = {
+                    background: null,
+                }
+                this.imageCache.push(cache);
+            }
+        } 
+    },
     computed: {
         authUser() {
             return JSON.parse(window.localStorage.getItem('user'));
@@ -179,20 +189,23 @@ export default {
         return {
             mapViewSelectedLocation: null,
             selectedLocation: null,
+            selectedLocationIndex: -1,
             hoverLocation: null,
             curentBlockIndex: -1,
             currentFloorIndex: -1,
             currentTileIndex: -1,
             showTileEquipmentPopup: false,
             tileEquipments: [],
+            imageCache: [],
         }
     },
     methods: {
-        setSelectedLocation(location) {
+        setSelectedLocation(location, index) {
             if (this.selectedLocation && this.selectedLocation.Id == location.Id) {
                 this.selectedLocation = null;
             } else {
                 this.selectedLocation = location;
+                this.selectedLocationIndex = index;
             }
         },
         showTileEquipment(tileId) {
@@ -220,8 +233,13 @@ export default {
                             this.mapViewSelectedLocation = res.data;
                             if (this.selectedLocation.Image) {
                                 let canvas = this.$refs.floorPlanCanvas;
-                                let background = new Image();
-                                background.src = this.selectedLocation.Image;
+                                var background = null;
+                                if (this.imageCache[this.selectedLocationIndex].background) {
+                                    background = this.imageCache[this.selectedLocationIndex].background;
+                                } else {
+                                    background = new Image()
+                                    background.src = this.selectedLocation.Image;
+                                }
                                 let MAX_WIDTH = 460;
                                 let MAX_HEIGHT = 460;
                                 var width = background.width;
@@ -241,11 +259,14 @@ export default {
                                 canvas.width = width;
                                 canvas.height = height;
                                 let canvasContext = canvas.getContext('2d');
-                                background.onload = () => {
-                                    canvas.width = 460;
-                                    canvas.height = background.height;
+                                if (this.imageCache[this.selectedLocationIndex]) {
                                     canvasContext.drawImage(background, 0, 0, width, height);
-                                };        
+                                } else {
+                                    background.onload = () => {
+                                        canvasContext.drawImage(background, 0, 0, width, height);
+                                        this.imageCache[this.selectedLocationIndex].background = background;
+                                    }
+                                }    
                             }
                             this.curentBlockIndex = 0;
                         }

@@ -153,13 +153,13 @@ export default {
           // alert(this.selectedTeams.length);
           if (this.selectedTeams.length > 0) {
             if (res.data.NewLocationId) {
-              this.selectedTeams.forEach(team => {
-                this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
+              this.selectedTeams.forEach(async team => {
+                await this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
                   locationId: res.data.NewLocationId,
                   teamId: team.Id
                 });
-                alert("Success!");
               });
+              this.$router.push('/location');
             }
           }
         })
