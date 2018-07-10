@@ -138,7 +138,7 @@ let router = new Router({
         showSearchBar: false
       }
     },
-    {
+    { name: "report",
       path: "/report",
       component: ReportComponent,
       beforeEnter: (to, from, next) => {

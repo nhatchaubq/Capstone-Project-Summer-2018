@@ -492,7 +492,7 @@ import moment from "moment";
 
 export default {
   components: {
-    // fileBase64
+    fileBase64
   },
   created() {
     let url = `${Server.LOCATION_API_PATH}/${this.$route.params.locationId}`;
@@ -723,6 +723,7 @@ methods: {
             context.paintCanvas(canvas, null, null);
         })
     }
+
     },
     showAlert(msg) {
       alert(msg);
