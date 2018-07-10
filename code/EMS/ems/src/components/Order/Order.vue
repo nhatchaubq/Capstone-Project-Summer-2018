@@ -119,8 +119,20 @@
                             </div>
                             <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'In Progress'">
                                 <button class="button btn-primary material-shadow-animate" v-on:click="() => {
-                                    newStatusName = 'Closed';
-                                    showChangeStatusDialog = true;
+                                    toCloseEquipments = []; 
+                                    equipments.forEach(equipment => {
+                                        equipment.EquipmentItems.forEach(item => {
+                                            if (!item.DetailReturnDate) {
+                                                toCloseEquipments.push({
+                                                    equipment: equipment,
+                                                    item: item,
+                                                    status: 'Available',
+                                                    description: ''
+                                                });
+                                            }
+                                        })
+                                    })
+                                    showCloseWorkOrderDetailDialog = true;
                                 }">Close this work order</button>
                             </div>
                       </div>
@@ -134,8 +146,8 @@
                             <div class="detail-contents" style="width: 100%;">
                                 <span class="detail-label">Equipments:</span>
                                 <v-flex>
-                                    <v-expansion-panel popout>
-                                        <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
+                                    <v-expansion-panel popout v-model="equipmentPanelIndex">
+                                        <v-expansion-panel-content v-for="(equipment, index) in equipments" :key="'equipment' + equipment.Id" v-on:click.native="selectedEquipmentPanelIndex = index">
                                             <div slot="header">
                                                 <div style="display: grid; grid-template-columns: 25% auto;">
                                                     <div style="display: flex">
@@ -159,25 +171,35 @@
                                                     <div>
                                                         Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a>
                                                         <span v-if="(authUser.Role == 'Staff' || authUser.Role == 'Maintainer')
-                                                                    && selectedOrder.WorkOrderStatus == 'In Progress'" >
+                                                                    && selectedOrder.WorkOrderStatus == 'In Progress' && !item.DetailReturnDate" >
                                                              | 
                                                             <a v-on:click="() => {
                                                                 showUpdateItemPosition = true;
                                                                 toUpdatePositionItem = item;
                                                             }">Update position</a>
                                                         </span>
-                                                        <span v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus === 'In Progress'">
+                                                        <span v-if="(authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus === 'In Progress')
+                                                                        && !item.DetailReturnDate">
                                                             | 
                                                             <a v-on:click="() => {
-                                                                workOrderIdOfToCloseWOD = selectedOrder.Id;
-                                                                toCloseEquipment = equipment;
-                                                                toCloseEquipmentItem = item;
+                                                                //toCloseEquipment = equipment;
+                                                                //toCloseEquipmentItem = item;
+                                                                toCloseEquipments = [];                                                                
+                                                                toCloseEquipments.push({
+                                                                    equipment: equipment,
+                                                                    item: item,
+                                                                    status: 'Available',
+                                                                    description: ''
+                                                                });
+
                                                                 showCloseWorkOrderDetailDialog = true;
                                                             }">Close</a>
                                                         </span>
+                                                        <span v-if="item.DetailReturnDate"> - Closed at {{ getDateWithTime(item.DetailReturnDate) }}</span>
                                                     </div>                                                        
                                                     <div v-if="selectedOrder.WorkOrderStatus != 'Cancelled' 
-                                                                && selectedOrder.WorkOrderStatus != 'Closed'">
+                                                                && selectedOrder.WorkOrderStatus != 'Closed'
+                                                                && !item.DetailReturnDate">
                                                         Current in: 
                                                         <span v-if="item.BlockFloorTile">
                                                             {{ item.BlockFloorTile.Location.Name }}
@@ -215,7 +237,7 @@
                             <div class="detail-contents" v-if="selectedOrder.WorkOrderRecord">
                                 <div style="font-size: .95rem;" :key="'orderRecord' + orderRecord.Id" v-for="(orderRecord, index) in selectedOrder.WorkOrderRecord">
                                     <span class="tag" :class="getStatusColorClass(orderRecord.NewStatus.Name)">{{ orderRecord.NewStatus.Name }}</span> 
-                                        by <span class="tag">{{ orderRecord.ModifiedUser.Id == authUser.Id ? 'You' :  `${orderRecord.ModifiedUser.Role} ${orderRecord.ModifiedUser.Username}` }}</span> on {{ getFormatDate(orderRecord.ModifiedByDateTime) }}
+                                        by <span class="tag">{{ orderRecord.ModifiedUser.Id == authUser.Id ? 'You' :  `${orderRecord.ModifiedUser.Role} ${orderRecord.ModifiedUser.Username}` }}</span> on {{ getDate(orderRecord.ModifiedByDateTime) }}
                                         <div style="margin-left: 2rem; padding: 1rem 1rem;" :style="((index != (selectedOrder.WorkOrderRecord.length - 1)) || (index == (selectedOrder.WorkOrderRecord.length - 1) && orderRecord.Description)) ? 
                                                                                                     `border-left: 2px solid ${getStatusColor(orderRecord.NewStatus.Name)}` : ''">
                                             <span v-if="orderRecord.Description" class="quote">&ldquo;{{ orderRecord.Description }}&rdquo;</span>
@@ -292,6 +314,7 @@
               </div>
           </div>
       </vodal> <!-- change status dialog -->
+
       <modal v-if="selectedOrder" v-model="showEditDialog" @on-ok="showEditDialog = false" @on-cancel="showEditDialog = false"
         ok-text="Save changes" cancel-text="Cancel">
           <div slot="header">
@@ -334,9 +357,9 @@
             </v-flex>
           </div>
       </modal>
+
       <!-- close work detail dialog -->
-      <modal width="800" v-if="toCloseEquipment && toCloseEquipmentItem" v-model="showCloseWorkOrderDetailDialog" 
-                @on-ok="showCloseWorkOrderDetailDialog = false" >
+      <modal width="800" v-if="toCloseEquipments.length > 0" v-model="showCloseWorkOrderDetailDialog">
           <div slot="header">
               Close Order Detail
           </div>
@@ -352,113 +375,128 @@
                 <div style="text-align: center">Lost</div>
                 <div>Description</div>
             </div>
-            <div style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%;">
+            <div style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%; margin-bottom: 1rem;"
+                    :key="'toCloseItem' + index" v-for="(value, index) in toCloseEquipments">
                 <div style="display: flex">
-                    <img v-show="toCloseEquipment.Image" :src="toCloseEquipment.Image" :alt="toCloseEquipment.Name" style="width: 3rem; height: 3rem;">
+                    <img v-show="value.equipment.Image" :src="value.equipment.Image" :alt="value.equipment.Name" style="width: 3rem; height: 3rem;">
                 </div>
                 <div style="display: grid; grid-template-rows: auto auto;">
                     <div>
-                        {{ toCloseEquipment.Name }}
+                        {{ value.equipment.Name }}
                     </div>                                            
                     <div style="font-size: .9rem">
-                        Serial #: <strong>{{ toCloseEquipmentItem.SerialNumber }}</strong>
+                        Serial #: <strong>{{ value.item.SerialNumber }}</strong>
                     </div>
                 </div>
                 <div style="text-align: center">
                     <label class="radio">
-                        <input type="radio" :checked="toUpdateItemStatus == 'Available'"
-                                :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`"
-                                v-on:click="toUpdateItemStatus = 'Available'">
+                        <input type="radio" :checked="value.status == 'Available'"
+                                :name="`${value.equipment.Name}${value.item.Id}`"
+                                v-on:click="value.status = 'Available'">
                     </label>
                 </div>
                 <div style="text-align: center">
                     <label class="radio">
-                        <input type="radio" :checked="toUpdateItemStatus == 'Damaged'"
-                            :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`"
-                            v-on:click="toUpdateItemStatus = 'Damaged'">
+                        <input type="radio" :checked="value.status == 'Damaged'"
+                            :name="`${value.equipment.Name}${value.item.Id}`"
+                            v-on:click="value.status = 'Damaged'">
                     </label>
                 </div>
                 <div style="text-align: center">
                     <label class="radio">
-                        <input type="radio" :checked="toUpdateItemStatus == 'Lost'"
-                            :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`"
-                            v-on:click="toUpdateItemStatus = 'Lost'">
+                        <input type="radio" :checked="value.status == 'Lost'"
+                            :name="`${value.equipment.Name}${value.item.Id}`"
+                            v-on:click="value.status = 'Lost'">
                     </label>
                 </div>
                 <div>
                     <textarea class="input" cols="30" rows="10" 
-                            v-model="toUpdateItemDescription"
+                            v-model="value.description"
                             style="width: 100%; min-height: 3rem; max-height: 3rem"></textarea>
                 </div>
             </div>
           </div>
           <div slot="footer">
-              <button v-on:click="showCloseWorkOrderDetailDialog = false" 
-                        class="button">Cancel</button>
-              <button class="button btn-primary" 
-                        v-on:click="closeWorkOrderDetail(selectedOrder.Id, toCloseEquipmentItem.Id, newItemStatus)">Close Order Detail</button>
+                <button v-on:click="showCloseWorkOrderDetailDialog = false" 
+                            class="button">Cancel</button>
+                <button class="button btn-primary" 
+                        v-on:click="closeWorkOrderDetails()">
+                    Close Order Detail
+                </button>
           </div>
-      </modal> 
-      <!-- close work detail dialog -->
-      <modal v-if="mapViewSelectedLocation" v-model="showUpdateItemPosition" 
-            @on-ok="updateItemPosition()" 
-            @on-cancel="() => {
-                showUpdateItemPosition = false;
-                updateBlock = null;
-                updateFloor = null;
-                updateTile = null;
-            }"
+      </modal> <!-- close work detail dialog -->
+      
+      <modal v-if="mapViewSelectedLocation" v-model="showUpdateItemPosition"
             ok-text="Save changes" cancel-text="Cancel">
-          <div slot="header">
-              <span>Update Position</span>
-          </div>
-          <div :style="{
-              'max-height': '50vh',
-              'overflow-y': 'auto',
-              'font-size': '.95rem',
-          }">
-           <div>
-               {{mapViewSelectedLocation.Name}} - {{mapViewSelectedLocation.Address}}
-           </div>
-           <div style="display: grid; grid-template-columns: 30% 30% 30%; grid-column-gap: 5%; margin: 2rem 0;">
-               <div style="width: 100%">
-                    <div style="width: 100%" class="select">
-                        <select style="width: 100%" v-model="updateBlock">
-                            <option disabled :value="null">Select a block</option>
-                            <option :value="block" :key="'updateBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks">
-                                Block {{ block.Name }}
-                            </option>
-                        </select>
+            <div slot="header">
+                <span>Update Position</span>
+            </div>
+            <div :style="{
+                'max-height': '50vh',
+                'overflow-y': 'auto',
+                'font-size': '.95rem',
+            }">
+                <div>
+                    {{mapViewSelectedLocation.Name}} - {{mapViewSelectedLocation.Address}}
+                </div>
+                <div style="display: grid; grid-template-columns: 30% 30% 30%; grid-column-gap: 5%; margin: 2rem 0;">
+                    <div style="width: 100%">
+                            <div style="width: 100%" class="select">
+                                <select style="width: 100%" v-model="updateBlock">
+                                    <option disabled :value="null">Select a block</option>
+                                    <option :value="block" :key="'updateBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks">
+                                        Block {{ block.Name }}
+                                    </option>
+                                </select>
+                            </div>
                     </div>
-               </div>
-               <div style="width: 100%">
-                    <div style="width: 100%" class="select" v-if="updateBlock && updateBlock.Floors">
-                        <select style="width: 100%" v-model="updateFloor">
-                            <option disabled :value="null">Select a floor</option>
-                            <option :value="floor" :key="'updateFloor' + floor.Id" v-for="floor in updateBlock.Floors">
-                                Floor {{ floor.Name }}
-                            </option>
-                        </select>
-                    </div>                   
-               </div>
-               <div style="width: 100%">
-                    <div style="width: 100%" class="select" v-if="updateFloor && updateFloor.Tiles">
-                        <select style="width: 100%" v-model="updateTile">
-                            <option disabled :value="null">Select a tile</option>
-                            <option :value="tile" :key="'updaupdateTileteFloor' + tile.Id" v-for="tile in updateFloor.Tiles">
-                                Tile {{ tile.Name }}
-                            </option>
-                        </select>
+                    <div style="width: 100%">
+                            <div style="width: 100%" class="select" v-if="updateBlock && updateBlock.Floors">
+                                <select style="width: 100%" v-model="updateFloor">
+                                    <option disabled :value="null">Select a floor</option>
+                                    <option :value="floor" :key="'updateFloor' + floor.Id" v-for="floor in updateBlock.Floors">
+                                        Floor {{ floor.Name }}
+                                    </option>
+                                </select>
+                            </div>                   
                     </div>
-               </div>
-           </div>
-          </div>
+                    <div style="width: 100%">
+                            <div style="width: 100%" class="select" v-if="updateFloor && updateFloor.Tiles">
+                                <select style="width: 100%" v-model="updateTile">
+                                    <option disabled :value="null">Select a tile</option>
+                                    <option :value="tile" :key="'updateTileFloor' + tile.Id" v-for="tile in updateFloor.Tiles">
+                                        Tile {{ tile.Name }}
+                                    </option>
+                                </select>
+                            </div>
+                    </div>
+                </div>
+                <div v-if="errorUpdatePosition != ''" style="margin-top: 1rem;">
+                    <span class="error-text" style="font-weight: 500 !important">{{ errorUpdatePosition }}</span>
+                </div>
+            </div>
+            <div slot="footer">
+                    <button class="button" 
+                        v-on:click="() => {
+                            showUpdateItemPosition = false;
+                            updateBlock = null;
+                            updateFloor = null;
+                            updateTile = null;
+                        }">Cancel</button>
+                    <button class="button btn-primary" 
+                        v-on:click="() => {
+                            if (errorUpdatePosition == '' && updateTile) {
+                                updateItemPosition();
+                        }
+                    }">Save changes</button>
+            </div>
       </modal>
     </div>
 </template>
 
 <script>
 // import Vue from "vue";
+import Vue from 'vue';
 import { sync } from "vuex-pathify";
 import moment from 'moment';
 import Server from "@/config/config.js";
@@ -506,6 +544,7 @@ export default {
   },
   data() {
     return {
+        errorUpdatePosition: '',
         tempValues: null, // to hold the original orders when apply filters
         myWorkOrderViewMode: true,
         toDisplayWorkOrders: [],
@@ -513,6 +552,8 @@ export default {
         workOrders: [], // orders data to display in orderblocks <order-block></order-block>
         selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
         equipments: [], // to hold equipments in the selected work order
+        equipmentPanelIndex: -1,
+        selectedEquipmentPanelIndex: -1,
         editMode: false, // edit work order detail
         equipmentItem: null, // when select an item in the list of equipment of selected order
         selectedFilter: null, // to hold the selected value when change in <select></select>
@@ -544,18 +585,19 @@ export default {
         },
         showEditDialog: false,
         showUpdateItemPosition: false,
-        showCloseWorkOrderDetailDialog: false,        
-        workOrderIdOfToCloseWOD: null,
-        toCloseEquipment: null,
-        toCloseEquipmentItem: null,
         mapViewSelectedLocation: null,
 
         toUpdatePositionItem: null,
         updateBlock: null,
         updateFloor: null,
         updateTile: null,
-        toUpdateItemStatus: 'Available',
-        toUpdateItemDescription: '',
+
+        showCloseWorkOrderDetailDialog: false,
+        toCloseEquipment: null,
+        toCloseEquipmentItem: null,
+        toCloseItemStatus: 'Available',
+        toCloseItemDescription: '',
+        toCloseEquipments: [],
     };
   },
   computed: {
@@ -589,16 +631,17 @@ export default {
         });
     },
     setSelectedOrder(order) {
-      if (this.selectedOrder == order) {
-        this.selectedOrder = null;
-      } else {
-        // this.viewDetailMode = true;
-        this.selectedOrder = order;
-        // get equipments in the selected work order - start
-        this.getEquipmentsOfWorkOrder(order);
-        this.getLocationBlockFloorTile(order);
-        // get equipments in the selected work order - end
-      }
+        this.equipmentPanelIndex = -1;
+        if (this.selectedOrder == order) {
+            this.selectedOrder = null;
+        } else {
+            // this.viewDetailMode = true;
+            this.selectedOrder = order;
+            // get equipments in the selected work order - start
+            this.getEquipmentsOfWorkOrder(order);
+            this.getLocationBlockFloorTile(order);
+            // get equipments in the selected work order - end
+        }
     },
     getEquipmentsOfWorkOrder(workOrder) {
         this.equipments = [];
@@ -804,27 +847,67 @@ export default {
             case 'Cancelled': return 'var(--status-cancelled)';
         }
     },
-    getFormatDate(date) {
+    getDate(date) {
         return moment(date).format('L');
     },
+    getDateWithTime(date) {
+        return moment(date).format('LLL');
+    },
     updateItemPosition() {
+        this.equipmentPanelIndex = -1;
         let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${this.toUpdatePositionItem.Id}`;
         this.axios.put(url, {
             tileId: this.updateTile.Id,
-        }).then((res) => {
+        }).then(async (res) => {
             if (res.status == 200) {
                 this.toUpdatePositionItem = null,
                 this.updateBlock = null;
                 this.updateFloor = null;
                 this.updateTile = null;
                 this.showUpdateItemPosition = false;
-                this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                await this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
             }
         });
     },
-    // closeWorkOrderDetail(order, itemId, newItemStatus, description) {
-
-    // }
+    async closeWorkOrderDetails() {
+        var check = true;
+        this.toCloseEquipments.forEach(async value => {
+            var workOrderDetail = null;
+            for (var i = 0; i < this.selectedOrder.WorkOrderDetails.length; i++) {
+                let detail = this.selectedOrder.WorkOrderDetails[i];
+                if (detail.EquipmentItemID == value.item.Id) {
+                    workOrderDetail = detail;
+                    break;
+                }
+            }
+            try {
+                let url = `${Server.WORKORDER_API_PATH}/close_detail/${workOrderDetail.Id}`;
+                let response = await this.axios.post(url, {                
+                    userId: this.authUser.Id,
+                    itemId: value.item.Id,
+                    newItemStatus: value.status,
+                    currentDate: moment(),
+                    description: value.description,
+                });
+                if (response.status == 200) {
+                    check = true;
+                } else {
+                    check = false;
+                }
+            } catch(error)  { 
+                console.log(error);
+                check = false;
+            }
+        });
+        if (check) {
+            this.getWorkOrders();
+            this.getEquipmentsOfWorkOrder(this.selectedOrder);
+            this.showCloseWorkOrderDetailDialog = false;
+        } else {
+            alert('Error occured!')
+        }
+    }
   },
   watch: {
     changeStatusDescription: function() {
@@ -842,7 +925,16 @@ export default {
         }
         this.tempValues = null;
         this.filterOrders();
-    }, 
+    },
+    updateTile: function() {
+        Vue.nextTick(() => {
+            if (this.updateTile && this.updateTile.Id == this.toUpdatePositionItem.TileID) {
+                this.errorUpdatePosition = 'This item is already in this position';
+            } else {
+                this.errorUpdatePosition = '';
+            }
+        })
+    }
   }
 };
 </script>
