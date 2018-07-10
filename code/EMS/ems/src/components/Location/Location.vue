@@ -21,7 +21,7 @@
               </div>
             </div>         
           </div>
-          <router-link to="/location/create-location" >
+          <router-link to="/location/create-location" v-if="authUser.Role == 'Manager'">
             <button class="btn-add-location button btn-primary material-shadow-animate">
               Add Location
             </button>
@@ -33,7 +33,7 @@
             <div class="header-detail">
               <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>      
               <div class="btn-edit" >
-              <router-link :to="'/location/edit-location/'+selectedLocation.Id" class="rtl-edit" style="color: #26a69a !important"> Edit <i class="material-icons" style="position: relative;top: 0.43rem;right: 0.3rem;font-size: 25px;">chevron_right</i></router-link> 
+              <router-link :to="'/location/edit-location/'+selectedLocation.Id" class="rtl-edit" style="color: #26a69a !important" v-if="authUser.Role == 'Manager'"> Edit <i class="material-icons" style="position: relative;top: 0.43rem;right: 0.3rem;font-size: 25px;">chevron_right</i></router-link> 
             </div>
           </div>
             
@@ -183,14 +183,17 @@
 import Server from "@/config/config.js";
 import { gmapApi } from "vue2-google-maps";
 
-import MapView from './MapView';
+import MapView from "./MapView";
 
 export default {
   components: {
-    MapView,
+    MapView
   },
   computed: {
-    google: gmapApi
+    google: gmapApi,
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    }
   },
   data() {
     return {
@@ -321,9 +324,13 @@ export default {
         this.medianLongitude = (minLongitude + maxLongitude) / 2;
         this.medianLatitude = (minLatitude + maxLatitude) / 2;
         // this.selectedLocation(this.locations[0]);
-        if (this.$route.meta && this.$route.viewMode && this.$route.viewMode === 'MapView') {
+        if (
+          this.$route.meta &&
+          this.$route.viewMode &&
+          this.$route.viewMode === "MapView"
+        ) {
           let locationId = this.$route.params.locationId;
-          let location = data.filter(l => l.Id = locationId)[0];
+          let location = data.filter(l => (l.Id = locationId))[0];
           this.setSelectedLocation(location);
           this.isListViewMode = false;
         }
