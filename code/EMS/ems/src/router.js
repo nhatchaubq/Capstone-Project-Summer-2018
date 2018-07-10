@@ -50,6 +50,11 @@ Vue.use(Router);
 import DienComponent from "./components/chartTest/test1.vue";
 //Dien -test- end
 
+
+//Dien addEquipmentCategory-start
+import AddEquipmentCategoryComponent from "./components/Equipment/AddEquipmentCategory.vue"
+//Dien addEquipmentCategory-end
+
 Vue.use(Router);
 
 import store from "./store";
@@ -57,8 +62,7 @@ import menu from "./models/menu";
 
 let router = new Router({
   mode: "history",
-  routes: [
-    {
+  routes: [{
       path: "/",
       component: DashboardComponent,
       beforeEnter: (to, from, next) => {
@@ -427,7 +431,7 @@ let router = new Router({
         showSearchBar: false
       }
     },
-    
+
     // hau - end
 
     // Dien -test -start
@@ -442,8 +446,23 @@ let router = new Router({
       meta: {
         showSearchBar: false
       }
-    }
+    },
     // Dien -test -end
+    //Dien addEquipmentCategory-start
+    {
+      path: "/addec",
+      component: AddEquipmentCategoryComponent,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Equipment);
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    }
+
+    //Dien addEquipmentCategory-end
   ]
 });
 
