@@ -48,10 +48,10 @@ router.get("/:id", (request, response) => {
 // });
 
 /* GET request, get EquipmentByName */
-router.get("/:equipmentName", function (request, response) {
+router.get("/byName/:equipmentName", function (request, response) {
   request
     .sql(
-      "SELECT * from Equipment where Equipment.Name = @equipmentName for json path, without_array_wrapper"
+      "SELECT * from Equipment where Name = @equipmentName for json path, without_array_wrapper"
     )
     .param("equipmentName", request.params.equipmentName, TYPES.NVarChar)
     .into(response);

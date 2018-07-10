@@ -230,7 +230,7 @@ export default {
       } else {
         //can chinh
         leaderId = 1248753;
-        alert(leaderId);
+        // alert(leaderId);
       }
       this.axios
         .put(
