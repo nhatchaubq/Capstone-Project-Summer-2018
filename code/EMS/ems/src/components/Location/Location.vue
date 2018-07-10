@@ -21,7 +21,7 @@
               </div>
             </div>         
           </div>
-          <router-link to="/location/create-location" >
+          <router-link to="/location/create-location" v-if="authUser.Role == 'Manager'">
             <button class="btn-add-location button btn-primary material-shadow-animate">
               Add Location
             </button>
@@ -32,8 +32,8 @@
           <div class="info-location" >
             <div class="header-detail">
               <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>      
-              <div class="btn-edit">
-              <router-link :to="'/location/edit-location/'+selectedLocation.Id" class="rtl-edit"> Edit <i class="material-icons" style="position: relative;top: 0.43rem;right: 0.3rem;font-size: 25px;">chevron_right</i></router-link> 
+              <div class="btn-edit" >
+              <router-link :to="'/location/edit-location/'+selectedLocation.Id" class="rtl-edit" style="color: #26a69a !important" v-if="authUser.Role == 'Manager'"> Edit <i class="material-icons" style="position: relative;top: 0.43rem;right: 0.3rem;font-size: 25px;">chevron_right</i></router-link> 
             </div>
           </div>
             
@@ -183,14 +183,17 @@
 import Server from "@/config/config.js";
 import { gmapApi } from "vue2-google-maps";
 
-import MapView from './MapView';
+import MapView from "./MapView";
 
 export default {
   components: {
-    MapView,
+    MapView
   },
   computed: {
-    google: gmapApi
+    google: gmapApi,
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    }
   },
   data() {
     return {
@@ -211,7 +214,7 @@ export default {
       isListViewMode: true,
       medianLatitude: null,
       medianLongitude: null,
-      mapViewSelectedLocation: null,
+      mapViewSelectedLocation: null
       // chaubqn - end
     };
   },
@@ -280,7 +283,7 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    },
+    }
     // chaubqn - start
     // getLocationBlockFloorTile(locationId) {
     //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
@@ -306,14 +309,14 @@ export default {
         data.forEach(location => {
           this.locations.push(location);
           if (location.Longitude <= minLongitude) {
-            minLongitude = location.Longitude;            
-          } 
+            minLongitude = location.Longitude;
+          }
           if (location.Longitude > maxLongitude) {
             maxLongitude = location.Longitude;
           }
           if (location.Latitude <= minLatitude) {
             minLatitude = location.Latitude;
-          } 
+          }
           if (location.Latitude > maxLatitude) {
             maxLatitude = location.Latitude;
           }
@@ -321,9 +324,13 @@ export default {
         this.medianLongitude = (minLongitude + maxLongitude) / 2;
         this.medianLatitude = (minLatitude + maxLatitude) / 2;
         // this.selectedLocation(this.locations[0]);
-        if (this.$route.meta && this.$route.viewMode && this.$route.viewMode === 'MapView') {
+        if (
+          this.$route.meta &&
+          this.$route.viewMode &&
+          this.$route.viewMode === "MapView"
+        ) {
           let locationId = this.$route.params.locationId;
-          let location = data.filter(l => l.Id = locationId)[0];
+          let location = data.filter(l => (l.Id = locationId))[0];
           this.setSelectedLocation(location);
           this.isListViewMode = false;
         }
@@ -486,8 +493,9 @@ export default {
 }
 .type-bar div:hover {
   cursor: pointer;
-  color: white;
-  background-color: var(--primary-color);
+  color: #263238;
+  /*background-color: var(--secondary-color);*/
+  background-color: #80cbc4;
 }
 
 .is-active {
@@ -574,8 +582,8 @@ export default {
 }
 
 .btn-view-mode-left:hover {
-  background-color: #26a69a;
-  color: white;
+  background-color: #80cbc4;
+  color: #263238;
   cursor: pointer;
 }
 .btn-view-mode-right {
@@ -596,8 +604,8 @@ export default {
 }
 
 .btn-view-mode-right:hover {
-  background-color: #26a69a;
-  color: white;
+  background-color: #80cbc4;
+  color: #263238;
   cursor: pointer;
 }
 

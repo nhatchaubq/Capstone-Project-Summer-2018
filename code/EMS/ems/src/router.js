@@ -142,7 +142,7 @@ let router = new Router({
         showSearchBar: false
       }
     },
-    {
+    { name: "report",
       path: "/report",
       component: ReportComponent,
       beforeEnter: (to, from, next) => {
@@ -273,6 +273,7 @@ let router = new Router({
       }
     },
     {
+      name: "create_location",
       path: "/location/create-location",
       component: CreateLocation,
 
@@ -285,7 +286,7 @@ let router = new Router({
         showSearchBar: true
       }
     },
-    {
+    { name: "edit_location",
       path: "/location/edit-location/:id",
       component: EditLocation,
       beforeEnter: (to, from, next) => {

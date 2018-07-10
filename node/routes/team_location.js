@@ -11,7 +11,10 @@ router.get("/:locationId/:teamId", (req, res) => {
 
 router.post("/createTeamLocation", (req, res) => {
   req
-    .sql("exec CreateTeamLocation @locationId,@teamId")
+    .sql(
+      "insert into [TeamLocation](LocationID,TeamID,StartDate,OutDate) " +
+        "values(@locationId, @teamId, GETDATE(), NULL)"
+    )
     .param("locationId", req.body.locationId, TYPES.Int)
     .param("teamId", req.body.teamId, TYPES.Int)
     .exec(res);
