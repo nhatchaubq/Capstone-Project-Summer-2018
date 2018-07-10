@@ -331,11 +331,12 @@
                                             locationSelectedTileIndex = -1; // no more block hightlight on the canvas
                                         }
                                         // repaint the canvas the display the next block to create floors info
-                                        paintCanvas(null, null);
                                     } else {
                                         createFloorCurrentBlock = -1;
+                                        locationSelectedTileIndex = -1;
                                         editingBlockFloor = false;
                                     }
+                                    paintCanvas($refs.locationCanvas, null, null);
                                 }"><i class="fa fa-check-circle"></i> {{ editingBlockFloor ? 'Save changes ' : 'Finish creating floors for '}} Block {{ newLocation.blocks[createFloorCurrentBlock].name }}</a>
                             </div> <!-- finish / save changes button -->
                         </div> <!-- define floor info -->
@@ -419,10 +420,10 @@
                                                 createFloorCurrentBlock = block.id;
                                                 locationSelectedTileIndex = block.id;
                                                 editingBlockFloor = true;
-                                                paintCanvas(null, null);
+                                                paintCanvas($refs.locationCanvas, null, null);
                                             }">Block {{ block.name }}</a> has <strong>{{ block.totalFloor }} floor<span v-if="block.totalFloor > 1">s</span></strong>
-                                                    , <strong>{{ block.totalBasementFloor > 0 ? block.totalBasementFloor : 'no' }} basement floor<span v-if="block.totalBasementFloor > 1">s</span></strong>
-                                                    , and start with <strong>floor {{ block.firstFloorType}}</strong>.
+                                            <span>, <strong>{{ block.totalBasementFloor > 0 ? block.totalBasementFloor : 'no' }} basement floor<span v-if="block.totalBasementFloor > 1">s</span></strong></span>
+                                            <span>, and start with <strong>floor {{ block.firstFloorType}}</strong>.</span>
                                     </span>
                                 </div>
                             </div>
@@ -492,7 +493,7 @@ import moment from 'moment';
 
 export default {
     components: {
-        // fileBase64
+        fileBase64
     },
     created() {
         let url = `${Server.LOCATION_API_PATH}/${this.$route.params.locationId}`;
@@ -605,8 +606,6 @@ export default {
                     canvasContext = canvas.getContext('2d');
 
                     background.onload = () => {
-                        canvas.width = 460;
-                        canvas.height = background.height;
                         canvasContext.drawImage(background, 0, 0, width, height);
                     }; 
 
@@ -708,7 +707,6 @@ export default {
                     }
                 }); 
                 canvas.addEventListener('mouseout', (event) => {
-                    context.locationSelectedTileIndex = -1;
                     context.paintCanvas(canvas, null, null);
                 })
             }
@@ -820,13 +818,14 @@ export default {
                 // fill points - start 
                 canvasContext.strokeStyle = "rgba(0,0,0,0.6)";
                 canvasContext.lineWidth = '2';
-                if (index == this.locationSelectedTileIndex 
-                    || (mouseX && mouseY && (mouseX >= points[0].x && mouseX <= points[1].x
+                if (index == this.locationSelectedTileIndex) {
+                    canvasContext.fillStyle = 'rgba(255, 0, 0, 0.6)';
+                } else if ((mouseX && mouseY && (mouseX >= points[0].x && mouseX <= points[1].x
                                 && (mouseY >= points[0].y && mouseY <= points[3].y)))) {
                    
                     // canvasContext.strokeStyle = "red";
                     // canvasContext.lineWidth = "2";
-                    canvasContext.fillStyle = 'rgba(255,0,0,0.4)';
+                    canvasContext.fillStyle = 'rgba(255,50,50,0.4)';
                 } else {
                     canvasContext.lineWidth = "1";
                     canvasContext.fillStyle = 'rgba(0,0,0,0.1)';
