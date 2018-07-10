@@ -65,7 +65,7 @@
                 </div>
                 <div class="select" style="width: 100% !important" >
                     <select v-model="selectedTeam" >
-                        <option :disabled="selectedTeams.length > 0"  value="null">Not now</option>
+                        <option :disabled="selectedTeams.length > 0" v- value="null">Not now</option>
                         <option v-bind:key='team.Id' v-for='team in teams' :value="team">{{team.Name}}</option>
                     </select>
                 </div>

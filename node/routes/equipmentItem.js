@@ -110,13 +110,15 @@ router.get("/getByEquipmentId/:id", (request, response) => {
 router.put("/status/:id", (req, res) => {
     req
         .sql("declare @currentItemStatusId int; " +
+            "declare @newStatusId int; " +
             "set @currentItemStatusId = (select StatusId from EquipmentItem where Id = @itemId); " +
-            "update EquipmentItem set StatusId = @newStatus where Id = @itemId; " +
+            "set @newStatusId = (select Id from EquipmentStatus where [Name] = @newStatusName); " +
+            "update EquipmentItem set StatusId = @newStatusId where Id = @itemId; " +
             "insert into EquipmentItemHistory(EquipmentItemID, ByUserID, OldStatusID, NewStatusID, [Date], [Description]) " +
-            "values(@itemId, @userId, @currentItemStatusId, @newStatus, getdate(), @description)")
+            "values(@itemId, @userId, @currentItemStatusId, @newStatusId, getdate(), @description)")
         .param("itemId", req.params.id, TYPES.Int)
         .param("userId", req.body.userId, TYPES.Int)
-        .param("newStatus", req.body.newStatus, TYPES.Int)
+        .param("newStatusName", req.body.newStatusName, TYPES.NVarChar)
         .param("description", req.body.description, TYPES.NVarChar)
         .exec(res);
 });
@@ -196,13 +198,6 @@ router.get("/getByEquipmentId/:id", (request, response) => {
     )
     .param("locationId", request.params.id, TYPES.Int)
     .into(response);
-});
-
-router.put("/status/:id", (req, res) => {
-  req
-    .sql("exec [dbo].[UpdateEquipmentItemStatus] @itemId, @newStatus")
-    .param(itemId, req.params.id, TYPES.Int)
-    .param(newStatus, req.body.newStatus, TYPES.Int);
 });
 
 module.exports = router;

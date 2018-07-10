@@ -14,6 +14,8 @@ router.get("/workorderbylocationId/:id", (request, response) => {
         " for json path"
     )
     .param("locationId", request.params.id, TYPES.Int)
+    .into(response);
+});
 
 // router.get('/', (request, response) => {
 //     request.sql("exec GetWorkOrders")
@@ -55,11 +57,11 @@ router.get('/', (request, response) => {
 });
 
 router.get('/:id/equipments', (request, response) => {
-    request.sql('select e.Id, e.[Name], e.[Image], (select ei.* '
+    request.sql('select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei.* '
                 + '         from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID '
                 + '                                 join EquipmentItem as ei on wod.EquipmentItemID = ei.Id '
                 + '             where wo.Id = @workOrderId and ei.EquipmentID = e.Id for json path) as [EquipmentItems] '
-                + ' from Equipment as e '
+                + ' from Equipment as e join [Unit] as u on e.UnitID = u.Id '
                 + ' where e.Id in (select distinct e.Id '
                 + ' from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID '
                 + ' where ei.id in (select wod.EquipmentItemID '
@@ -68,8 +70,6 @@ router.get('/:id/equipments', (request, response) => {
                 + ' for json path')
         .param('workOrderId', request.params.id, TYPES.Int)
         .into(response);
-});
-    .into(response);
 });
 
 router.get("/status", (request, response) => {
@@ -174,7 +174,7 @@ router.put('/status/:orderId', (req, res) => {
             + ' values(@workOrderId, @userId, @currentDate, @oldWorkOrderStatusId, @newWorkOrderStatusId, @description);')
         .param('workOrderId', req.params.orderId, TYPES.Int)
         .param('userId', req.body.userId, TYPES.Int)
-        .param('newStatusName', req.body.newStatusName, TYPES.NVarChar)
+        .param('newWorkOrderStatusName', req.body.newStatusName, TYPES.NVarChar)
         .param('description', req.body.description, TYPES.NVarChar)
         .exec(res);
 });

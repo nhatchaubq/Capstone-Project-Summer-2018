@@ -1,13 +1,14 @@
 <template>
     <div class="row" style="margin: 0; padding: 0; height: 100% important" v-if="locations && medianLatitude && medianLongitude">
-        <div class="material-box material-shadow" style="padding: 0; transition: all .25s ease-in-out" :style="{width: selectedLocation ? '49%' : '100%'}">
-            <GmapMap          
-                :center="google && new google.maps.LatLng(selectedLocation ? selectedLocation.Latitude : medianLatitude, 
-                          selectedLocation ? selectedLocation.Longitude : medianLongitude)"
-                :zoom="selectedLocation ? 16 : 13"
-                map-type-id="terrain"
-                style="width: 100%; height:80vh"
-                >
+        <GmapMap          
+            :center="google && new google.maps.LatLng(selectedLocation ? selectedLocation.Latitude : medianLatitude, 
+                        selectedLocation ? selectedLocation.Longitude : medianLongitude)"
+            :zoom="selectedLocation ? 16 : 13"
+            map-type-id="terrain"
+            class="material-box material-shadow"
+            style="width: 100%; height: 80vh; padding: 0; transition: all .25s ease-in-out;"
+            :style="{width: selectedLocation ? '49%' : '100%'}"
+            >
             <GmapMarker
                 v-for="location in locations" :key="'mapViewMarker' + location.Id"
                 :position="google && new google.maps.LatLng(location.Latitude, location.Longitude)"
@@ -18,18 +19,16 @@
                     setSelectedLocation(location);
                 }"
             >
-             <GmapInfoWindow v-if="((hoverLocation && hoverLocation.Id == location.Id)
+                <GmapInfoWindow v-if="((hoverLocation && hoverLocation.Id == location.Id)
                                     || (selectedLocation && selectedLocation.Id == location.Id))"
                             :position="google && new google.maps.LatLng( hoverLocation ? hoverLocation.Latitude : selectedLocation.Latitude, 
                                         hoverLocation ? hoverLocation.Longitud : selectedLocation.Longitude)">
                 {{ (hoverLocation && hoverLocation.Id == location.Id) ? hoverLocation.Name : selectedLocation.Name }}
-                  - 
+                    - 
                 {{ (hoverLocation && hoverLocation.Id == location.Id) ? hoverLocation.Address : selectedLocation.Address }}
-             </GmapInfoWindow>
+                </GmapInfoWindow>
             </GmapMarker>
-            <!-- <gmap-info-window :key="'mapViewLocationInfoWindow' + location.Id" v-for="location in locations">{{ location.Name }}</gmap-info-window> -->
-            </GmapMap>
-        </div>
+        </GmapMap>
         <div class="material-box material-shadow" v-show="selectedLocation && mapViewSelectedLocation" style="width: 49%; margin-left: 2%;">
             <div>
                 <i v-on:click="selectedLocation = null" class="fa fa-times" style="cursor: pointer; color: var(--danger-color)"></i>
@@ -49,14 +48,115 @@
                                 <span> Create new block now</span>
                             </a>
                         </span>
+                        <!-- display location blocks, floors, tiles - start -->
                         <div>
-                            <canvas v-show="selectedLocation && selectedLocation.Image" ref="floorPlanCanvas"></canvas>
+                            <div>
+                                <canvas v-show="selectedLocation && selectedLocation.Image" ref="floorPlanCanvas"></canvas>
+                            </div>
+
+                            <div v-if="mapViewSelectedLocation" style="margin-top: 1rem">
+                                <button :key="'block' + block.Id" v-for="(block, index) in mapViewSelectedLocation.Blocks"
+                                    style="margin: right: 2rem;"
+                                    :style="{background: curentBlockIndex == index ? '#424242' : '',
+                                            color: curentBlockIndex == index ? 'white' : 'black', }"
+                                    class="button"
+                                    v-on:click="() => {
+                                        if (curentBlockIndex == index) {
+                                            curentBlockIndex = -1;
+                                        } else {
+                                            curentBlockIndex = index;
+                                        }
+                                    }">
+                                    Block {{ block.Name }}
+                                </button>
+                            </div>
                         </div>
+                        <div style="margin-top: 1rem" v-if="mapViewSelectedLocation && mapViewSelectedLocation.Blocks && curentBlockIndex >= 0">
+                            <div>
+                                <div class="row" style="margin: .5rem 0 !important">
+                                    <!-- display floors -->
+                                    <div style="width: 15%;">
+                                        <div style="margin-bottom: 1rem;">Floors</div>
+                                        <div :key="'blockFloors' + index" v-for="(floor, index) in mapViewSelectedLocation.Blocks[curentBlockIndex].Floors" style="padding-bottom: .3rem">
+                                            <!-- button to select a floor -->
+                                            <button class="button material-shadow" 
+                                                    :class="{'btn-primary': (index == mapViewSelectedLocation.Blocks[curentBlockIndex].TotalFloor - mapViewSelectedLocation.Blocks[curentBlockIndex].TotalBasementFloor - 1),
+                                                            'is-active-block': currentFloorIndex == index,
+                                                            }" 
+                                                    style="text-align: center; width: 100%;" 
+                                                    :style="((index == mapViewSelectedLocation.Blocks[curentBlockIndex].TotalFloor - mapViewSelectedLocation.Blocks[curentBlockIndex].TotalBasementFloor - 1) 
+                                                                && currentFloorIndex == index) ? 
+                                                                'background: var(--darken-primary-color) !important; border: none !important' : ''"
+                                                    v-on:click="() => {
+                                                        currentFloorIndex = index;
+                                                        currentTileIndex = -1;
+                                                    }">
+                                                {{ floor.Name }}
+                                            </button> <!-- button to select a floor -->
+                                        </div>
+                                    </div><!-- display floors -->
+                                    <!-- after selected a floor -->
+                                    <div v-if="currentFloorIndex >= 0" style="width: 75%; margin-left: 10%; padding: 0 !important;">
+                                        <div style="margin-bottom: 1rem;">Tiles (rooms)</div>
+                                        <div :key="'tile' + index" v-for="(tile, index) in mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles">
+                                            <a v-on:click="() => {
+                                                currentTileIndex = index;
+                                                showTileEquipment(tile.Id);
+                                            }">{{tile.Name}}</a>
+                                        </div>
+                                    </div> <!-- after selected a floor -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- display location blocks, floors, tiles - end -->
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        <!-- tile equipment popup -->
+        <modal v-if="curentBlockIndex >= 0 && currentFloorIndex >= 0 && currentTileIndex >= 0" v-model="showTileEquipmentPopup">
+          <div slot="header">
+              <span style="font-size: 1.3rem">
+                  Tile {{ mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles[currentTileIndex].Name }}
+                </span>
+          </div>
+          <div slot="footer">
+              <Button size="large" long class="button btn-primary" @click.native="showTileEquipmentPopup = false">OK</Button>
+          </div>
+          <div :style="{
+              'max-height': '50vh',
+              'overflow-y': 'auto',
+          }">
+            <v-flex v-if="tileEquipments.length > 0">
+                <v-expansion-panel expand>
+                    <v-expansion-panel-content v-for="equipment in tileEquipments" :key="'equipment' + equipment.Id">
+                        <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
+                            <div style="display: flex">
+                                <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
+                            </div>
+                            <div style="display: grid; grid-template-rows: auto auto; font-size: 1rem">
+                                <div>
+                                    {{ equipment.Name }}
+                                </div>                                            
+                                <div style="font-size: .9rem">
+                                    Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
+                                </div>
+                            </div>
+                        </div>
+                        <v-card style="" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
+                            <v-card-text class="grey lighten-3" style="font-size: .9rem">
+                                Serial #: <a>{{ item.SerialNumber }}</a>
+                            </v-card-text>
+                        </v-card>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-flex>
+            <div v-else style="font-size: 1rem;">
+                There is no equipments in tile {{ mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles[currentTileIndex].Name }}.
+            </div>
+          </div>
+      </modal>
+    </div>    
 </template>
 
 <script>
@@ -80,6 +180,11 @@ export default {
             mapViewSelectedLocation: null,
             selectedLocation: null,
             hoverLocation: null,
+            curentBlockIndex: -1,
+            currentFloorIndex: -1,
+            currentTileIndex: -1,
+            showTileEquipmentPopup: false,
+            tileEquipments: [],
         }
     },
     methods: {
@@ -88,23 +193,25 @@ export default {
                 this.selectedLocation = null;
             } else {
                 this.selectedLocation = location;
-                if (location.Image) {
-                    let canvas = this.$refs.floorPlanCanvas;
-                    let canvasContext = canvas.getContext('2d');
-                    let background = new Image();
-                    background.src = location.Image;
-                    background.onload = () => {
-                        canvas.width = background.width;
-                        canvas.height = background.height;
-                        canvasContext.drawImage(background, 0, 0);
-                    };        
-                }
             }
+        },
+        showTileEquipment(tileId) {
+            let url = `http://localhost:3000/api/tile/equipmentItems/${tileId}`;
+            this.axios.get(url)
+                .then(res => {
+                    if (res.status == 200) {
+                        this.tileEquipments = res.data;
+                        this.showTileEquipmentPopup = true;
+                    }
+                }).catch(error => {
+                    console.log(error);
+                }) 
         }
     },
     watch: {
         'selectedLocation': function() {
             this.mapViewSelectedLocation = null;
+            this.curentBlockIndex = -1;
             if (this.selectedLocation) {
                 let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${this.selectedLocation.Id}`;
                 this.axios.get(url)
@@ -113,15 +220,34 @@ export default {
                             this.mapViewSelectedLocation = res.data;
                             if (this.selectedLocation.Image) {
                                 let canvas = this.$refs.floorPlanCanvas;
-                                let canvasContext = canvas.getContext('2d');
                                 let background = new Image();
                                 background.src = this.selectedLocation.Image;
+                                let MAX_WIDTH = 460;
+                                let MAX_HEIGHT = 460;
+                                var width = background.width;
+                                var height = background.height;
+
+                                if (width > height) {
+                                    if (width > MAX_WIDTH) {
+                                        height *= MAX_WIDTH / width;
+                                        width = MAX_WIDTH;
+                                    }
+                                } else {
+                                    if (height > MAX_HEIGHT) {
+                                        width *= MAX_HEIGHT / height;
+                                        height = MAX_HEIGHT;
+                                    }
+                                }
+                                canvas.width = width;
+                                canvas.height = height;
+                                let canvasContext = canvas.getContext('2d');
                                 background.onload = () => {
-                                    // canvas.width = background.width;
-                                    // canvas.height = background.height;
-                                    canvasContext.drawImage(background, 0, 0);
+                                    canvas.width = 460;
+                                    canvas.height = background.height;
+                                    canvasContext.drawImage(background, 0, 0, width, height);
                                 };        
                             }
+                            this.curentBlockIndex = 0;
                         }
                     })
                     .catch((error) => {
@@ -144,5 +270,10 @@ export default {
 
     .content > div {
         margin-bottom: 1rem;
+    }
+
+    .left-panel {
+        position: fixed;
+
     }
 </style>

@@ -584,7 +584,31 @@ export default {
                 background.src = file.base64;
                 if (this.currentStep === this.Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION) {
                     canvas = this.$refs.locationCanvas;
+                    let MAX_WIDTH = 460;
+                    let MAX_HEIGHT = 460;
+                    var width = background.width;
+                    var height = background.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
                     canvasContext = canvas.getContext('2d');
+
+                    background.onload = () => {
+                        canvas.width = 460;
+                        canvas.height = background.height;
+                        canvasContext.drawImage(background, 0, 0, width, height);
+                    }; 
 
                     this.locationSelectingPointIndex = -1;
                     this.locationGridPreset = null;
@@ -622,11 +646,11 @@ export default {
                 //     floor.background = background;
                 // }
 
-                background.onload = () => {
-                    canvas.width = background.width;
-                    canvas.height = background.height;
-                    canvasContext.drawImage(background, 0, 0);
-                };        
+                // background.onload = () => {
+                //     canvas.width = background.width;
+                //     canvas.height = background.height;
+                //     canvasContext.drawImage(background, 0, 0);
+                // };        
                 let context = this;
                 // let canvas = this.$refs.locationCanvas;
                 // let canvasContext = this.$refs.locationCanvas.getContext('2d');
