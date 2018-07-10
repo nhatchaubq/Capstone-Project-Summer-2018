@@ -9,8 +9,8 @@ server.use(cors());
 var connection = {
   server: "localhost",
   userName: "sa",
+  password: "123456",
 
-  password: "tien1005",
 
   port: "1433",
   options: {
@@ -23,7 +23,7 @@ var connection = {
 
 server.use(bodyParser.json());
 
-server.use(function (request, respones, next) {
+server.use(function(request, respones, next) {
   request.sql = tediousExpress(connection);
   // respones.header('Access-Control-Allow-Origin', '*');
   // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -37,7 +37,10 @@ server.use("/api/account", require("./routes/account"));
 server.use("/api/account/id", require("./routes/accountDetail"));
 server.use("/api/equipment", require("./routes/equipment"));
 server.use("/api/EquipmentCategory", require("./routes/EquipmentCategory"));
-server.use('/api/equipmentItemHistory', require('./routes/equipmentItemHistory'));
+server.use(
+  "/api/equipmentItemHistory",
+  require("./routes/equipmentItemHistory")
+);
 server.use("/api/Vendor", require("./routes/vendor"));
 server.use("/api/work_order", require("./routes/work_order"));
 server.use("/api/location", require("./routes/location"));
@@ -64,7 +67,7 @@ server.use("/api/tile", require("./routes/tile"));
 // server.use('/api/account/delete/id', require('./routes/'));
 
 // catch 404 and forward to error handler
-server.use(function (req, res, next) {
+server.use(function(req, res, next) {
   var err = new Error("Not Found: " + req.method + ":" + req.originalUrl);
   err.status = 404;
   next(err);
