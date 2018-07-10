@@ -166,7 +166,7 @@
         </div>
         <vodal :show="showEquipmentItemPopup" @hide="showEquipmentItemPopup = false" animation="slideUp" :height='400'>
             <div  v-if="equipmentItems.length > 0" style="max-height:355px;overflow-y:auto;margin-top: 20px">
-                <div style="display: grid; grid-template-columns: 25% auto;" :key="equipmentItem.Id" v-for="equipmentItem in equipmentItems">
+                <div style="display: grid; grid-template-columns: 25% auto;margin-bottom:0.5rem;border-bottom: 0.5px solid" :key="equipmentItem.Id" v-for="equipmentItem in equipmentItems">
                     <div style="display: flex">
                         <img v-show="equipmentItem.Image" :src="equipmentItem.Image" style="width: 6rem; height: 6rem;">
                     </div>

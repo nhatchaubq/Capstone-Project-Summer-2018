@@ -116,12 +116,12 @@
                     Quantity
                 </div>
                 <div class="field is-horizontal">
-                    <input type="number" min="1" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" >
-                    <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">Barcode</button>
+                    <input type="number" min="1" class="input" style="margin-right: 1rem" v-model="quantity" >
+                    <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">CreateBarcode</button>
                 </div>
                 <div v-show="showingBarcode">
                     <ul>
-                        <li v-for="i in randomNumbers" :key="i">{{i}}</li>
+                        <li v-for="(i,index) in randomNumbers" :key="i">{{index+1}}. {{i}}</li>
                     </ul>
                 </div>
               <div class="field" style="display: grid; grid-template-columns: 50% 50%">
@@ -130,7 +130,7 @@
                       Price
                     </div>
                     <div class="field is-horizontal" style="margin-right:6rem">
-                      <input type="text" class="input" placeholder="Price" v-model="form.Price">
+                      <input type="number" value="50000" min="50000" class="input" placeholder="Price" step="10000" v-model="form.Price">
                     </div>
                 </div>
                 <div class="" >
@@ -138,11 +138,39 @@
                       Warranty
                     </div>
                     <div class="field is-horizontal" >
-                      <input type="number" class="input" placeholder="Warranty Months" v-model="form.Warranty">
+                      <input type="number" min="1" class="input" placeholder="Warranty Months" v-model="form.Warranty">
                     </div> 
-                </div>
+                </div> 
+          </div>
+             <div class="form-field-title">
+              Location
+          </div>
+          <div>
+          <model-select style="width: 100% !important" :options="locationOptions" v-model="selectedLocation" v-on:click="changeLocation" placeholder="Select a location"></model-select>  
+          </div>
+          <div class="form-field-title">
+              Block
+          </div>
+           <div>
+          <model-select style="width: 100% !important" :options="blockOptions" v-model="selectedBlock" placeholder="Select a block  "></model-select>  
+          </div>
+           <div class="form-field-title">
+              Floor
+          </div>
+           <div>
+          <model-select style="width: 100% !important" :options="floorOptions" v-model="selectedFloor" placeholder="Select a floor  "></model-select>  
+          </div>
+
+           <div class="form-field-title">
+              Tile
+          </div>
+           <div>
+          <model-select style="width: 100% !important" :options="tileOptions" v-model="selectedTile" placeholder="Select a tile  "></model-select>  
+          </div>
             </div>
-            <button id="" class="button is-rounded is-primary" v-on:click="createNewEquipentItem">Create New Items</button>  
+            <div class="" style="align-items: center; display: flex; justify-content: center;">
+              <button id="" class="button is-rounded is-primary" v-on:click="createNewEquipentItem">Create New Items</button>  
+            </div>
         </div>
         </div>
     </div>        
@@ -154,6 +182,9 @@ import AddEquipment from "./AddEquipment";
 import VueBase64FileUpload from "vue-base64-file-upload";
 import { ModelSelect } from "vue-search-select";
 import Autocomplete from "./Autocomplete";
+import Utils from "@/utils.js";
+import fileBase64 from "vue-file-base64";
+import moment from "moment";
 export default {
   props: ["filterby"],
   components: {
@@ -163,6 +194,21 @@ export default {
     Autocomplete
   },
   created() {
+    this.axios
+      .get("http://localhost:3000/api/location")
+      .then(response => {
+        let data = response.data;
+        data.forEach(location => {
+          let option = {
+            text: location.Name,
+            value: location.Id
+          };
+          this.locationOptions.push(option);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
     this.axios
       .get("http://localhost:3000/api/EquipmentCategory")
       .then(response => {
@@ -216,8 +262,30 @@ export default {
         Category: "",
         Vendor: "",
         MadeIn: "",
-        Description: ""
+        Description: "",
+        Price: 500000,
+        Warranty: 1
       },
+      selectedLocation: {
+        text: "",
+        value: ""
+      },
+      locationOptions: [],
+      selectedBlock: {
+        text: "",
+        value: ""
+      },
+      blockOptions: [],
+      selectedFloor: {
+        text: "",
+        value: ""
+      },
+      floorOptions: [],
+      selectedTile: {
+        text: "",
+        value: ""
+      },
+      tileOptions: [],
       selectedEquipment: {
         text: "",
         value: ""
@@ -226,6 +294,7 @@ export default {
         text: "",
         value: ""
       },
+      imageUrl: "",
       newCategory: "",
       newVendor: "",
       showingAddCategory: false,
@@ -299,6 +368,8 @@ export default {
         })
         .then(function(respone) {
           // console.log(respone);
+          location.reload();
+          alert("Add new category successfully");
         })
         .catch(function(error) {
           console.log(error);
@@ -311,6 +382,7 @@ export default {
         })
         .then(function(respone) {
           // console.log(respone);
+          location.reload();
           alert("Add successfully");
           this.created();
         })
@@ -318,22 +390,43 @@ export default {
           console.log(error);
         });
     },
-    createNewEquipment() {
+    async createNewEquipment() {
       // this.checkExistEquipment();
       // if (this.validateExistEquipment) {
       //   alert("This equipment is exist with this vendor");
       // }
       // else {
+
+      let formData = new FormData();
+      formData.append("api_key", "982394881563116");
+      formData.append("file", this.files[0]);
+      formData.append("public_id", this.files[0].name);
+      formData.append("timestamp", moment().valueOf());
+      formData.append("upload_preset", "ursbvd4a");
+
+      let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+      try {
+        let uploadRespose = await this.axios.post(url, formData);
+        if (uploadRespose.status == 200) {
+          this.imageUrl = uploadRespose.data.url;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      //alert(this.imageUrl);
       this.axios
         .post("http://localhost:3000/api/equipment", {
           name: this.form.EquipmentName,
           vendorID: this.selectedVendor.value,
+          image: this.imageUrl,
           madein: this.form.MadeIn,
           description: this.form.Description,
           categoryID: this.form.Category
         })
         .then(function(respone) {
           // console.log(respone);
+          // location.reload();
+          alert("Add successfully!!!");
         })
         .catch(function(error) {
           console.log(error);
@@ -363,12 +456,17 @@ export default {
       }
     },
     createNewEquipentItem() {
-      alert(this.checked);
+      // alert(this.checked);
+      var result = false;
       this.axios
-        .get("http://localhost:3000/api/equipment/" + this.form.EquipmentName)
+        .get(
+          "http://localhost:3000/api/equipment/byName/" +
+            this.form.EquipmentName
+        )
         .then(response => {
           for (var i = 0; i < this.quantity; i++) {
             let data = response.data;
+            //  alert(data.Id);
             this.axios
               .post("http://localhost:3000/api/equipmentItem", {
                 equipmentID: data.Id,
@@ -377,17 +475,22 @@ export default {
                 price: this.form.Price,
                 statusId: 1,
                 description: "No description",
-                positionID: 1
+                tileID: this.selectedTile.value
               })
               .then(function(respone) {
-                alert("oke");
+                result = true;
               })
               .catch(function(error) {
                 console.log(error);
               });
           }
+          if ((result = true)) {
+            alert("Add " + this.quantity + " item(s) successfully");
+          }
+          //location.reload();
         })
         .catch(function(error) {
+          alert(this.form.EquipmentName);
           console.log(error);
         });
     }
@@ -400,7 +503,7 @@ export default {
     //         barcode = barcode + x;
     //     }
     //     return barcode;
-  }
+  },
   // watch: {
   //   selectedEquipment: function() {
   //     this.axios
@@ -421,6 +524,74 @@ export default {
   //       });
   //   }
   // }
+  watch: {
+    selectedLocation: function() {
+      if (this.selectedLocation.value != "") {
+        this.blockOptions = [];
+        this.axios
+          .get(
+            `http://localhost:3000/api/block/location/${
+              this.selectedLocation.value
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let blocks = res.data;
+              blocks.forEach(block => {
+                let option = {
+                  value: block.Id,
+                  text: block.Name
+                };
+                this.blockOptions.push(option);
+              });
+            }
+          });
+      }
+    },
+    selectedBlock: function() {
+      if (this.selectedBlock.value != "") {
+        this.floorOptions = [];
+        this.axios
+          .get(
+            `http://localhost:3000/api/floor/block/${this.selectedBlock.value}`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let floors = res.data;
+              floors.forEach(floor => {
+                let option = {
+                  value: floor.Id,
+                  text: floor.Name
+                };
+                this.floorOptions.push(option);
+              });
+            }
+          });
+      }
+    },
+    selectedFloor: function() {
+      // alert(this.selectedFloor.value);
+      if (this.selectedFloor.value != "") {
+        this.tileOptions = [];
+        this.axios
+          .get(
+            `http://localhost:3000/api/tile/floor/${this.selectedFloor.value}`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let tiles = res.data;
+              tiles.forEach(tile => {
+                let option = {
+                  value: tile.Id,
+                  text: tile.Name
+                };
+                this.tileOptions.push(option);
+              });
+            }
+          });
+      }
+    }
+  }
 };
 </script>
 
@@ -433,13 +604,13 @@ export default {
 }
 .form-title {
   display: grid;
-  grid-template-columns: 25% 40% 35%;
+  grid-template-columns: 50% 50%;
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem 2rem;
 }
 .form-title-start {
   position: relative;
-  top: 10px;
+  /* top: 10px; */
   font-weight: bold;
   font-size: 20px;
   color: #616161;

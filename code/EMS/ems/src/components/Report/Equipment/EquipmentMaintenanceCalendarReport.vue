@@ -37,21 +37,7 @@
                     </select>
                     </div>
                 </div>
-                <div>
-                    <div class="txtText">
-                        Work Order Type 
-                    </div>                    
-                    <div class="control">
-                        <label class="radio">
-                        <input type="checkbox" name="wotypebar">
-                        Maintaining
-                        </label>
-                        <label class="radio" style="margin-left:0">
-                        <input type="checkbox" name="wotypebar">
-                        Working
-                        </label>
-                    </div>
-                </div>
+
                 <div>
                     <div class="txtText">
                         Export 
@@ -67,7 +53,7 @@
         <div class="columnright">
             <div class="btncotrol">
                 <div class="field is-grouped view-mode">
-                    <button class="btn-view-mode">Equipments</button>
+                    <button class="btn-view-mode">Maintenance Calendar Of Equipments</button>
                     <!-- <button class="btn-view-mode" :class='{"is-active": currentViewMode == viewModes.STOCK}' v-on:click="setViewMode(viewModes.STOCK)">Stock</button>
                     <button class="btn-view-mode" :class='{"is-active": currentViewMode == viewModes.DOWNTIME}' v-on:click="setViewMode(viewModes.DOWNTIME)">Downtime History</button> -->
                 </div>

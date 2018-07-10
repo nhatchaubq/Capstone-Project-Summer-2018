@@ -1,32 +1,69 @@
 var router = require("express").Router();
 var TYPES = require("tedious").TYPES;
 
+// router.get("/", (request, response) => {
+//   request.sql("exec GetEquipments").into(response);
+// });
+/*Get ALL EQT*/
 router.get("/", (request, response) => {
-  request.sql("exec GetEquipments").into(response);
+  request.sql("SELECT e.Id as 'Equipment.Id', e.Name as 'Equipment.Name', " +
+    "e.Image  as 'Equipment.Image', e.MadeIn as 'Equipment.MadeIn', " +
+    "e.Description as 'Equipment.Description', e.VendorID as 'Equipment.VendorId', " +
+    "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId', " +
+    "ec.Name as 'Equipment.Category.Name', (select count(Id)  from EquipmentItem where EquipmentID = e.Id) as [Equipment.Quantity], " +
+    "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 1) as [Equipment.AvailableQuantity], " +
+    "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 2) as [Equipment.NotAvailableQuantity], " +
+    "(select * from EquipmentItem where EquipmentID = e.Id for json path) as [Equipment.EquipmentItems] " +
+    "FROM [Equipment] as e " +
+    "JOIN [Vendor] as v ON e.VendorID = v.Id " +
+    "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
+    "for json path").into(response);
 });
+/*GET an Eqt by ID*/
 router.get("/:id", (request, response) => {
   request
-    .sql("exec GetEquipmentByID @id")
+  request.sql("SELECT e.Id as 'Equipment.Id', e.Name as 'Equipment.Name', " +
+      "e.Image  as 'Equipment.Image', e.MadeIn as 'Equipment.MadeIn', " +
+      "e.Description as 'Equipment.Description', e.VendorID as 'Equipment.VendorId', " +
+      "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId', " +
+      "ec.Name as 'Equipment.Category.Name', (select count(Id)  from EquipmentItem where EquipmentID = e.Id) as [Equipment.Quantity], " +
+      "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 1) as [Equipment.AvailableQuantity], " +
+      "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 2) as [Equipment.NotAvailableQuantity], " +
+      "(select * from EquipmentItem where EquipmentID = e.Id for json path) as [Equipment.EquipmentItems] " +
+      "FROM [Equipment] as e " +
+      "JOIN [Vendor] as v ON e.VendorID = v.Id " +
+      "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
+      "where e.Id = @id " +
+      "for json path")
     .param("id", request.params.id, TYPES.Int)
     .into(response);
 });
+
+// /*Get Equipment BY ID*/
+// router.get("/:id", (request, response) => {
+//   request
+//     .sql("exec GetEquipmentByID @id")
+//     .param("id", request.params.id, TYPES.Int)
+//     .into(response);
+// });
+
 /* GET request, get EquipmentByName */
-router.get("/:equipmentName", function(request, response) {
+router.get("/byName/:equipmentName", function (request, response) {
   request
     .sql(
-      "SELECT * from [Equipment] where Name = @equipmentName for json path, without_array_wrapper"
+      "SELECT * from Equipment where Name = @equipmentName for json path, without_array_wrapper"
     )
     .param("equipmentName", request.params.equipmentName, TYPES.NVarChar)
     .into(response);
 });
 /* GET request, get EquipmentByName and vendorName */
-router.get("/:equipmentId/:vendorId", function(request, response) {
+router.get("/:equipmentId/:vendorId", function (request, response) {
   request
     .sql(
       "SELECT count(e.Id) as [Quantity] " +
-        "FROM [Equipment] as e " +
-        "JOIN [Vendor] as v ON e.VendorID = v.Id " +
-        "where e.Id = @equipmentId and v.Id = @vendorId for json path, without_array_wrapper"
+      "FROM [Equipment] as e " +
+      "JOIN [Vendor] as v ON e.VendorID = v.Id " +
+      "where e.Id = @equipmentId and v.Id = @vendorId for json path, without_array_wrapper"
     )
     .param("equipmentId", request.params.equipmentId, TYPES.Int)
     .param("vendorId", request.params.vendorId, TYPES.Int)
@@ -37,7 +74,7 @@ router.post("/", (request, response) => {
   request
     .sql(
       "INSERT INTO Equipment (Name, VendorID, Image, MadeIn, Description, CategoryID)" +
-        " VALUES (@name, @vendorID, @image, @madein, @description, @categoryID)"
+      " VALUES (@name, @vendorID, @image, @madein, @description, @categoryID)"
     )
     .param("name", request.body.name, TYPES.NVarChar)
     .param("vendorID", request.body.vendorID, TYPES.Int)
@@ -49,7 +86,7 @@ router.post("/", (request, response) => {
 });
 
 /* PUT request, for update an Equipment */
-router.put("/:id", function(request, response) {
+router.put("/:id", function (request, response) {
   request
     .sql(
       "UPDATE [Equipment] set Name = @name, VendorID = @vendorid, Image=@image, MadeIn=@madein, Description=@description, CategoryID=@categoryid where Id = @id"

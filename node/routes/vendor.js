@@ -24,7 +24,6 @@ router.get("/:id", (request, response) => {
 });
 
 router.post("/", (request, response) => {
-  console.log(request);
   request
     .sql(
       "INSERT INTO [Vendor](BusinessName, BusinessAddress, Website, ContactName, ContactEmail, Description) VALUES(@BusinessName, @BusinessAddress, @Website, @ContactName, @ContactEmail, @Description)"
