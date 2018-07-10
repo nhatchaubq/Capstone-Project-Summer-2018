@@ -58,17 +58,22 @@ router.get('/', (request, response) => {
 });
 
 router.get('/:id/equipments', (request, response) => {
-    request.sql('select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei.* '
-                + '         from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID '
-                + '                                 join EquipmentItem as ei on wod.EquipmentItemID = ei.Id '
-                + '             where wo.Id = @workOrderId and ei.EquipmentID = e.Id for json path) as [EquipmentItems] '
-                + ' from Equipment as e join [Unit] as u on e.UnitID = u.Id '
-                + ' where e.Id in (select distinct e.Id '
-                + ' from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID '
-                + ' where ei.id in (select wod.EquipmentItemID '
-                + '         from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID '
-                + '         where wo.Id = @workOrderId)) '
-                + ' for json path')
+    request.sql("select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei.*, json_query((select lo.[Name] as [Location.Name], lo.[Address] as [Location.Address], " +
+    "                                                                                                   bl.[Name] as [BlockName], fl.[Name] as [FloorName], ti.[Name] as [TileName] " +
+    "                                                                                           from [Location] as lo join [Block] as bl on lo.Id = bl.LocationID " +
+"                                                                                                                       join [Floor] as fl on bl.Id = fl.BlockID " +
+    "                                                                                                                   join Tile as ti on fl.Id = ti.FloorID " +
+    "                                                                                           where ti.Id = ei.TileID for json path, without_array_wrapper)) as [BlockFloorTile] "
+                + "                                                     from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
+                + "                                                                         join EquipmentItem as ei on wod.EquipmentItemID = ei.Id "
+                + "                                                     where wo.Id = @workOrderId and ei.EquipmentID = e.Id for json path) as [EquipmentItems] "
+                + " from Equipment as e join [Unit] as u on e.UnitID = u.Id "
+                + " where e.Id in (select distinct e.Id "
+                + " from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID "
+                + " where ei.id in (select wod.EquipmentItemID "
+                + "         from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
+                + "         where wo.Id = @workOrderId)) "
+                + " for json path")
         .param('workOrderId', request.params.id, TYPES.Int)
         .into(response);
 });

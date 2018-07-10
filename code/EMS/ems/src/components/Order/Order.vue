@@ -136,35 +136,55 @@
                                 <v-flex>
                                     <v-expansion-panel popout>
                                         <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
-                                            <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
-                                                <div style="display: flex">
-                                                    <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
-                                                </div>
-                                                <div style="display: grid; grid-template-rows: auto auto;">
-                                                    <div>
-                                                        {{ equipment.Name }}
-                                                    </div>                                            
-                                                    <div style="font-size: .9rem">
-                                                        Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
+                                            <div slot="header">
+                                                <div style="display: grid; grid-template-columns: 25% auto;">
+                                                    <div style="display: flex">
+                                                        <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
                                                     </div>
+                                                    <div style="display: grid; grid-template-rows: auto auto;">
+                                                        <div>
+                                                            {{ equipment.Name }}
+                                                        </div>                                            
+                                                        <div style="font-size: .9rem">
+                                                            Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div>
+
                                                 </div>
                                             </div>
                                             <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
                                                 <v-card-text style="font-size: .9rem">
-                                                    Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a> | 
-                                                    <a v-on:click="() => {
-                                                        showUpdateItemPosition = true;
-                                                        toUpdatePositionItem = item;ss
-                                                    }">Update position</a>
-                                                    <span v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus === 'In Progress'">
-                                                         | 
-                                                        <a v-on:click="() => {
-                                                            workOrderIdOfToCloseWOD = selectedOrder.Id;
-                                                            toCloseEquipment = equipment;
-                                                            toCloseEquipmentItem = item;
-                                                            showCloseWorkOrderDetailDialog = true;
-                                                        }">Close</a>
-                                                    </span>
+                                                    <div>
+                                                        Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a>
+                                                        <span v-if="(authUser.Role == 'Staff' || authUser.Role == 'Maintainer')
+                                                                    && selectedOrder.WorkOrderStatus == 'In Progress'" >
+                                                             | 
+                                                            <a v-on:click="() => {
+                                                                showUpdateItemPosition = true;
+                                                                toUpdatePositionItem = item;
+                                                            }">Update position</a>
+                                                        </span>
+                                                        <span v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus === 'In Progress'">
+                                                            | 
+                                                            <a v-on:click="() => {
+                                                                workOrderIdOfToCloseWOD = selectedOrder.Id;
+                                                                toCloseEquipment = equipment;
+                                                                toCloseEquipmentItem = item;
+                                                                showCloseWorkOrderDetailDialog = true;
+                                                            }">Close</a>
+                                                        </span>
+                                                    </div>                                                        
+                                                    <div>
+                                                        Current in: 
+                                                        <span v-if="item.BlockFloorTile">
+                                                            {{ item.BlockFloorTile.Location.Name }}
+                                                            - Block {{ item.BlockFloorTile.BlockName }} - Floor {{ item.BlockFloorTile.FloorName }}
+                                                            - Tile {{ item.BlockFloorTile.TileName }}
+                                                        </span>
+                                                        <span v-else>undefined</span>
+                                                    </div>
                                                 </v-card-text>
                                             </v-card>
                                         </v-expansion-panel-content>
@@ -362,27 +382,57 @@
       </modal>  -->
       <!-- close work detail dialog -->
       <modal v-if="mapViewSelectedLocation" v-model="showUpdateItemPosition" 
-            @on-ok="showUpdateItemPosition = false" @on-cancel="showUpdateItemPosition = false"
+            @on-ok="updateItemPosition()" 
+            @on-cancel="() => {
+                showUpdateItemPosition = false;
+                updateBlock = null;
+                updateFloor = null;
+                updateTile = null;
+            }"
             ok-text="Save changes" cancel-text="Cancel">
           <div slot="header">
-              <span>Update Equipment Item Position</span>
+              <span>Update Position</span>
           </div>
           <div :style="{
               'max-height': '50vh',
               'overflow-y': 'auto',
+              'font-size': '.95rem',
           }">
-          <div class="select">
-            <select v-model="updateBlock">
-                <option :key="'updateBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks"></option>
-            </select>
-            <select v-model="updateFloor">
-                <option :key="'updateFloor' + floor.Id" v-for="floor in updateBlock.Floors"></option>
-            </select>
-            <select v-model="updateTile">
-                <option :key="'updaupdateTileteFloor' + tile.Id" v-for="tile in updateFloor.Tiles"></option>
-            </select>
-
-          </div>
+           <div>
+               {{mapViewSelectedLocation.Name}} - {{mapViewSelectedLocation.Address}}
+           </div>
+           <div style="display: grid; grid-template-columns: 30% 30% 30%; grid-column-gap: 5%; margin: 2rem 0;">
+               <div style="width: 100%">
+                    <div style="width: 100%" class="select">
+                        <select style="width: 100%" v-model="updateBlock">
+                            <option disabled :value="null">Select a block</option>
+                            <option :value="block" :key="'updateBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks">
+                                Block {{ block.Name }}
+                            </option>
+                        </select>
+                    </div>
+               </div>
+               <div style="width: 100%">
+                    <div style="width: 100%" class="select" v-if="updateBlock && updateBlock.Floors">
+                        <select style="width: 100%" v-model="updateFloor">
+                            <option disabled :value="null">Select a floor</option>
+                            <option :value="floor" :key="'updateFloor' + floor.Id" v-for="floor in updateBlock.Floors">
+                                Floor {{ floor.Name }}
+                            </option>
+                        </select>
+                    </div>                   
+               </div>
+               <div style="width: 100%">
+                    <div style="width: 100%" class="select" v-if="updateFloor && updateFloor.Tiles">
+                        <select style="width: 100%" v-model="updateTile">
+                            <option disabled :value="null">Select a tile</option>
+                            <option :value="tile" :key="'updaupdateTileteFloor' + tile.Id" v-for="tile in updateFloor.Tiles">
+                                Tile {{ tile.Name }}
+                            </option>
+                        </select>
+                    </div>
+               </div>
+           </div>
           </div>
       </modal>
     </div>
@@ -511,6 +561,8 @@ export default {
                 }
                 if (this.selectedOrder) {
                     this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
+                    // this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                    // this.getLocationBlockFloorTile(this.selectedOrder);
                 }
             }
         });
@@ -522,28 +574,31 @@ export default {
         // this.viewDetailMode = true;
         this.selectedOrder = order;
         // get equipments in the selected work order - start
+        this.getEquipmentsOfWorkOrder(order);
+        this.getLocationBlockFloorTile(order);
+        // get equipments in the selected work order - end
+      }
+    },
+    getEquipmentsOfWorkOrder(workOrder) {
         this.equipments = [];
-        let equipmentsUrl = `${Server.WORKORDER_API_PATH}/${this.selectedOrder.Id}/equipments`;
+        let equipmentsUrl = `${Server.WORKORDER_API_PATH}/${workOrder.Id}/equipments`;
         this.axios.get(equipmentsUrl)
             .then((res) => {
-                let data = res.data;
-                data.forEach(equipment => {
-                    this.equipments.push(equipment);
-                });
+                this.equipments = res.data;
             })
             .catch((error) => {
                 console.log(error);
-            })
+            });
+    },
+    getLocationBlockFloorTile(workOrder) {
         this.mapViewSelectedLocation = null;
-        let positionUrl = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${this.selectedOrder.Location.Id}`;
+        let positionUrl = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${workOrder.Location.Id}`;
         this.axios.get(positionUrl)
             .then((res) => {
                 if (res.data) {
                     this.mapViewSelectedLocation = res.data;
                 }
             });
-        // get equipments in the selected work order - end
-      }
     },
     // when click on an orderblock, add 'is-active-block' class to it
     isActive(orderId) {
@@ -574,30 +629,32 @@ export default {
       }
     },
     filterOrders() {
-      if (this.tempValues == null) {
-        this.tempValues = this.toDisplayWorkOrders;
-      }
-      this.toDisplayWorkOrders = []; // reset orders before applying new filters
-      this.selectedOrder = null;
-      if (this.filterOptionsValues.status.length > 0) {
-        this.filterOptionsValues.status.forEach(status => {
-          this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(this.tempValues.filter(order => order.WorkOrderStatus == status.name));
-        });
-      } else {
-          this.toDisplayWorkOrders = this.tempValues;
-      }
-      if (this.filterOptionsValues.priorities.length > 0) {
-        var tempValues = [];
-        this.filterOptionsValues.priorities.forEach(priority => {
-          tempValues = tempValues.concat(this.toDisplayWorkOrders.filter(order => order.Priority == priority.name));
-        });
-        this.toDisplayWorkOrders = tempValues;
-      }
-      this.toDisplayWorkOrders = this.sortOrdersByDate(this.toDisplayWorkOrders);
-    //   this.selectedFilter = null;
-      // for (var i = 0; i < this.filterValues.length; i++) {
-      //     this.orders = this.sortOrdersByDate(this.orders);
-      // }
+        if (this.filterOptionsValues.status.length > 0 || this.filterOptionsValues.priorities.length > 0) {
+            // if (this.tempValues == null) {
+              this.tempValues = this.toDisplayWorkOrders;
+            // }
+            this.toDisplayWorkOrders = []; // reset orders before applying new filters
+            this.selectedOrder = null;
+            if (this.filterOptionsValues.status.length > 0) {
+              this.filterOptionsValues.status.forEach(status => {
+                this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(this.tempValues.filter(order => order.WorkOrderStatus == status.name));
+              });
+            } else {
+                this.toDisplayWorkOrders = this.tempValues;
+            }
+            if (this.filterOptionsValues.priorities.length > 0) {
+              var tempValues = [];
+              this.filterOptionsValues.priorities.forEach(priority => {
+                tempValues = tempValues.concat(this.toDisplayWorkOrders.filter(order => order.Priority == priority.name));
+              });
+              this.toDisplayWorkOrders = tempValues;
+            }
+            this.toDisplayWorkOrders = this.sortOrdersByDate(this.toDisplayWorkOrders);
+          //   this.selectedFilter = null;
+            // for (var i = 0; i < this.filterValues.length; i++) {
+            //     this.orders = this.sortOrdersByDate(this.orders);
+            // }
+        }
     },
     sortOrdersByDate(orders) {
         return orders.sort((order1, order2) => {
@@ -729,14 +786,18 @@ export default {
     getFormatDate(date) {
         return moment(date).format('L');
     },
-    updateItemPosition(itemId, tileId) {
-        let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${itemId}`;
+    updateItemPosition() {
+        let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${this.toUpdatePositionItem.Id}`;
         this.axios.put(url, {
-            tileId: tileId,
+            tileId: this.updateTile.Id,
         }).then((res) => {
             if (res.status == 200) {
-                this.getWorkOrders();
+                this.toUpdatePositionItem = null,
+                this.updateBlock = null;
+                this.updateFloor = null;
+                this.updateTile = null;
                 this.showUpdateItemPosition = false;
+                this.getEquipmentsOfWorkOrder(this.selectedOrder);
             }
         });
     }
@@ -760,11 +821,6 @@ export default {
         }
         this.filterOrders();
     }, 
-    showUpdateItemPosition: function() {
-        if (this.showUpdateItemPosition) {
-            
-        }
-    }
   }
 };
 </script>
