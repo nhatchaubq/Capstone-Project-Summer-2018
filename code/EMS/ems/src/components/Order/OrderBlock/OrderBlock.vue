@@ -55,13 +55,13 @@ export default {
                 case 'Approved': { // Approved
                     return 'fa-thumbs-up approved';
                 }
-                case 'In Progress': { // InProgress
+                case 'Rejected': { // InProgress
                     return 'fa-thumbs-down rejected';
                 }
-                case 'Closed': { // Closed
+                case 'In Progress': { // Closed
                     return 'fa-tasks in-progress';
                 }
-                case 'Rejected': { // Rejected
+                case 'Closed': { // Rejected
                     return 'fa-archive closed';
                 }
                 case 'Cancelled': { // Cancelled
@@ -80,13 +80,13 @@ export default {
                 case 'Approved': { // Approved
                     return 'approved';
                 }
-                case 'In Progress': { // InProgress
+                case 'Rejected': { // InProgress
                     return 'rejected';
                 }
-                case 'Closed': { // Closed
+                case 'In Progress': { // Closed
                     return 'in-progress';
                 }
-                case 'Rejected': { // Rejected
+                case 'Closed': { // Rejected
                     return 'closed';
                 }
                 case 'Cancelled': { // Cancelled

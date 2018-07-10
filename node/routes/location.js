@@ -36,7 +36,6 @@ router.put("/updateLocation", (req, res) => {
 });
 
 router.put('/update_location_floor_plan/:locationId', (req, res) => {
-  console.log(req.body.imageBase64);
   req.sql('update [Location] set [Image] = @imageUrl where Id = @locationId')
     .param('locationId', req.params.locationId, TYPES.Int)
     .param('imageUrl', req.body.imageUrl, TYPES.VarChar)

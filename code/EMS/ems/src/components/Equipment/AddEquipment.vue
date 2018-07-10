@@ -117,7 +117,7 @@
                 </div>
                 <div class="field is-horizontal">
                     <input type="number" min="1" class="input" style="margin-right: 1rem" v-model="quantity" >
-                    <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">Barcode</button>
+                    <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">CreateBarcode</button>
                 </div>
                 <div v-show="showingBarcode">
                     <ul>
@@ -182,6 +182,9 @@ import AddEquipment from "./AddEquipment";
 import VueBase64FileUpload from "vue-base64-file-upload";
 import { ModelSelect } from "vue-search-select";
 import Autocomplete from "./Autocomplete";
+import Utils from "@/utils.js";
+import fileBase64 from "vue-file-base64";
+import moment from "moment";
 export default {
   props: ["filterby"],
   components: {
@@ -263,7 +266,7 @@ export default {
         Price: 500000,
         Warranty: 1
       },
-       selectedLocation: {
+      selectedLocation: {
         text: "",
         value: ""
       },
@@ -291,6 +294,7 @@ export default {
         text: "",
         value: ""
       },
+      imageUrl: "",
       newCategory: "",
       newVendor: "",
       showingAddCategory: false,
@@ -386,16 +390,35 @@ export default {
           console.log(error);
         });
     },
-    createNewEquipment() {
+    async createNewEquipment() {
       // this.checkExistEquipment();
       // if (this.validateExistEquipment) {
       //   alert("This equipment is exist with this vendor");
       // }
       // else {
+
+      let formData = new FormData();
+      formData.append("api_key", "982394881563116");
+      formData.append("file", this.files[0]);
+      formData.append("public_id", this.files[0].name);
+      formData.append("timestamp", moment().valueOf());
+      formData.append("upload_preset", "ursbvd4a");
+
+      let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+      try {
+        let uploadRespose = await this.axios.post(url, formData);
+        if (uploadRespose.status == 200) {
+          this.imageUrl = uploadRespose.data.url;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      //alert(this.imageUrl);
       this.axios
         .post("http://localhost:3000/api/equipment", {
           name: this.form.EquipmentName,
           vendorID: this.selectedVendor.value,
+          image: this.imageUrl,
           madein: this.form.MadeIn,
           description: this.form.Description,
           categoryID: this.form.Category
@@ -434,13 +457,16 @@ export default {
     },
     createNewEquipentItem() {
       // alert(this.checked);
-
-       this.axios
-         .get("http://localhost:3000/api/equipment/" + this.form.EquipmentName)
-         .then(response => {
-           for (var i = 0; i < this.quantity; i++) {
-             let data = response.data;
-             alert(data.Id);
+      var result = false;
+      this.axios
+        .get(
+          "http://localhost:3000/api/equipment/byName/" +
+            this.form.EquipmentName
+        )
+        .then(response => {
+          for (var i = 0; i < this.quantity; i++) {
+            let data = response.data;
+            //  alert(data.Id);
             this.axios
               .post("http://localhost:3000/api/equipmentItem", {
                 equipmentID: data.Id,
@@ -452,18 +478,20 @@ export default {
                 tileID: this.selectedTile.value
               })
               .then(function(respone) {
-                alert("Add" + this.quantity + "item(s) successfully");
-                location.reload();
+                result = true;
               })
               .catch(function(error) {
                 console.log(error);
               });
           }
+          if ((result = true)) {
+            alert("Add " + this.quantity + " item(s) successfully");
+          }
+          //location.reload();
         })
         .catch(function(error) {
-          alert(this.form.EquipmentName)
+          alert(this.form.EquipmentName);
           console.log(error);
-          
         });
     }
 
