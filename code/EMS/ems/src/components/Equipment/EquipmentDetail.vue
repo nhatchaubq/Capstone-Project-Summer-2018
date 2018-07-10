@@ -119,7 +119,7 @@
           </div>
           <div class="field is-horizontal">
               <input type="number" min="1" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" >
-              <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">Barcode</button>
+              <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">CreateBarcode</button>
           </div>
           <div v-show="showingBarcode" style="max-height: 80px; overflow-y: auto">
               <ul>
@@ -349,7 +349,7 @@ import "vodal/common.css";
 import "vodal/slide-up.css";
 import EquipmentDetailPopup from "./EquipmentDetailPopup";
 import Vodal from "vodal";
-
+import moment from "moment";
 export default {
   // name: "ConditionalModal",
 
@@ -464,6 +464,7 @@ export default {
       quality: 0,
       Items: [],
       files: "",
+      imageUrl: "",
       quantity: 1,
       editMode: false,
       editItemMode: false,
@@ -471,7 +472,7 @@ export default {
       randomNumbers: [],
       statusHistories: [],
       allworkorder: [],
-      tiles:[],
+      tiles: [],
       selectedStatus: {
         text: "",
         value: ""
@@ -616,7 +617,6 @@ export default {
       }
     },
     setSelectedItem(itemId) {
-
       this.axios
         .get("http://localhost:3000/api/equipmentItem/Item/" + itemId)
         .then(response => {
@@ -665,7 +665,7 @@ export default {
     inputFileChange() {
       this.files = this.$refs.fileInput.files;
     },
-    updateEquipment() {
+    async updateEquipment() {
       if (
         this.selectedCategory.value == "" ||
         this.selectedCategory.value == ""
@@ -674,6 +674,22 @@ export default {
       } else if (this.EquimentByID.Name == "") {
         alert("Please enter equipment name");
       } else {
+        let formData = new FormData();
+        formData.append("api_key", "982394881563116");
+        formData.append("file", this.files[0]);
+        formData.append("public_id", this.files[0].name);
+        formData.append("timestamp", moment().valueOf());
+        formData.append("upload_preset", "ursbvd4a");
+
+        let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+        try {
+          let uploadRespose = await this.axios.post(url, formData);
+          if (uploadRespose.status == 200) {
+            this.imageUrl = uploadRespose.data.url;
+          }
+        } catch (error) {
+          console.log(error);
+        }
         // alert(this.selectedCategory.value);
         this.editMode = !this.editMode;
         this.axios
@@ -681,8 +697,7 @@ export default {
             id: this.equipmentId,
             name: this.EquimentByID.Name,
             vendorid: this.selectedVendor.value,
-            image:
-              "http://dailymayxaydung.com/wp-content/uploads/2016/05/bua_duc_hoi_g10.jpg",
+            image: this.imageUrl,
             madein: this.EquimentByID.MadeIn,
             categoryid: this.selectedCategory.value,
             description: this.EquimentByID.Description
@@ -694,6 +709,7 @@ export default {
             console.log(error);
           });
       }
+      location.reload();
     },
     changeItemStatus() {
       let authUser = JSON.parse(window.localStorage.getItem("user"));
@@ -738,12 +754,12 @@ export default {
         )
         .then(function(respone) {
           alert("Update successfully");
-          this.created();
         })
         .catch(function(error) {
           console.log(error);
         });
       // }
+      location.reload();
     }
   },
   watch: {
