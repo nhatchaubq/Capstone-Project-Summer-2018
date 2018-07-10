@@ -10,7 +10,7 @@ var connection = {
   server: "localhost",
   userName: "sa",
 
-  password: "cCS94@bcnq836894",
+  password: "tien1005",
 
   port: "1433",
   options: {
@@ -54,10 +54,10 @@ server.use("/api/team_account", require("./routes/team_account"));
 server.use("/api/team/id", require("./routes/teamDetails"));
 server.use("/api/dashboard", require("./routes/dashBoard"));
 
-server.use("/api/report",require("./routes/report"));
-server.use("/api/block",require("./routes/block"));
-server.use("/api/floor",require("./routes/floor"));
-server.use("/api/tile",require("./routes/tile"));
+server.use("/api/report", require("./routes/report"));
+server.use("/api/block", require("./routes/block"));
+server.use("/api/floor", require("./routes/floor"));
+server.use("/api/tile", require("./routes/tile"));
 
 // server.use('/api/account/edit/id', require('./routes/account'));
 // server.use('/api/account', require('./routes/account'));
