@@ -543,14 +543,14 @@ export default {
       // havaFloorFloorPlanImage: true,
       editingBlockFloor: false,
       // step data - end
-
+      
       // paint tool data - start
       locationBackground: null,
       currentLocationPaintToolMode: 0,
       paintToolMode: {
-        Preset: 0,
-        Rectangle: 1,
-        Hand: 2
+          Preset: 0,
+          Rectangle: 1,
+          Hand: 2,
       },
       polyList: [],
       radius: 5,
@@ -561,7 +561,7 @@ export default {
       locationSelectedGridPresetOption: null,
       locationGridCustomColumns: 1,
       locationGridCustomRows: 1,
-      locationSelectedTileIndex: -1
+      locationSelectedTileIndex: -1,
       // location - end
       // floorSelectingPointIndex: -1,
       // floorGridPreset: null,
@@ -570,30 +570,51 @@ export default {
       // floorGridCustomRows: 1,
       // floorSelectedTileIndex: -1,
       // paint tool data - end
-    };
-  },
-  methods: {
-    getFile(file) {
+  }
+},
+methods: {
+  getFile(file) {
       if (file) {
-        var canvas = null;
-        var canvasContext = null;
-        var background = null;
-        background = new Image();
-        background.src = file.base64;
-        if (
-          this.currentStep ===
-          this.Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION
-        ) {
-          canvas = this.$refs.locationCanvas;
-          canvasContext = canvas.getContext("2d");
+          var canvas = null;
+          var canvasContext = null;
+          var background = null;
+          background = new Image();
+          background.src = file.base64;
+          if (this.currentStep === this.Steps.CREATE_BLOCK_FLOOR_PLAN_IMAGE_FOR_LOCATION) {
+              canvas = this.$refs.locationCanvas;
+              let MAX_WIDTH = 460;
+              let MAX_HEIGHT = 460;
+              var width = background.width;
+              var height = background.height;
 
-          this.locationSelectingPointIndex = -1;
-          this.locationGridPreset = null;
-          this.locationSelectedGridPresetOption = null;
-          this.locationGridCustomColumns = 1;
-          this.locationGridCustomRows = 1;
-          this.locationSelectedTileIndex = -1;
-          this.locationFloorPlanImage = file;
+              if (width > height) {
+                  if (width > MAX_WIDTH) {
+                      height *= MAX_WIDTH / width;
+                      width = MAX_WIDTH;
+                  }
+              } else {
+                  if (height > MAX_HEIGHT) {
+                      width *= MAX_HEIGHT / height;
+                      height = MAX_HEIGHT;
+                  }
+              }
+              canvas.width = width;
+              canvas.height = height;
+              canvasContext = canvas.getContext('2d');
+
+              background.onload = () => {
+                  canvas.width = 460;
+                  canvas.height = background.height;
+                  canvasContext.drawImage(background, 0, 0, width, height);
+              }; 
+
+              this.locationSelectingPointIndex = -1;
+              this.locationGridPreset = null;
+              this.locationSelectedGridPresetOption = null;
+              this.locationGridCustomColumns = 1;
+              this.locationGridCustomRows = 1;
+              this.locationSelectedTileIndex = -1;
+              this.locationFloorPlanImage = file;
 
           this.newLocation = {
             id: this.location.Id,
@@ -623,77 +644,71 @@ export default {
         //     floor.background = background;
         // }
 
-        background.onload = () => {
-          canvas.width = background.width;
-          canvas.height = background.height;
-          canvasContext.drawImage(background, 0, 0);
-        };
-        let context = this;
-        // let canvas = this.$refs.locationCanvas;
-        // let canvasContext = this.$refs.locationCanvas.getContext('2d');
-        canvas.addEventListener("mousemove", event => {
-          if (
-            context.currentStep !=
-            context.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS
-          ) {
-            var mousePos = {
-              x: event.clientX - canvas.getBoundingClientRect().left,
-              y: event.clientY - canvas.getBoundingClientRect().top
-            };
-            context.paintCanvas(canvas, mousePos.x, mousePos.y);
-          }
-        });
-        canvas.addEventListener("mousedown", event => {
-          if (
-            context.currentStep !=
-            context.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS
-          ) {
-            context.canvasMouseDown = true;
-            var mousePos = {
-              x: event.clientX - canvas.getBoundingClientRect().left,
-              y: event.clientY - canvas.getBoundingClientRect().top
-            };
-            if (
-              context.currentLocationPaintToolMode == context.paintToolMode.Hand
-            ) {
-              for (var i = 0; i < context.newBlock.points.length; i++) {
-                let point = context.newBlock.points[i];
-                let distX = mousePos.x - point.x;
-                let distY = mousePos.y - point.y;
-                let distance = Math.sqrt(distX * distX + distY * distY);
-                if (distance <= context.radius) {
-                  context.locationSelectingPointIndex = i;
-                  break;
-                } else {
-                  context.locationSelectingPointIndex = -1;
-                }
-              }
-              if (context.locationSelectingPointIndex == -1) {
-                context.canvasClick(canvas, mousePos.x, mousePos.y);
-              }
-            }
-          }
-        });
-        canvas.addEventListener("mouseup", event => {
-          context.canvasMouseDown = false;
-          // if (!context.currentLocationPaintToolMode == this.paintToolMode.Preset && (context.newBlock.points.length > 0 || context.polyList.length > 0)) {
-          //     // context.locationSelectingPointIndex= -1;
-          //     context.drawPoints();
-          // }
-        });
-        canvas.addEventListener("click", event => {
-          if (
-            context.currentStep !=
-            context.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS
-          ) {
-            if (
-              context.currentLocationPaintToolMode == this.paintToolMode.Preset
-            ) {
-              var mousePos = {
-                x: event.clientX - canvas.getBoundingClientRect().left,
-                y: event.clientY - canvas.getBoundingClientRect().top
-              };
-              context.canvasClick(canvas, mousePos.x, mousePos.y);
+                // background.onload = () => {
+                //     canvas.width = background.width;
+                //     canvas.height = background.height;
+                //     canvasContext.drawImage(background, 0, 0);
+                // };        
+                let context = this;
+                // let canvas = this.$refs.locationCanvas;
+                // let canvasContext = this.$refs.locationCanvas.getContext('2d');
+                canvas.addEventListener('mousemove', (event) => {
+                    if (context.currentStep != context.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
+                        var mousePos = {
+                            x: event.clientX - canvas.getBoundingClientRect().left,
+                            y: event.clientY - canvas.getBoundingClientRect().top
+                        };
+                        context.paintCanvas(canvas, mousePos.x, mousePos.y);
+                    }
+                });
+                canvas.addEventListener('mousedown', (event) => {
+                    if (context.currentStep != context.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
+                        context.canvasMouseDown = true;
+                        var mousePos = {
+                            x: event.clientX - canvas.getBoundingClientRect().left,
+                            y: event.clientY - canvas.getBoundingClientRect().top
+                        };
+                        if (context.currentLocationPaintToolMode == context.paintToolMode.Hand) {
+                            for (var i = 0; i < context.newBlock.points.length; i++) {
+                                let point = context.newBlock.points[i];
+                                let distX = mousePos.x - point.x;
+                                let distY = mousePos.y - point.y;
+                                let distance = Math.sqrt((distX * distX) + (distY * distY));
+                                if (distance <= context.radius) {
+                                    context.locationSelectingPointIndex= i;
+                                    break;
+                                } else {
+                                    context.locationSelectingPointIndex= -1;
+                                }
+                            }
+                            if (context.locationSelectingPointIndex== -1) {
+                                context.canvasClick(canvas, mousePos.x, mousePos.y);
+                            }
+                        }
+                    }
+                });
+                canvas.addEventListener('mouseup', (event) => {
+                    context.canvasMouseDown = false;
+                    // if (!context.currentLocationPaintToolMode == this.paintToolMode.Preset && (context.newBlock.points.length > 0 || context.polyList.length > 0)) {
+                    //     // context.locationSelectingPointIndex= -1;
+                    //     context.drawPoints();
+                    // }
+                });
+                canvas.addEventListener('click', (event) => {
+                    if (context.currentStep != context.Steps.CREATE_FLOOR_FLOOR_PLAN_IMAGE_FOR_BLOCKS) {
+                        if (context.currentLocationPaintToolMode == this.paintToolMode.Preset) {
+                            var mousePos = {
+                                x: event.clientX - canvas.getBoundingClientRect().left,
+                                y: event.clientY - canvas.getBoundingClientRect().top
+                            };
+                            context.canvasClick(canvas, mousePos.x, mousePos.y);
+                        }
+                    }
+                }); 
+                canvas.addEventListener('mouseout', (event) => {
+                    context.locationSelectedTileIndex = -1;
+                    context.paintCanvas(canvas, null, null);
+                })
             }
           }
         });
