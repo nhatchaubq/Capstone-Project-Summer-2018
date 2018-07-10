@@ -491,7 +491,7 @@ import moment from "moment";
 
 export default {
   components: {
-    // fileBase64
+    fileBase64
   },
   created() {
     let url = `${Server.LOCATION_API_PATH}/${this.$route.params.locationId}`;
@@ -709,13 +709,6 @@ methods: {
                     context.locationSelectedTileIndex = -1;
                     context.paintCanvas(canvas, null, null);
                 })
-            }
-          }
-        });
-        canvas.addEventListener("mouseout", event => {
-          context.locationSelectedTileIndex = -1;
-          context.paintCanvas(canvas, null, null);
-        });
       }
     },
     showAlert(msg) {
