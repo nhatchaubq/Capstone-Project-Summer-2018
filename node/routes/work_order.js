@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const TYPES = require("tedious").TYPES;
 
-router.get("/workorderbylocationId/:id", (request, response) => {
 
+router.get("/workorderbylocationId/:id", (request, response) => {
   request
     .sql(
       "select distinct wo.*, (select COUNT(*) " +
@@ -17,6 +17,8 @@ router.get("/workorderbylocationId/:id", (request, response) => {
     .param("locationId", request.params.id, TYPES.Int)
     .into(response);
 });
+
+
 
 // router.get('/', (request, response) => {
 //     request.sql("exec GetWorkOrders")
