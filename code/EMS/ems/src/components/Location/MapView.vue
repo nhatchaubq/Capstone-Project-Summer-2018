@@ -259,7 +259,7 @@ export default {
                                 canvas.width = width;
                                 canvas.height = height;
                                 let canvasContext = canvas.getContext('2d');
-                                if (this.imageCache[this.selectedLocationIndex]) {
+                                if (this.imageCache[this.selectedLocationIndex].background) {
                                     canvasContext.drawImage(background, 0, 0, width, height);
                                 } else {
                                     background.onload = () => {

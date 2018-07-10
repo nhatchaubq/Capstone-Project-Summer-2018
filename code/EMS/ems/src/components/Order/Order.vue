@@ -176,7 +176,8 @@
                                                             }">Close</a>
                                                         </span>
                                                     </div>                                                        
-                                                    <div>
+                                                    <div v-if="selectedOrder.WorkOrderStatus != 'Cancelled' 
+                                                                && selectedOrder.WorkOrderStatus != 'Closed'">
                                                         Current in: 
                                                         <span v-if="item.BlockFloorTile">
                                                             {{ item.BlockFloorTile.Location.Name }}
@@ -334,7 +335,7 @@
           </div>
       </modal>
       <!-- close work detail dialog -->
-      <!-- <modal v-if="toCloseEquipment && toCloseEquipmentItem" v-model="showCloseWorkOrderDetailDialog" 
+      <modal width="800" v-if="toCloseEquipment && toCloseEquipmentItem" v-model="showCloseWorkOrderDetailDialog" 
                 @on-ok="showCloseWorkOrderDetailDialog = false" >
           <div slot="header">
               Close Order Detail
@@ -344,13 +345,14 @@
               'max-height': '50vh',
               'overflow-y': 'auto',
           }">
-            <div style="font-size: 0.95rem; margin-bottom: 1rem; display: grid; grid-template-columns: 55% 15% 15% 15%;">
+            <div style="font-size: 0.95rem; margin-bottom: 1rem; display: grid; grid-template-columns: 40% 10% 10% 10% 30%;">
                 <div>Equipment Item</div>
                 <div style="text-align: center">Good</div>
                 <div style="text-align: center">Damaged</div>
                 <div style="text-align: center">Lost</div>
+                <div>Description</div>
             </div>
-            <div style="display: grid; grid-template-columns: 15% 40% 15% 15% 15%;">
+            <div style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%;">
                 <div style="display: flex">
                     <img v-show="toCloseEquipment.Image" :src="toCloseEquipment.Image" :alt="toCloseEquipment.Name" style="width: 3rem; height: 3rem;">
                 </div>
@@ -363,13 +365,30 @@
                     </div>
                 </div>
                 <div style="text-align: center">
-                    <input type="radio" checked :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`">
+                    <label class="radio">
+                        <input type="radio" :checked="toUpdateItemStatus == 'Available'"
+                                :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`"
+                                v-on:click="toUpdateItemStatus = 'Available'">
+                    </label>
                 </div>
                 <div style="text-align: center">
-                    <input type="radio" :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`">
+                    <label class="radio">
+                        <input type="radio" :checked="toUpdateItemStatus == 'Damaged'"
+                            :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`"
+                            v-on:click="toUpdateItemStatus = 'Damaged'">
+                    </label>
                 </div>
                 <div style="text-align: center">
-                    <input type="radio" :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`">
+                    <label class="radio">
+                        <input type="radio" :checked="toUpdateItemStatus == 'Lost'"
+                            :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`"
+                            v-on:click="toUpdateItemStatus = 'Lost'">
+                    </label>
+                </div>
+                <div>
+                    <textarea class="input" cols="30" rows="10" 
+                            v-model="toUpdateItemDescription"
+                            style="width: 100%; min-height: 3rem; max-height: 3rem"></textarea>
                 </div>
             </div>
           </div>
@@ -379,7 +398,7 @@
               <button class="button btn-primary" 
                         v-on:click="closeWorkOrderDetail(selectedOrder.Id, toCloseEquipmentItem.Id, newItemStatus)">Close Order Detail</button>
           </div>
-      </modal>  -->
+      </modal> 
       <!-- close work detail dialog -->
       <modal v-if="mapViewSelectedLocation" v-model="showUpdateItemPosition" 
             @on-ok="updateItemPosition()" 
@@ -535,6 +554,8 @@ export default {
         updateBlock: null,
         updateFloor: null,
         updateTile: null,
+        toUpdateItemStatus: 'Available',
+        toUpdateItemDescription: '',
     };
   },
   computed: {
@@ -630,9 +651,9 @@ export default {
     },
     filterOrders() {
         if (this.filterOptionsValues.status.length > 0 || this.filterOptionsValues.priorities.length > 0) {
-            // if (this.tempValues == null) {
+            if (this.tempValues == null) {
               this.tempValues = this.toDisplayWorkOrders;
-            // }
+            }
             this.toDisplayWorkOrders = []; // reset orders before applying new filters
             this.selectedOrder = null;
             if (this.filterOptionsValues.status.length > 0) {
@@ -800,8 +821,8 @@ export default {
                 this.getEquipmentsOfWorkOrder(this.selectedOrder);
             }
         });
-    }
-    // closeWorkOrderDetail(selectedOrderId, itemId) {
+    },
+    // closeWorkOrderDetail(order, itemId, newItemStatus, description) {
 
     // }
   },
@@ -819,6 +840,7 @@ export default {
         } else {
             this.toDisplayWorkOrders = this.workOrders;
         }
+        this.tempValues = null;
         this.filterOrders();
     }, 
   }
