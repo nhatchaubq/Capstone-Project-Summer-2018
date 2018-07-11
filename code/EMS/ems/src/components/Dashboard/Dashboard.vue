@@ -14,7 +14,20 @@
                 <!-- DoughnutChart  -->
                 <!-- <div style=" margin-left: 2rem !important" class="Chart col-4" > -->
                 <div class="Chart col-12" >
-                  <strong>Available Equipment Percent</strong>
+                  <div class="row">
+                    <div class="col-6" style="padding:0 0 0 0.5rem !important">
+                      <!-- <strong>Available Equipment Percent</strong> -->
+                      <strong>Available Equipment Percent {{tmpCategory}}</strong>
+                    </div>
+                    <div class="col-6">
+                      <div class="select">
+                        <select style="width:100%" v-model="tmpCategory">                                                    
+                            <option :value='null'>All</option>
+                            <option :key="category.Id" v-for="category in categories" :value="category" >{{category.Name}} </option>                                                                           
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                     <doughnut-chart :data="doughnutChartData" styles="height: 40vh"></doughnut-chart>
                 </div>
                 <!-- DoughnutChart- end -->
@@ -355,6 +368,7 @@
 
             </div>
         </div>
+                    
     </div>
 </template>
 
@@ -365,6 +379,7 @@ import PieChart from "../../components/chartTest/pie-chart.js";
 import DoughnutChart from "../../components/chartTest/Doughnut-chart.js";
 import moment from "moment";
 import OrderBlock from "../Dashboard/OrderBlock/OrderBlock";
+import Vue from "vue";
 
 export default {
   components: {
@@ -496,7 +511,7 @@ export default {
         // line chart data - end
         // doughnut chart data - start
         this.doughnutChartData.TodayLabels.push(data.Doughnut.Available.Name);
-        this.doughnutChartData.TodayLabels.push("UNAVAILABLE");
+        this.doughnutChartData.TodayLabels.push("Unavailable");
         this.doughnutChartData.TodayData.push(
           data.Doughnut.Today.AvailableItemCount
         );
@@ -518,6 +533,17 @@ export default {
       let data3 = response.data.tomorrowWokingOrder;
       this.workOrdersWokingTomorrow = data3;
     });
+    this.axios
+      .get("http://localhost:3000/api/dashboard/getCategory")
+      .then(res => {
+        let data = res.data;
+        data.forEach(category => {
+          this.categories.push(category);
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
   },
   data() {
     return {
@@ -539,6 +565,12 @@ export default {
           maintain: []
         }
       },
+
+      //cate start
+
+      categories: [],
+      tmpCategory: null,
+      //cate end
       workOrders: [], // orders data to display in orderblocks <order-block></order-block>
       workOrdersMaintainTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
       workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
@@ -548,6 +580,17 @@ export default {
   methods: {
     getDate(date) {
       return moment(date).format("L");
+    }
+  },
+  watch: {
+    tmpCategory: function() {
+      Vue.nextTick(() => {
+        if (this.tmpCategory) {
+          this.tmpEquipments = this.equipments.filter(
+            equipment => equipment.CategoryID == this.tmpCategory.Id
+          );
+        }
+      });
     }
   }
 };
