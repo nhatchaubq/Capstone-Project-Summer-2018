@@ -19,16 +19,16 @@
                       <!-- <strong>Available Equipment Percent</strong> -->
                       <strong>Available Equipment Percent {{tmpCategory}}</strong>
                     </div>
-                    <div class="col-6">
+                    <!-- <div class="col-6">
                       <div class="select">
                         <select style="width:100%" v-model="tmpCategory">                                                    
                             <option :value='null'>All</option>
                             <option :key="category.Id" v-for="category in categories" :value="category" >{{category.Name}} </option>                                                                           
                         </select>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
-                    <doughnut-chart :data="doughnutChartData" styles="height: 40vh"></doughnut-chart>
+                    <doughnut-chart :data="doughnutChartData" styles="height: 36vh"></doughnut-chart>
                 </div>
                 <!-- DoughnutChart- end -->
 
@@ -516,7 +516,7 @@ export default {
           data.Doughnut.Today.AvailableItemCount
         );
         this.doughnutChartData.TodayData.push(
-          data.Doughnut.Today.UnavailableItemCount
+          data.Doughnut.Today.UnAvailableItemCount
         );
 
         // doughnut chart data - end
