@@ -12,35 +12,35 @@
       <button class="button btn-edit btn-primary material-shadow-animate col-1" v-on:click="editMode = !editMode">Edit</button>
       </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem" >
-          Business address  <span v-if="editMode"> (required)</span>
+        <div class="col-12" style="margin-top:0.5rem" >
+          Business address  <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoBusinessAddress != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span>
         </div>
       </div>
         <input v-if="!editMode" v-model="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" >
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem" >
+        <div class="col-12" style="margin-top:0.5rem" >
           Website
         </div>
       </div>
         <input v-if="!editMode" v-model="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" >
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem;" >
-          Contact name <span v-if="editMode"> (required)</span>
+        <div class="col-12" style="margin-top:0.5rem;" >
+          Contact name <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoContactName != ''">. <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span>
         </div>
       </div>
         <input v-if="!editMode" v-model="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" >
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem" >
-          Contact email <span v-if="editMode"> (required)</span>
+        <div class="col-12" style="margin-top:0.5rem" >
+          Contact email <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''">. <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
         </div>
       </div>
         <input v-if="!editMode" v-model="Vendor.ContactEmail" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.ContactEmail" class="input col-7 " type="text"  placeholder="Text input" >
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem" >
+        <div class="col-12" style="margin-top:0.5rem" >
           Description
         </div>
       </div>
@@ -135,6 +135,19 @@ export default {
   },
   data() {
     return {
+      sending: false,
+      ErrorStrings: {
+        // NoBusinessName: "You must provide business name for this vendor",
+        NoBusinessAddress: "You must provide business address for this vendor",
+        NoContactName: "You must provide contact name for this vendor",
+        NoEmail: "You must provide contact email for this vendor"
+      },
+      CreateVendorErrors: {
+        // NoBusinessName: "",
+        NoBusinessAddress: "",
+        NoContactName: "",
+        NoEmail: ""
+      },
       Vendor: null,
       checkedActive: [],
       editMode: false
@@ -142,18 +155,61 @@ export default {
   },
   methods: {
     editVendor() {
-      this.axios
-        .put(`http://localhost:3000/api/vendor/${this.$route.params.id}`, {
-          Vendor: this.Vendor
-        })
-        .then(res => {
-          this.$router.push("/vendor");
-        });
+      // if (this.Vendor.BusinessName === "") {
+      //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
+      // }
+      if (this.Vendor.BusinessAddress === "") {
+        this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
+      }
+      if (this.Vendor.ContactName === "") {
+        this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
+      }
+      if (this.Vendor.ContactEmail === "") {
+        this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+      if (this.validateVendor())
+        this.axios
+          .put(`http://localhost:3000/api/vendor/${this.$route.params.id}`, {
+            Vendor: this.Vendor
+          })
+          .then(res => {
+            this.$router.push("/vendor");
+          });
     },
     getAccountAvatar(equip) {
       return equip.AvatarImage
         ? equip.AvatarImage
         : "http://citizen.edisha.gov.in/Content/assets/stylesheet/img/placeholder-user.png";
+    },
+    validateVendor() {
+      return (
+        // this.CreateVendorErrors.NoBusinessName === "" &&
+        this.CreateVendorErrors.NoBusinessAddress === "" &&
+        this.CreateVendorErrors.NoContactName === "" &&
+        this.CreateVendorErrors.NoEmail === ""
+      );
+    }
+  },
+  watch: {
+    // "Vendor.BusinessName": function() {
+    //   if (this.Vendor.BusinessName != "") {
+    //     this.CreateVendorErrors.NoBusinessName = "";
+    //   }
+    // },
+    "Vendor.BusinessAddress": function() {
+      if (this.Vendor.BusinessAddress != "") {
+        this.CreateVendorErrors.NoBusinessAddress = "";
+      }
+    },
+    "Vendor.ContactName": function() {
+      if (this.Vendor.ContactName != "") {
+        this.CreateVendorErrors.NoContactName = "";
+      }
+    },
+    "Vendor.ContactEmail": function() {
+      if (this.Vendor.ContactEmail != "") {
+        this.CreateVendorErrors.NoEmail = "";
+      }
     }
   }
 };
