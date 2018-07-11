@@ -298,14 +298,6 @@ export default {
                 this.$router.push("/account");
                 });
         }
-            // this.axios
-            //     .post("http://localhost:3000/api/account", {
-            //     account: this.account
-            //     })
-            //     .then(res => {
-            //     this.$router.push("/account");
-            //     });
-
     },
  validateAccount() {      
       return this.CreateAccountErrors.NoUsername === '' && this.CreateAccountErrors.NoPassword === ''

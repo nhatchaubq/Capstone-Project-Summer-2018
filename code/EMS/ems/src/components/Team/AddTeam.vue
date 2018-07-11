@@ -12,7 +12,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Team's name <span style="color:red;">*</span></strong>
+                    <strong>  Team's name (required)</strong>
                     </div>
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
                         <input v-model="team.name" class="input " type="text" placeholder="Text input" >
@@ -32,7 +32,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                        Create date <strong><span style="color:red;">*</span></strong>
+                      <strong>Create date (required)</strong>  
                     </div>
                     <div class="form-field-input">
                         <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -53,7 +53,8 @@
             <!-- teset -->
             <div class="form-field">
               <div class="form-field-title">
-                Member 
+                <strong>Member</strong>
+                 
               </div>
               <div class="select" style="margin-left:0.5rem; margin-bottom:1rem">
                 <select v-model="selectedAccount" style="width:62rem">
