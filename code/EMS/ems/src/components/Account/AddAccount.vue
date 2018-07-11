@@ -12,7 +12,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.NoUsername != ''">. <span class="error-text">{{ CreateAccountErrors.NoUsername }}</span></span>
+                    <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.NoUsername != ''">. <span></span> <span class="error-text">{{ CreateAccountErrors.NoUsername }}</span></span>
                     <!-- <span v-if="CreateWorkOrderErrors.NoTitle != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoTitle }}</span></span> -->
                     </div>
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -32,7 +32,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>   Password (required)</strong> <span v-if="CreateAccountErrors.NoPassword != ''">. <span class="error-text">{{ CreateAccountErrors.NoPassword }}</span></span>
+                    <strong>   Password (required)</strong> <span v-if="CreateAccountErrors.NoPassword != ''">. <span class="error-text">{{ CreateAccountErrors.NoPassword }}</span></span><span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">.{{ CreateAccountErrors.WeakAccount }}</span></span>
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
                         <input v-model="account.password" class="input " type="password" placeholder="Text input" name="password" id="password">
                             <span class="icon is-small is-left">
@@ -247,6 +247,9 @@ export default {
         NoEmail: 'You must provide email name for this account',
         NoRole: 'You must provide role for this account',
 
+        WeakAccount: 'Minimum password length is 6 characters',
+
+
 
       },
       CreateAccountErrors: {
@@ -255,7 +258,9 @@ export default {
         NoFullname: '',
         NoPhone: '',
         NoEmail: '',
-        NoRole: ''
+        NoRole: '',
+
+        WeakAccount: '',
       },
       account: {
         username: "",
@@ -271,11 +276,15 @@ export default {
   },
   methods: {
     createAccount1() {
+
         if(this.account.username === ''){
             this.CreateAccountErrors.NoUsername = this.ErrorStrings.NoUsername;
         }
         if(this.account.password === ''){
             this.CreateAccountErrors.NoPassword = this.ErrorStrings.NoPassword;
+        } 
+        if(this.account.password.length < 6){
+            this.CreateAccountErrors.WeakAccount = this.ErrorStrings.WeakAccount;
         }
         if(this.account.fullname === ''){
             this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
@@ -298,19 +307,11 @@ export default {
                 this.$router.push("/account");
                 });
         }
-            // this.axios
-            //     .post("http://localhost:3000/api/account", {
-            //     account: this.account
-            //     })
-            //     .then(res => {
-            //     this.$router.push("/account");
-            //     });
-
     },
  validateAccount() {      
       return this.CreateAccountErrors.NoUsername === '' && this.CreateAccountErrors.NoPassword === ''
               && this.CreateAccountErrors.NoFullname === '' && this.CreateAccountErrors.NoPhone === ''
-              && this.CreateAccountErrors.NoEmail === '' && this.CreateAccountErrors.NoRole === ''
+              && this.CreateAccountErrors.NoEmail === '' && this.CreateAccountErrors.NoRole === '' && this.CreateAccountErrors.WeakAccount === ''
     },
   },
   watch:{
@@ -320,8 +321,11 @@ export default {
           }
       },
       'account.password': function(){
-          if(this.account.password != ''){
+          if(this.account.password != '' ){
               this.CreateAccountErrors.NoPassword = ''
+          }
+           if(this.account.password.length >5){
+            this.CreateAccountErrors.WeakAccount = ''
           }
       },
       'account.fullname': function(){
