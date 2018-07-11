@@ -169,7 +169,7 @@ router.post('/', (req, res) => {
 
 /* ChauBQN */
 router.post('/detail', (req, res) => {
-    req.sql('insert into WorkOrderDetail(EquipmentItemID, WorkOrderID, StartDate, FinishedDate, MaintainceCost, [Description]) ' +
+    req.sql('insert into WorkOrderDetail(EquipmentItemID, WorkOrderID, ExpectingStartDate, ExpectingDueDate, MaintainceCost, [Description]) ' +
             'values(@equipmentItemId, @workOrderId, @startDate, @dueDate, @maintainceCost, @description);')
         .param('workOrderId', req.body.workOrderId, TYPES.Int)
         .param('equipmentItemId', req.body.equipmentItemId, TYPES.Int)
@@ -213,7 +213,10 @@ router.post('/close_detail/:workOrderDetailId', (req, res) => {
         + "     set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); "
         + "     set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = N'Closed'); "
         
-        + "     update [WorkOrder] set StatusID = @newWorkOrderStatusId where Id = @workOrderId; "
+        + "     update WorkOrderDetail set ReturnedDate = getdate() where Id = @workOrderDetailId "
+        
+        + "     update [WorkOrder] set StatusID = @newWorkOrderStatusId, ClosedDate = getdate() where Id = @workOrderId; "
+        
         + "     insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) "
         + "         values(@workOrderId, @userId, getdate(), @oldWorkOrderStatusId, @newWorkOrderStatusId, @description); "
         + " end "
@@ -233,15 +236,19 @@ router.post('/close_detail/:workOrderDetailId', (req, res) => {
 // ChauBQN
 // update status of work order
 router.put('/status/:orderId', (req, res) => {
-    req.sql('declare @currentDate datetime; ' +
-            ' declare @oldWorkOrderStatusId int; ' +
-            ' declare @newWorkOrderStatusId int; ' +
-            ' set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); ' +
-            ' set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = @newWorkOrderStatusName); ' +
-            ' set @currentDate = getdate(); ' +
-            ' update [WorkOrder] set StatusID = @newWorkOrderStatusId where Id = @workOrderId; ' +
-            ' insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) ' +
-            ' values(@workOrderId, @userId, @currentDate, @oldWorkOrderStatusId, @newWorkOrderStatusId, @description);')
+    req.sql("declare @currentDate datetime; " +
+            " declare @oldWorkOrderStatusId int; " +
+            " declare @newWorkOrderStatusId int; " +
+            " set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); " +
+            " set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = @newWorkOrderStatusName); " +
+            " set @currentDate = getdate(); " +
+            " update [WorkOrder] set StatusID = @newWorkOrderStatusId where Id = @workOrderId; " +
+            " if @newWorkOrderStatusName = n'In Progress' " +
+            " begin " +
+            "   update WorkOrderDetail set StartDate = @currentDate " +
+            " end " +
+            " insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) " +
+            " values(@workOrderId, @userId, @currentDate, @oldWorkOrderStatusId, @newWorkOrderStatusId, @description);")
         .param('workOrderId', req.params.orderId, TYPES.Int)
         .param('userId', req.body.userId, TYPES.Int)
         .param('newWorkOrderStatusName', req.body.newStatusName, TYPES.NVarChar)

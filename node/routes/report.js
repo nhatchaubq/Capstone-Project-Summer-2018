@@ -30,7 +30,7 @@ router.get("/getEquipmentOverview", (req, res) => {
 router.get("/getUsingEquipment", (req, res) => {
   req
     .sql(
-      "select distinct ei.Id,e.[Name],ei.SerialNumber,l.[Name] as 'Location',t.[Name] as 'Tile',f.[Name] as 'Floor',b.[Name] as 'Block',wd.StartDate,wd.FinishedDate,tm.[Name] as 'Team' " +
+      "select distinct ei.Id,e.[Name],ei.SerialNumber,l.[Name] as 'Location',t.[Name] as 'Tile',f.[Name] as 'Floor',b.[Name] as 'Block',wd.ExpectingStartDate, wd.ExpectingDueDate,tm.[Name] as 'Team' " +
         " from EquipmentItem as ei join Equipment as e on ei.EquipmentID = e.Id " +
         " 				 join WorkOrderDetail as wd on wd.EquipmentItemID = ei.Id " +
         " 			 join WorkOrder as w on w.Id = wd.WorkOrderID " +
