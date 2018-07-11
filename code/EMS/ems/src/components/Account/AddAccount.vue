@@ -81,7 +81,7 @@
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="account.phone" class="input " type="number" placeholder="Text input" name="phone" id="phone">
+                        <input v-model="account.phone" class="input " type="text" placeholder="Text input" name="phone" id="phone">
                             <span class="icon is-small is-left">
                             <i class="fa fa-mobile"></i>
                             </span>
@@ -253,7 +253,7 @@ export default {
         NoUsername: '',
         NoPassword: '',
         NoFullname: '',
-        NoPhone: null,
+        NoPhone: '',
         NoEmail: '',
         NoRole: ''
       },
@@ -261,7 +261,7 @@ export default {
         username: "",
         password: "",
         fullname: "",
-        phone: null,
+        phone: '',
         email: "",
         startdate: "",
         roleid: null
@@ -280,7 +280,7 @@ export default {
         if(this.account.fullname === ''){
             this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
         }
-        if(this.account.phone === null){
+        if(this.account.phone === ''){
             this.CreateAccountErrors.NoPhone = this.ErrorStrings.NoPhone;
         }
         if(this.account.email === ''){
@@ -330,7 +330,7 @@ export default {
           }
       },
       'account.phone': function(){
-          if(this.account.phone != null){
+          if(this.account.phone != ''){
               this.CreateAccountErrors.NoPhone = ''
           }
       },
