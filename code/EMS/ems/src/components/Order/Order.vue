@@ -498,16 +498,16 @@
 // import Vue from "vue";
 import Vue from 'vue';
 import { sync } from "vuex-pathify";
-import moment from 'moment';
+import moment from "moment";
 import Server from "@/config/config.js";
 import OrderBlock from "./OrderBlock/OrderBlock";
-import StepProgress from '@/components/StepProgress/StepProgress.vue';
+import StepProgress from "@/components/StepProgress/StepProgress.vue";
 // import OrderDetail from "./OrderDetailComponent/OrderDetail";
 import "vodal/common.css";
 import "vodal/slide-up.css";
-import EquipmentDetailPopup from '@/components/Equipment/EquipmentDetailPopup';
-import Vodal from 'vodal';
-import {gmapApi} from 'vue2-google-maps';
+import EquipmentDetailPopup from "@/components/Equipment/EquipmentDetailPopup";
+import Vodal from "vodal";
+import { gmapApi } from "vue2-google-maps";
 
 export default {
   components: {
@@ -606,14 +606,15 @@ export default {
         toCloseItemStatus: 'Available',
         toCloseItemDescription: '',
         toCloseEquipments: [],
+
     };
   },
   computed: {
     searchValues: sync("workOrderPage.searchValues"),
     authUser() {
-        return JSON.parse(window.localStorage.getItem('user'));
+      return JSON.parse(window.localStorage.getItem("user"));
     },
-    google: gmapApi,
+    google: gmapApi
   },
   methods: {
     getWorkOrders() {
@@ -656,25 +657,29 @@ export default {
         }
     },
     getEquipmentsOfWorkOrder(workOrder) {
-        this.equipments = [];
-        let equipmentsUrl = `${Server.WORKORDER_API_PATH}/${workOrder.Id}/equipments`;
-        this.axios.get(equipmentsUrl)
-            .then((res) => {
-                this.equipments = res.data;
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+      this.equipments = [];
+      let equipmentsUrl = `${Server.WORKORDER_API_PATH}/${
+        workOrder.Id
+      }/equipments`;
+      this.axios
+        .get(equipmentsUrl)
+        .then(res => {
+          this.equipments = res.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     getLocationBlockFloorTile(workOrder) {
-        this.mapViewSelectedLocation = null;
-        let positionUrl = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${workOrder.Location.Id}`;
-        this.axios.get(positionUrl)
-            .then((res) => {
-                if (res.data) {
-                    this.mapViewSelectedLocation = res.data;
-                }
-            });
+      this.mapViewSelectedLocation = null;
+      let positionUrl = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${
+        workOrder.Location.Id
+      }`;
+      this.axios.get(positionUrl).then(res => {
+        if (res.data) {
+          this.mapViewSelectedLocation = res.data;
+        }
+      });
     },
     // when click on an orderblock, add 'is-active-block' class to it
     isActive(orderId) {
@@ -688,58 +693,80 @@ export default {
       // in this case it will find if any elements in filterValues match the filter we provided.
       // it is the same as we make a for loop then find the needed elements by using if, then return it as an array. all of those steps in one line of code if we use lamda.
       // this.filterValues = this.filterValues.filter(value => value != filter);
-      switch(filter.type) {
-          case this.optionTypes.STATUS: {
-              this.filterOptionsValues.status = this.filterOptionsValues.status.filter(status => filter.id != status.id);
-              break;
-          }
-          case this.optionTypes.PRIORITY: {
-              this.filterOptionsValues.priorities = this.filterOptionsValues.priorities.filter(priority => filter.id != priority.id);
-              break;
-          }
+      switch (filter.type) {
+        case this.optionTypes.STATUS: {
+          this.filterOptionsValues.status = this.filterOptionsValues.status.filter(
+            status => filter.id != status.id
+          );
+          break;
+        }
+        case this.optionTypes.PRIORITY: {
+          this.filterOptionsValues.priorities = this.filterOptionsValues.priorities.filter(
+            priority => filter.id != priority.id
+          );
+          break;
+        }
       }
       this.filterOrders();
-      if (this.filterOptionsValues.status.length == 0 && this.filterOptionsValues.priorities.length == 0) {
+      if (
+        this.filterOptionsValues.status.length == 0 &&
+        this.filterOptionsValues.priorities.length == 0
+      ) {
         this.selectedFilter = null;
         this.toDisplayWorkOrders = this.tempValues;
       }
     },
     filterOrders() {
-        if (this.filterOptionsValues.status.length > 0 || this.filterOptionsValues.priorities.length > 0) {
-            if (this.tempValues == null) {
-              this.tempValues = this.toDisplayWorkOrders;
-            }
-            this.toDisplayWorkOrders = []; // reset orders before applying new filters
-            this.selectedOrder = null;
-            if (this.filterOptionsValues.status.length > 0) {
-              this.filterOptionsValues.status.forEach(status => {
-                this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(this.tempValues.filter(order => order.WorkOrderStatus == status.name));
-              });
-            } else {
-                this.toDisplayWorkOrders = this.tempValues;
-            }
-            if (this.filterOptionsValues.priorities.length > 0) {
-              var tempValues = [];
-              this.filterOptionsValues.priorities.forEach(priority => {
-                tempValues = tempValues.concat(this.toDisplayWorkOrders.filter(order => order.Priority == priority.name));
-              });
-              this.toDisplayWorkOrders = tempValues;
-            }
-            this.toDisplayWorkOrders = this.sortOrdersByDate(this.toDisplayWorkOrders);
-          //   this.selectedFilter = null;
-            // for (var i = 0; i < this.filterValues.length; i++) {
-            //     this.orders = this.sortOrdersByDate(this.orders);
-            // }
+      if (
+        this.filterOptionsValues.status.length > 0 ||
+        this.filterOptionsValues.priorities.length > 0
+      ) {
+        if (this.tempValues == null) {
+          this.tempValues = this.toDisplayWorkOrders;
         }
+        this.toDisplayWorkOrders = []; // reset orders before applying new filters
+        this.selectedOrder = null;
+        if (this.filterOptionsValues.status.length > 0) {
+          this.filterOptionsValues.status.forEach(status => {
+            this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(
+              this.tempValues.filter(
+                order => order.WorkOrderStatus == status.name
+              )
+            );
+          });
+        } else {
+          this.toDisplayWorkOrders = this.tempValues;
+        }
+        if (this.filterOptionsValues.priorities.length > 0) {
+          var tempValues = [];
+          this.filterOptionsValues.priorities.forEach(priority => {
+            tempValues = tempValues.concat(
+              this.toDisplayWorkOrders.filter(
+                order => order.Priority == priority.name
+              )
+            );
+          });
+          this.toDisplayWorkOrders = tempValues;
+        }
+        this.toDisplayWorkOrders = this.sortOrdersByDate(
+          this.toDisplayWorkOrders
+        );
+        //   this.selectedFilter = null;
+        // for (var i = 0; i < this.filterValues.length; i++) {
+        //     this.orders = this.sortOrdersByDate(this.orders);
+        // }
+      }
     },
     sortOrdersByDate(orders) {
-        return orders.sort((order1, order2) => {
-            var date1 = parseInt(new Date(order1.CreateDate).getTime());
-            var date2 = parseInt(new Date(order2.CreateDate).getTime());
-            // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
-            var result = date2 - date1;
-            return (result > 0) ? 1 : (result < 0) ? -1 : (order2.PriorityID - order1.PriorityID);
-        });
+      return orders.sort((order1, order2) => {
+        var date1 = parseInt(new Date(order1.CreateDate).getTime());
+        var date2 = parseInt(new Date(order2.CreateDate).getTime());
+        // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
+        var result = date2 - date1;
+        return result > 0
+          ? 1
+          : result < 0 ? -1 : order2.PriorityID - order1.PriorityID;
+      });
     },
     addFilter(filter, event) {
       if (event.target.checked) {
@@ -754,7 +781,7 @@ export default {
             break;
           }
         }
-        // tempValues is null means that no filters yet.                                                                                                                                                                                                                                    
+        // tempValues is null means that no filters yet.
         this.filterOrders();
       } else {
         this.removeFilter(filter);
@@ -771,96 +798,120 @@ export default {
       this.$store.state.workOrderPage.searchValues = [];
     },
     showDetailPopup(equipmentItemId) {
-        let url = `${Server.EQUIPMENTITEM_API_PATH}/chau/${equipmentItemId}`;
-        this.axios.get(url)
-            .then((res) => {
-                if(res.data) {
-                    this.equipmentItem = res.data;
-                }
-            })
+      let url = `${Server.EQUIPMENTITEM_API_PATH}/chau/${equipmentItemId}`;
+      this.axios.get(url).then(res => {
+        if (res.data) {
+          this.equipmentItem = res.data;
+        }
+      });
     },
     showAlert(msg) {
-        alert(msg);
+      alert(msg);
     },
     cancelOrder(orderId) {
-        this.changeWorkOrderStatus(orderId, 'Cancelled');
+      this.changeWorkOrderStatus(orderId, "Cancelled");
     },
     approveRejectWorkOrder(orderId) {
-        if (!this.approveWorkOrder && this.changeStatusDescription == '') {
-            this.Errors.RejectedDescriptionNotProvided = 'You must explain why you reject this order';
-        } else {
-            let newStatusName = this.approveWorkOrder ? 'Approved' : 'Rejected';
-            this.changeWorkOrderStatus(orderId, newStatusName);
-        }
+      if (!this.approveWorkOrder && this.changeStatusDescription == "") {
+        this.Errors.RejectedDescriptionNotProvided =
+          "You must explain why you reject this order";
+      } else {
+        let newStatusName = this.approveWorkOrder ? "Approved" : "Rejected";
+        this.changeWorkOrderStatus(orderId, newStatusName);
+      }
     },
     changeWorkOrderStatus(orderId, newOrderStatusName) {
-        let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
-        this.axios.put(url, {
-            userId: this.authUser.Id,
-            newStatusName: newOrderStatusName,
-            description: this.changeStatusDescription != '' ? this.changeStatusDescription : null
+      let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
+      this.axios
+        .put(url, {
+          userId: this.authUser.Id,
+          newStatusName: newOrderStatusName,
+          description:
+            this.changeStatusDescription != ""
+              ? this.changeStatusDescription
+              : null
         })
-            .then((res) => {
-                if (res.status == 200) {
-                    if (newOrderStatusName == 'Approved' 
-                            || newOrderStatusName == 'In Progress' 
-                            || newOrderStatusName == 'Closed') {
-                        let newItemStatusName = '';
-                        if (newOrderStatusName == 'Approved') {
-                            newItemStatusName = 'Working Requested';
-                        } else if (newOrderStatusName == 'In Progress') {
-                            newItemStatusName = 'Working';
-                        } else if (newOrderStatusName == 'Closed') {
-                            newItemStatusName = 'Available';
-                        }
-                        this.selectedOrder.WorkOrderDetails.forEach(async orderDetail => {
-                            let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/${orderDetail.EquipmentItem.Id}`;
-                            await this.axios.put(equipmentStatusApi, {
-                                userId: this.authUser.Id,
-                                newStatusName: newItemStatusName,
-                                description: null,
-                            })
-                        });
-                    }
-                    this.showCancelDialog = false;
-                    this.showApproveRejectDialog = false;
-                    this.showChangeStatusDialog = false;
-                    this.getWorkOrders();
-                    // this.selectedOrder.StatusID = newStatusId;
-                    // this.selectedOrder.WorkOrderStatus = `${newStatusName}`;
-                    // if (newStatusName == 'Closed' || newStatusId == 'Cancelled') {
-                    //     url = `${Server.EQUIPMENTITEM_API_PATH}/status/${}`
-                    // }
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            })
+        .then(res => {
+          if (res.status == 200) {
+            if (
+              newOrderStatusName == "Approved" ||
+              newOrderStatusName == "In Progress" ||
+              newOrderStatusName == "Closed"
+            ) {
+              let newItemStatusName = "";
+              if (newOrderStatusName == "Approved") {
+                newItemStatusName = "Working Requested";
+              } else if (newOrderStatusName == "In Progress") {
+                newItemStatusName = "Working";
+              } else if (newOrderStatusName == "Closed") {
+                newItemStatusName = "Available";
+              }
+              this.selectedOrder.WorkOrderDetails.forEach(async orderDetail => {
+                let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/${
+                  orderDetail.EquipmentItem.Id
+                }`;
+                await this.axios.put(equipmentStatusApi, {
+                  userId: this.authUser.Id,
+                  newStatusName: newItemStatusName,
+                  description: null
+                });
+              });
+            }
+            this.showCancelDialog = false;
+            this.showApproveRejectDialog = false;
+            this.showChangeStatusDialog = false;
+            this.getWorkOrders();
+            // this.selectedOrder.StatusID = newStatusId;
+            // this.selectedOrder.WorkOrderStatus = `${newStatusName}`;
+            // if (newStatusName == 'Closed' || newStatusId == 'Cancelled') {
+            //     url = `${Server.EQUIPMENTITEM_API_PATH}/status/${}`
+            // }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     getStatusColorClass(statusName) {
-        switch(statusName) {
-            case 'Requested': return 'requested';
-            case 'Checked': return 'checked';
-            case 'Approved': return 'approved';
-            case 'Rejected': return 'rejected';
-            case 'In Progress': return 'in-progress';
-            case 'Closed': return 'closed';
-            case 'Cancelled': return 'cancelled';
-        }
+      switch (statusName) {
+        case "Requested":
+          return "requested";
+        case "Checked":
+          return "checked";
+        case "Approved":
+          return "approved";
+        case "Rejected":
+          return "rejected";
+        case "In Progress":
+          return "in-progress";
+        case "Closed":
+          return "closed";
+        case "Cancelled":
+          return "cancelled";
+      }
     },
     getStatusColor(statusName) {
-        switch(statusName) {
-            case 'Requested': return 'var(--status-requested)';
-            case 'Checked': return 'var(--status-checked)';
-            case 'Approved': return 'var(--status-approved)';
-            case 'Rejected': return 'var(--status-rejected)';
-            case 'In Progress': return 'var(--status-in-progress)';
-            case 'Closed': return 'var(--status-closed)';
-            case 'Cancelled': return 'var(--status-cancelled)';
-        }
+      switch (statusName) {
+        case "Requested":
+          return "var(--status-requested)";
+        case "Checked":
+          return "var(--status-checked)";
+        case "Approved":
+          return "var(--status-approved)";
+        case "Rejected":
+          return "var(--status-rejected)";
+        case "In Progress":
+          return "var(--status-in-progress)";
+        case "Closed":
+          return "var(--status-closed)";
+        case "Cancelled":
+          return "var(--status-cancelled)";
+      }
     },
+
     getDate(date) {
         return moment(date).format('L');
+
     },
     getDateWithTime(date) {
         return moment(date).format('LLL');
@@ -920,14 +971,20 @@ export default {
             alert('Error occured!')
         }
     }
+
   },
   watch: {
     changeStatusDescription: function() {
-        if (this.showApproveRejectDialog && !this.approveWorkOrder && this.changeStatusDescription != '') {
-            this.Errors.RejectedDescriptionNotProvided = '';
-        }
+      if (
+        this.showApproveRejectDialog &&
+        !this.approveWorkOrder &&
+        this.changeStatusDescription != ""
+      ) {
+        this.Errors.RejectedDescriptionNotProvided = "";
+      }
     },
     myWorkOrderViewMode: function() {
+
         this.selectedOrder = null;
         this.toDisplayWorkOrders = [];
         if (this.myWorkOrderViewMode) {
@@ -946,6 +1003,7 @@ export default {
                 this.errorUpdatePosition = '';
             }
         })
+
     }
   }
 };
@@ -1031,13 +1089,13 @@ export default {
 }
 
 .order-blocks {
-    position: fixed;
-    height: 65.5%;
-    max-height: 65.5%;
-    padding-right: 0.5rem;
-    width: 38%;
-    overflow-y: auto;
-    padding-bottom: .5rem;
+  position: fixed;
+  height: 65.5%;
+  max-height: 65.5%;
+  padding-right: 0.5rem;
+  width: 38%;
+  overflow-y: auto;
+  padding-bottom: 0.5rem;
 }
 
 .order-detail {
@@ -1051,88 +1109,82 @@ export default {
 }
 
 .detail {
-    padding: .5rem 1rem;
-}
-
-.detail-header {
-    
+  padding: 0.5rem 1rem;
 }
 
 .detail-title {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .detail-label {
-    font-size: .98rem;
+  font-size: 0.98rem;
 }
 
 .detail-contents {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .vodal-confirm-btn {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    width: 4rem;
-    font-size: .9rem;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 4rem;
+  font-size: 0.9rem;
 }
 
 .vodal-cancel-btn {
-    position: absolute;
-    bottom: 1rem;
-    right: 5.5rem;
-    width: 4rem;
-    font-size: .9rem;
+  position: absolute;
+  bottom: 1rem;
+  right: 5.5rem;
+  width: 4rem;
+  font-size: 0.9rem;
 }
 
-
 .my-dialog-title {
-    padding: .7rem 1rem .5rem 1rem;
-    border-bottom: 1px solid #e0e0e0;
-    font-weight: 500;
+  padding: 0.7rem 1rem 0.5rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 500;
 }
 
 .my-dialog-content {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 .chip-btn {
-    text-align: center;
-    padding: .2rem .25rem .1rem .25rem;
-    border-radius: 20px;
-    background-color: #f5f5f5;
+  text-align: center;
+  padding: 0.2rem 0.25rem 0.1rem 0.25rem;
+  border-radius: 20px;
+  background-color: #f5f5f5;
 }
 
 .view-mode {
-    text-align: center;
-    background-color: white;
-    padding: 0.2rem 0.6rem;
-    font-size: .95rem;
-    color: var(--primary-color);
-    border-top: 1px solid var(--primary-color);
-    border-bottom: 1px solid var(--primary-color);
+  text-align: center;
+  background-color: white;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  border-top: 1px solid var(--primary-color);
+  border-bottom: 1px solid var(--primary-color);
 }
 
 .view-mode:first-child {
-    border-left: 1px solid var(--primary-color);
-    border-radius: 5px 0 0 5px;
+  border-left: 1px solid var(--primary-color);
+  border-radius: 5px 0 0 5px;
 }
 
 .view-mode:last-child {
-    border-right: 1px solid var(--primary-color);
-    border-radius: 0 5px 5px 0;
+  border-right: 1px solid var(--primary-color);
+  border-radius: 0 5px 5px 0;
 }
 
 .view-mode:hover {
-    color: #263238;
-    background-color: #80cbc4;
-    cursor: pointer;
+  color: #263238;
+  background-color: #80cbc4;
+  cursor: pointer;
 }
 
 .view-mode-active {
-    color: white;
-    background-color: #26a69a;
+  color: white;
+  background-color: #26a69a;
 }
-
 </style>

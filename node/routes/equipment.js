@@ -27,14 +27,15 @@ router.get("/:id", (request, response) => {
   request.sql("SELECT e.Id as 'Equipment.Id', e.Name as 'Equipment.Name', " +
       "e.Image  as 'Equipment.Image', e.MadeIn as 'Equipment.MadeIn', " +
       "e.Description as 'Equipment.Description', e.VendorID as 'Equipment.VendorId', " +
-      "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId', " +
-      "ec.Name as 'Equipment.Category.Name', (select count(Id)  from EquipmentItem where EquipmentID = e.Id) as [Equipment.Quantity], " +
+      "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId',  " +
+      "ec.Name as 'Equipment.Category.Name', e.UnitID as 'Equipment.UnitID', unit.Name as 'Equipment.Unit.Name' , (select count(Id)  from EquipmentItem where EquipmentID = e.Id) as [Equipment.Quantity], " +
       "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 1) as [Equipment.AvailableQuantity], " +
       "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 2) as [Equipment.NotAvailableQuantity], " +
       "(select * from EquipmentItem where EquipmentID = e.Id for json path) as [Equipment.EquipmentItems] " +
       "FROM [Equipment] as e " +
       "JOIN [Vendor] as v ON e.VendorID = v.Id " +
       "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
+      "JOIN [Unit] as unit ON e.UnitID = unit.Id " +
       "where e.Id = @id " +
       "for json path")
     .param("id", request.params.id, TYPES.Int)
@@ -75,8 +76,8 @@ router.get("/:equipmentId/:vendorId", function (request, response) {
 router.post("/", (request, response) => {
   request
     .sql(
-      "INSERT INTO Equipment (Name, VendorID, Image, MadeIn, Description, CategoryID)" +
-      " VALUES (@name, @vendorID, @image, @madein, @description, @categoryID)"
+      "INSERT INTO Equipment (Name, VendorID, Image, MadeIn, Description, CategoryID, UnitID)" +
+      " VALUES (@name, @vendorID, @image, @madein, @description, @categoryID, @unitID)"
     )
     .param("name", request.body.name, TYPES.NVarChar)
     .param("vendorID", request.body.vendorID, TYPES.Int)
@@ -84,6 +85,7 @@ router.post("/", (request, response) => {
     .param("madein", request.body.madein, TYPES.NVarChar)
     .param("description", request.body.description, TYPES.NVarChar)
     .param("categoryID", request.body.categoryID, TYPES.Int)
+    .param("unitID", request.body.unitID, TYPES.Int)
     .exec(response);
 });
 
