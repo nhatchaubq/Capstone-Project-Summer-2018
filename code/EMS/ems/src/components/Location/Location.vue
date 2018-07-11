@@ -218,7 +218,7 @@ export default {
       // chaubqn - end
     };
   },
-  // methods: {
+  methods: {
   //   isActive(locationId) {
   //     if (this.selectedLocation && locationId != this.location.Id) {
   //       return "location-block-choose";
@@ -292,18 +292,6 @@ export default {
           console.log(error);
         });
     }
-    // chaubqn - start
-    // getLocationBlockFloorTile(locationId) {
-    //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
-    //   this.axios.get(url)
-    //     .then((res) => {
-    //       this.mapViewSelectedLocation = res.data;
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     })
-    // }
-    // chaubqn - end
   },
   created() {
     this.axios
