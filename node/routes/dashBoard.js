@@ -240,4 +240,25 @@ router.get("/workorderdb", (request, response) => {
     )
     .into(response);
 });
+router.get("/getCategory", (req, res) => {
+  req
+    .sql(
+      "select ec.*, json_query((SELECT count(*) as [Quanity] " +
+      "FROM [EquipmentItem] as ei " +
+      "WHERE ei.StatusId = (select Id from EquipmentStatus where [Name] = N'Available')  " +
+      "and ei.EquipmentID IN (SELECT e.Id  " +
+      "FROM [Equipment] as e  " +
+      "WHERE e.CategoryID = ec.Id) " +
+      "for json path, without_array_wrapper)) as 'Available', json_query((SELECT count(*) as [Quanity] " +
+      "FROM [EquipmentItem] as ei " +
+      "WHERE ei.StatusId NOT IN (select Id from EquipmentStatus where [Name] = N'Available')  " +
+      "and ei.EquipmentID in (SELECT e.Id  " +
+      "	FROM [Equipment] as e  " +
+      "WHERE e.CategoryID = ec.Id) " +
+      "for json path, without_array_wrapper)) as 'Unavailable' " +
+      "from EquipmentCategory as ec " +
+      "for json path "
+    )
+    .into(res);
+});
 module.exports = router;
