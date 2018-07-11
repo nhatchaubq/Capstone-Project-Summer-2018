@@ -5,7 +5,7 @@
                 Add New Equipment
             </div>            
             <div class="form-title-end">
-                <button id="" class="button is-rounded" style="margin-right: .6rem">Cancel</button>
+                <router-link to='/equipment'> <button id="" class="button is-rounded" style="margin-right: .6rem">Cancel</button></router-link>
                 <button id="" class="button is-rounded is-primary" v-on:click="createNewEquipment">Create New Equipment</button>
             </div>
         </div>
