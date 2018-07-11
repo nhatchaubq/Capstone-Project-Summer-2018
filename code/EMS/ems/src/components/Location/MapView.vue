@@ -114,21 +114,19 @@
             </div>
         </div>
         <!-- tile equipment popup -->
-        <modal v-if="curentBlockIndex >= 0 && currentFloorIndex >= 0 && currentTileIndex >= 0" 
-            v-model="showTileEquipmentPopup">
-            
+        <modal v-model="showTileEquipmentPopup">            
             <div slot="header">
-                <span style="font-size: 1.3rem">
+                <span style="font-size: 1.3rem" v-if="curentBlockIndex >= 0 && currentFloorIndex >= 0 && currentTileIndex >= 0" >
                     Tile {{ mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles[currentTileIndex].Name }}
-                    </span>
+                </span>
             </div>
             <div slot="footer">
-                <Button size="large" long class="button btn-primary" @click.native="showTileEquipmentPopup = false">OK</Button>
+                <Button size="large" long class="button btn-primary" @click="showTileEquipmentPopup = false">OK</Button>
             </div>
             <div :style="{
                 'max-height': '50vh',
                 'overflow-y': 'auto',
-            }">
+            }" v-if="curentBlockIndex >= 0 && currentFloorIndex >= 0 && currentTileIndex >= 0" >
                 <v-flex v-if="tileEquipments.length > 0">
                     <v-expansion-panel expand>
                         <v-expansion-panel-content v-for="equipment in tileEquipments" :key="'equipment' + equipment.Id">
@@ -203,6 +201,11 @@ export default {
     },
     methods: {
         setSelectedLocation(location, index) {
+            this.curentBlockIndex = -1;
+            this.currentFloorIndex = -1;
+            this.currentTileIndex = -1;
+            this.tileEquipments = [];
+            this.imageCache = [];
             if (this.selectedLocation && this.selectedLocation.Id == location.Id) {
                 this.selectedLocation = null;
             } else {

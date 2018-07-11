@@ -17,13 +17,15 @@
                 <div class="input_picture">                    
                     <label class="file-label" style="width: 100% !important"> 
                     <span class="file-cta">
+
                         <input class="file-input" type="file" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
                         <span class="file-icon">
+
                             <i class="fa fa-upload"></i>
                         </span>
                         <span class="file-label">
                             Choose images...
-                        </span>
+                        </span> -->
                     </span>
                         <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
                             {{ file.name }}

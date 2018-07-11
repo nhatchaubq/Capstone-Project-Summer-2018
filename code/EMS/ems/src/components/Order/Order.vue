@@ -529,6 +529,10 @@ export default {
         };
         this.options.status.push(status);
       });
+    }).catch((error) => {
+        if (error == 'Request failed with status code 500') {
+            this.$router.push('/500');
+        }
     });
     this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
       let data = response.data;
@@ -540,6 +544,10 @@ export default {
         };
         this.options.priorities.push(priority);
       });
+    }).catch((error) => {
+        if (error == 'Request failed with status code 500') {
+            this.$router.push('/500');
+        }
     });
   },
   data() {
@@ -610,33 +618,30 @@ export default {
   },
   methods: {
     getWorkOrders() {
-      this.axios.get(Server.WORKORDER_API_PATH).then(response => {
-        if (response.data.WorkOrders) {
-          let data = response.data.WorkOrders;
-          this.$store.state.workOrderPage.orders = data;
-          this.workOrders = data;
-          if (
-            this.authUser.Role === "Staff" ||
-            this.authUser.Role === "Maintainer"
-          ) {
-            this.myWorkOrders = data.filter(
-              order => order.RequestUserID == this.authUser.Id
-            );
-            this.toDisplayWorkOrders = this.myWorkOrders;
-            this.myWorkOrderViewMode = true;
-          } else {
-            this.toDisplayWorkOrders = this.workOrders;
-            this.myWorkOrderViewMode = false;
-          }
-          if (this.selectedOrder) {
-            this.selectedOrder = data.filter(
-              order => order.Id == this.selectedOrder.Id
-            )[0];
-            // this.getEquipmentsOfWorkOrder(this.selectedOrder);
-            // this.getLocationBlockFloorTile(this.selectedOrder);
-          }
-        }
-      });
+        this.axios.get(Server.WORKORDER_API_PATH).then(response => {
+            if (response.data.WorkOrders) {
+                let data = response.data.WorkOrders;
+                this.$store.state.workOrderPage.orders = data;
+                this.workOrders = data;
+                if (this.authUser.Role === 'Staff' || this.authUser.Role === 'Maintainer') {
+                    this.myWorkOrders = data.filter(order => order.RequestUserID == this.authUser.Id);
+                    this.toDisplayWorkOrders = this.myWorkOrders;
+                    this.myWorkOrderViewMode = true;
+                } else {
+                    this.toDisplayWorkOrders = this.workOrders;
+                    this.myWorkOrderViewMode = false;
+                }
+                if (this.selectedOrder) {
+                    this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
+                    // this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                    // this.getLocationBlockFloorTile(this.selectedOrder);
+                }
+            }
+        }).catch(error => {
+            if (error == 'Request failed with status code 500') {
+                this.$router.push('/500');
+            }
+        });
     },
     setSelectedOrder(order) {
         this.equipmentPanelIndex = -1;

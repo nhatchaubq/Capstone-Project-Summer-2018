@@ -104,10 +104,16 @@ router.get("/editLocation/:id", (request, response) => {
     .into(response);
 });
 
-router.get("/:id/team", (req, res) => {
+// ChauBQN
+// get team of location for create work order
+router.get("/:id/team/:userId", (req, res) => {
   req
-    .sql("exec GetTeamFromLocationId @locationId")
+    .sql("select (json_query((select * from Team where Id = tl.TeamID for json path, without_array_wrapper))) as [Team] "
+    + " from TeamLocation as tl join Team as t on tl.TeamID = t.Id join TeamAccount as ta on t.Id = ta.TeamID "
+    + " where tl.LocationID = @locationId and ta.TeamRoleID = (select Id from TeamRoles where TeamRole = N'Leader') and ta.AccountID = @userId "
+    + " for json path")
     .param("locationId", req.params.id, TYPES.Int)
+    .param("userId", req.params.userId, TYPES.Int)
     .into(res);
 });
 
