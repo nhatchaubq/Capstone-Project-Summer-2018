@@ -30,6 +30,9 @@
                       <gmap-autocomplete  class="input" 
                         @place_changed="setPlace">
                       </gmap-autocomplete>
+                      <!-- <button  id="clear-btn" v-if="currentPlace" v-on:click="() => {}">
+                        <i class="material-icons">close</i>
+                      </button> -->
                       <!-- <button @click="addMarker" class="btn" style="position: relative; bottom: 8px;">Check</button> -->
                     </label>
                     <br/>
@@ -59,13 +62,14 @@
                     <textarea id="text-descrip" v-model="newLocation.description"  cols="80" rows="10"></textarea>
                 </div>
             </div>
-            <div class="form-field" style=" display:grid ; grid-template-columns: 10% 20% auto">
+            <div class="form-field" style=" display:grid ; grid-template-columns: 7% 20% auto">
                 <div class="form-field-title">
-                    Choose Team
+                    Team
                 </div>
                 <div class="select" style="width: 100% !important" >
-                    <select v-model="selectedTeam" >
-                        <option :disabled="selectedTeams.length > 0" v- value="null">Not now</option>
+                    <select v-model="selectedTeam" style="width:100%">
+                        <option :disabled="selectedTeams.length > 0" value=null> --Choose new team</option>
+                        <!-- <option :disabled="selectedTeams.length > 0" v- value="null">Not now</option> -->
                         <option v-bind:key='team.Id' v-for='team in teams' :value="team">{{team.Name}}</option>
                     </select>
                 </div>
@@ -139,33 +143,37 @@ export default {
   },
   methods: {
     createLocation() {
-      this.axios
-        .post(Server.LOCATION_CREATE_API_PATH, {
-          newLocation: {
-            name: this.newLocation.name,
-            address: this.currentPlace.formatted_address,
-            description: this.newLocation.description,
-            longtitude: this.currentPlace.geometry.location.lng(),
-            latitude: this.currentPlace.geometry.location.lat()
-          }
-        })
-        .then(res => {
-          // alert(this.selectedTeams.length);
-          if (this.selectedTeams.length > 0) {
-            if (res.data.NewLocationId) {
-              this.selectedTeams.forEach(async team => {
-                await this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
-                  locationId: res.data.NewLocationId,
-                  teamId: team.Id
-                });
-              });
-              this.$router.push('/location');
+      if (this.newLocation.name.trim() == "" || !this.currentPlace) {
+        alert("Please fill out the required fields");
+      } else {
+        this.axios
+          .post(Server.LOCATION_CREATE_API_PATH, {
+            newLocation: {
+              name: this.newLocation.name,
+              address: this.currentPlace.formatted_address,
+              description: this.newLocation.description,
+              longtitude: this.currentPlace.geometry.location.lng(),
+              latitude: this.currentPlace.geometry.location.lat()
             }
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
+          })
+          .then(res => {
+            // alert(this.selectedTeams.length);
+            if (this.selectedTeams.length > 0) {
+              if (res.data.NewLocationId) {
+                this.selectedTeams.forEach(async team => {
+                  await this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
+                    locationId: res.data.NewLocationId,
+                    teamId: team.Id
+                  });
+                });
+              }
+            }
+            this.$router.push("/location");
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     },
     removeSelectedTeam(tmpTeam) {
       this.selectedTeams = this.selectedTeams.filter(
@@ -238,6 +246,17 @@ export default {
 </script>
 
 <style scoped>
+/* #clear-btn {
+  border-left: 0.5px solid lightgray;
+  border-radius: 3px;
+  position: relative;
+  left: 70.05rem;
+  bottom: 2.25rem;
+  height: 2.4rem;
+  padding-top: 0.25rem;
+
+  color: red;
+} */
 .form {
   background-color: white;
   padding: 0 !important;

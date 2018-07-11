@@ -119,8 +119,20 @@
                             </div>
                             <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'In Progress'">
                                 <button class="button btn-primary material-shadow-animate" v-on:click="() => {
-                                    newStatusName = 'Closed';
-                                    showChangeStatusDialog = true;
+                                    toCloseEquipments = []; 
+                                    equipments.forEach(equipment => {
+                                        equipment.EquipmentItems.forEach(item => {
+                                            if (!item.DetailReturnDate) {
+                                                toCloseEquipments.push({
+                                                    equipment: equipment,
+                                                    item: item,
+                                                    status: 'Available',
+                                                    description: ''
+                                                });
+                                            }
+                                        })
+                                    })
+                                    showCloseWorkOrderDetailDialog = true;
                                 }">Close this work order</button>
                             </div>
                       </div>
@@ -134,8 +146,8 @@
                             <div class="detail-contents" style="width: 100%;">
                                 <span class="detail-label">Equipments:</span>
                                 <v-flex>
-                                    <v-expansion-panel popout>
-                                        <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
+                                    <v-expansion-panel popout v-model="equipmentPanelIndex">
+                                        <v-expansion-panel-content v-for="(equipment, index) in equipments" :key="'equipment' + equipment.Id" v-on:click.native="selectedEquipmentPanelIndex = index">
                                             <div slot="header">
                                                 <div style="display: grid; grid-template-columns: 25% auto;">
                                                     <div style="display: flex">
@@ -159,25 +171,35 @@
                                                     <div>
                                                         Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a>
                                                         <span v-if="(authUser.Role == 'Staff' || authUser.Role == 'Maintainer')
-                                                                    && selectedOrder.WorkOrderStatus == 'In Progress'" >
+                                                                    && selectedOrder.WorkOrderStatus == 'In Progress' && !item.DetailReturnDate" >
                                                              | 
                                                             <a v-on:click="() => {
                                                                 showUpdateItemPosition = true;
                                                                 toUpdatePositionItem = item;
                                                             }">Update position</a>
                                                         </span>
-                                                        <span v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus === 'In Progress'">
+                                                        <span v-if="(authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus === 'In Progress')
+                                                                        && !item.DetailReturnDate">
                                                             | 
                                                             <a v-on:click="() => {
-                                                                workOrderIdOfToCloseWOD = selectedOrder.Id;
-                                                                toCloseEquipment = equipment;
-                                                                toCloseEquipmentItem = item;
+                                                                //toCloseEquipment = equipment;
+                                                                //toCloseEquipmentItem = item;
+                                                                toCloseEquipments = [];                                                                
+                                                                toCloseEquipments.push({
+                                                                    equipment: equipment,
+                                                                    item: item,
+                                                                    status: 'Available',
+                                                                    description: ''
+                                                                });
+
                                                                 showCloseWorkOrderDetailDialog = true;
                                                             }">Close</a>
                                                         </span>
+                                                        <span v-if="item.DetailReturnDate"> - Closed at {{ getDateWithTime(item.DetailReturnDate) }}</span>
                                                     </div>                                                        
                                                     <div v-if="selectedOrder.WorkOrderStatus != 'Cancelled' 
-                                                                && selectedOrder.WorkOrderStatus != 'Closed'">
+                                                                && selectedOrder.WorkOrderStatus != 'Closed'
+                                                                && !item.DetailReturnDate">
                                                         Current in: 
                                                         <span v-if="item.BlockFloorTile">
                                                             {{ item.BlockFloorTile.Location.Name }}
@@ -215,7 +237,7 @@
                             <div class="detail-contents" v-if="selectedOrder.WorkOrderRecord">
                                 <div style="font-size: .95rem;" :key="'orderRecord' + orderRecord.Id" v-for="(orderRecord, index) in selectedOrder.WorkOrderRecord">
                                     <span class="tag" :class="getStatusColorClass(orderRecord.NewStatus.Name)">{{ orderRecord.NewStatus.Name }}</span> 
-                                        by <span class="tag">{{ orderRecord.ModifiedUser.Id == authUser.Id ? 'You' :  `${orderRecord.ModifiedUser.Role} ${orderRecord.ModifiedUser.Username}` }}</span> on {{ getFormatDate(orderRecord.ModifiedByDateTime) }}
+                                        by <span class="tag">{{ orderRecord.ModifiedUser.Id == authUser.Id ? 'You' :  `${orderRecord.ModifiedUser.Role} ${orderRecord.ModifiedUser.Username}` }}</span> on {{ getDate(orderRecord.ModifiedByDateTime) }}
                                         <div style="margin-left: 2rem; padding: 1rem 1rem;" :style="((index != (selectedOrder.WorkOrderRecord.length - 1)) || (index == (selectedOrder.WorkOrderRecord.length - 1) && orderRecord.Description)) ? 
                                                                                                     `border-left: 2px solid ${getStatusColor(orderRecord.NewStatus.Name)}` : ''">
                                             <span v-if="orderRecord.Description" class="quote">&ldquo;{{ orderRecord.Description }}&rdquo;</span>
@@ -292,6 +314,7 @@
               </div>
           </div>
       </vodal> <!-- change status dialog -->
+
       <modal v-if="selectedOrder" v-model="showEditDialog" @on-ok="showEditDialog = false" @on-cancel="showEditDialog = false"
         ok-text="Save changes" cancel-text="Cancel">
           <div slot="header">
@@ -334,9 +357,9 @@
             </v-flex>
           </div>
       </modal>
+
       <!-- close work detail dialog -->
-      <modal width="800" v-if="toCloseEquipment && toCloseEquipmentItem" v-model="showCloseWorkOrderDetailDialog" 
-                @on-ok="showCloseWorkOrderDetailDialog = false" >
+      <modal width="800" v-if="toCloseEquipments.length > 0" v-model="showCloseWorkOrderDetailDialog">
           <div slot="header">
               Close Order Detail
           </div>
@@ -352,124 +375,139 @@
                 <div style="text-align: center">Lost</div>
                 <div>Description</div>
             </div>
-            <div style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%;">
+            <div style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%; margin-bottom: 1rem;"
+                    :key="'toCloseItem' + index" v-for="(value, index) in toCloseEquipments">
                 <div style="display: flex">
-                    <img v-show="toCloseEquipment.Image" :src="toCloseEquipment.Image" :alt="toCloseEquipment.Name" style="width: 3rem; height: 3rem;">
+                    <img v-show="value.equipment.Image" :src="value.equipment.Image" :alt="value.equipment.Name" style="width: 3rem; height: 3rem;">
                 </div>
                 <div style="display: grid; grid-template-rows: auto auto;">
                     <div>
-                        {{ toCloseEquipment.Name }}
+                        {{ value.equipment.Name }}
                     </div>                                            
                     <div style="font-size: .9rem">
-                        Serial #: <strong>{{ toCloseEquipmentItem.SerialNumber }}</strong>
+                        Serial #: <strong>{{ value.item.SerialNumber }}</strong>
                     </div>
                 </div>
                 <div style="text-align: center">
                     <label class="radio">
-                        <input type="radio" :checked="toUpdateItemStatus == 'Available'"
-                                :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`"
-                                v-on:click="toUpdateItemStatus = 'Available'">
+                        <input type="radio" :checked="value.status == 'Available'"
+                                :name="`${value.equipment.Name}${value.item.Id}`"
+                                v-on:click="value.status = 'Available'">
                     </label>
                 </div>
                 <div style="text-align: center">
                     <label class="radio">
-                        <input type="radio" :checked="toUpdateItemStatus == 'Damaged'"
-                            :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`"
-                            v-on:click="toUpdateItemStatus = 'Damaged'">
+                        <input type="radio" :checked="value.status == 'Damaged'"
+                            :name="`${value.equipment.Name}${value.item.Id}`"
+                            v-on:click="value.status = 'Damaged'">
                     </label>
                 </div>
                 <div style="text-align: center">
                     <label class="radio">
-                        <input type="radio" :checked="toUpdateItemStatus == 'Lost'"
-                            :name="`${toCloseEquipment.Name}${toCloseEquipmentItem.Id}`"
-                            v-on:click="toUpdateItemStatus = 'Lost'">
+                        <input type="radio" :checked="value.status == 'Lost'"
+                            :name="`${value.equipment.Name}${value.item.Id}`"
+                            v-on:click="value.status = 'Lost'">
                     </label>
                 </div>
                 <div>
                     <textarea class="input" cols="30" rows="10" 
-                            v-model="toUpdateItemDescription"
+                            v-model="value.description"
                             style="width: 100%; min-height: 3rem; max-height: 3rem"></textarea>
                 </div>
             </div>
           </div>
           <div slot="footer">
-              <button v-on:click="showCloseWorkOrderDetailDialog = false" 
-                        class="button">Cancel</button>
-              <button class="button btn-primary" 
-                        v-on:click="closeWorkOrderDetail(selectedOrder.Id, toCloseEquipmentItem.Id, newItemStatus)">Close Order Detail</button>
+                <button v-on:click="showCloseWorkOrderDetailDialog = false" 
+                            class="button">Cancel</button>
+                <button class="button btn-primary" 
+                        v-on:click="closeWorkOrderDetails()">
+                    Close Order Detail
+                </button>
           </div>
-      </modal> 
-      <!-- close work detail dialog -->
-      <modal v-if="mapViewSelectedLocation" v-model="showUpdateItemPosition" 
-            @on-ok="updateItemPosition()" 
-            @on-cancel="() => {
-                showUpdateItemPosition = false;
-                updateBlock = null;
-                updateFloor = null;
-                updateTile = null;
-            }"
+      </modal> <!-- close work detail dialog -->
+      
+      <modal v-if="mapViewSelectedLocation" v-model="showUpdateItemPosition"
             ok-text="Save changes" cancel-text="Cancel">
-          <div slot="header">
-              <span>Update Position</span>
-          </div>
-          <div :style="{
-              'max-height': '50vh',
-              'overflow-y': 'auto',
-              'font-size': '.95rem',
-          }">
-           <div>
-               {{mapViewSelectedLocation.Name}} - {{mapViewSelectedLocation.Address}}
-           </div>
-           <div style="display: grid; grid-template-columns: 30% 30% 30%; grid-column-gap: 5%; margin: 2rem 0;">
-               <div style="width: 100%">
-                    <div style="width: 100%" class="select">
-                        <select style="width: 100%" v-model="updateBlock">
-                            <option disabled :value="null">Select a block</option>
-                            <option :value="block" :key="'updateBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks">
-                                Block {{ block.Name }}
-                            </option>
-                        </select>
+            <div slot="header">
+                <span>Update Position</span>
+            </div>
+            <div :style="{
+                'max-height': '50vh',
+                'overflow-y': 'auto',
+                'font-size': '.95rem',
+            }">
+                <div>
+                    {{mapViewSelectedLocation.Name}} - {{mapViewSelectedLocation.Address}}
+                </div>
+                <div style="display: grid; grid-template-columns: 30% 30% 30%; grid-column-gap: 5%; margin: 2rem 0;">
+                    <div style="width: 100%">
+                            <div style="width: 100%" class="select">
+                                <select style="width: 100%" v-model="updateBlock">
+                                    <option disabled :value="null">Select a block</option>
+                                    <option :value="block" :key="'updateBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks">
+                                        Block {{ block.Name }}
+                                    </option>
+                                </select>
+                            </div>
                     </div>
-               </div>
-               <div style="width: 100%">
-                    <div style="width: 100%" class="select" v-if="updateBlock && updateBlock.Floors">
-                        <select style="width: 100%" v-model="updateFloor">
-                            <option disabled :value="null">Select a floor</option>
-                            <option :value="floor" :key="'updateFloor' + floor.Id" v-for="floor in updateBlock.Floors">
-                                Floor {{ floor.Name }}
-                            </option>
-                        </select>
-                    </div>                   
-               </div>
-               <div style="width: 100%">
-                    <div style="width: 100%" class="select" v-if="updateFloor && updateFloor.Tiles">
-                        <select style="width: 100%" v-model="updateTile">
-                            <option disabled :value="null">Select a tile</option>
-                            <option :value="tile" :key="'updaupdateTileteFloor' + tile.Id" v-for="tile in updateFloor.Tiles">
-                                Tile {{ tile.Name }}
-                            </option>
-                        </select>
+                    <div style="width: 100%">
+                            <div style="width: 100%" class="select" v-if="updateBlock && updateBlock.Floors">
+                                <select style="width: 100%" v-model="updateFloor">
+                                    <option disabled :value="null">Select a floor</option>
+                                    <option :value="floor" :key="'updateFloor' + floor.Id" v-for="floor in updateBlock.Floors">
+                                        Floor {{ floor.Name }}
+                                    </option>
+                                </select>
+                            </div>                   
                     </div>
-               </div>
-           </div>
-          </div>
+                    <div style="width: 100%">
+                            <div style="width: 100%" class="select" v-if="updateFloor && updateFloor.Tiles">
+                                <select style="width: 100%" v-model="updateTile">
+                                    <option disabled :value="null">Select a tile</option>
+                                    <option :value="tile" :key="'updateTileFloor' + tile.Id" v-for="tile in updateFloor.Tiles">
+                                        Tile {{ tile.Name }}
+                                    </option>
+                                </select>
+                            </div>
+                    </div>
+                </div>
+                <div v-if="errorUpdatePosition != ''" style="margin-top: 1rem;">
+                    <span class="error-text" style="font-weight: 500 !important">{{ errorUpdatePosition }}</span>
+                </div>
+            </div>
+            <div slot="footer">
+                    <button class="button" 
+                        v-on:click="() => {
+                            showUpdateItemPosition = false;
+                            updateBlock = null;
+                            updateFloor = null;
+                            updateTile = null;
+                        }">Cancel</button>
+                    <button class="button btn-primary" 
+                        v-on:click="() => {
+                            if (errorUpdatePosition == '' && updateTile) {
+                                updateItemPosition();
+                        }
+                    }">Save changes</button>
+            </div>
       </modal>
     </div>
 </template>
 
 <script>
 // import Vue from "vue";
+import Vue from 'vue';
 import { sync } from "vuex-pathify";
-import moment from 'moment';
+import moment from "moment";
 import Server from "@/config/config.js";
 import OrderBlock from "./OrderBlock/OrderBlock";
-import StepProgress from '@/components/StepProgress/StepProgress.vue';
+import StepProgress from "@/components/StepProgress/StepProgress.vue";
 // import OrderDetail from "./OrderDetailComponent/OrderDetail";
 import "vodal/common.css";
 import "vodal/slide-up.css";
-import EquipmentDetailPopup from '@/components/Equipment/EquipmentDetailPopup';
-import Vodal from 'vodal';
-import {gmapApi} from 'vue2-google-maps';
+import EquipmentDetailPopup from "@/components/Equipment/EquipmentDetailPopup";
+import Vodal from "vodal";
+import { gmapApi } from "vue2-google-maps";
 
 export default {
   components: {
@@ -506,6 +544,7 @@ export default {
   },
   data() {
     return {
+        errorUpdatePosition: '',
         tempValues: null, // to hold the original orders when apply filters
         myWorkOrderViewMode: true,
         toDisplayWorkOrders: [],
@@ -513,6 +552,8 @@ export default {
         workOrders: [], // orders data to display in orderblocks <order-block></order-block>
         selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
         equipments: [], // to hold equipments in the selected work order
+        equipmentPanelIndex: -1,
+        selectedEquipmentPanelIndex: -1,
         editMode: false, // edit work order detail
         equipmentItem: null, // when select an item in the list of equipment of selected order
         selectedFilter: null, // to hold the selected value when change in <select></select>
@@ -544,82 +585,96 @@ export default {
         },
         showEditDialog: false,
         showUpdateItemPosition: false,
-        showCloseWorkOrderDetailDialog: false,        
-        workOrderIdOfToCloseWOD: null,
-        toCloseEquipment: null,
-        toCloseEquipmentItem: null,
         mapViewSelectedLocation: null,
 
         toUpdatePositionItem: null,
         updateBlock: null,
         updateFloor: null,
         updateTile: null,
-        toUpdateItemStatus: 'Available',
-        toUpdateItemDescription: '',
+
+        showCloseWorkOrderDetailDialog: false,
+        toCloseEquipment: null,
+        toCloseEquipmentItem: null,
+        toCloseItemStatus: 'Available',
+        toCloseItemDescription: '',
+        toCloseEquipments: [],
+
     };
   },
   computed: {
     searchValues: sync("workOrderPage.searchValues"),
     authUser() {
-        return JSON.parse(window.localStorage.getItem('user'));
+      return JSON.parse(window.localStorage.getItem("user"));
     },
-    google: gmapApi,
+    google: gmapApi
   },
   methods: {
     getWorkOrders() {
-        this.axios.get(Server.WORKORDER_API_PATH).then(response => {
-            if (response.data.WorkOrders) {
-                let data = response.data.WorkOrders;
-                this.$store.state.workOrderPage.orders = data;
-                this.workOrders = data;
-                if (this.authUser.Role === 'Staff' || this.authUser.Role === 'Maintainer') {
-                    this.myWorkOrders = data.filter(order => order.RequestUserID == this.authUser.Id);
-                    this.toDisplayWorkOrders = this.myWorkOrders;
-                    this.myWorkOrderViewMode = true;
-                } else {
-                    this.toDisplayWorkOrders = this.workOrders;
-                    this.myWorkOrderViewMode = false;
-                }
-                if (this.selectedOrder) {
-                    this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
-                    // this.getEquipmentsOfWorkOrder(this.selectedOrder);
-                    // this.getLocationBlockFloorTile(this.selectedOrder);
-                }
-            }
-        });
+      this.axios.get(Server.WORKORDER_API_PATH).then(response => {
+        if (response.data.WorkOrders) {
+          let data = response.data.WorkOrders;
+          this.$store.state.workOrderPage.orders = data;
+          this.workOrders = data;
+          if (
+            this.authUser.Role === "Staff" ||
+            this.authUser.Role === "Maintainer"
+          ) {
+            this.myWorkOrders = data.filter(
+              order => order.RequestUserID == this.authUser.Id
+            );
+            this.toDisplayWorkOrders = this.myWorkOrders;
+            this.myWorkOrderViewMode = true;
+          } else {
+            this.toDisplayWorkOrders = this.workOrders;
+            this.myWorkOrderViewMode = false;
+          }
+          if (this.selectedOrder) {
+            this.selectedOrder = data.filter(
+              order => order.Id == this.selectedOrder.Id
+            )[0];
+            // this.getEquipmentsOfWorkOrder(this.selectedOrder);
+            // this.getLocationBlockFloorTile(this.selectedOrder);
+          }
+        }
+      });
     },
     setSelectedOrder(order) {
-      if (this.selectedOrder == order) {
-        this.selectedOrder = null;
-      } else {
-        // this.viewDetailMode = true;
-        this.selectedOrder = order;
-        // get equipments in the selected work order - start
-        this.getEquipmentsOfWorkOrder(order);
-        this.getLocationBlockFloorTile(order);
-        // get equipments in the selected work order - end
-      }
+        this.equipmentPanelIndex = -1;
+        if (this.selectedOrder == order) {
+            this.selectedOrder = null;
+        } else {
+            // this.viewDetailMode = true;
+            this.selectedOrder = order;
+            // get equipments in the selected work order - start
+            this.getEquipmentsOfWorkOrder(order);
+            this.getLocationBlockFloorTile(order);
+            // get equipments in the selected work order - end
+        }
     },
     getEquipmentsOfWorkOrder(workOrder) {
-        this.equipments = [];
-        let equipmentsUrl = `${Server.WORKORDER_API_PATH}/${workOrder.Id}/equipments`;
-        this.axios.get(equipmentsUrl)
-            .then((res) => {
-                this.equipments = res.data;
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+      this.equipments = [];
+      let equipmentsUrl = `${Server.WORKORDER_API_PATH}/${
+        workOrder.Id
+      }/equipments`;
+      this.axios
+        .get(equipmentsUrl)
+        .then(res => {
+          this.equipments = res.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     getLocationBlockFloorTile(workOrder) {
-        this.mapViewSelectedLocation = null;
-        let positionUrl = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${workOrder.Location.Id}`;
-        this.axios.get(positionUrl)
-            .then((res) => {
-                if (res.data) {
-                    this.mapViewSelectedLocation = res.data;
-                }
-            });
+      this.mapViewSelectedLocation = null;
+      let positionUrl = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${
+        workOrder.Location.Id
+      }`;
+      this.axios.get(positionUrl).then(res => {
+        if (res.data) {
+          this.mapViewSelectedLocation = res.data;
+        }
+      });
     },
     // when click on an orderblock, add 'is-active-block' class to it
     isActive(orderId) {
@@ -633,58 +688,80 @@ export default {
       // in this case it will find if any elements in filterValues match the filter we provided.
       // it is the same as we make a for loop then find the needed elements by using if, then return it as an array. all of those steps in one line of code if we use lamda.
       // this.filterValues = this.filterValues.filter(value => value != filter);
-      switch(filter.type) {
-          case this.optionTypes.STATUS: {
-              this.filterOptionsValues.status = this.filterOptionsValues.status.filter(status => filter.id != status.id);
-              break;
-          }
-          case this.optionTypes.PRIORITY: {
-              this.filterOptionsValues.priorities = this.filterOptionsValues.priorities.filter(priority => filter.id != priority.id);
-              break;
-          }
+      switch (filter.type) {
+        case this.optionTypes.STATUS: {
+          this.filterOptionsValues.status = this.filterOptionsValues.status.filter(
+            status => filter.id != status.id
+          );
+          break;
+        }
+        case this.optionTypes.PRIORITY: {
+          this.filterOptionsValues.priorities = this.filterOptionsValues.priorities.filter(
+            priority => filter.id != priority.id
+          );
+          break;
+        }
       }
       this.filterOrders();
-      if (this.filterOptionsValues.status.length == 0 && this.filterOptionsValues.priorities.length == 0) {
+      if (
+        this.filterOptionsValues.status.length == 0 &&
+        this.filterOptionsValues.priorities.length == 0
+      ) {
         this.selectedFilter = null;
         this.toDisplayWorkOrders = this.tempValues;
       }
     },
     filterOrders() {
-        if (this.filterOptionsValues.status.length > 0 || this.filterOptionsValues.priorities.length > 0) {
-            if (this.tempValues == null) {
-              this.tempValues = this.toDisplayWorkOrders;
-            }
-            this.toDisplayWorkOrders = []; // reset orders before applying new filters
-            this.selectedOrder = null;
-            if (this.filterOptionsValues.status.length > 0) {
-              this.filterOptionsValues.status.forEach(status => {
-                this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(this.tempValues.filter(order => order.WorkOrderStatus == status.name));
-              });
-            } else {
-                this.toDisplayWorkOrders = this.tempValues;
-            }
-            if (this.filterOptionsValues.priorities.length > 0) {
-              var tempValues = [];
-              this.filterOptionsValues.priorities.forEach(priority => {
-                tempValues = tempValues.concat(this.toDisplayWorkOrders.filter(order => order.Priority == priority.name));
-              });
-              this.toDisplayWorkOrders = tempValues;
-            }
-            this.toDisplayWorkOrders = this.sortOrdersByDate(this.toDisplayWorkOrders);
-          //   this.selectedFilter = null;
-            // for (var i = 0; i < this.filterValues.length; i++) {
-            //     this.orders = this.sortOrdersByDate(this.orders);
-            // }
+      if (
+        this.filterOptionsValues.status.length > 0 ||
+        this.filterOptionsValues.priorities.length > 0
+      ) {
+        if (this.tempValues == null) {
+          this.tempValues = this.toDisplayWorkOrders;
         }
+        this.toDisplayWorkOrders = []; // reset orders before applying new filters
+        this.selectedOrder = null;
+        if (this.filterOptionsValues.status.length > 0) {
+          this.filterOptionsValues.status.forEach(status => {
+            this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(
+              this.tempValues.filter(
+                order => order.WorkOrderStatus == status.name
+              )
+            );
+          });
+        } else {
+          this.toDisplayWorkOrders = this.tempValues;
+        }
+        if (this.filterOptionsValues.priorities.length > 0) {
+          var tempValues = [];
+          this.filterOptionsValues.priorities.forEach(priority => {
+            tempValues = tempValues.concat(
+              this.toDisplayWorkOrders.filter(
+                order => order.Priority == priority.name
+              )
+            );
+          });
+          this.toDisplayWorkOrders = tempValues;
+        }
+        this.toDisplayWorkOrders = this.sortOrdersByDate(
+          this.toDisplayWorkOrders
+        );
+        //   this.selectedFilter = null;
+        // for (var i = 0; i < this.filterValues.length; i++) {
+        //     this.orders = this.sortOrdersByDate(this.orders);
+        // }
+      }
     },
     sortOrdersByDate(orders) {
-        return orders.sort((order1, order2) => {
-            var date1 = parseInt(new Date(order1.CreateDate).getTime());
-            var date2 = parseInt(new Date(order2.CreateDate).getTime());
-            // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
-            var result = date2 - date1;
-            return (result > 0) ? 1 : (result < 0) ? -1 : (order2.PriorityID - order1.PriorityID);
-        });
+      return orders.sort((order1, order2) => {
+        var date1 = parseInt(new Date(order1.CreateDate).getTime());
+        var date2 = parseInt(new Date(order2.CreateDate).getTime());
+        // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
+        var result = date2 - date1;
+        return result > 0
+          ? 1
+          : result < 0 ? -1 : order2.PriorityID - order1.PriorityID;
+      });
     },
     addFilter(filter, event) {
       if (event.target.checked) {
@@ -699,7 +776,7 @@ export default {
             break;
           }
         }
-        // tempValues is null means that no filters yet.                                                                                                                                                                                                                                    
+        // tempValues is null means that no filters yet.
         this.filterOrders();
       } else {
         this.removeFilter(filter);
@@ -716,123 +793,193 @@ export default {
       this.$store.state.workOrderPage.searchValues = [];
     },
     showDetailPopup(equipmentItemId) {
-        let url = `${Server.EQUIPMENTITEM_API_PATH}/chau/${equipmentItemId}`;
-        this.axios.get(url)
-            .then((res) => {
-                if(res.data) {
-                    this.equipmentItem = res.data;
-                }
-            })
+      let url = `${Server.EQUIPMENTITEM_API_PATH}/chau/${equipmentItemId}`;
+      this.axios.get(url).then(res => {
+        if (res.data) {
+          this.equipmentItem = res.data;
+        }
+      });
     },
     showAlert(msg) {
-        alert(msg);
+      alert(msg);
     },
     cancelOrder(orderId) {
-        this.changeWorkOrderStatus(orderId, 'Cancelled');
+      this.changeWorkOrderStatus(orderId, "Cancelled");
     },
     approveRejectWorkOrder(orderId) {
-        if (!this.approveWorkOrder && this.changeStatusDescription == '') {
-            this.Errors.RejectedDescriptionNotProvided = 'You must explain why you reject this order';
-        } else {
-            let newStatusName = this.approveWorkOrder ? 'Approved' : 'Rejected';
-            this.changeWorkOrderStatus(orderId, newStatusName);
-        }
+      if (!this.approveWorkOrder && this.changeStatusDescription == "") {
+        this.Errors.RejectedDescriptionNotProvided =
+          "You must explain why you reject this order";
+      } else {
+        let newStatusName = this.approveWorkOrder ? "Approved" : "Rejected";
+        this.changeWorkOrderStatus(orderId, newStatusName);
+      }
     },
     changeWorkOrderStatus(orderId, newOrderStatusName) {
-        let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
-        this.axios.put(url, {
-            userId: this.authUser.Id,
-            newStatusName: newOrderStatusName,
-            description: this.changeStatusDescription != '' ? this.changeStatusDescription : null
+      let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
+      this.axios
+        .put(url, {
+          userId: this.authUser.Id,
+          newStatusName: newOrderStatusName,
+          description:
+            this.changeStatusDescription != ""
+              ? this.changeStatusDescription
+              : null
         })
-            .then((res) => {
-                if (res.status == 200) {
-                    if (newOrderStatusName == 'Approved' 
-                            || newOrderStatusName == 'In Progress' 
-                            || newOrderStatusName == 'Closed') {
-                        let newItemStatusName = '';
-                        if (newOrderStatusName == 'Approved') {
-                            newItemStatusName = 'Working Requested';
-                        } else if (newOrderStatusName == 'In Progress') {
-                            newItemStatusName = 'Working';
-                        } else if (newOrderStatusName == 'Closed') {
-                            newItemStatusName = 'Available';
-                        }
-                        this.selectedOrder.WorkOrderDetails.forEach(async orderDetail => {
-                            let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/${orderDetail.EquipmentItem.Id}`;
-                            await this.axios.put(equipmentStatusApi, {
-                                userId: this.authUser.Id,
-                                newStatusName: newItemStatusName,
-                                description: null,
-                            })
-                        });
-                    }
-                    this.showCancelDialog = false;
-                    this.showApproveRejectDialog = false;
-                    this.showChangeStatusDialog = false;
-                    this.getWorkOrders();
-                    // this.selectedOrder.StatusID = newStatusId;
-                    // this.selectedOrder.WorkOrderStatus = `${newStatusName}`;
-                    // if (newStatusName == 'Closed' || newStatusId == 'Cancelled') {
-                    //     url = `${Server.EQUIPMENTITEM_API_PATH}/status/${}`
-                    // }
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            })
+        .then(res => {
+          if (res.status == 200) {
+            if (
+              newOrderStatusName == "Approved" ||
+              newOrderStatusName == "In Progress" ||
+              newOrderStatusName == "Closed"
+            ) {
+              let newItemStatusName = "";
+              if (newOrderStatusName == "Approved") {
+                newItemStatusName = "Working Requested";
+              } else if (newOrderStatusName == "In Progress") {
+                newItemStatusName = "Working";
+              } else if (newOrderStatusName == "Closed") {
+                newItemStatusName = "Available";
+              }
+              this.selectedOrder.WorkOrderDetails.forEach(async orderDetail => {
+                let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/${
+                  orderDetail.EquipmentItem.Id
+                }`;
+                await this.axios.put(equipmentStatusApi, {
+                  userId: this.authUser.Id,
+                  newStatusName: newItemStatusName,
+                  description: null
+                });
+              });
+            }
+            this.showCancelDialog = false;
+            this.showApproveRejectDialog = false;
+            this.showChangeStatusDialog = false;
+            this.getWorkOrders();
+            // this.selectedOrder.StatusID = newStatusId;
+            // this.selectedOrder.WorkOrderStatus = `${newStatusName}`;
+            // if (newStatusName == 'Closed' || newStatusId == 'Cancelled') {
+            //     url = `${Server.EQUIPMENTITEM_API_PATH}/status/${}`
+            // }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     getStatusColorClass(statusName) {
-        switch(statusName) {
-            case 'Requested': return 'requested';
-            case 'Checked': return 'checked';
-            case 'Approved': return 'approved';
-            case 'Rejected': return 'rejected';
-            case 'In Progress': return 'in-progress';
-            case 'Closed': return 'closed';
-            case 'Cancelled': return 'cancelled';
-        }
+      switch (statusName) {
+        case "Requested":
+          return "requested";
+        case "Checked":
+          return "checked";
+        case "Approved":
+          return "approved";
+        case "Rejected":
+          return "rejected";
+        case "In Progress":
+          return "in-progress";
+        case "Closed":
+          return "closed";
+        case "Cancelled":
+          return "cancelled";
+      }
     },
     getStatusColor(statusName) {
-        switch(statusName) {
-            case 'Requested': return 'var(--status-requested)';
-            case 'Checked': return 'var(--status-checked)';
-            case 'Approved': return 'var(--status-approved)';
-            case 'Rejected': return 'var(--status-rejected)';
-            case 'In Progress': return 'var(--status-in-progress)';
-            case 'Closed': return 'var(--status-closed)';
-            case 'Cancelled': return 'var(--status-cancelled)';
-        }
+      switch (statusName) {
+        case "Requested":
+          return "var(--status-requested)";
+        case "Checked":
+          return "var(--status-checked)";
+        case "Approved":
+          return "var(--status-approved)";
+        case "Rejected":
+          return "var(--status-rejected)";
+        case "In Progress":
+          return "var(--status-in-progress)";
+        case "Closed":
+          return "var(--status-closed)";
+        case "Cancelled":
+          return "var(--status-cancelled)";
+      }
     },
-    getFormatDate(date) {
+
+    getDate(date) {
         return moment(date).format('L');
+
+    },
+    getDateWithTime(date) {
+        return moment(date).format('LLL');
     },
     updateItemPosition() {
+        this.equipmentPanelIndex = -1;
         let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${this.toUpdatePositionItem.Id}`;
         this.axios.put(url, {
             tileId: this.updateTile.Id,
-        }).then((res) => {
+        }).then(async (res) => {
             if (res.status == 200) {
                 this.toUpdatePositionItem = null,
                 this.updateBlock = null;
                 this.updateFloor = null;
                 this.updateTile = null;
                 this.showUpdateItemPosition = false;
-                this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                await this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
             }
         });
     },
-    // closeWorkOrderDetail(order, itemId, newItemStatus, description) {
+    async closeWorkOrderDetails() {
+        var check = true;
+        this.toCloseEquipments.forEach(async value => {
+            var workOrderDetail = null;
+            for (var i = 0; i < this.selectedOrder.WorkOrderDetails.length; i++) {
+                let detail = this.selectedOrder.WorkOrderDetails[i];
+                if (detail.EquipmentItemID == value.item.Id) {
+                    workOrderDetail = detail;
+                    break;
+                }
+            }
+            try {
+                let url = `${Server.WORKORDER_API_PATH}/close_detail/${workOrderDetail.Id}`;
+                let response = await this.axios.post(url, {                
+                    userId: this.authUser.Id,
+                    itemId: value.item.Id,
+                    newItemStatus: value.status,
+                    currentDate: moment(),
+                    description: value.description,
+                });
+                if (response.status == 200) {
+                    check = true;
+                } else {
+                    check = false;
+                }
+            } catch(error)  { 
+                console.log(error);
+                check = false;
+            }
+        });
+        if (check) {
+            this.getWorkOrders();
+            this.getEquipmentsOfWorkOrder(this.selectedOrder);
+            this.showCloseWorkOrderDetailDialog = false;
+        } else {
+            alert('Error occured!')
+        }
+    }
 
-    // }
   },
   watch: {
     changeStatusDescription: function() {
-        if (this.showApproveRejectDialog && !this.approveWorkOrder && this.changeStatusDescription != '') {
-            this.Errors.RejectedDescriptionNotProvided = '';
-        }
+      if (
+        this.showApproveRejectDialog &&
+        !this.approveWorkOrder &&
+        this.changeStatusDescription != ""
+      ) {
+        this.Errors.RejectedDescriptionNotProvided = "";
+      }
     },
     myWorkOrderViewMode: function() {
+
         this.selectedOrder = null;
         this.toDisplayWorkOrders = [];
         if (this.myWorkOrderViewMode) {
@@ -842,7 +989,17 @@ export default {
         }
         this.tempValues = null;
         this.filterOrders();
-    }, 
+    },
+    updateTile: function() {
+        Vue.nextTick(() => {
+            if (this.updateTile && this.updateTile.Id == this.toUpdatePositionItem.TileID) {
+                this.errorUpdatePosition = 'This item is already in this position';
+            } else {
+                this.errorUpdatePosition = '';
+            }
+        })
+
+    }
   }
 };
 </script>
@@ -927,13 +1084,13 @@ export default {
 }
 
 .order-blocks {
-    position: fixed;
-    height: 65.5%;
-    max-height: 65.5%;
-    padding-right: 0.5rem;
-    width: 38%;
-    overflow-y: auto;
-    padding-bottom: .5rem;
+  position: fixed;
+  height: 65.5%;
+  max-height: 65.5%;
+  padding-right: 0.5rem;
+  width: 38%;
+  overflow-y: auto;
+  padding-bottom: 0.5rem;
 }
 
 .order-detail {
@@ -947,88 +1104,82 @@ export default {
 }
 
 .detail {
-    padding: .5rem 1rem;
-}
-
-.detail-header {
-    
+  padding: 0.5rem 1rem;
 }
 
 .detail-title {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .detail-label {
-    font-size: .98rem;
+  font-size: 0.98rem;
 }
 
 .detail-contents {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .vodal-confirm-btn {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    width: 4rem;
-    font-size: .9rem;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 4rem;
+  font-size: 0.9rem;
 }
 
 .vodal-cancel-btn {
-    position: absolute;
-    bottom: 1rem;
-    right: 5.5rem;
-    width: 4rem;
-    font-size: .9rem;
+  position: absolute;
+  bottom: 1rem;
+  right: 5.5rem;
+  width: 4rem;
+  font-size: 0.9rem;
 }
 
-
 .my-dialog-title {
-    padding: .7rem 1rem .5rem 1rem;
-    border-bottom: 1px solid #e0e0e0;
-    font-weight: 500;
+  padding: 0.7rem 1rem 0.5rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 500;
 }
 
 .my-dialog-content {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 .chip-btn {
-    text-align: center;
-    padding: .2rem .25rem .1rem .25rem;
-    border-radius: 20px;
-    background-color: #f5f5f5;
+  text-align: center;
+  padding: 0.2rem 0.25rem 0.1rem 0.25rem;
+  border-radius: 20px;
+  background-color: #f5f5f5;
 }
 
 .view-mode {
-    text-align: center;
-    background-color: white;
-    padding: 0.2rem 0.6rem;
-    font-size: .95rem;
-    color: var(--primary-color);
-    border-top: 1px solid var(--primary-color);
-    border-bottom: 1px solid var(--primary-color);
+  text-align: center;
+  background-color: white;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  border-top: 1px solid var(--primary-color);
+  border-bottom: 1px solid var(--primary-color);
 }
 
 .view-mode:first-child {
-    border-left: 1px solid var(--primary-color);
-    border-radius: 5px 0 0 5px;
+  border-left: 1px solid var(--primary-color);
+  border-radius: 5px 0 0 5px;
 }
 
 .view-mode:last-child {
-    border-right: 1px solid var(--primary-color);
-    border-radius: 0 5px 5px 0;
+  border-right: 1px solid var(--primary-color);
+  border-radius: 0 5px 5px 0;
 }
 
 .view-mode:hover {
-    color: #263238;
-    background-color: #80cbc4;
-    cursor: pointer;
+  color: #263238;
+  background-color: #80cbc4;
+  cursor: pointer;
 }
 
 .view-mode-active {
-    color: white;
-    background-color: #26a69a;
+  color: white;
+  background-color: #26a69a;
 }
-
 </style>
