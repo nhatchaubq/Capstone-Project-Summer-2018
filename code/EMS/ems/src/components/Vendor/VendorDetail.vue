@@ -3,9 +3,9 @@
     <router-link to="/vendor">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Vendors</a>
     </router-link>
-<div class="row">
 
-  <div class="grid-wrapper1 col-6">
+
+  <div class="grid-wrapper1 col-12" style="margin-bottom:1rem">
     <div class="material-box" >
       <div class="row" style="margin: 0 !important; margin-bottom: 0.5rem">
         <h2 class="col-11" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{Vendor.BusinessName}}</strong> </h2>
@@ -13,39 +13,39 @@
       </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
         <div class="col-4" style="margin-top:0.5rem" >
-          Business address  
+          Business address  <span v-if="editMode"> (required)</span>
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
         <div class="col-4" style="margin-top:0.5rem" >
           Website
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
         <div class="col-4" style="margin-top:0.5rem;" >
-          Contact name 
+          Contact name <span v-if="editMode"> (required)</span>
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
         <div class="col-4" style="margin-top:0.5rem" >
-          Contact email
+          Contact email <span v-if="editMode"> (required)</span>
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.ContactEmail" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.ContactEmail" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
         <div class="col-4" style="margin-top:0.5rem" >
           Description
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div class="row" v-if="editMode">
         <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editVendor()">Done</button>
         <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Cancel</button>
@@ -91,8 +91,8 @@
 
     </div> -->
         <!-- test- start -->
-
-    <div class="material-box col-6">
+  <div class="grid-wrapper1 col-12">
+    <div class="material-box">
       <!-- <div class="grid-wrapper1"> -->
         <strong>Vendor's equipment</strong> 
         <div v-if="Vendor.Equipments" >
@@ -116,9 +116,10 @@
         </div>
       <!-- </div> -->
     </div>
+  </div>
 
     <!-- test end -->
-  </div>    
+
 </div>
   
 </template>
