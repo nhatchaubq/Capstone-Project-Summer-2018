@@ -12,7 +12,8 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Username <span style="color:red;">*</span></strong>
+                    <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.NoUsername != ''">. <span class="error-text">{{ CreateAccountErrors.NoUsername }}</span></span>
+                    <!-- <span v-if="CreateWorkOrderErrors.NoTitle != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoTitle }}</span></span> -->
                     </div>
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
                         <input v-model="account.username" class="input " type="text" placeholder="Text input" >
@@ -31,7 +32,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>   Password <span style="color:red;">*</span></strong>
+                    <strong>   Password (required)</strong> <span v-if="CreateAccountErrors.NoPassword != ''">. <span class="error-text">{{ CreateAccountErrors.NoPassword }}</span></span>
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
                         <input v-model="account.password" class="input " type="password" placeholder="Text input" name="password" id="password">
                             <span class="icon is-small is-left">
@@ -50,7 +51,9 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                        Fullname <strong><span style="color:red;">*</span></strong>
+                        <strong>
+                            Fullname (required)
+                        </strong>    <span v-if="CreateAccountErrors.NoFullname != ''">. <span class="error-text">{{ CreateAccountErrors.NoFullname }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -71,7 +74,10 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                        Phone <strong><span style="color:red;">*</span></strong>
+                        <strong>
+                            Phone (required)
+
+                        </strong> <span v-if="CreateAccountErrors.NoPhone != ''">. <span class="error-text">{{ CreateAccountErrors.NoPhone }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -92,7 +98,9 @@
                     <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                        Email 
+                        <strong>
+                            Email (required) 
+                        </strong> <span v-if="CreateAccountErrors.NoEmail != ''">. <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -133,7 +141,9 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                        Start date <strong><span style="color:red;">*</span></strong>
+                        <strong>
+                            Start date 
+                        </strong>
                     </div>
                     <div class="form-field-input">
                         <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -168,13 +178,15 @@
                     </div> -->
 <!-- tien -->
                     <div class="form-field-title" >
-                        Role
-                    </div>
+                        <strong>
+                            Role (required)
+                        </strong><span v-if="CreateAccountErrors.NoRole != ''">. <span class="error-text">{{ CreateAccountErrors.NoRole }}</span></span>
+                    </div> 
                     <div class="field is-horizontal" >
                         <model-select style="width: 100% !important" :options="roleOptions" v-model="account.roleid" placeholder="Select a role"></model-select>  
                         
                     </div>
-<!-- /tien -->
+<!-- /tien -->      
                 </div>            
             </div>
 
@@ -226,6 +238,25 @@ export default {
 
   data() {
     return {
+         sending: false,
+      ErrorStrings: {
+        NoUsername: 'You must provide username for this account',
+        NoPassword: 'You must provide password for this account',
+        NoFullname: 'You must provide full name for this account',
+        NoPhone: 'You must provide phone number for this account',
+        NoEmail: 'You must provide email name for this account',
+        NoRole: 'You must provide role for this account',
+
+
+      },
+      CreateAccountErrors: {
+        NoUsername: '',
+        NoPassword: '',
+        NoFullname: '',
+        NoPhone: null,
+        NoEmail: '',
+        NoRole: ''
+      },
       account: {
         username: "",
         password: "",
@@ -240,16 +271,83 @@ export default {
   },
   methods: {
     createAccount1() {
-      this.axios
-        .post("http://localhost:3000/api/account", {
-          account: this.account
-        })
-        .then(res => {
-          this.$router.push("/account");
-        });
-    }
+        if(this.account.username === ''){
+            this.CreateAccountErrors.NoUsername = this.ErrorStrings.NoUsername;
+        }
+        if(this.account.password === ''){
+            this.CreateAccountErrors.NoPassword = this.ErrorStrings.NoPassword;
+        }
+        if(this.account.fullname === ''){
+            this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
+        }
+        if(this.account.phone === null){
+            this.CreateAccountErrors.NoPhone = this.ErrorStrings.NoPhone;
+        }
+        if(this.account.email === ''){
+            this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
+        }
+        if(!this.account.roleid  || this.account.roleid == ''){
+            this.CreateAccountErrors.NoRole = this.ErrorStrings.NoRole;
+        }
+        if(this.validateAccount()){
+            this.axios
+                .post("http://localhost:3000/api/account", {
+                account: this.account
+                })
+                .then(res => {
+                this.$router.push("/account");
+                });
+        }
+            // this.axios
+            //     .post("http://localhost:3000/api/account", {
+            //     account: this.account
+            //     })
+            //     .then(res => {
+            //     this.$router.push("/account");
+            //     });
+
+    },
+ validateAccount() {      
+      return this.CreateAccountErrors.NoUsername === '' && this.CreateAccountErrors.NoPassword === ''
+              && this.CreateAccountErrors.NoFullname === '' && this.CreateAccountErrors.NoPhone === ''
+              && this.CreateAccountErrors.NoEmail === '' && this.CreateAccountErrors.NoRole === ''
+    },
+  },
+  watch:{
+      "account.username": function(){
+          if(this.account.username != ''){
+              this.CreateAccountErrors.NoUsername = ''
+          }
+      },
+      'account.password': function(){
+          if(this.account.password != ''){
+              this.CreateAccountErrors.NoPassword = ''
+          }
+      },
+      'account.fullname': function(){
+          if(this.account.fullname != ''){
+              this.CreateAccountErrors.NoFullname = ''
+          }
+      },
+      'account.phone': function(){
+          if(this.account.phone != null){
+              this.CreateAccountErrors.NoPhone = ''
+          }
+      },
+      'account.email': function(){
+          if(this.account.email != ''){
+              this.CreateAccountErrors.NoEmail = ''
+          }
+      },
+      'account.roleid': function(){
+          if(this.account.roleid && this.account.roleid != ''){
+              this.CreateAccountErrors.NoRole = ''
+          }
+      },
+      
   }
 };
+     
 </script>
 
 <style scoped>

@@ -68,7 +68,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .form {
   background-color: white;
   padding: 0 !important;
