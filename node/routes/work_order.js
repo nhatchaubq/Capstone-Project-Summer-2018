@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const TYPES = require("tedious").TYPES;
 
-
 router.get("/workorderbylocationId/:id", (request, response) => {
   request
     .sql(
@@ -11,14 +10,13 @@ router.get("/workorderbylocationId/:id", (request, response) => {
         " where tl.LocationID = @locationId) as Quantity " +
         " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
         " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
-        " where tl.LocationID = @locationId " +
+        " where tl.LocationID = @locationId and wo.ClosedDate is null" +
         " for json path"
+      //   "exec [GetWorkOrderByLocationId] @locationId"
     )
     .param("locationId", request.params.id, TYPES.Int)
     .into(response);
 });
-
-
 
 // router.get('/', (request, response) => {
 //     request.sql("exec GetWorkOrders")
@@ -83,25 +81,26 @@ router.get('/:id/equipments', (request, response) => {
                 + " for json path")
         .param('workOrderId', request.params.id, TYPES.Int)
         .into(response);
+
 });
 
 router.get("/status", (request, response) => {
-    request.sql("select * from WorkOrderStatus for json path").into(response);
+  request.sql("select * from WorkOrderStatus for json path").into(response);
 });
 
 router.get("/priorities", (request, response) => {
-    request.sql("select * from Priority for json path").into(response);
+  request.sql("select * from Priority for json path").into(response);
 });
 
 router.get("/search/:value", (req, res) => {
-    req
-        .sql("exec [dbo].SearchWorkOrder @searchValue")
-        .param("searchValue", req.params.value, TYPES.NVarChar)
-        .into(res);
+  req
+    .sql("exec [dbo].SearchWorkOrder @searchValue")
+    .param("searchValue", req.params.value, TYPES.NVarChar)
+    .into(res);
 });
 
 router.get("/categories", (req, res) => {
-    req.sql("select * from WorkOrderCategory for json path").into(res);
+  req.sql("select * from WorkOrderCategory for json path").into(res);
 });
 
 /* ChauBQN */
@@ -136,6 +135,7 @@ router.get('/get_equipment_detail/:id', (req, res) => {
             " for json path")
         .param('equipmentId', req.params.id, TYPES.Int)
         .into(res);
+
 });
 
 // router.get('/create/get_date_between/:equipmentId/:startDate/:dueDate', (req, res) => {
@@ -247,5 +247,6 @@ router.put('/status/:orderId', (req, res) => {
         .param('newWorkOrderStatusName', req.body.newStatusName, TYPES.NVarChar)
         .param('description', req.body.description, TYPES.NVarChar)
         .exec(res);
+
 });
 module.exports = router;

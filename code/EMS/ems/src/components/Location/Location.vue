@@ -10,7 +10,7 @@
             <b>Sort By</b>
           </div> -->
           <div class="location-blocks">
-            <div class="material-box material-shadow-animate" :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
+            <div class="material-box material-shadow-animate"  :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
               <div class="location-name" >
                 {{location.Name}}
               </div>
@@ -218,7 +218,14 @@ export default {
       // chaubqn - end
     };
   },
-  methods: {
+  // methods: {
+  //   isActive(locationId) {
+  //     if (this.selectedLocation && locationId != this.location.Id) {
+  //       return "location-block-choose";
+  //     } else {
+  //       return "location-block";
+  //     }
+  //   },
     setSelectedLocation(location) {
       // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
       // this.axios.get(url)
@@ -254,6 +261,7 @@ export default {
           console.log(error);
         });
     },
+
     getWororderFromLocation(location) {
       this.workorders = [];
       let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
@@ -400,6 +408,14 @@ export default {
   padding-right: 1rem;
   width: 35%;
   overflow-y: auto;
+}
+.location-blocks-choose {
+  position: fixed;
+  height: 88%;
+  padding-right: 1rem;
+  width: 35%;
+  overflow-y: auto;
+  background-color: #263238;
 }
 
 .location-blocks div {
