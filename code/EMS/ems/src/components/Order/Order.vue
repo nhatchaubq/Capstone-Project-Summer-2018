@@ -529,6 +529,10 @@ export default {
         };
         this.options.status.push(status);
       });
+    }).catch((error) => {
+        if (error == 'Request failed with status code 500') {
+            this.$router.push('/500');
+        }
     });
     this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
       let data = response.data;
@@ -540,6 +544,10 @@ export default {
         };
         this.options.priorities.push(priority);
       });
+    }).catch((error) => {
+        if (error == 'Request failed with status code 500') {
+            this.$router.push('/500');
+        }
     });
   },
   data() {
@@ -627,6 +635,10 @@ export default {
                     // this.getEquipmentsOfWorkOrder(this.selectedOrder);
                     // this.getLocationBlockFloorTile(this.selectedOrder);
                 }
+            }
+        }).catch(error => {
+            if (error == 'Request failed with status code 500') {
+                this.$router.push('/500');
             }
         });
     },

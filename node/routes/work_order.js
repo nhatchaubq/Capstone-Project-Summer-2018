@@ -19,11 +19,12 @@ router.get("/workorderbylocationId/:id", (request, response) => {
 });
 
 
-
-// router.get('/', (request, response) => {
-//     request.sql("exec GetWorkOrders")
-//         .into(response);
-// });
+// ChauBQN
+// get work order for editing
+router.get('/', (request, response) => {
+    request.sql("exec GetWorkOrders")
+        .into(response);
+});
 
 // ChauBQN
 // get work orders
@@ -65,7 +66,7 @@ router.get('/', (request, response) => {
 // ChauBQN
 // get equipments and equipment items to display on work order
 router.get('/:id/equipments', (request, response) => {
-    request.sql("select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei2.*, wod2.ReturnDate as [DetailReturnDate], json_query((select lo.[Name] as [Location.Name], lo.[Address] as [Location.Address], " +
+    request.sql("select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei2.*, wod2.ClosedDate as [DetailReturnDate], json_query((select lo.[Name] as [Location.Name], lo.[Address] as [Location.Address], " +
     "                                                                                                   bl.[Name] as [BlockName], fl.[Name] as [FloorName], ti.[Name] as [TileName] " +
     "                                                                                           from [Location] as lo join [Block] as bl on lo.Id = bl.LocationID " +
     "                                                                                                                   join [Floor] as fl on bl.Id = fl.BlockID " +
@@ -149,7 +150,9 @@ router.get('/get_equipment_detail/:id', (req, res) => {
 /* ChauBQN */
 /* create new work order and insert new record to WorkOrderRecord */
 router.post('/', (req, res) => {
-    req.sql("declare @newWorkOrderId int; " +
+    req.sql(" declare @newWorkOrderId int; " +
+            " declare @categoryId int; " +
+            " set @categoryId = (select Id from WorkOrderCategory where [Name] = @categoryName); " +
             " insert into [WorkOrder]([Name], RequestUserID, CreateDate, [Description], PriorityID, StatusID, CategoryID, TeamLocationID) " +
             "     values(@name, @requestUserId, @createDate, @description, @priorityId, @statusId, @categoryId, @teamLocationId); " +
             " set @newWorkOrderId = (select SCOPE_IDENTITY()); " +
@@ -162,7 +165,7 @@ router.post('/', (req, res) => {
         .param('description', req.body.description, TYPES.NVarChar)
         .param('priorityId', req.body.priorityId, TYPES.Int)
         .param('statusId', req.body.statusId, TYPES.Int)
-        .param('categoryId', req.body.categoryId, TYPES.Int)
+        .param('categoryName', req.body.categoryName, TYPES.NVarChar)
         .param('teamLocationId', req.body.teamLocationId, TYPES.Int)
         .into(res);
 });
@@ -196,7 +199,14 @@ router.post('/close_detail/:workOrderDetailId', (req, res) => {
         + "  set @newStatusId = (select Id from EquipmentStatus where [Name] = @newItemStatus); "
    
         + "  insert into WorkOrderDetailReturn(WorkOrderDetailId, ByUserId, [DateTime], NewItemStatusId) values(@workOrderDetailId, @userId, getdate(), @newStatusId); "
-        + "  update WorkOrderDetail set ReturnDate = getdate() where Id = @workOrderDetailId; "
+        + "  update WorkOrderDetail set ClosedDate = getdate() where Id = @workOrderDetailId; "
+
+        + "  declare @currentRuntimeDays int; "
+        + "  declare @orderDetailStartDate datetime; "
+        + "  set @orderDetailStartDate = (select StartDate from WorkOrderDetail where Id = @workOrderDetailId); "
+        + "  set @currentRuntimeDays = (select RuntimeDays from EquipmentItem where Id = @itemId); "
+
+        + "  update EquipmentItem set RuntimeDays = (DATEDIFF(day, @orderDetailStartDate, getdate()) + @currentRuntimeDays) where Id = @itemId; "
   
         + "  declare @totalOrderDetail int; "
         + "  declare @totalOrderDetailReturned int; "
@@ -213,7 +223,7 @@ router.post('/close_detail/:workOrderDetailId', (req, res) => {
         + "     set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); "
         + "     set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = N'Closed'); "
         
-        + "     update WorkOrderDetail set ReturnedDate = getdate() where Id = @workOrderDetailId "
+        + "     update WorkOrderDetail set ClosedDate = getdate() where Id = @workOrderDetailId "
         
         + "     update [WorkOrder] set StatusID = @newWorkOrderStatusId, ClosedDate = getdate() where Id = @workOrderId; "
         
@@ -243,7 +253,7 @@ router.put('/status/:orderId', (req, res) => {
             " set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = @newWorkOrderStatusName); " +
             " set @currentDate = getdate(); " +
             " update [WorkOrder] set StatusID = @newWorkOrderStatusId where Id = @workOrderId; " +
-            " if @newWorkOrderStatusName = n'In Progress' " +
+            " if @newWorkOrderStatusName = N'In Progress' " +
             " begin " +
             "   update WorkOrderDetail set StartDate = @currentDate " +
             " end " +

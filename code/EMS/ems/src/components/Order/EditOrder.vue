@@ -1,5 +1,5 @@
 <template>
-    <div class="form">
+    <div class="form" v-if="editWorkOrder">
         <div class="form-title">
             <div class="form-title-start">
                 Add New Work Order
@@ -619,613 +619,617 @@ import moment from "moment";
 import { ModelSelect } from "vue-search-select";
 
 export default {
-  components: {
-    ModelSelect
-  },
-  data() {
-    return {
-      sending: false,
-      ErrorStrings: {
-        MustSelectEquipment: 'You must select an equipment',
-        FromDateIsLargerThanToDate: 'From date is larger than to date',
-        AvailableQuantityIsZero: 'This equipment has no available units',
-        NoTitle: 'You must provide a title for this order',
-        NoEquipmentSelected: 'You must select at least one equipment',
-        NoLocation: 'You must select a location',
-        NoTeam: 'You must select a team in the selected location',
-        SelectedEquipmentQuantityIsZero: 'You must choose at least 1 equipment item from the table below',
-        SelectedDateConflictWorkOrders: 'From date or to date has conflict with some work orders. '
-                                            + '\nPlease reconsider choosing another date or the managers may reject your order.'
-      },
-      AddEquipmentWarnings: {
-        MustSelectEquipment: '',
-        FromDateIsLargerThanToDate: '',
-        AvailableQuantityIsZero: '',
-        SelectedEquipmentQuantityIsZero: '',
-        SelectedDateConflictWorkOrders: '',
-      },
-      CreateWorkOrderErrors: {
-        NoTitle: '',
-        NoEquipmentSelected: '',
-        EquipmentErrors: [],
-        NoLocation: '',
-        NoTeam: '',
-      },
-      workOrderTitle: "",
-      workOrderDescription: "",
-      workOrderPriority: 1,
-      selectedEquipmentQuantity: 0,
-      selectedEquipmentFromDate: "",
-      selectedEquipmentToDate: "",
-      selectedEquipments: [],
-      selectedLocation: {
-        text: "",
-        value: ""
-      },
-      selectedTeam: {
-        text: "",
-        value: ""
-      },
-      selectedEquipment: {
-        text: "",
-        value: "",
-        image: "",
-        totalQuantity: 0
-      },
-      categories: [],
-      priorities: [],
-      equipmentOptions: [],
-      locationOptions: [],
-      teamOptions: [],
-      equipmentTable: [],
-      selectedEquipmentItemIds: [],
-      checkAllItems: false,
-      indeterminate: true,
-      conflictItems: [],
-    };
-  },
-  computed: {
-    authUser() {
-      return JSON.parse(window.localStorage.getItem("user"));
+    components: {
+        ModelSelect
     },
-    workOrderCategory() {
-      if (this.authUser.Role == 'Staff') {
-        return 'Working'; // working order
-      } else if (this.authUser.Role == 'Maintainer') {
-        return 'Maintain'; // maintain order
-      }
+    data() {
+        return {
+            editWorkOrder: null,
+            sending: false,
+            ErrorStrings: {
+                MustSelectEquipment: 'You must select an equipment',
+                FromDateIsLargerThanToDate: 'From date is larger than to date',
+                AvailableQuantityIsZero: 'This equipment has no available units',
+                NoTitle: 'You must provide a title for this order',
+                NoEquipmentSelected: 'You must select at least one equipment',
+                NoLocation: 'You must select a location',
+                NoTeam: 'You must select a team in the selected location',
+                SelectedEquipmentQuantityIsZero: 'You must choose at least 1 equipment item from the table below',
+                SelectedDateConflictWorkOrders: 'From date or to date has conflict with some work orders. '
+                                                    + '\nPlease reconsider choosing another date or the managers may reject your order.'
+            },
+            AddEquipmentWarnings: {
+                MustSelectEquipment: '',
+                FromDateIsLargerThanToDate: '',
+                AvailableQuantityIsZero: '',
+                SelectedEquipmentQuantityIsZero: '',
+                SelectedDateConflictWorkOrders: '',
+            },
+            CreateWorkOrderErrors: {
+                NoTitle: '',
+                NoEquipmentSelected: '',
+                EquipmentErrors: [],
+                NoLocation: '',
+                NoTeam: '',
+            },
+            workOrderTitle: "",
+            workOrderDescription: "",
+            workOrderPriority: 1,
+            selectedEquipmentQuantity: 0,
+            selectedEquipmentFromDate: "",
+            selectedEquipmentToDate: "",
+            selectedEquipments: [],
+            selectedLocation: {
+                text: "",
+                value: ""
+            },
+            selectedTeam: {
+                text: "",
+                value: ""
+            },
+            selectedEquipment: {
+                text: "",
+                value: "",
+                image: "",
+                totalQuantity: 0
+            },
+            categories: [],
+            priorities: [],
+            equipmentOptions: [],
+            locationOptions: [],
+            teamOptions: [],
+            equipmentTable: [],
+            selectedEquipmentItemIds: [],
+            checkAllItems: false,
+            indeterminate: true,
+            conflictItems: [],
+        };
     },
-  },
-  created() {
-    // this.axios.get(Server.WORKORDER_CATEGORIES_API_PATH).then(res => {
-    //   if (res.data) {
-    //     let data = res.data;
-    //     this.categories = data;
-    //     // this.workOrderCategory = data[0].Id;
-    //   }
-    // });
-    this.axios.get(Server.EQUIPMENT_API_PATH).then(res => {
-      if (res.data) {
-        let data = res.data;
-        data.forEach(element => {
-          let quantity = parseInt(element.Equipment.Quantity);
-          let option = {
-            text: `${element.Equipment.Name}, quantity: ${quantity} ${quantity > 0 ? element.Equipment.Unit : ''}`,
-            value: element.Equipment.Id,
-            image: element.Equipment.Image,
-            totalQuantity: quantity
-          };
-          this.equipmentOptions.push(option);
-        });
-      }
-    });
-    this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(res => {
-      if (res.data) {
-        this.priorities = res.data;
-        this.workOrderPriority = this.priorities[0].Id;
-      }
-    });
-    this.axios.get(Server.LOCATION_API_PATH).then(res => {
-      if (res.data) {
-        let data = res.data;
-        data.forEach(location => {
-          let option = {
-            value: location.Id,
-            text: `${location.Name} - ${location.Address}`
-          };
-          this.locationOptions.push(option);
-        });
-      }
-    });
-    this.selectedEquipmentFromDate = this.getToday();
-    this.selectedEquipmentToDate = this.getToday();
-  },
-  methods: {
-    cancel() {
-      this.$router.push("/work_order");
+    computed: {
+        authUser() {
+            return JSON.parse(window.localStorage.getItem("user"));
+        },
+        workOrderCategory() {
+            if (this.authUser.Role == 'Staff') {
+                return 'Working'; // working order
+            } else if (this.authUser.Role == 'Maintainer') {
+                return 'Maintain'; // maintain order
+            }
+        },
     },
-    addEquipment() {
-      if (this.selectedEquipment.value == "") {
-        this.AddEquipmentWarnings.MustSelectEquipment = this.ErrorStrings.MustSelectEquipment;
-      } 
-      if (this.validateAddEquipment()) {
-        if (this.selectedEquipment.value != "" &&
-          this.selectedEquipment.totalQuantity > 0) {
-          let index = this.selectedEquipments.findIndex(
-            equipment => equipment.id == this.selectedEquipment.value
-          );
-          // this equipment is not yet selected, so add to the list
-          var warningOb = JSON.stringify(this.AddEquipmentWarnings);
-          warningOb = JSON.parse(warningOb);
-          if (index < 0) {
-            let equipment = {
-              id: parseInt(this.selectedEquipment.value),
-              name: this.selectedEquipment.text,
-              quantity: parseInt(this.selectedEquipmentQuantity),
-              image: this.selectedEquipment.image,
-              totalQuantity: parseInt(
-                this.selectedEquipment.totalQuantity
-              ),
-              fromDate: this.selectedEquipmentFromDate,
-              toDate: this.selectedEquipmentToDate,
-              equipmentItemIds: this.selectedEquipmentItemIds,
-              editMode: false,
-              indeterminate: this.indeterminate,
-              checkAllItesm: this.checkAllItems,
-              equipmentItemList: this.equipmentTable,
-              conflictItems: this.conflictItems,
-              addEquipmentWarnings: warningOb,
-            };
-            this.selectedEquipments.push(equipment);
-          } else { // this equipment is already added to the list, so modified the quantity
-            // TODO
-          }
-  
-          // reset values
-          this.selectedEquipment = {
-            text: "",
-            value: "",
-            image: "",
-            totalQuantity: 0
-          };
-          this.resetEquipmentSelection();
-        }
-      } 
-    },
-    removeEquipment(equipment) {
-      this.selectedEquipments = this.selectedEquipments.filter(
-        e => e.id != equipment.id
-      );
-    },
-    getToday() {
-      return moment().format("YYYY-MM-DD");
-    },
-    createWorkOrder() {
-      if (this.workOrderTitle === '') {
-        this.CreateWorkOrderErrors.NoTitle = this.ErrorStrings.NoTitle;
-      }
-      if (this.selectedEquipments.length == 0) {
-        this.CreateWorkOrderErrors.NoEquipmentSelected = this.ErrorStrings.NoEquipmentSelected;
-      }
-      if (this.selectedLocation.value === '') {
-        this.CreateWorkOrderErrors.NoLocation = this.ErrorStrings.NoLocation;
-      }
-      if (this.selectedTeam.value === '') {
-        this.CreateWorkOrderErrors.NoTeam = this.ErrorStrings.NoTeam;
-      }
-      if (this.validateCreateOrder()) {
-        let context = this;
-        context.sending = true;
-        let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${
-          this.selectedLocation.value
-        }/${this.selectedTeam.value}`;
-        this.axios
-          .get(teamLocationApi)
-          .then(function(res) {
-            if (res.data.Id) {
-              let result = res.data.Id;
-              let workOrderApi = Server.WORKORDER_API_PATH;
-  
-              context.axios
-                .post(workOrderApi, {
-                  name: context.workOrderTitle,
-                  description: context.workOrderDescription,
-                  requestUserId: context.authUser.Id,
-                  createDate: new Date(),
-                  priorityId: context.workOrderPriority,
-                  statusId: 1,
-                  categoryName: context.workOrderCategory,
-                  teamLocationId: result
-                })
-                .then(function(res) {
-                  if (res.data.NewWorkOrderId) {
-                    let newWorkOrderId = res.data.NewWorkOrderId;
-                    var check = true;
-                    context.selectedEquipments.forEach(equipment => {
-                      equipment.equipmentItemIds.forEach(async itemId => {
-                        try {
-                          const response = await context.axios
-                          .post(Server.WORKORDER_DETAIL_API_PATH, {
-                            workOrderId: newWorkOrderId,
-                            equipmentItemId: itemId,
-                            startDate: equipment.fromDate,
-                            dueDate: equipment.toDate,
-                            maintainceCost: null,
-                            description: null
-                          });
-                          if (response.status == 200) {
-                            check = true;
-                          }
-                        } catch(error) {
-                          console.log(error);
-                          check = false;
-                        }
-                      })
-                    })
-                    context.sending = false;
-                    if (check) {
-                      context.$router.push('/work_order');
-                    } else {
-                      alert('Error');
-                    }                      
-                  } else {
-                    alert("No new work order id returned");
-                  }
-                })
-                .catch(error => {
-                  alert(
-                    "Create work order detail: " + error
-                  );
+    created() {
+        // this.axios.get(Server.WORKORDER_CATEGORIES_API_PATH).then(res => {
+        //   if (res.data) {
+        //     let data = res.data;
+        //     this.categories = data;
+        //     // this.workOrderCategory = data[0].Id;
+        //   }
+        // });
+        this.axios()
+        this.axios.get(Server.EQUIPMENT_API_PATH).then(res => {
+            if (res.data) {
+                let data = res.data;
+                data.forEach(element => {
+                let quantity = parseInt(element.Equipment.Quantity);
+                let option = {
+                    text: `${element.Equipment.Name}, quantity: ${quantity} ${quantity > 0 ? element.Equipment.Unit : ''}`,
+                    value: element.Equipment.Id,
+                    image: element.Equipment.Image,
+                    totalQuantity: quantity
+                };
+                this.equipmentOptions.push(option);
                 });
             }
-          })
-          .catch(error => {
-            alert(
-              "Create work order: " + error
-            );
-          });
-      }
-    },
-    validateAddEquipment() {
-      return this.AddEquipmentWarnings.MustSelectEquipment === '' && this.AddEquipmentWarnings.FromDateIsLargerThanToDate === ''
-              && this.AddEquipmentWarnings.AvailableQuantityIsZero === '' && this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero === '';
-    },
-    validateCreateOrder() {      
-      var checkSelectedItems = true; // check if currently there is no error messages of items are displaying
-      for (var i = 0; i < this.selectedEquipments.length; i++) {
-        let selectedEquipment = this.selectedEquipments[i];
-        if (selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != '' 
-            || selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate != '') {
-          checkSelectedItems = false;
-          break;
-        }
-      }
-      return this.CreateWorkOrderErrors.NoTitle === '' && this.CreateWorkOrderErrors.NoEquipmentSelected === ''
-              && this.CreateWorkOrderErrors.NoLocation === '' && this.CreateWorkOrderErrors.NoTeam === ''
-              && checkSelectedItems;
-    },
-    getMilis(date) {
-      return moment(date).valueOf();
-    },
-    getDate(date) {
-      return moment(date).format("L");
-    },
-    myconsole(obj) {
-      console.log(obj);
-    },
-    checkItemFromTable(equipmentItemId) {
-      this.indeterminate = true;
-      this.checkAllItems = false;
-      // if selectedEquipmentItemIds already has equipmentItemId, we decrease the selectedEquipmentQuantity, then remove the equipmentItemId from the selectedEquipmentItemIds
-      if (this.selectedEquipmentItemIds.includes(equipmentItemId)) {
-        this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) - 1;
-        this.selectedEquipmentItemIds = this.selectedEquipmentItemIds.filter(itemId => itemId != equipmentItemId);
-        if (this.selectedEquipmentItemIds.length == 0) {
-          this.indeterminate = false;
-          this.checkAllItems = false;
-          this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
-        }
-      } 
-      else {
-        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
-        this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) + 1;
-        this.selectedEquipmentItemIds.push(equipmentItemId);
-        if (this.selectedEquipmentItemIds.length == this.equipmentTable.length) {
-            this.indeterminate = false;
-            this.checkAllItems = true;
-        }
-      }
-      
-      this.conflictItems = [];
-      // check if from date conflicts any item in work orders
-      let tempItems = [];
-      // get the selected items in equipmentTable to tempItems
-      this.selectedEquipmentItemIds.forEach(itemId => {
-        tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-      })
-      // get the selected items in equipmentTable to tempItems
-      this.checkSelectedItemDateConflict(tempItems, this.conflictItems, 
-                    this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
-      if (this.conflictItems.length == 0) {
-        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-      } else {
-        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
-      }
-    },
-    handleCheckAllItems() {
-      if (this.indeterminate) {
-        this.checkAllItems = false;
-      } else {
-        this.checkAllItems = !this.checkAllItems;
-      }
-
-      this.indeterminate = false;
-      if (this.checkAllItems) {
-        this.selectedEquipmentItemIds = [];
-        this.equipmentTable.forEach(item => this.selectedEquipmentItemIds.push(item.Id));
-        this.selectedEquipmentQuantity = this.equipmentTable.length;
-
-        this.conflictItems = [];
-          // check if from date conflicts any item in work orders
-        let tempItems = [];
-        this.selectedEquipmentItemIds.forEach(itemId => {
-          tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-        })
-        // get the selected items in equipmentTable to tempItems
-        this.checkSelectedItemDateConflict(tempItems, this.conflictItems, 
-                          this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentTODate));
-        if (this.conflictItems.length == 0) {
-          this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-        } else {
-          this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
-        }
-      } else {
-        this.selectedEquipmentItemIds = [];
-        this.selectedEquipmentQuantity = 0;
-        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
-      }
-    },
-    resetEquipmentSelection() {
-      this.equipmentTable = [];
-      this.indeterminate = false;
-      this.checkAllItems = false;
-
-      this.selectedEquipmentItemIds = [];
-      this.selectedEquipmentQuantity = 0;
-      this.selectedEquipmentFromDate = this.getToday();
-      this.selectedEquipmentToDate = this.getToday();
-
-      this.conflictItems = [];
-      this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-    },
-    isItemConflicted(itemId, workOrderId, conflictItems) {
-      for (var i = 0; i < conflictItems.length; i++) {
-        let item = conflictItems[i];
-        if (item.itemId == itemId && item.workOrderId == workOrderId) {
-          return true;
-        }
-      }
-      return false;
-    },
-    checkSelectedItemDateConflict(items, conflictItems, fromDate, toDate) {
-      items.forEach(item => {
-        if (item.WorkOrders) {
-          item.WorkOrders.forEach(order => {
-            let itemFromDate = this.getMilis(order.Detail.StartDate);
-            let itemToDate = this.getMilis(order.Detail.FinishedDate);
-            if ((fromDate >= itemFromDate && fromDate <= itemToDate)  
-                || (toDate >= itemFromDate && toDate <= itemToDate)
-                || (fromDate < itemFromDate && fromDate < itemToDate && toDate > itemFromDate && toDate > itemToDate)) {
-                conflictItems.push({itemId: item.Id, workOrderId: order.Id});
-            }
-          })
-        }
-      });          
-    },
-  },
-  watch: {
-    'workOrderTitle': function() {
-      if (this.workOrderTitle != '' && this.CreateWorkOrderErrors.NoTitle != '') {
-        this.CreateWorkOrderErrors.NoTitle = '';
-      }
-    },
-    'selectedEquipment': function() {
-      // selecte another equipment
-      if (this.selectedEquipment.value != '') {
-         this.resetEquipmentSelection(); // reset after selected another equipment 
-        if (this.AddEquipmentWarnings.MustSelectEquipment != '') { // error 'Must select equipment' displaying
-          this.AddEquipmentWarnings.MustSelectEquipment = '';
-        }
-        // check if selected equipment has equipment item(s)
-        if (this.selectedEquipment.totalQuantity == 0) {
-          this.AddEquipmentWarnings.AvailableQuantityIsZero = this.ErrorStrings.AvailableQuantityIsZero;
-        } else {
-          this.AddEquipmentWarnings.AvailableQuantityIsZero = ''; // set warning to empty text         
-
-          // get all the equipment items with work order detail info (if available)
-          let url = `${Server.WORKORDER_API_PATH}/get_equipment_detail/${this.selectedEquipment.value}`;
-          this.axios.get(url)
-            .then((res) => {
-              if (res.status == 200 && res.data) {
-                this.equipmentTable = res.data;
-                this.selectedEquipmentItemIds.push(res.data[0].Id);
-                this.selectedEquipmentQuantity = 1;
-                this.indeterminate = true;
-                this.selectedEquipmentFromDate = this.getToday();
-                this.selectedEquipmentToDate = this.getToday();
-              }
-            })
-        }
-      }
-    },
-    'selectedEquipments': function() {
-      if (this.selectedEquipments.length > 0) {
-        this.CreateWorkOrderErrors.NoEquipmentSelected = '';
-      }
-    },
-    'selectedLocation': function() {
-      this.teamOptions = [];
-      this.selectedTeam = {
-        text: "",
-        value: ""
-      };
-      if (this.selectedLocation.value != '') {
-        if (this.CreateWorkOrderErrors.NoLocation != '') {
-          this.CreateWorkOrderErrors.NoLocation = '';
-        }
-        // alert('in 2')
-        let url = `${Server.LOCATION_API_PATH}/${
-          this.selectedLocation.value
-        }/team/${this.authUser.Id}`;
-        this.axios.get(url).then(res => {
-          if (res.data) {
-            let data = res.data;
-            data.forEach(element => {
-              let option = {
-                value: element.Team.Id,
-                text: element.Team.Name
-              };
-              this.teamOptions.push(option);
-            });
-          }
         });
-      }
-    },
-    'selectedEquipmentFromDate': function() {
-      if (this.selectedEquipmentFromDate === '') {
+        this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(res => {
+        if (res.data) {
+            this.priorities = res.data;
+            this.workOrderPriority = this.priorities[0].Id;
+        }
+        });
+        this.axios.get(Server.LOCATION_API_PATH).then(res => {
+        if (res.data) {
+            let data = res.data;
+            data.forEach(location => {
+            let option = {
+                value: location.Id,
+                text: `${location.Name} - ${location.Address}`
+            };
+            this.locationOptions.push(option);
+            });
+        }
+        });
         this.selectedEquipmentFromDate = this.getToday();
-      } else {
-        let fromDate = this.getMilis(this.selectedEquipmentFromDate);
-        let toDate = this.getMilis(this.selectedEquipmentToDate);
-        if (fromDate > toDate) {
-          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = this.ErrorStrings.FromDateIsLargerThanToDate;
-        } else if (fromDate <= toDate) {
-          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = '';
-          this.conflictItems = [];
-          // check if from date conflicts any item in work orders
-          let tempItems = [];
-          // get the selected items in equipmentTable to tempItems
-          this.selectedEquipmentItemIds.forEach(itemId => {
-            tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-          })
-          // get the selected items in equipmentTable to tempItems
-          this.checkSelectedItemDateConflict(tempItems, this.conflictItems, fromDate, toDate);
-          if (this.conflictItems.length == 0) {
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-          } else {
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
-          }
-        }
-      }
-    }
-    ,
-    'selectedEquipmentToDate': function() {
-      if (this.selectedEquipmentToDate === '') {
         this.selectedEquipmentToDate = this.getToday();
-      } else {
-        let fromDate = moment(this.selectedEquipmentFromDate).valueOf();
-        let toDate = moment(this.selectedEquipmentToDate).valueOf();
-        if (fromDate > toDate) {
-          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = this.ErrorStrings.FromDateIsLargerThanToDate;
-        } else if (fromDate <= toDate){
-          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = '';
-
-          this.conflictItems = [];
-          // check if from date conflicts any item in work orders
-          let tempItems = [];
-          // get the selected items in equipmentTable to tempItems
-          this.selectedEquipmentItemIds.forEach(itemId => {
-            tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-          })
-          // get the selected items in equipmentTable to tempItems
-          this.checkSelectedItemDateConflict(tempItems, this.conflictItems, fromDate, toDate);
-          if (this.conflictItems.length == 0) {
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-          } else {
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
-          }
-        }
-      }
     },
-    'selectedEquipmentQuantity': function() {
-      if (this.selectedEquipmentQuantity === '') {
-        this.selectedEquipmentQuantity = 0;
-        this.selectedEquipmentItemIds = [];
-        this.conflictItems = [];
-        this.indeterminate = false;
-        this.checkAllItems = false;
-        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
-      } else {
-        if (this.selectedEquipment.value != '' && this.selectedEquipment.totalQuantity > 0) {
-          var currentQuantity = parseInt(this.selectedEquipmentQuantity);
-          let equipmentQuantity = parseInt(this.selectedEquipment.totalQuantity);
-          if (currentQuantity < 0) {
-            this.selectedEquipmentQuantity = 0;
-          } else if (currentQuantity > equipmentQuantity) {
-            this.selectedEquipmentQuantity = equipmentQuantity;
-          }
-
-          // if the selectedEquipmentQuantity = 0, we should display a warning to user
-          if (currentQuantity == 0) {
-            this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-            this.selectedEquipmentItemIds = [];
-            this.conflictItems = [];
-            this.indeterminate = false;
-            this.checkAllItems = false;
-          } else {
-            this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
-            this.indeterminate = true;
-            // if the selectedEquipmentQuantity is greater than selectedEquipmentItemIds.length
-            //, it means we should add the next item to selectedEquipmentItemIds
-            if (currentQuantity >= this.selectedEquipmentItemIds.length) {
-              while(this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
-                let tempItems = this.equipmentTable;
-                this.selectedEquipmentItemIds.forEach(itemId => {
-                  tempItems = tempItems.filter(item => item.Id != itemId);
-                })
-                this.selectedEquipmentItemIds.push(tempItems[0].Id);
-              }
-              if (this.selectedEquipmentItemIds.length == this.equipmentTable.length) {
-                this.indeterminate = false;
-                this.checkAllItems = true;
-              } 
-            } else if (currentQuantity < this.selectedEquipmentItemIds.length) {
-              // the code below will simply pop the last id out of the list, so if user has pick an equipment by hand (not using the number input)
-              // and then use the number input, the item is not automatically calculate to choose the best ideal one
-              // in other words, the order of item will not be the best ideal order the algorithm should give out
-              // then the user would see item unchecks in the incorrect descending order
-              // but i think we should respect the user's choice
-              while(this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
-                this.selectedEquipmentItemIds.pop();
-              }
+    methods: {
+        cancel() {
+        this.$router.push("/work_order");
+        },
+        addEquipment() {
+            if (this.selectedEquipment.value == "") {
+                this.AddEquipmentWarnings.MustSelectEquipment = this.ErrorStrings.MustSelectEquipment;
+            } 
+            if (this.validateAddEquipment()) {
+                if (this.selectedEquipment.value != "" &&
+                    this.selectedEquipment.totalQuantity > 0) {
+                    let index = this.selectedEquipments.findIndex(
+                        equipment => equipment.id == this.selectedEquipment.value
+                    );
+                    // this equipment is not yet selected, so add to the list
+                    var warningOb = JSON.stringify(this.AddEquipmentWarnings);
+                    warningOb = JSON.parse(warningOb);
+                    if (index < 0) {
+                        let equipment = {
+                        id: parseInt(this.selectedEquipment.value),
+                        name: this.selectedEquipment.text,
+                        quantity: parseInt(this.selectedEquipmentQuantity),
+                        image: this.selectedEquipment.image,
+                        totalQuantity: parseInt(
+                            this.selectedEquipment.totalQuantity
+                        ),
+                        fromDate: this.selectedEquipmentFromDate,
+                        toDate: this.selectedEquipmentToDate,
+                        equipmentItemIds: this.selectedEquipmentItemIds,
+                        editMode: false,
+                        indeterminate: this.indeterminate,
+                        checkAllItesm: this.checkAllItems,
+                        equipmentItemList: this.equipmentTable,
+                        conflictItems: this.conflictItems,
+                        addEquipmentWarnings: warningOb,
+                        };
+                        this.selectedEquipments.push(equipment);
+                    } else { // this equipment is already added to the list, so modified the quantity
+                        // TODO
+                    }
+            
+                    // reset values
+                    this.selectedEquipment = {
+                        text: "",
+                        value: "",
+                        image: "",
+                        totalQuantity: 0
+                    };
+                    this.resetEquipmentSelection();
+                    }
+                } 
+            },
+            removeEquipment(equipment) {
+            this.selectedEquipments = this.selectedEquipments.filter(
+                e => e.id != equipment.id
+            );
+            },
+            getToday() {
+            return moment().format("YYYY-MM-DD");
+            },
+            createWorkOrder() {
+            if (this.workOrderTitle === '') {
+                this.CreateWorkOrderErrors.NoTitle = this.ErrorStrings.NoTitle;
             }
+            if (this.selectedEquipments.length == 0) {
+                this.CreateWorkOrderErrors.NoEquipmentSelected = this.ErrorStrings.NoEquipmentSelected;
+            }
+            if (this.selectedLocation.value === '') {
+                this.CreateWorkOrderErrors.NoLocation = this.ErrorStrings.NoLocation;
+            }
+            if (this.selectedTeam.value === '') {
+                this.CreateWorkOrderErrors.NoTeam = this.ErrorStrings.NoTeam;
+            }
+            if (this.validateCreateOrder()) {
+                let context = this;
+                context.sending = true;
+                let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${
+                this.selectedLocation.value
+                }/${this.selectedTeam.value}`;
+                this.axios
+                .get(teamLocationApi)
+                .then(function(res) {
+                    if (res.data.Id) {
+                    let result = res.data.Id;
+                    let workOrderApi = Server.WORKORDER_API_PATH;
+        
+                    context.axios
+                        .post(workOrderApi, {
+                        name: context.workOrderTitle,
+                        description: context.workOrderDescription,
+                        requestUserId: context.authUser.Id,
+                        createDate: new Date(),
+                        priorityId: context.workOrderPriority,
+                        statusId: 1,
+                        categoryName: context.workOrderCategory,
+                        teamLocationId: result
+                        })
+                        .then(function(res) {
+                        if (res.data.NewWorkOrderId) {
+                            let newWorkOrderId = res.data.NewWorkOrderId;
+                            var check = true;
+                            context.selectedEquipments.forEach(equipment => {
+                            equipment.equipmentItemIds.forEach(async itemId => {
+                                try {
+                                const response = await context.axios
+                                .post(Server.WORKORDER_DETAIL_API_PATH, {
+                                    workOrderId: newWorkOrderId,
+                                    equipmentItemId: itemId,
+                                    startDate: equipment.fromDate,
+                                    dueDate: equipment.toDate,
+                                    maintainceCost: null,
+                                    description: null
+                                });
+                                if (response.status == 200) {
+                                    check = true;
+                                }
+                                } catch(error) {
+                                console.log(error);
+                                check = false;
+                                }
+                            })
+                            })
+                            context.sending = false;
+                            if (check) {
+                            context.$router.push('/work_order');
+                            } else {
+                            alert('Error');
+                            }                      
+                        } else {
+                            alert("No new work order id returned");
+                        }
+                        })
+                        .catch(error => {
+                        alert(
+                            "Create work order detail: " + error
+                        );
+                        });
+                    }
+                })
+                .catch(error => {
+                    alert(
+                    "Create work order: " + error
+                    );
+                });
+            }
+        },
+        validateAddEquipment() {
+        return this.AddEquipmentWarnings.MustSelectEquipment === '' && this.AddEquipmentWarnings.FromDateIsLargerThanToDate === ''
+                && this.AddEquipmentWarnings.AvailableQuantityIsZero === '' && this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero === '';
+        },
+        validateCreateOrder() {      
+        var checkSelectedItems = true; // check if currently there is no error messages of items are displaying
+        for (var i = 0; i < this.selectedEquipments.length; i++) {
+            let selectedEquipment = this.selectedEquipments[i];
+            if (selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != '' 
+                || selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate != '') {
+            checkSelectedItems = false;
+            break;
+            }
+        }
+        return this.CreateWorkOrderErrors.NoTitle === '' && this.CreateWorkOrderErrors.NoEquipmentSelected === ''
+                && this.CreateWorkOrderErrors.NoLocation === '' && this.CreateWorkOrderErrors.NoTeam === ''
+                && checkSelectedItems;
+        },
+        getMilis(date) {
+            return moment(date).valueOf();
+        },
+        getDate(date) {
+            return moment(date).format("L");
+        },
+        myconsole(obj) {
+            console.log(obj);
+        },
+        checkItemFromTable(equipmentItemId) {
+            this.indeterminate = true;
+            this.checkAllItems = false;
+            // if selectedEquipmentItemIds already has equipmentItemId, we decrease the selectedEquipmentQuantity, then remove the equipmentItemId from the selectedEquipmentItemIds
+            if (this.selectedEquipmentItemIds.includes(equipmentItemId)) {
+                this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) - 1;
+                this.selectedEquipmentItemIds = this.selectedEquipmentItemIds.filter(itemId => itemId != equipmentItemId);
+                if (this.selectedEquipmentItemIds.length == 0) {
+                this.indeterminate = false;
+                this.checkAllItems = false;
+                this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
+                }
+            } 
+            else {
+                this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
+                this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) + 1;
+                this.selectedEquipmentItemIds.push(equipmentItemId);
+                if (this.selectedEquipmentItemIds.length == this.equipmentTable.length) {
+                    this.indeterminate = false;
+                    this.checkAllItems = true;
+                }
+            }
+            
             this.conflictItems = [];
             // check if from date conflicts any item in work orders
             let tempItems = [];
             // get the selected items in equipmentTable to tempItems
             this.selectedEquipmentItemIds.forEach(itemId => {
-              tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
+                tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
             })
             // get the selected items in equipmentTable to tempItems
             this.checkSelectedItemDateConflict(tempItems, this.conflictItems, 
-                          this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
+                            this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
             if (this.conflictItems.length == 0) {
-              this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
             } else {
-              this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
+                this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
             }
-          }          
+        },
+        handleCheckAllItems() {
+            if (this.indeterminate) {
+                this.checkAllItems = false;
+            } else {
+                this.checkAllItems = !this.checkAllItems;
+            }
+
+            this.indeterminate = false;
+            if (this.checkAllItems) {
+                this.selectedEquipmentItemIds = [];
+                this.equipmentTable.forEach(item => this.selectedEquipmentItemIds.push(item.Id));
+                this.selectedEquipmentQuantity = this.equipmentTable.length;
+
+                this.conflictItems = [];
+                // check if from date conflicts any item in work orders
+                let tempItems = [];
+                this.selectedEquipmentItemIds.forEach(itemId => {
+                tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
+                })
+                // get the selected items in equipmentTable to tempItems
+                this.checkSelectedItemDateConflict(tempItems, this.conflictItems, 
+                                this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentTODate));
+                if (this.conflictItems.length == 0) {
+                    this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                } else {
+                    this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
+                }
+            } else {
+                this.selectedEquipmentItemIds = [];
+                this.selectedEquipmentQuantity = 0;
+                this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
+            }
+        },
+        resetEquipmentSelection() {
+            this.equipmentTable = [];
+            this.indeterminate = false;
+            this.checkAllItems = false;
+
+            this.selectedEquipmentItemIds = [];
+            this.selectedEquipmentQuantity = 0;
+            this.selectedEquipmentFromDate = this.getToday();
+            this.selectedEquipmentToDate = this.getToday();
+
+            this.conflictItems = [];
+            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+        },
+        isItemConflicted(itemId, workOrderId, conflictItems) {
+        for (var i = 0; i < conflictItems.length; i++) {
+            let item = conflictItems[i];
+            if (item.itemId == itemId && item.workOrderId == workOrderId) {
+                return true;
+            }
         }
-      }
+        return false;
+        },
+        checkSelectedItemDateConflict(items, conflictItems, fromDate, toDate) {
+            items.forEach(item => {
+                if (item.WorkOrders) {
+                    item.WorkOrders.forEach(order => {
+                        let itemFromDate = this.getMilis(order.Detail.StartDate);
+                        let itemToDate = this.getMilis(order.Detail.FinishedDate);
+                        if ((fromDate >= itemFromDate && fromDate <= itemToDate)  
+                            || (toDate >= itemFromDate && toDate <= itemToDate)
+                            || (fromDate < itemFromDate && fromDate < itemToDate && toDate > itemFromDate && toDate > itemToDate)) {
+                            conflictItems.push({itemId: item.Id, workOrderId: order.Id});
+                        }
+                    })
+                }
+            });          
+        },
     },
-    'selectedTeam': function() {
-      if (this.selectedTeam.value != '' && this.CreateWorkOrderErrors.NoTeam != '') {
-        this.CreateWorkOrderErrors.NoTeam = '';
-      }
+    watch: {
+        'workOrderTitle': function() {
+            if (this.workOrderTitle != '' && this.CreateWorkOrderErrors.NoTitle != '') {
+                this.CreateWorkOrderErrors.NoTitle = '';
+            }
+        },
+        'selectedEquipment': function() {
+            // selecte another equipment
+            if (this.selectedEquipment.value != '') {
+                this.resetEquipmentSelection(); // reset after selected another equipment 
+                if (this.AddEquipmentWarnings.MustSelectEquipment != '') { // error 'Must select equipment' displaying
+                    this.AddEquipmentWarnings.MustSelectEquipment = '';
+                }
+                // check if selected equipment has equipment item(s)
+                if (this.selectedEquipment.totalQuantity == 0) {
+                    this.AddEquipmentWarnings.AvailableQuantityIsZero = this.ErrorStrings.AvailableQuantityIsZero;
+                } else {
+                    this.AddEquipmentWarnings.AvailableQuantityIsZero = ''; // set warning to empty text         
+
+                    // get all the equipment items with work order detail info (if available)
+                    let url = `${Server.WORKORDER_API_PATH}/get_equipment_detail/${this.selectedEquipment.value}`;
+                    this.axios.get(url)
+                        .then((res) => {
+                        if (res.status == 200 && res.data) {
+                            this.equipmentTable = res.data;
+                            this.selectedEquipmentItemIds.push(res.data[0].Id);
+                            this.selectedEquipmentQuantity = 1;
+                            this.indeterminate = true;
+                            this.selectedEquipmentFromDate = this.getToday();
+                            this.selectedEquipmentToDate = this.getToday();
+                        }
+                    })
+                }
+            }
+        },
+        'selectedEquipments': function() {
+            if (this.selectedEquipments.length > 0) {
+                this.CreateWorkOrderErrors.NoEquipmentSelected = '';
+            }
+        },
+        'selectedLocation': function() {
+            this.teamOptions = [];
+            this.selectedTeam = {
+                text: "",
+                value: ""
+            };
+            if (this.selectedLocation.value != '') {
+                if (this.CreateWorkOrderErrors.NoLocation != '') {
+                    this.CreateWorkOrderErrors.NoLocation = '';
+                }
+                // alert('in 2')
+                let url = `${Server.LOCATION_API_PATH}/${
+                this.selectedLocation.value
+                }/team/${this.authUser.Id}`;
+                this.axios.get(url).then(res => {
+                    if (res.data) {
+                        let data = res.data;
+                        data.forEach(element => {
+                        let option = {
+                            value: element.Team.Id,
+                            text: element.Team.Name
+                        };
+                        this.teamOptions.push(option);
+                        });
+                    }
+                });
+            }
+        },
+        'selectedEquipmentFromDate': function() {
+        if (this.selectedEquipmentFromDate === '') {
+            this.selectedEquipmentFromDate = this.getToday();
+        } else {
+            let fromDate = this.getMilis(this.selectedEquipmentFromDate);
+            let toDate = this.getMilis(this.selectedEquipmentToDate);
+            if (fromDate > toDate) {
+                this.AddEquipmentWarnings.FromDateIsLargerThanToDate = this.ErrorStrings.FromDateIsLargerThanToDate;
+            } 
+            else if (fromDate <= toDate) {
+                this.AddEquipmentWarnings.FromDateIsLargerThanToDate = '';
+                this.conflictItems = [];
+                // check if from date conflicts any item in work orders
+                let tempItems = [];
+                // get the selected items in equipmentTable to tempItems
+                this.selectedEquipmentItemIds.forEach(itemId => {
+                    tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
+                })
+                // get the selected items in equipmentTable to tempItems
+                this.checkSelectedItemDateConflict(tempItems, this.conflictItems, fromDate, toDate);
+                if (this.conflictItems.length == 0) {
+                    this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                } else {
+                    this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
+                }
+            }
+        }
+        }
+        ,
+        'selectedEquipmentToDate': function() {
+        if (this.selectedEquipmentToDate === '') {
+            this.selectedEquipmentToDate = this.getToday();
+        } else {
+            let fromDate = moment(this.selectedEquipmentFromDate).valueOf();
+            let toDate = moment(this.selectedEquipmentToDate).valueOf();
+            if (fromDate > toDate) {
+                this.AddEquipmentWarnings.FromDateIsLargerThanToDate = this.ErrorStrings.FromDateIsLargerThanToDate;
+            } 
+            else if (fromDate <= toDate) {
+                this.AddEquipmentWarnings.FromDateIsLargerThanToDate = '';
+
+                this.conflictItems = [];
+                // check if from date conflicts any item in work orders
+                let tempItems = [];
+                // get the selected items in equipmentTable to tempItems
+                this.selectedEquipmentItemIds.forEach(itemId => {
+                    tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
+                })
+                // get the selected items in equipmentTable to tempItems
+                this.checkSelectedItemDateConflict(tempItems, this.conflictItems, fromDate, toDate);
+                if (this.conflictItems.length == 0) {
+                    this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                } else {
+                    this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
+                }
+            }
+        }
+        },
+        'selectedEquipmentQuantity': function() {
+            if (this.selectedEquipmentQuantity === '') {
+                this.selectedEquipmentQuantity = 0;
+                this.selectedEquipmentItemIds = [];
+                this.conflictItems = [];
+                this.indeterminate = false;
+                this.checkAllItems = false;
+                this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
+            } else {
+                if (this.selectedEquipment.value != '' && this.selectedEquipment.totalQuantity > 0) {
+                    var currentQuantity = parseInt(this.selectedEquipmentQuantity);
+                    let equipmentQuantity = parseInt(this.selectedEquipment.totalQuantity);
+                    if (currentQuantity < 0) {
+                        this.selectedEquipmentQuantity = 0;
+                    } else if (currentQuantity > equipmentQuantity) {
+                        this.selectedEquipmentQuantity = equipmentQuantity;
+                    }
+
+                    // if the selectedEquipmentQuantity = 0, we should display a warning to user
+                    if (currentQuantity == 0) {
+                        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
+                        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                        this.selectedEquipmentItemIds = [];
+                        this.conflictItems = [];
+                        this.indeterminate = false;
+                        this.checkAllItems = false;
+                    } else {
+                        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
+                        this.indeterminate = true;
+                        // if the selectedEquipmentQuantity is greater than selectedEquipmentItemIds.length
+                        //, it means we should add the next item to selectedEquipmentItemIds
+                        if (currentQuantity >= this.selectedEquipmentItemIds.length) {
+                            while(this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
+                                let tempItems = this.equipmentTable;
+                                this.selectedEquipmentItemIds.forEach(itemId => {
+                                tempItems = tempItems.filter(item => item.Id != itemId);
+                                })
+                                this.selectedEquipmentItemIds.push(tempItems[0].Id);
+                            }
+                            if (this.selectedEquipmentItemIds.length == this.equipmentTable.length) {
+                                this.indeterminate = false;
+                                this.checkAllItems = true;
+                            } 
+                        } else if (currentQuantity < this.selectedEquipmentItemIds.length) {
+                        // the code below will simply pop the last id out of the list, so if user has pick an equipment by hand (not using the number input)
+                        // and then use the number input, the item is not automatically calculate to choose the best ideal one
+                        // in other words, the order of item will not be the best ideal order the algorithm should give out
+                        // then the user would see item unchecks in the incorrect descending order
+                        // but i think we should respect the user's choice
+                        while(this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
+                                this.selectedEquipmentItemIds.pop();
+                            }
+                        }
+                        this.conflictItems = [];
+                        // check if from date conflicts any item in work orders
+                        let tempItems = [];
+                        // get the selected items in equipmentTable to tempItems
+                        this.selectedEquipmentItemIds.forEach(itemId => {
+                            tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
+                        })
+                        // get the selected items in equipmentTable to tempItems
+                        this.checkSelectedItemDateConflict(tempItems, this.conflictItems, 
+                                    this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
+                        if (this.conflictItems.length == 0) {
+                            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                        } else {
+                            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
+                        }
+                    }          
+                }
+            }
+        },
+        'selectedTeam': function() {
+            if (this.selectedTeam.value != '' && this.CreateWorkOrderErrors.NoTeam != '') {
+                this.CreateWorkOrderErrors.NoTeam = '';
+            }
+        }
     }
-  }
 };
 </script>
 
