@@ -144,10 +144,10 @@ export default {
     return {
          sending: false,
       ErrorStrings: {
-        NoBusinessName: 'You must provide username for this account',
-        NoBusinessAddress: 'You must provide password for this account',
-        NoContactName: 'You must provide full name for this account',
-        NoEmail: 'You must provide email name for this account'
+        NoBusinessName: 'You must provide business name for this vendor',
+        NoBusinessAddress: 'You must provide business address for this vendor',
+        NoContactName: 'You must provide contact name for this vendor',
+        NoEmail: 'You must provide contact email for this vendor'
        
 
       },

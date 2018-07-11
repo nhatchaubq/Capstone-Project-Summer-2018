@@ -12,7 +12,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Team's name (required)</strong>
+                    <strong>  Team's name (required)</strong><span v-if="CreateTeamErrors.NoTeamName != ''">. <span class="error-text">{{ CreateTeamErrors.NoTeamName }}</span></span>
                     </div>
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
                         <input v-model="team.name" class="input " type="text" placeholder="Text input" >
@@ -32,7 +32,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                      <strong>Create date (required)</strong>  
+                      <strong>Create date (required)</strong><span v-if="CreateTeamErrors.NoCreateDate != ''">. <span class="error-text">{{ CreateTeamErrors.NoCreateDate }}</span></span>  
                     </div>
                     <div class="form-field-input">
                         <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -100,6 +100,16 @@ import Server from "@/config/config.js";
 export default {
   data() {
     return {
+       sending: false,
+      ErrorStrings: {
+        NoTeamName: 'You must provide name for this team',
+        NoCreateDate: 'You must provide create date for this team',
+      },
+      CreateTeamErrors: {
+        NoTeamName: '',
+        NoCreateDate: '',
+
+      },
       team: {
         name: "",
         createdDate: ""
@@ -127,6 +137,13 @@ export default {
   },
   methods: {
     createTeam() {
+      if(this.team.name === ''){
+            this.CreateTeamErrors.NoTeamName = this.ErrorStrings.NoTeamName;
+        }
+        if(this.team.createdDate === ''){
+            this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
+        }
+         if(this.validateTeam())
       this.axios
         .post("http://localhost:3000/api/team", {
           team: this.team
@@ -147,6 +164,11 @@ export default {
           this.$router.push("/team");
         });
     },
+       validateTeam() {      
+      return this.CreateTeamErrors.NoTeamName === '' && this.CreateVendorErrors.CreateTeamErrors.NoCreateDate === ''
+            
+              
+    },
     removeSelectedAccount(tmpAccount) {
       this.selectedAccounts = this.selectedAccounts.filter(
         account => account.Id != tmpAccount.Id
@@ -159,7 +181,7 @@ export default {
       if (this.selectedAccounts.length == 0) {
         this.accounts = this.tempAccounts;
       }
-    }
+    },
   },
   watch: {
     selectedAccount: function() {
@@ -173,7 +195,17 @@ export default {
         this.selectedAccounts.push(this.selectedAccount);
         this.selectedAccount = null;
       }
-    }
+    },
+    "team.name": function(){
+      if(this.team.name != ''){
+        this.CreateTeamErrors.NoTeamName = ''
+      }
+    },
+      'team.createdDate': function(){
+      if(this.team.createdDate != ''){
+        this.CreateTeamErrors.NoCreateDate = ''
+      } 
+    },
   }
 };
 </script>
