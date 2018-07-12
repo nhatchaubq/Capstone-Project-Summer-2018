@@ -32,7 +32,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>   Password (required)</strong> <span v-if="CreateAccountErrors.NoPassword != ''">. <span class="error-text">{{ CreateAccountErrors.NoPassword }}</span></span><span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">.{{ CreateAccountErrors.WeakAccount }}</span></span>
+                    <strong>   Password (required)</strong> <span v-if="CreateAccountErrors.NoPassword != ''"> <span class="error-text">{{ CreateAccountErrors.NoPassword }}</span></span><span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">.{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">.{{ CreateAccountErrors.MaxPassword }}</span></span>
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
                         <input v-model="account.password" class="input " type="password" placeholder="Text input" name="password" id="password">
                             <span class="icon is-small is-left">
@@ -238,35 +238,34 @@ export default {
 
   data() {
     return {
-         sending: false,
+      sending: false,
       ErrorStrings: {
-        NoUsername: 'You must provide username for this account',
-        NoPassword: 'You must provide password for this account',
-        NoFullname: 'You must provide full name for this account',
-        NoPhone: 'You must provide phone number for this account',
-        NoEmail: 'You must provide email name for this account',
-        NoRole: 'You must provide role for this account',
+        NoUsername: "You must provide username for this account",
+        NoPassword: "You must provide password for this account",
+        NoFullname: "You must provide full name for this account",
+        NoPhone: "You must provide phone number for this account",
+        NoEmail: "You must provide email name for this account",
+        NoRole: "You must provide role for this account",
 
-        WeakAccount: 'Minimum password length is 6 characters',
-
-
-
+        WeakAccount: "Minimum password length is 6 characters",
+        MaxPassword: "Maximum password length is 20 characters"
       },
       CreateAccountErrors: {
-        NoUsername: '',
-        NoPassword: '',
-        NoFullname: '',
-        NoPhone: '',
-        NoEmail: '',
-        NoRole: '',
+        NoUsername: "",
+        NoPassword: "",
+        NoFullname: "",
+        NoPhone: "",
+        NoEmail: "",
+        NoRole: "",
 
-        WeakAccount: '',
+        WeakAccount: "",
+        MaxPassword: ""
       },
       account: {
         username: "",
         password: "",
         fullname: "",
-        phone: '',
+        phone: "",
         email: "",
         startdate: "",
         roleid: null
@@ -276,82 +275,92 @@ export default {
   },
   methods: {
     createAccount1() {
-
-        if(this.account.username === ''){
-            this.CreateAccountErrors.NoUsername = this.ErrorStrings.NoUsername;
-        }
-        if(this.account.password === ''){
-            this.CreateAccountErrors.NoPassword = this.ErrorStrings.NoPassword;
-        } 
-        if(this.account.password.length < 6){
-            this.CreateAccountErrors.WeakAccount = this.ErrorStrings.WeakAccount;
-        }
-        if(this.account.fullname === ''){
-            this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
-        }
-        if(this.account.phone === ''){
-            this.CreateAccountErrors.NoPhone = this.ErrorStrings.NoPhone;
-        }
-        if(this.account.email === ''){
-            this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
-        }
-        if(!this.account.roleid  || this.account.roleid == ''){
-            this.CreateAccountErrors.NoRole = this.ErrorStrings.NoRole;
-        }
-        if(this.validateAccount()){
-            this.axios
-                .post("http://localhost:3000/api/account", {
-                account: this.account
-                })
-                .then(res => {
-                this.$router.push("/account");
-                });
-        }
+      if (this.account.username === "") {
+        this.CreateAccountErrors.NoUsername = this.ErrorStrings.NoUsername;
+      }
+      if (this.account.password === "") {
+        this.CreateAccountErrors.NoPassword = this.ErrorStrings.NoPassword;
+      }
+      if (this.account.password.length < 6) {
+        this.CreateAccountErrors.WeakAccount = this.ErrorStrings.WeakAccount;
+      }
+      if (this.account.password.length > 20) {
+        this.CreateAccountErrors.MaxPassword = this.ErrorStrings.MaxPassword;
+      }
+      if (this.account.fullname === "") {
+        this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
+      }
+      if (this.account.phone === "") {
+        this.CreateAccountErrors.NoPhone = this.ErrorStrings.NoPhone;
+      }
+      if (this.account.email === "") {
+        this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+      if (!this.account.roleid || this.account.roleid == "") {
+        this.CreateAccountErrors.NoRole = this.ErrorStrings.NoRole;
+      }
+      if (this.validateAccount()) {
+        this.axios
+          .post("http://localhost:3000/api/account", {
+            account: this.account
+          })
+          .then(res => {
+            this.$router.push("/account");
+          });
+      }
     },
- validateAccount() {      
-      return this.CreateAccountErrors.NoUsername === '' && this.CreateAccountErrors.NoPassword === ''
-              && this.CreateAccountErrors.NoFullname === '' && this.CreateAccountErrors.NoPhone === ''
-              && this.CreateAccountErrors.NoEmail === '' && this.CreateAccountErrors.NoRole === '' && this.CreateAccountErrors.WeakAccount === ''
-    },
+    validateAccount() {
+      return (
+        this.CreateAccountErrors.NoUsername === "" &&
+        this.CreateAccountErrors.NoPassword === "" &&
+        this.CreateAccountErrors.NoFullname === "" &&
+        this.CreateAccountErrors.NoPhone === "" &&
+        this.CreateAccountErrors.NoEmail === "" &&
+        this.CreateAccountErrors.NoRole === "" &&
+        this.CreateAccountErrors.WeakAccount === "" &&
+        this.CreateAccountErrors.MaxPassword === ""
+      );
+    }
   },
-  watch:{
-      "account.username": function(){
-          if(this.account.username != ''){
-              this.CreateAccountErrors.NoUsername = ''
-          }
-      },
-      'account.password': function(){
-          if(this.account.password != '' ){
-              this.CreateAccountErrors.NoPassword = ''
-          }
-           if(this.account.password.length >5){
-            this.CreateAccountErrors.WeakAccount = ''
-          }
-      },
-      'account.fullname': function(){
-          if(this.account.fullname != ''){
-              this.CreateAccountErrors.NoFullname = ''
-          }
-      },
-      'account.phone': function(){
-          if(this.account.phone != ''){
-              this.CreateAccountErrors.NoPhone = ''
-          }
-      },
-      'account.email': function(){
-          if(this.account.email != ''){
-              this.CreateAccountErrors.NoEmail = ''
-          }
-      },
-      'account.roleid': function(){
-          if(this.account.roleid && this.account.roleid != ''){
-              this.CreateAccountErrors.NoRole = ''
-          }
-      },
-      
+  watch: {
+    "account.username": function() {
+      if (this.account.username != "") {
+        this.CreateAccountErrors.NoUsername = "";
+      }
+    },
+    "account.password": function() {
+      if (this.account.password != "") {
+        this.CreateAccountErrors.NoPassword = "";
+      }
+      if (this.account.password.length > 5) {
+        this.CreateAccountErrors.WeakAccount = "";
+      }
+      if (this.account.password.length < 21) {
+        this.CreateAccountErrors.MaxPassword = "";
+      }
+    },
+    "account.fullname": function() {
+      if (this.account.fullname != "") {
+        this.CreateAccountErrors.NoFullname = "";
+      }
+    },
+    "account.phone": function() {
+      if (this.account.phone != "") {
+        this.CreateAccountErrors.NoPhone = "";
+      }
+    },
+    "account.email": function() {
+      if (this.account.email != "") {
+        this.CreateAccountErrors.NoEmail = "";
+      }
+    },
+    "account.roleid": function() {
+      if (this.account.roleid && this.account.roleid != "") {
+        this.CreateAccountErrors.NoRole = "";
+      }
+    }
   }
 };
-     
 </script>
 
 <style scoped>
