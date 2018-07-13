@@ -5,16 +5,17 @@
             Add New Location
           </div>
           <div class="form-title-end">              
-                <button id="" class="button is-rounded is-primary" style="margin-right: .6rem" v-on:click="createLocation()">Create New Location</button>
-                <button id="" class="button is-rounded"  v-on:click="$router.push('/location')">Cancel</button>
+                
+                <button id="" class="button" style="margin-right: .6rem"  v-on:click="$router.push('/location')">Cancel</button>
+                <button id="" class="button is-primary"  v-on:click="createLocation()">Create New Location</button>
           </div>  
         </div>
-        <div class="form-input" >   
+        <div class="form-content" >   
             <div class="form-field" style="padding-top:1.5rem">
                 <div class="form-field-title">
                     Name of location (required)
                 </div>
-                <div>
+                <div class="form-field-input">
                     <input v-model="newLocation.name" type="text" class="input">
                 </div>
             </div>
@@ -22,22 +23,18 @@
                 <div class="form-field-title">
                     Address (required)
                 </div>
-                <div>
-                  
-                    <div>
-                    
-                    <label class="ggSearch" style="width: 100%">
-                      <gmap-autocomplete  class="input" 
-                        @place_changed="setPlace">
-                      </gmap-autocomplete>
-                      <!-- <button  id="clear-btn" v-if="currentPlace" v-on:click="() => {}">
-                        <i class="material-icons">close</i>
-                      </button> -->
-                      <!-- <button @click="addMarker" class="btn" style="position: relative; bottom: 8px;">Check</button> -->
-                    </label>
-                    <br/>
-
-                  </div>
+                <div class="form-field-input">                  
+                    <div>                    
+                      <label class="ggSearch" style="width: 100%">
+                        <gmap-autocomplete  class="input" 
+                          @place_changed="setPlace">
+                        </gmap-autocomplete>
+                        <!-- <button  id="clear-btn" v-if="currentPlace" v-on:click="() => {}">
+                          <i class="material-icons">close</i>
+                        </button> -->
+                        <!-- <button @click="addMarker" class="btn" style="position: relative; bottom: 8px;">Check</button> -->
+                      </label>                   
+                    </div>
                   <br>
                   <gmap-map
                     :center="marker?  marker : center"
@@ -49,15 +46,14 @@
                       :position="marker"
                       
                     ></gmap-marker>
-                  </gmap-map>
-                
+                  </gmap-map>                
                 </div>
             </div>
             <div class="form-field">
                 <div class="form-field-title">
                     Description
                 </div>
-                <div >
+                <div class="form-field-input">
                     <!-- <input type="text" class="input" > -->
                     <textarea id="text-descrip" v-model="newLocation.description"  cols="80" rows="10"></textarea>
                 </div>
@@ -66,7 +62,7 @@
                 <div class="form-field-title">
                     Team
                 </div>
-                <div class="select" style="width: 100% !important" >
+                <div class="select form-field-input" style="width: 100% !important" >
                     <select v-model="selectedTeam" style="width:100%">
                         <option :disabled="selectedTeams.length > 0" value=null> --Choose new team</option>
                         <!-- <option :disabled="selectedTeams.length > 0" v- value="null">Not now</option> -->
@@ -257,40 +253,47 @@ export default {
 
   color: red;
 } */
+
 .form {
   background-color: white;
   padding: 0 !important;
   grid-template-columns: 20% 20% 60%;
 }
+.form-content {
+  font-size: 0.9rem;
+  position: fixed;
+  max-height: 82.5%;
+  width: 82%;
+  overflow-y: auto;
+
+  /* display: flex;
+        flex-direction: column;  */
+}
+
+.form-field {
+  /* margin-bottom: 5px; */
+  width: 100%;
+  padding: 1rem 2rem;
+}
+
 .form-title {
   display: grid;
-  grid-template-columns: 73% auto;
-  border-bottom: 0.02px solid;
-
-  height: 50px;
-  line-height: 50px;
-  padding-left: 30px;
-  top: 10px;
-  /* font-weight: bold; */
-  font-size: 20px;
-  color: #616161;
+  grid-template-columns: 65% 35%;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem 2rem;
 }
-/* .form-title-start {
+.form-title-start {
   position: relative;
   top: 10px;
   font-weight: bold;
   font-size: 20px;
   color: #616161;
-} */
+}
 .form-title-end {
-  /* width: 100%; */
-  /* display: flex;
-  justify-content: flex-end; */
-
-  /* bottom: 20px; */
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
   /* align-content: center; */
-  position: relative;
-  top: 0.5rem;
 }
 .form-input {
   padding-left: 50px;
