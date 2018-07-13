@@ -91,7 +91,7 @@ router.post("/", (request, response) => {
 router.put("/:id", function (request, response) {
   request
     .sql(
-      "UPDATE [Equipment] set Name = @name, VendorID = @vendorid, Image=@image, MadeIn=@madein, Description=@description, CategoryID=@categoryid where Id = @id"
+      "UPDATE [Equipment] set Name = @name, VendorID = @vendorid, Image=@image, MadeIn=@madein, Description=@description, CategoryID=@categoryid, UnitID=@unitid where Id = @id"
     )
     .param("id", request.params.id, TYPES.Int)
     .param("name", request.body.name, TYPES.NVarChar)
@@ -100,6 +100,7 @@ router.put("/:id", function (request, response) {
     .param("madein", request.body.madein, TYPES.NVarChar)
     .param("categoryid", request.body.categoryid, TYPES.Int)
     .param("description", request.body.description, TYPES.NVarChar)
+    .param("unitid", request.body.unitid, TYPES.Int)
     .exec(response);
 });
 
