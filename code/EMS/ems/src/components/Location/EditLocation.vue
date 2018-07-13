@@ -1,14 +1,13 @@
 <template>
 
-    <div v-if="location">
+    <div v-if="location" class="form">
         <div class="form-title">          
             <div class="form-title-start">
                Edit Location 
             </div>
-            <div class="form-title-end">
-              <button id="" class="button is-rounded is-primary" style="margin-right: .6rem" v-on:click="updateLocation()">Save Changes</button>
-              <button id="" class="button is-rounded"  v-on:click="$router.push('/location')">Cancel</button>
-              
+            <div class="form-title-end">              
+              <button  class="button" style="margin-right: .6rem"  v-on:click="$router.push('/location')">Cancel</button>
+              <button  class="button is-primary"  v-on:click="updateLocation()">Save Changes</button>              
             </div>
         </div>
        
@@ -35,7 +34,7 @@
                 <strong> New Description </strong>
                 </div>
                 <div>
-                    <textarea v-model="location.Description" cols="100" rows="10" >  </textarea>                              
+                    <textarea v-model="location.Description" cols="100" rows="6" >  </textarea>                              
                 </div>
             </div> 
             <div class="field">
