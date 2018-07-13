@@ -36,25 +36,29 @@ router.get("/:id", (req, res) => {
 });
 /* GET AN ITEM of an Equipment */
 router.get("/Item/:id", (request, response) => {
-  request
-    .sql(
-      "select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
-        "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, (select wo.* " +
-        "from WorkOrder as wo " +
-        "where wo.StatusID < 5 and wo.Id in (select wod.WorkOrderID " +
-        "from WorkOrderDetail as wod " +
-        "where wod.EquipmentItemID = (select ei.Id as [EquipmentItemId] " +
-        "from EquipmentItem as ei " +
-        "where ei.Id = @id)) " +
-        "for json path) as [WorkOrders] " +
-        "from EquipmentItem as ei " +
-        "JOIN EquipmentStatus as es on es.Id = ei.StatusId " +
-        "where ei.Id = @id for json path, without_array_wrapper)) " +
-        ") as [Item] " +
-        "for json path, without_array_wrapper"
-    )
-    .param("id", request.params.id, TYPES.Int)
-    .into(response);
+
+    request
+        .sql("select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
+            "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, tile.Name as [Tile] , floor.Name as [FLoor] , block.Name as [Block], loca.Name as [Location], loca.Address as [Address] ,(select wo.* " +
+            "from WorkOrder as wo " +
+            "where wo.StatusID < 5 and wo.Id in (select wod.WorkOrderID " +
+            "from WorkOrderDetail as wod " +
+            "where wod.EquipmentItemID = (select ei.Id as [EquipmentItemId] " +
+            "from EquipmentItem as ei " +
+            "where ei.Id = @id)) " +
+            "for json path) as [WorkOrders] " +
+            "from EquipmentItem as ei " +
+            "JOIN EquipmentStatus as es on es.Id = ei.StatusId " +
+            "JOIN Tile as tile on tile.Id = ei.TileID " +
+            "JOIN Floor as floor on floor.Id = tile.FloorID " +
+            "JOIN Block as block on block.Id = floor.BlockID " +
+            "JOIN Location as loca on loca.Id = block.LocationID " +
+            "where ei.Id = @id for json path, without_array_wrapper)) " +
+            ") as [Item] " +
+            "for json path, without_array_wrapper")
+        .param("id", request.params.id, TYPES.Int)
+        .into(response);
+
 });
 
 /* GET all Work Order of an Item */
@@ -106,6 +110,43 @@ router.get("/:id/getByLocationId", (request, response) => {
     .into(response);
 });
 
+router.get("/getByEquipmentId/:id", (request, response) => {
+
+    request
+        .sql("select distinct e.*, (select ei.* "
+            + " from EquipmentItem as ei join Tile as t on ei.TileID = t.Id  "
+            + "                          join [Floor] as f on t.FloorID = f.Id "
+            + "                          join [Block] as b on f.BlockID = b.Id "
+            + " where b.LocationID = @locationId and ei.EquipmentId =  [LocationEquipment].Id for JSON path) as [EquipmentItems] "
+            + " from Equipment as e, (select eqt.Id as [Id] "
+            + "            from EquipmentItem as ei join Tile as t on ei.TileID = t.Id  "
+            + "                          join [Floor] as f on t.FloorID = f.Id "
+            + "                          join [Block] as b on f.BlockID = b.Id "
+            + "                                    join Equipment as eqt on eqt.Id = ei.EquipmentID "
+                                               + "            where b.LocationID = @locationId) as [LocationEquipment] "
+                                               + " where e.Id = [LocationEquipment].Id "
+                                               + " for json path") 
+        .param("locationId", request.params.id, TYPES.Int)
+        .into(response);
+});
+
+router.get("/oldstt/:id", (request, response) => {
+    request
+        .sql("select StatusId from EquipmentItem where Id = @id for json path, without_array_wrapper")
+        .param("id", request.params.id, TYPES.Int)
+        .into(response);
+});
+
+/*Update Item TileID to Null when stt = lost*/
+router.put("/tileId/:id", (req, res) => {
+    req
+        .sql(
+            "update EquipmentItem set TileID = NULL where EquipmentItem.Id = @id; ")
+        .param("id", req.params.id, TYPES.Int)
+        .exec(res);
+});
+
+
 router.put("/status/:id", (req, res) => {
   req
     .sql(
@@ -145,6 +186,7 @@ router.put("/:eid", (req, res) => {
 });
 
 /* GET AN ITEM of an Equipment */
+
 router.get("/Item/:id", (request, response) => {
   request
     .sql("exec GetAnItem @id")
