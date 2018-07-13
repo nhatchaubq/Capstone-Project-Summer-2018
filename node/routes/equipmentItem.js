@@ -38,7 +38,8 @@ router.get("/:id", (req, res) => {
 router.get("/Item/:id", (request, response) => {
     request
         .sql("select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
-            "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, tile.Name as [Tile] , floor.Name as [FLoor] , block.Name as [Block], loca.Name as [Location], loca.Address as [Address] ,(select wo.* " +
+            "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, tile.Name as [Tile], tile.Id as [TileID] , floor.Name as [FLoor] , floor.Id as [FloorID], " +
+            "block.Name as [Block], block.Id as [BlockID], loca.Name as [Location], loca.Id as [LocationID], loca.Address as [Address] ,(select wo.* " +
             "from WorkOrder as wo " +
             "where wo.StatusID < 5 and wo.Id in (select wod.WorkOrderID " +
             "from WorkOrderDetail as wod " +
