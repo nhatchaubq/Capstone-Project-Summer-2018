@@ -229,6 +229,7 @@ export default {
     };
   },
   methods: {
+
     isActive(locationId) {
       if (this.selectedLocation && locationId != this.selectedLocation.Id) {
         return "is-active-block";
@@ -236,6 +237,8 @@ export default {
         return "";
       }
     },
+
+
     setSelectedLocation(location) {
       // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
       // this.axios.get(url)
@@ -302,18 +305,6 @@ export default {
           console.log(error);
         });
     }
-    // chaubqn - start
-    // getLocationBlockFloorTile(locationId) {
-    //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
-    //   this.axios.get(url)
-    //     .then((res) => {
-    //       this.mapViewSelectedLocation = res.data;
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     })
-    // }
-    // chaubqn - end
   },
   created() {
     this.axios

@@ -14,14 +14,18 @@
         <div class="form-content">
             <div class="form-field is-horizonal">
                 <div class="form-field-title">Category: </div>
-                <label class="radio" :key="'category' + category.Id" v-for="category in categories" style="margin-right: 1rem;">
+                <!-- <label class="radio" :key="'category' + category.Id" v-for="category in categories" style="margin-right: 1rem;">
                     <input required type="radio" name="category" 
                     :disabled="authUser.RoleID == 6 && category.Name != 'Maintain'
                               || authUser.RoleID == 5 && category.Name != 'Working'"
                     :checked="authUser.RoleID == 6 && category.Name == 'Maintain' 
                               || authUser.RoleID == 5 && category.Name == 'Working'">
                     {{ category.Name }}
-                </label>
+                </label> -->
+                <RadioGroup v-model="workOrderCategory" type="button" style="user-select: none">
+                  <Radio :disabled="authUser.Role != 'Staff'" label="Working"></Radio>
+                  <Radio :disabled="authUser.Role != 'Maintainer'" label="Maintain"></Radio>
+                </RadioGroup>
             </div>
             <div class="form-field is-horizonal">
                 <div class="form-field-title" style="margin-right: 1rem">Priority:</div> 
@@ -60,12 +64,14 @@
                     </div>
                     <div class="form-field-input">
                         <model-select :style="CreateWorkOrderErrors.NoTeam != '' ?
-                                   'border: 1px solid var(--danger-color)' : ''" :options="teamOptions" v-model="selectedTeam" placeholder="Select a team" style="width: 40%"></model-select>
+                                   'border: 1px solid var(--danger-color)' : ''" 
+                                   :options="teamOptions" v-model="selectedTeam" 
+                                   placeholder="Select a team" style="width: 40%"></model-select>
                     </div>
                 </div>
-                <div class="form-field-title" v-else-if="teamOptions.length == 0">
+                <div v-else-if="teamOptions.length == 0">
                     <div class="error-text">{{ CreateWorkOrderErrors.NoTeam }}</div>
-                    There is no team in <strong>{{ selectedLocation.text }}</strong>
+                    You are not a team leader of any teams in <strong style="font-style: italic">{{ selectedLocation.text }}</strong>
                 </div>
             </div> <!-- select team from selected location -->
             <!-- select equipments - start -->
@@ -684,21 +690,21 @@ export default {
       return JSON.parse(window.localStorage.getItem("user"));
     },
     workOrderCategory() {
-      if (this.authUser.RoleID == 5) {
-        return 2; // working order
-      } else if (this.authUser.RoleID == 6) {
-        return 1; // maintain order
+      if (this.authUser.Role == 'Staff') {
+        return 'Working'; // working order
+      } else if (this.authUser.Role == 'Maintainer') {
+        return 'Maintain'; // maintain order
       }
     }
   },
   created() {
-    this.axios.get(Server.WORKORDER_CATEGORIES_API_PATH).then(res => {
-      if (res.data) {
-        let data = res.data;
-        this.categories = data;
-        // this.workOrderCategory = data[0].Id;
-      }
-    });
+    // this.axios.get(Server.WORKORDER_CATEGORIES_API_PATH).then(res => {
+    //   if (res.data) {
+    //     let data = res.data;
+    //     this.categories = data;
+    //     // this.workOrderCategory = data[0].Id;
+    //   }
+    // });
     this.axios.get(Server.EQUIPMENT_API_PATH).then(res => {
       if (res.data) {
         let data = res.data;
@@ -832,7 +838,7 @@ export default {
                   createDate: new Date(),
                   priorityId: context.workOrderPriority,
                   statusId: 1,
-                  categoryId: context.workOrderCategory,
+                  categoryName: context.workOrderCategory,
                   teamLocationId: result
                 })
                 .then(function(res) {
@@ -1113,7 +1119,7 @@ export default {
         // alert('in 2')
         let url = `${Server.LOCATION_API_PATH}/${
           this.selectedLocation.value
-        }/team`;
+        }/team/${this.authUser.Id}`;
         this.axios.get(url).then(res => {
           if (res.data) {
             let data = res.data;
@@ -1303,10 +1309,6 @@ export default {
 </script>
 
 <style scoped>
-input {
-  outline: 0 !important;
-}
-
 input[type="number"] {
   text-align: right;
 }

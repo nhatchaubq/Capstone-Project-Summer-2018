@@ -9,7 +9,7 @@
 
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  Business name  (required)</strong><span v-if="CreateVendorErrors.NoBusinessName != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessName }}</span></span>
+                <strong>  Business name (required)</strong><span v-if="CreateVendorErrors.NoBusinessName != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessName }}</span></span>
                 </div>
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
                     <input v-model="Vendor.BusinessName" class="input " type="text" placeholder="Text input" >
@@ -142,20 +142,18 @@
 export default {
   data() {
     return {
-         sending: false,
+      sending: false,
       ErrorStrings: {
-        NoBusinessName: 'You must provide business name for this vendor',
-        NoBusinessAddress: 'You must provide business address for this vendor',
-        NoContactName: 'You must provide contact name for this vendor',
-        NoEmail: 'You must provide contact email for this vendor'
-       
-
+        NoBusinessName: "You must provide business name for this vendor",
+        NoBusinessAddress: "You must provide business address for this vendor",
+        NoContactName: "You must provide contact name for this vendor",
+        NoEmail: "You must provide contact email for this vendor"
       },
       CreateVendorErrors: {
-        NoBusinessName: '',
-        NoBusinessAddress: '',
-        NoContactName: '',
-        NoEmail: ''
+        NoBusinessName: "",
+        NoBusinessAddress: "",
+        NoContactName: "",
+        NoEmail: ""
       },
       Vendor: {
         BusinessName: "",
@@ -169,58 +167,59 @@ export default {
   },
   methods: {
     createVendor() {
-        if(this.Vendor.BusinessName === ''){
-            this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
-        }
-        if(this.Vendor.BusinessAddress === ''){
-            this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
-        }
-        if(this.Vendor.ContactName === ''){
-            this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
-        }
-        if(this.Vendor.ContactEmail === ''){
-            this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
-        }
-        
-        if(this.validateVendor())
-      this.axios
-        .post("http://localhost:3000/api/Vendor", {
-          Vendor: this.Vendor
-        })
-        .then(res => {
-          this.$router.push("/vendor");
-        });
+      if (this.Vendor.BusinessName === "") {
+        this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
+      }
+      if (this.Vendor.BusinessAddress === "") {
+        this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
+      }
+      if (this.Vendor.ContactName === "") {
+        this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
+      }
+      if (this.Vendor.ContactEmail === "") {
+        this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+
+      if (this.validateVendor())
+        this.axios
+          .post("http://localhost:3000/api/Vendor", {
+            Vendor: this.Vendor
+          })
+          .then(res => {
+            this.$router.push("/vendor");
+          });
     },
-   validateVendor() {      
-      return this.CreateVendorErrors.NoBusinessName === '' && this.CreateVendorErrors.NoBusinessAddress === ''
-              && this.CreateVendorErrors.NoContactName === '' && this.CreateVendorErrors.NoEmail === ''
-              
-    },
+    validateVendor() {
+      return (
+        this.CreateVendorErrors.NoBusinessName === "" &&
+        this.CreateVendorErrors.NoBusinessAddress === "" &&
+        this.CreateVendorErrors.NoContactName === "" &&
+        this.CreateVendorErrors.NoEmail === ""
+      );
+    }
   },
 
-      watch:{
-      "Vendor.BusinessName": function(){
-          if(this.Vendor.BusinessName != ''){
-              this.CreateVendorErrors.NoBusinessName = ''
-          }
-      },
-      'Vendor.BusinessAddress': function(){
-          if(this.Vendor.BusinessAddress != ''){
-              this.CreateVendorErrors.NoBusinessAddress = ''
-          }
-      },
-      'Vendor.ContactName': function(){
-          if(this.Vendor.ContactName != ''){
-              this.CreateVendorErrors.NoContactName = ''
-          }
-      },
-      'Vendor.ContactEmail': function(){
-          if(this.Vendor.ContactEmail != ''){
-              this.CreateVendorErrors.NoEmail = ''
-          }
-      },
-      
-      
+  watch: {
+    "Vendor.BusinessName": function() {
+      if (this.Vendor.BusinessName != "") {
+        this.CreateVendorErrors.NoBusinessName = "";
+      }
+    },
+    "Vendor.BusinessAddress": function() {
+      if (this.Vendor.BusinessAddress != "") {
+        this.CreateVendorErrors.NoBusinessAddress = "";
+      }
+    },
+    "Vendor.ContactName": function() {
+      if (this.Vendor.ContactName != "") {
+        this.CreateVendorErrors.NoContactName = "";
+      }
+    },
+    "Vendor.ContactEmail": function() {
+      if (this.Vendor.ContactEmail != "") {
+        this.CreateVendorErrors.NoEmail = "";
+      }
+    }
   }
 };
 </script>

@@ -12,18 +12,20 @@
         <div class="form-content">            
             <div class="form-field-picture">
                 <div class="form-field-title">
-                    Picture
+                  <span><strong>  Picture (required) </strong></span><span v-if="CreateEquipmentErrors.NoImage != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoImage }}</span></span>
                 </div>
                 <div class="input_picture">                    
                     <label class="file-label" style="width: 100% !important"> 
                     <span class="file-cta">
-                        <input class="file-input" type="file" ref="fileInput" v-on:change="inputFileChange"  />
+
+                        <input class="file-input" type="file" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
                         <span class="file-icon">
+
                             <i class="fa fa-upload"></i>
                         </span>
                         <span class="file-label">
                             Choose images...
-                        </span>
+                        </span> -->
                     </span>
                         <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
                             {{ file.name }}
@@ -36,7 +38,7 @@
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Equipment Name
+                   <span><strong> Equipment Name (required) </strong></span><span v-if="CreateEquipmentErrors.NoName != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoName }}</span></span>
                 </div>
                 <div class="form-field-input" >
                   <!-- <Autocomplete :items="equipmentOptions"
@@ -48,18 +50,19 @@
                   <input type="text" class="input" placeholder="EquipmentName" v-model="form.EquipmentName" >
                 </div>
             </div>
-            <div class="field" style="margin-left: 3rem; margin-top: 0.75rem; margin-right: 1.5rem; display: grid; grid-template-columns: 50% 50%">
-                <div>
+            <div class="field" style="margin-left: 3rem; margin-top: 0.9rem; margin-right: 2rem; display: grid; grid-template-columns: 33% 33% 33%">
+                <div class="">
                     <div class="form-field-title" >
-                        Category
+                       <span><strong> Category (required) </strong></span>
+                      <span v-if="CreateEquipmentErrors.NoCategory != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoCategory }}</span></span>
                     </div>
-                    <div class="field is-horizontal" style="margin-right:6rem">
+                    <div class="field is-horizontal" style="">
                         <model-select style="width: 100% !important" :options="categoryOptions" v-model="form.Category" placeholder="Select a category"></model-select>  
                         <button class="btn-new" style="margin: 0rem 0.3rem" v-on:click= "showingAddCategory = true"><i class="fa fa-plus"></i></button>
                     </div>
                     <div class="" v-show = "showingAddCategory" style="margin-right:2rem">
                         <div class="form-field-title">
-                        Name
+                        <span><strong> Name (required) </strong></span> 
                         </div>
                         <div class="field is-horizontal" >
                             <input type="text" class="input" placeholder="Name" v-model="newCategory">
@@ -68,9 +71,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="" style="margin-right: 1.1rem">
+                <div class="" style="">
                     <div class="form-field-title">
-                        Vendor
+                      <span><strong>  Vendor (required) </strong></span>
+                      <span v-if="CreateEquipmentErrors.NoVendor != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoVendor }}</span></span>
                     </div>
                     <div class="field is-horizontal" >
                         <model-select style="width: 100% !important" :options="vendorOptions" v-model="selectedVendor" placeholder="Select a vendor"></model-select>  
@@ -78,7 +82,7 @@
                     </div> 
                     <div class="" v-show = "showingAddVendor" >
                     <div class="">
-                       Name
+                       <span><strong> Name (required) </strong></span>
                     </div>
                     <div class="field is-horizontal" >
                         <input type="text" class="input" placeholder="Name" v-model="newVendor">
@@ -86,11 +90,31 @@
                         <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddVendor = false">Cancel</button>
                     </div>
                     </div>
+                </div>
+                 <div class="" style="">
+                    <div class="form-field-title" >
+                       <span><strong> Unit (required) </strong></span>
+                       <span v-if="CreateEquipmentErrors.NoUnit != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoUnit }}</span></span>
+                    </div>
+                    <div class="field is-horizontal" style="">
+                        <model-select style="width: 100% !important" :options="unitOptions" v-model="form.Unit" placeholder="Select a unit"></model-select>  
+                        <button class="btn-new" style="margin: 0rem 0.3rem" v-on:click= "showingAddUnit = true"><i class="fa fa-plus"></i></button>
+                    </div>
+                    <div class="" v-show = "showingAddUnit" style="margin-right:2rem">
+                        <div class="form-field-title">
+                        <span><strong> Name (required) </strong></span> 
+                        </div>
+                        <div class="field is-horizontal" >
+                            <input type="text" class="input" placeholder="Name" v-model="newUnit">
+                            <button class="button is-rounded is-primary" style="margin-left: .6rem" v-on:click="createNewUnit">Add</button>
+                            <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddUnit = false">Cancel</button>
+                        </div>
+                    </div>
                 </div>                  
             </div>    
             <div class="form-field">
                 <div class="form-field-title">
-                    Made In
+                  <span><strong>  Made In </strong></span>
                 </div>
                 <div class="form-field-input">
                     <input type="text" class="input" placeholder="Made In" v-model="form.MadeIn">
@@ -98,7 +122,7 @@
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Description
+                  <span><strong>  Description </strong></span>
                 </div>
                 <div class="form-field-input">
                     <input type="text" class="input" placeholder="Description" v-model="form.Description">
@@ -117,7 +141,7 @@
                 </div>
                 <div class="field is-horizontal">
                     <input type="number" min="1" class="input" style="margin-right: 1rem" v-model="quantity" >
-                    <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">CreateBarcode</button>
+                    <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">CreateSerialNumber</button>
                 </div>
                 <div v-show="showingBarcode">
                     <ul>
@@ -224,6 +248,21 @@ export default {
       .catch(error => {
         alert(error);
       });
+      this.axios
+      .get("http://localhost:3000/api/unit")
+      .then(response => {
+        let data = response.data;
+        data.forEach(unit => {
+          let option = {
+            text: unit.Name,
+            value: unit.Id
+          };
+          this.unitOptions.push(option);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
     this.axios
       .get("http://localhost:3000/api/vendor")
       .then(response => {
@@ -257,10 +296,25 @@ export default {
   },
   data() {
     return {
+      CreateEquipmentErrors:{
+        NoImage: "",
+        NoName: "",
+        NoCategory: "",
+        NoVendor: "",
+        NoUnit: "", 
+      },
+      ErrorStrings:{
+        NoImage: 'You must choose an image',
+        NoName: 'You must enter name to add equipment',
+        NoCategory: 'Please choose a category',
+        NoVendor: 'Please choose a vendor',
+        NoUnit: 'Please choose a unit'
+      },
       form: {
         EquipmentName: "",
         Category: "",
         Vendor: "",
+        Unit: "",
         MadeIn: "",
         Description: "",
         Price: 500000,
@@ -294,12 +348,20 @@ export default {
         text: "",
         value: ""
       },
+      selectedUnit: {
+        text: "",
+        value: ""
+      },
+      byName:"",
       imageUrl: "",
       newCategory: "",
       newVendor: "",
+      newUnit:"",
       showingAddCategory: false,
       showingAddVendor: false,
+      showingAddUnit: false,
       showingBarcode: false,
+      unitOptions: [],
       categoryOptions: [],
       vendorOptions: [],
       equipmentOptions: [],
@@ -362,7 +424,10 @@ export default {
         });
     },
     createNewCategory() {
-      this.axios
+      if(this.newCategory == ""){
+        alert("Please enter Category name");
+      }else{
+        this.axios
         .post("http://localhost:3000/api/EquipmentCategory", {
           name: this.newCategory
         })
@@ -374,21 +439,46 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+      }
+      
     },
     createNewVendor() {
-      this.axios
+      if (this.newVendor == ""){
+         alert("Please enter vendor name");
+      }else{
+          this.axios
         .post("http://localhost:3000/api/Vendor", {
           businessName: this.newVendor
         })
         .then(function(respone) {
           // console.log(respone);
           location.reload();
-          alert("Add successfully");
+          alert("Add new vendor successfully");
           this.created();
         })
         .catch(function(error) {
           console.log(error);
         });
+      }
+    },
+    createNewUnit(){
+      if (this.newUnit == ""){
+        alert('Please enter Unit name');
+      }else{
+        this.axios
+        .post("http://localhost:3000/api/unit", {
+          name: this.newUnit
+        })
+        .then(function(respone) {
+          // console.log(respone);
+          location.reload();
+          alert("Add new Unit successfully");
+          this.created();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      }
     },
     async createNewEquipment() {
       // this.checkExistEquipment();
@@ -396,42 +486,68 @@ export default {
       //   alert("This equipment is exist with this vendor");
       // }
       // else {
-
-      let formData = new FormData();
-      formData.append("api_key", "982394881563116");
-      formData.append("file", this.files[0]);
-      formData.append("public_id", this.files[0].name);
-      formData.append("timestamp", moment().valueOf());
-      formData.append("upload_preset", "ursbvd4a");
-
-      let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
-      try {
-        let uploadRespose = await this.axios.post(url, formData);
-        if (uploadRespose.status == 200) {
-          this.imageUrl = uploadRespose.data.url;
-        }
-      } catch (error) {
-        console.log(error);
+      // this.files[0].name = "";
+      // alert(this.files[0].name);
+      if(this.form.EquipmentName.trim() === ''){
+        this.CreateEquipmentErrors.NoName = this.ErrorStrings.NoName;
       }
-      //alert(this.imageUrl);
-      this.axios
-        .post("http://localhost:3000/api/equipment", {
-          name: this.form.EquipmentName,
-          vendorID: this.selectedVendor.value,
-          image: this.imageUrl,
-          madein: this.form.MadeIn,
-          description: this.form.Description,
-          categoryID: this.form.Category
-        })
-        .then(function(respone) {
-          // console.log(respone);
-          // location.reload();
-          alert("Add successfully!!!");
-        })
-        .catch(function(error) {
+      if(this.selectedVendor.value  === ''){
+        this.CreateEquipmentErrors.NoVendor = this.ErrorStrings.NoVendor;
+      }
+      if(this.form.Category === ''){
+        this.CreateEquipmentErrors.NoCategory = this.ErrorStrings.NoCategory;
+      }
+      if(this.form.Unit === ''){
+        this.CreateEquipmentErrors.NoUnit = this.ErrorStrings.NoUnit;
+      }
+      if(this.files[0] && this.files[0].name){
+        this.CreateEquipmentErrors.NoImage = '';
+         let formData = new FormData();
+        formData.append("api_key", "982394881563116");
+        formData.append("file", this.files[0]);
+        formData.append("public_id", this.files[0].name);
+        formData.append("timestamp", moment().valueOf());
+        formData.append("upload_preset", "ursbvd4a");
+
+        let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+        try {
+          let uploadRespose = await this.axios.post(url, formData);
+          if (uploadRespose.status == 200) {
+            this.imageUrl = uploadRespose.data.url;
+          }
+        } catch (error) {
           console.log(error);
-        });
-      //   }
+        }
+      }else{
+        //  alert(this.files[0])
+        //alert(this.files[0].name)
+        this.CreateEquipmentErrors.NoImage = this.ErrorStrings.NoImage;
+        
+      }
+      if (this.CreateEquipmentErrors.NoImage === '' &&
+          this.CreateEquipmentErrors.NoName === '' &&
+          this.CreateEquipmentErrors.NoCategory === '' &&
+          this.CreateEquipmentErrors.NoVendor === '' &&
+          this.CreateEquipmentErrors.NoUnit === ''
+      ){
+           this.axios
+          .post("http://localhost:3000/api/equipment", {
+            name: this.form.EquipmentName,
+            vendorID: this.selectedVendor.value,
+            image: this.imageUrl,
+            madein: this.form.MadeIn,
+            description: this.form.Description,
+            categoryID: this.form.Category,
+            unitID: this.form.Unit
+          })
+          .then(function(respone) {
+            // console.log(respone);
+            alert("Add successfully!!!");
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+        }
     },
     getRandomNumber() {
       if (this.form.Category == "") {
@@ -456,53 +572,52 @@ export default {
       }
     },
     createNewEquipentItem() {
-      // alert(this.checked);
-      var result = false;
-      this.axios
-        .get(
-          "http://localhost:3000/api/equipment/byName/" +
-            this.form.EquipmentName
-        )
-        .then(response => {
-          for (var i = 0; i < this.quantity; i++) {
-            let data = response.data;
-            //  alert(data.Id);
-            this.axios
-              .post("http://localhost:3000/api/equipmentItem", {
-                equipmentID: data.Id,
-                serialNumber: this.randomNumbers[i],
-                warrantyDuration: this.form.Warranty,
-                price: this.form.Price,
-                statusId: 1,
-                description: "No description",
-                tileID: this.selectedTile.value
-              })
-              .then(function(respone) {
-                result = true;
-              })
-              .catch(function(error) {
-                console.log(error);
-              });
-          }
-          if ((result = true)) {
-            alert("Add " + this.quantity + " item(s) successfully");
-          }
-          //location.reload();
-        })
-        .catch(function(error) {
-          alert(this.form.EquipmentName);
-          console.log(error);
-        });
+      let result = false;
+      if (this.form.Price === '' || this.form.Price < 50000) {
+        alert("Please enter price more than 50000");
+      }else if (this.form.Warranty === '' || this.form.Warranty < 1) {
+          alert("Please enter warranty duration more than 1");
+      }else if  (this.randomNumbers.length == 0) {
+          alert("Please create serial number for item(s) to add");
+      }else if(this.selectedTile.value === ''){
+            alert("Please choose tile for item(s)");
+      } else{
+         let name = this.form.EquipmentName.trim();
+        this.axios
+            .get("http://localhost:3000/api/equipment/byName/"+name)
+            .then(function(respone) {
+              this.byName = response.data
+              
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        alert(byName.Id);
+        // for (var i = 0; i < this.quantity; i++) {
+        //   this.axios
+        //     .post("http://localhost:3000/api/equipmentItem", {
+        //       equipmentID: EQTNameID.Id,
+        //       serialNumber: this.randomNumbers[i],
+        //       warrantyDuration: this.form.Warranty,
+        //       price: this.form.Price,
+        //       statusId: 1,
+        //       description: "No description",
+        //       tileID: this.selectedTile.value
+        //     })
+        //     .then(function(respone) {
+        //       result = true;
+        //     })
+        //     .catch(function(error) {
+        //       console.log(error);
+        //     });
+        // }
+      if (result = true) {
+        alert("Add " + this.quantity + " item(s) successfully!");
+        location.reload();
+      }
+      }
     }
 
-    // createBarcode(){
-    //     var barcode =this.form.Category.id +"";
-    //     alert(barcode);
-    //     for (var i=0; i<13; i++){
-    //         var x = this.getRandomNumber();
-    //         barcode = barcode + x;
-    //     }
-    //     return barcode;
   },
   // watch: {
   //   selectedEquipment: function() {
@@ -525,6 +640,31 @@ export default {
   //   }
   // }
   watch: {
+    'form.EquipmentName': function() {
+      if (this.form.EquipmentName.trim() != '' && this.CreateEquipmentErrors.NoName != '') {
+        this.CreateEquipmentErrors.NoName = '';
+      }
+    },
+    'selectedVendor': function() {
+      if (this.selectedVendor.value != '' && this.CreateEquipmentErrors.NoVendor != '') {
+        this.CreateEquipmentErrors.NoVendor = '';
+      }
+    },
+    'form.Category': function() {
+      if (this.form.Category != '' && this.CreateEquipmentErrors.NoCategory != '') {
+        this.CreateEquipmentErrors.NoCategory = '';
+      }
+    },
+    'form.Unit': function() {
+      if (this.form.Unit != '' && this.CreateEquipmentErrors.NoUnit != '') {
+        this.CreateEquipmentErrors.NoUnit = '';
+      }
+    },
+    'files':function(){
+       if ( !this.files[0] && !this.files[0].name && this.CreateEquipmentErrors.NoImage != '') {
+        this.CreateEquipmentErrors.Image = '';
+      }
+    },
     selectedLocation: function() {
       if (this.selectedLocation.value != "") {
         this.blockOptions = [];
