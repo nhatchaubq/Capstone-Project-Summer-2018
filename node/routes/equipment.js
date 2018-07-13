@@ -10,6 +10,7 @@ router.get("/", (request, response) => {
     "e.Image  as 'Equipment.Image', e.MadeIn as 'Equipment.MadeIn', " +
     "e.Description as 'Equipment.Description', e.VendorID as 'Equipment.VendorId', " +
     "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId', " +
+    "u.[Name] as [Equipment.Unit], " +
     "ec.Name as 'Equipment.Category.Name', (select count(Id)  from EquipmentItem where EquipmentID = e.Id) as [Equipment.Quantity], " +
     "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 1) as [Equipment.AvailableQuantity], " +
     "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 2) as [Equipment.NotAvailableQuantity], " +
@@ -17,6 +18,7 @@ router.get("/", (request, response) => {
     "FROM [Equipment] as e " +
     "JOIN [Vendor] as v ON e.VendorID = v.Id " +
     "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
+    "JOIN [Unit] as u on e.UnitID = u.Id " +
     "for json path").into(response);
 });
 /*GET an Eqt by ID*/

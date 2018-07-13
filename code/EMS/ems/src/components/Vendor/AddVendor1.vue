@@ -9,7 +9,7 @@
 
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  Business name <span style="color:red;">*</span></strong>
+                <strong>  Business name  (required)</strong><span v-if="CreateVendorErrors.NoBusinessName != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessName }}</span></span>
                 </div>
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
                     <input v-model="Vendor.BusinessName" class="input " type="text" placeholder="Text input" >
@@ -28,7 +28,7 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>Business address <span style="color:red;">*</span></strong>
+                <strong>Business address  (required)</strong><span v-if="CreateVendorErrors.NoBusinessAddress != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span>
             <div class="control has-icons-left has-icons-right" style="padding:8px">
                     <input v-model="Vendor.BusinessAddress" class="input " type="text" placeholder="Text input">
                         <span class="icon is-small is-left">
@@ -47,7 +47,7 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                     <strong>Website<span style="color:red;">*</span></strong>
+                     <strong>Website</strong>
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -68,7 +68,7 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                     <strong>Contact name<span style="color:red;">*</span></strong>
+                     <strong>Contact name (required)</strong><span v-if="CreateVendorErrors.NoContactName != ''">. <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span>
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -89,7 +89,7 @@
                 <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <strong>Email</strong>  
+                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''">. <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -142,6 +142,21 @@
 export default {
   data() {
     return {
+         sending: false,
+      ErrorStrings: {
+        NoBusinessName: 'You must provide business name for this vendor',
+        NoBusinessAddress: 'You must provide business address for this vendor',
+        NoContactName: 'You must provide contact name for this vendor',
+        NoEmail: 'You must provide contact email for this vendor'
+       
+
+      },
+      CreateVendorErrors: {
+        NoBusinessName: '',
+        NoBusinessAddress: '',
+        NoContactName: '',
+        NoEmail: ''
+      },
       Vendor: {
         BusinessName: "",
         BusinessAddress: "",
@@ -154,6 +169,20 @@ export default {
   },
   methods: {
     createVendor() {
+        if(this.Vendor.BusinessName === ''){
+            this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
+        }
+        if(this.Vendor.BusinessAddress === ''){
+            this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
+        }
+        if(this.Vendor.ContactName === ''){
+            this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
+        }
+        if(this.Vendor.ContactEmail === ''){
+            this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
+        }
+        
+        if(this.validateVendor())
       this.axios
         .post("http://localhost:3000/api/Vendor", {
           Vendor: this.Vendor
@@ -161,7 +190,37 @@ export default {
         .then(res => {
           this.$router.push("/vendor");
         });
-    }
+    },
+   validateVendor() {      
+      return this.CreateVendorErrors.NoBusinessName === '' && this.CreateVendorErrors.NoBusinessAddress === ''
+              && this.CreateVendorErrors.NoContactName === '' && this.CreateVendorErrors.NoEmail === ''
+              
+    },
+  },
+
+      watch:{
+      "Vendor.BusinessName": function(){
+          if(this.Vendor.BusinessName != ''){
+              this.CreateVendorErrors.NoBusinessName = ''
+          }
+      },
+      'Vendor.BusinessAddress': function(){
+          if(this.Vendor.BusinessAddress != ''){
+              this.CreateVendorErrors.NoBusinessAddress = ''
+          }
+      },
+      'Vendor.ContactName': function(){
+          if(this.Vendor.ContactName != ''){
+              this.CreateVendorErrors.NoContactName = ''
+          }
+      },
+      'Vendor.ContactEmail': function(){
+          if(this.Vendor.ContactEmail != ''){
+              this.CreateVendorErrors.NoEmail = ''
+          }
+      },
+      
+      
   }
 };
 </script>

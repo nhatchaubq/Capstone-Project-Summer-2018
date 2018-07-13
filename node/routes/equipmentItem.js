@@ -186,8 +186,6 @@ router.put("/status/:id", (req, res) => {
         .param("newStatusId", req.body.newStatusId, TYPES.NVarChar)
         .param("description", req.body.description, TYPES.NVarChar)
         .exec(res);
-
-
 });
 
 router.put("/:eid", (req, res) => {
@@ -211,68 +209,73 @@ router.put("/:eid", (req, res) => {
 });
 
 /* GET AN ITEM of an Equipment */
-// router.get("/Item/:id", (request, response) => {
-//     request
-//         .sql("exec GetAnItem @id")
-//         .param("id", request.params.id, TYPES.Int)
-//         .into(response);
-// });
+
+router.get("/Item/:id", (request, response) => {
+  request
+    .sql("exec GetAnItem @id")
+    .param("id", request.params.id, TYPES.Int)
+    .into(response);
+});
 /* POST request, for insert */
 router.post("/", (request, response) => {
-    request
-        .sql(
-            "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
-            " VALUES (@equipmentID, @serialNumber, @warrantyDuration, 0, @price, GETDATE(), @statusId, @description, @tileID)"
-        )
-        .param("equipmentID", request.body.equipmentID, TYPES.Int)
-        .param("serialNumber", request.body.serialNumber, TYPES.NVarChar)
-        .param("warrantyDuration", request.body.warrantyDuration, TYPES.Int)
-        .param("price", request.body.price, TYPES.Float)
-        //.param('importDate', request.body.importDate, TYPES.DateTime)
-        .param("statusId", request.body.statusId, TYPES.Int)
-        .param("description", request.body.description, TYPES.NVarChar)
-        .param("tileID", request.body.tileID, TYPES.Int)
-        .exec(response);
+  request
+    .sql(
+      "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
+        " VALUES (@equipmentID, @serialNumber, @warrantyDuration, 0, @price, GETDATE(), @statusId, @description, @tileID)"
+    )
+    .param("equipmentID", request.body.equipmentID, TYPES.Int)
+    .param("serialNumber", request.body.serialNumber, TYPES.NVarChar)
+    .param("warrantyDuration", request.body.warrantyDuration, TYPES.Int)
+    .param("price", request.body.price, TYPES.Float)
+    //.param('importDate', request.body.importDate, TYPES.DateTime)
+    .param("statusId", request.body.statusId, TYPES.Int)
+    .param("description", request.body.description, TYPES.NVarChar)
+    .param("tileID", request.body.tileID, TYPES.Int)
+    .exec(response);
 });
 
 router.get("/:id/getByLocationId", (request, response) => {
-    request
-        .sql(
-            "select eqti.*,eqt.Name,eqt.Image from [EquipmentItem] as eqti join [Position] as pos on eqti.PositionID = pos.Id " +
-            "join [Equipment] as eqt on eqti.EquipmentID = eqt.ID " +
-            "where pos.LocationID = @locationId for json path"
-        )
-        .param("locationId", request.params.id, TYPES.Int)
-        .into(response);
+  request
+    .sql(
+      "select eqti.*,eqt.Name,eqt.Image from [EquipmentItem] as eqti join [Position] as pos on eqti.PositionID = pos.Id " +
+        "join [Equipment] as eqt on eqti.EquipmentID = eqt.ID " +
+        "where pos.LocationID = @locationId for json path"
+    )
+    .param("locationId", request.params.id, TYPES.Int)
+    .into(response);
 });
 
-router.get("/getByEquipmentId/:id", (request, response) => {
-    request
-        .sql(
-            "select distinct e.*, (select ei.* " +
-            "                   from EquipmentItem as ei join Tile as t on ei.TileID = t.Id  " +
-            " 						                    join[Floor] as f on t.FloorID = f.Id " +
-            " 							                join[Block] as b on f.BlockID = b.Id " +
-            " 	                where b.LocationID = @locationId and ei.EquipmentId = [LocationEquipment].Id for JSON path) as[EquipmentItems] " +
-            " from Equipment as e, (select eqt.Id as [Id] " +
-            "                       from EquipmentItem as ei join Tile as t on ei.TileID = t.Id " +
-            "                                               join[Floor] as f on t.FloorID = f.Id " +
-            "                                               join[Block] as b on f.BlockID = b.Id " +
-            "                                               join Equipment as eqt on eqt.Id = ei.EquipmentID " +
-            "                       where b.LocationID = @locationId) as [LocationEquipment] " +
-            " where e.Id = [LocationEquipment].Id " +
-            " for json path "
-        )
-        .param("locationId", request.params.id, TYPES.Int)
-        .into(response);
+router.get("/getByEquipmentId/:id", (request, response) => {        .into(response);
+
+  request
+    .sql(
+      "select distinct e.*, (select ei.* " +
+        "                   from EquipmentItem as ei join Tile as t on ei.TileID = t.Id  " +
+        " 						                    join[Floor] as f on t.FloorID = f.Id " +
+        " 							                join[Block] as b on f.BlockID = b.Id " +
+        " 	                where b.LocationID = @locationId and ei.EquipmentId = [LocationEquipment].Id for JSON path) as[EquipmentItems] " +
+        " from Equipment as e, (select eqt.Id as [Id] " +
+        "                       from EquipmentItem as ei join Tile as t on ei.TileID = t.Id " +
+        "                                               join[Floor] as f on t.FloorID = f.Id " +
+        "                                               join[Block] as b on f.BlockID = b.Id " +
+        "                                               join Equipment as eqt on eqt.Id = ei.EquipmentID " +
+        "                       where b.LocationID = @locationId) as [LocationEquipment] " +
+        " where e.Id = [LocationEquipment].Id " +
+        " for json path "
+      // "exec [GetEquipmentItemByEquipmentIdAndLocationId] @locationId"
+    )
+    .param("locationId", request.params.id, TYPES.Int)
+    .into(response);
+
 });
 
 // chau - update pos of equipment item
-router.put('/position/tile/:itemId', (req, res) => {
-    req.sql('update EquipmentItem set TileID = @tileId where Id = @itemId')
-        .param('itemId', req.params.itemId, TYPES.Int)
-        .param('tileId', req.body.tileId, TYPES.Int)
-        .exec(res);
+router.put("/position/tile/:itemId", (req, res) => {
+  req
+    .sql("update EquipmentItem set TileID = @tileId where Id = @itemId")
+    .param("itemId", req.params.itemId, TYPES.Int)
+    .param("tileId", req.body.tileId, TYPES.Int)
+    .exec(res);
 });
 
 module.exports = router;

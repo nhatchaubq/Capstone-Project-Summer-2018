@@ -9,8 +9,8 @@ server.use(cors());
 var connection = {
   server: "localhost",
   userName: "sa",
-  password: "tien1005",
 
+  password: "cCS94@bcnq836894",
 
   port: "1433",
   options: {
