@@ -728,7 +728,7 @@ export default {
               console.log(error);
             });
         }
-      if (result = true) {
+      if (result == true) {
         alert("Add " + this.quantity + " item(s) successfully!");
         location.reload();
       }
@@ -872,7 +872,7 @@ export default {
     changeItemStatus() {
       let authUser = JSON.parse(window.localStorage.getItem("user"));
       // alert(this.changeItemSttDescription);
-      alert(this.selectedItem.Item.StatusID);
+      // alert(this.selectedItem.Item.StatusID);
       if (this.oldstt == this.selectedItem.Item.StatusID){
         alert('Cannot updatde, please choose new status');
       }else{
@@ -943,12 +943,14 @@ export default {
             importdate: this.selectedItem.Item.ImportDate,
             lastmaintaindate: this.selectedItem.Item.LastMaintainDate,
             nextmaintaindate: this.selectedItem.Item.NextMaintainDate,
-            description: this.selectedItem.Item.Description
+            description: this.selectedItem.Item.Description,
+            tileID: this.selectedTile.value
           }
         )
         .then(function(respone) {
           alert("Update successfully");
           this.editItemMode = !this.editItemMode;
+          location.reload();
         })
         .catch(function(error) {
           console.log(error);

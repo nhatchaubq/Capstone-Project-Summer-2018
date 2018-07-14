@@ -83,7 +83,7 @@
                             }">Cancel</a> <!-- cancel work order -->
                             <span> | </span>
                             <!-- cancel work order -->
-                            <a v-on:click="showEditDialog = true">Edit</a> <!-- cancel work order -->
+                            <a v-on:click="$router.push(`/work_order/edit/${selectedOrder.Id}`)">Edit</a> <!-- cancel work order -->
                         </div> 
                     </div> <!-- edit/cancel work order -->
                   </div>
@@ -143,6 +143,9 @@
                       </div><!-- order detail view mode -->
                       <!-- detail view mode -->
                       <div v-if="viewDetailMode">
+                            <div class="detail-contents" style="width: 100%;">                                    
+                                <span class="detail-label">Team: </span><span>{{ selectedOrder.Team.Name }}</span>
+                            </div>
                             <div class="detail-contents" style="width: 100%;">
                                 <span class="detail-label">Equipments:</span>
                                 <v-flex>
@@ -213,9 +216,9 @@
                                         </v-expansion-panel-content>
                                     </v-expansion-panel>
                                 </v-flex>
-                            </div>
+                            </div>                            
                             <div class="detail-contents">
-                                    <span class="detail-label">Location: {{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
+                                    <span class="detail-label">Location: </span><span>{{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
                                     <!-- <img src="http://images.indianexpress.com/2016/11/hazaribagh-759.jpg" /> -->
                                     <GmapMap
                                         :center="{lat:selectedOrder.Location.Latitude, lng:selectedOrder.Location.Longitude}"
@@ -260,64 +263,62 @@
       </vodal> <!-- equipment detail dialog -->
 
       <!-- approve / reject dialog -->
-      <vodal :show="showApproveRejectDialog" :height="Errors.RejectedDescriptionNotProvided != '' ? 390 : 350" @hide="showApproveRejectDialog = false" animation="slideUp" :closeButton="false">
-          <div v-if="selectedOrder">
-              <div class="my-dialog">
-                <div class="my-dialog-title">
-                    Confirm
+      <modal v-model="showApproveRejectDialog" @on-cancel="() => {
+            Errors.RejectedDescriptionNotProvided = '';
+            showApproveRejectDialog = false
+          }" :mask-closable="false">
+            <div slot="header">
+                Confirm
+            </div>
+            <div v-if="selectedOrder" style="font-size: 1rem">
+                <span>Are you sure to {{ approveWorkOrder ? 'approve' : 'reject' }} this order <strong>#{{ selectedOrder.Id }} - {{ selectedOrder.Name }}</strong>?</span>
+                <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
+                    <span v-if="approveWorkOrder">Description (optional)</span>
+                    <span v-else>Why do you reject this order (required)</span>
                 </div>
-                <div class="my-dialog-content">
-                    <span>Are you sure to {{ approveWorkOrder ? 'approve' : 'reject' }} this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
+                <textarea v-model="changeStatusDescription" class="input" style="min-height: 7rem; max-height: 7rem; overflow-y: auto" cols="30" rows="10"></textarea>
+                <div class="error-text" style="font-weight: bold !importa3nt"
+                        v-if="Errors.RejectedDescriptionNotProvided != ''">
+                    {{ Errors.RejectedDescriptionNotProvided }}
+                </div>
+            </div>
+            <div slot="footer">
+                <button class="button" @click="showApproveRejectDialog = false">No</button>
+                <button :class="{'btn-primary': approveWorkOrder, 'btn-danger': !approveWorkOrder}" 
+                        class="button" 
+                        @click="approveRejectWorkOrder(selectedOrder.Id)">
+                    {{ approveWorkOrder ? 'Approve' : 'Reject' }}
+                </button>
+            </div>
+      </modal> <!-- approve / reject dialog -->
+      <!-- change status dialog -->
+      <modal v-model="showChangeStatusDialog" @on-cancel="showChangeStatusDialog = false" :mask-closable="false">
+          <div slot="header">
+                Confirm
+            </div>
+            <div v-if="selectedOrder" style="font-size: 1rem">
+                <div v-if="newStatusName != 'Closed'">
+                    <span v-if="newStatusName != 'Cancelled'">Are you sure to change status of this order <strong style="font-style: italic">#{{ selectedOrder.Id }} - {{ selectedOrder.Name }}</strong> to <strong style="font-style: italic">{{ newStatusName }}</strong>?</span>
+                    <span v-if="newStatusName == 'Cancelled'">Are you sure to cancel this order <strong style="font-style: italic">#{{ selectedOrder.Id }} - {{ selectedOrder.Name }}</strong>?</span>
                     <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
-                        <span v-if="approveWorkOrder">Description (optional)</span>
-                        <span v-else>Describe the reason you reject this order (required)</span>
+                        Description (optional):
                     </div>
                     <textarea v-model="changeStatusDescription" class="input" style="min-height: 7rem; max-height: 7rem; overflow-y: auto" cols="30" rows="10"></textarea>
-                    <div style="color: var(--danger-color); font-weight: 500; font-size: .95rem; margin-top: 1rem" 
-                            v-if="Errors.RejectedDescriptionNotProvided != ''">
-                        {{ Errors.RejectedDescriptionNotProvided }}
-                    </div>
-                    <button class="button vodal-cancel-btn" @click="showApproveRejectDialog = false">Cancel</button>
-                    <button :class="{'btn-primary': approveWorkOrder, 'btn-danger': !approveWorkOrder}" 
-                            class="button vodal-confirm-btn" 
-                            @click="approveRejectWorkOrder(selectedOrder.Id)">
-                        {{ approveWorkOrder ? 'Approve' : 'Reject' }}
-                    </button>
                 </div>
-              </div>
-          </div>
-      </vodal> <!-- approve / reject dialog -->
-      <!-- change status dialog -->
-      <vodal :show="showChangeStatusDialog" :height="350" @hide="showChangeStatusDialog = false" animation="slideUp" :closeButton="false">
-          <div v-if="selectedOrder">
-              <div class="my-dialog">
-                <div class="my-dialog-title">
-                    Confirm
-                </div>
-                <div class="my-dialog-content">
-                    <div v-if="newStatusName != 'Closed'">
-                        <span v-if="newStatusName != 'Cancelled'">Are you sure to change status of this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }} to {{ newStatusName }}?</span>
-                        <span v-if="newStatusName == 'Cancelled'">Are you sure to cancel this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
-                        <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
-                            Description (optional):
-                        </div>
-                        <textarea v-model="changeStatusDescription" class="input" style="min-height: 7rem; max-height: 7rem; overflow-y: auto" cols="30" rows="10"></textarea>
-                    </div>
-                    <div v-else>
-                        <div>
-                            Please recheck the equipments' status of this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }} before closing
-                        </div>
-                    </div>
-                    <button class="button vodal-cancel-btn" @click="showChangeStatusDialog = false">No</button>
-                    <button class="btn-primary button vodal-confirm-btn" @click="changeWorkOrderStatus(selectedOrder.Id, newStatusName)">Yes</button>
-                </div>
-              </div>
-          </div>
-      </vodal> <!-- change status dialog -->
+            </div>
+            <div slot="footer">
+                <button style="width: 5rem" class="button" v-on:click="showChangeStatusDialog = false">
+                    No
+                </button>
+                <button style="width: 5rem" class="button btn-primary" v-on:click="changeWorkOrderStatus(selectedOrder.Id, newStatusName)">
+                    Yes
+                </button>
+            </div>
+      </modal> <!-- change status dialog -->
 
-      <modal v-if="selectedOrder" v-model="showEditDialog" @on-ok="showEditDialog = false" @on-cancel="showEditDialog = false"
+      <modal v-model="showEditDialog" @on-ok="showEditDialog = false" @on-cancel="showEditDialog = false"
         ok-text="Save changes" cancel-text="Cancel">
-          <div slot="header">
+          <div v-if="selectedOrder" slot="header">
               <span :style="{
                   'background-color': selectedOrder.PriorityColor,
                   'color': 'white',                  
@@ -326,7 +327,7 @@
                   'top': '-.2rem'
                   }" class="tag">{{selectedOrder.Priority}}</span> <span style="font-size: 1.5rem;">{{ selectedOrder.Name }}</span>
           </div>
-          <div :style="{
+          <div v-if="selectedOrder" :style="{
               'max-height': '50vh',
               'overflow-y': 'auto',
           }">
@@ -359,7 +360,7 @@
       </modal>
 
       <!-- close work detail dialog -->
-      <modal width="800" v-if="toCloseEquipments.length > 0" v-model="showCloseWorkOrderDetailDialog">
+      <modal width="800" v-model="showCloseWorkOrderDetailDialog">
           <div slot="header">
               Close Order Detail
           </div>
@@ -375,7 +376,7 @@
                 <div style="text-align: center">Lost</div>
                 <div>Description</div>
             </div>
-            <div style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%; margin-bottom: 1rem;"
+            <div v-if="toCloseEquipments.length > 0" style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%; margin-bottom: 1rem;"
                     :key="'toCloseItem' + index" v-for="(value, index) in toCloseEquipments">
                 <div style="display: flex">
                     <img v-show="value.equipment.Image" :src="value.equipment.Image" :alt="value.equipment.Name" style="width: 3rem; height: 3rem;">
@@ -426,8 +427,7 @@
           </div>
       </modal> <!-- close work detail dialog -->
       
-      <modal v-if="mapViewSelectedLocation" v-model="showUpdateItemPosition"
-            ok-text="Save changes" cancel-text="Cancel">
+      <modal v-model="showUpdateItemPosition">
             <div slot="header">
                 <span>Update Position</span>
             </div>
@@ -436,10 +436,10 @@
                 'overflow-y': 'auto',
                 'font-size': '.95rem',
             }">
-                <div>
+                <div v-if="mapViewSelectedLocation">
                     {{mapViewSelectedLocation.Name}} - {{mapViewSelectedLocation.Address}}
                 </div>
-                <div style="display: grid; grid-template-columns: 30% 30% 30%; grid-column-gap: 5%; margin: 2rem 0;">
+                <div style="display: grid; grid-template-columns: 30% 30% 30%; grid-column-gap: 5%; margin: 2rem 0;" v-if="mapViewSelectedLocation">
                     <div style="width: 100%">
                             <div style="width: 100%" class="select">
                                 <select style="width: 100%" v-model="updateBlock">
@@ -479,6 +479,7 @@
                     <button class="button" 
                         v-on:click="() => {
                             showUpdateItemPosition = false;
+                            toUpdatePositionItem = null;
                             updateBlock = null;
                             updateFloor = null;
                             updateTile = null;
@@ -635,6 +636,10 @@ export default {
                     this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
                     // this.getEquipmentsOfWorkOrder(this.selectedOrder);
                     // this.getLocationBlockFloorTile(this.selectedOrder);
+                }
+                if (this.$route.params && this.$route.params.orderId) {
+                    this.selectedOrder = data.filter(order => order.Id == this.$route.params.orderId)[0];
+                    this.getEquipmentsOfWorkOrder(this.selectedOrder);
                 }
             }
         }).catch(error => {
@@ -840,7 +845,7 @@ export default {
             ) {
               let newItemStatusName = "";
               if (newOrderStatusName == "Approved") {
-                newItemStatusName = "Working Requested";
+                newItemStatusName = "Working Approved";
               } else if (newOrderStatusName == "In Progress") {
                 newItemStatusName = "Working";
               } else if (newOrderStatusName == "Closed") {
@@ -923,7 +928,7 @@ export default {
             tileId: this.updateTile.Id,
         }).then(async (res) => {
             if (res.status == 200) {
-                this.toUpdatePositionItem = null,
+                this.toUpdatePositionItem = null;
                 this.updateBlock = null;
                 this.updateFloor = null;
                 this.updateTile = null;
@@ -974,7 +979,10 @@ export default {
 
   },
   watch: {
-    changeStatusDescription: function() {
+    'showApproveRejectDialog': function() {
+        this.Errors.RejectedDescriptionNotProvided = '';
+    },
+    'changeStatusDescription': function() {
       if (
         this.showApproveRejectDialog &&
         !this.approveWorkOrder &&
@@ -983,7 +991,7 @@ export default {
         this.Errors.RejectedDescriptionNotProvided = "";
       }
     },
-    myWorkOrderViewMode: function() {
+    'myWorkOrderViewMode': function() {
 
         this.selectedOrder = null;
         this.toDisplayWorkOrders = [];
@@ -995,7 +1003,7 @@ export default {
         this.tempValues = null;
         this.filterOrders();
     },
-    updateTile: function() {
+    'updateTile': function() {
         Vue.nextTick(() => {
             if (this.updateTile && this.updateTile.Id == this.toUpdatePositionItem.TileID) {
                 this.errorUpdatePosition = 'This item is already in this position';
@@ -1003,7 +1011,14 @@ export default {
                 this.errorUpdatePosition = '';
             }
         })
-
+    },
+    'showUpdateItemPosition': function() {
+        if (!this.showUpdateItemPosition) {
+            this.toUpdatePositionItem = null;
+            this.updateBlock = null;
+            this.updateFloor = null;
+            this.updateTile = null;
+        }
     }
   }
 };
@@ -1118,6 +1133,7 @@ export default {
 
 .detail-label {
   font-size: 0.98rem;
+  font-weight: bold;
 }
 
 .detail-contents {

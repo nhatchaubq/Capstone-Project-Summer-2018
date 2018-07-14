@@ -18,10 +18,67 @@ router.get("/workorderbylocationId/:id", (request, response) => {
     .into(response);
 });
 
-// router.get('/', (request, response) => {
-//     request.sql("exec GetWorkOrders")
-//         .into(response);
-// });
+// ChauBQN
+// Get work order info to edit
+router.get('/id/:orderId', (request, response) => {
+    request.sql("select wo.*, json_query((select lo.Id as [Id] "
+        + "                               from [Location] as lo join TeamLocation as tl on lo.Id = tl.LocationID "
+        + "                               where tl.Id = wo.TeamLocationID "
+        + "                               for json path, without_array_wrapper)) as [Location], "
+        + "                         json_query((select t.Id as [Id] "
+        + "                                     from [Team] as t join TeamLocation as tl on t.Id = tl.TeamID "
+        + "                                     where tl.Id = wo.TeamLocationID "
+        + "                                     for json path, without_array_wrapper)) as [Team], "
+        + "                             json_query((select e.Id as [Id], json_query((select top 1 wod.ExpectingStartDate, wod.ExpectingDueDate "
+        + "                                                                          from WorkOrderDetail as wod join WorkOrder as wo  on wod.WorkOrderID = wo.Id "
+        + "                                                                                 join EquipmentItem as ei on wod.EquipmentItemID = ei.Id "
+        + "                                                                                 join Equipment as e2 on ei.EquipmentID = e.Id "
+        + "                                                                          where wo.Id = @orderId and e2.Id = e.Id "
+        + "                                                                          for json path, without_array_wrapper)) as [OrderDetail], "
+        + "                                                                     json_query((select ei.Id as [Id] "
+        + "                                                                                 from EquipmentItem as ei join WorkOrderDetail as wod on ei.Id = wod.EquipmentItemID "
+        + "                                                                                 where wod.WorkOrderID = @orderId and ei.EquipmentID = e.Id "
+        + "                                                                                 for json path)) as [EquipmentItems], "
+        + "                                                                         json_query((select ei.*, es.[Name] as [Status], " 
+        + "                                                                                                 json_query((select wo.*, acc.[Username] as [RequestUsername], wos.[Name] as [Status], pri.[Name] as [Priority], pri.TagHexColor as [PriorityTagColor], "
+        + "                                                                                                                     json_query((select wod.* "
+        + "                                                                                                                                 from WorkOrderDetail as wod "
+        + "                                                                                                                                 where wod.EquipmentItemID = ei.Id and wod.WorkOrderID = wo.Id "
+        + "                                                                                                                                 for json path, without_array_wrapper)) as [Detail] "
+        + "                                                                                                             from WorkOrder as wo join Account as acc on wo.RequestUserID = acc.Id  "
+        + "                                                                                                                     join WorkOrderStatus as wos on wo.StatusID = wos.Id "
+        + "                                                                                                                     join [Priority] as pri on wo.PriorityID = pri.Id, (select Id  "
+        + "                                                                                                                                                                        from WorkOrderStatus "
+        + "                                                                                                                                                                        where [Name] != N'Cancelled' and [Name] != N'Closed' and [Name] != N'Rejected') as [status],  "
+        + "                                                                                                                                                                                 (select wod.* "
+        + "                                                                                                                                                                                  from WorkOrderDetail as wod "
+        + "                                                                                                                                                                                  where wod.EquipmentItemID = ei.Id) as [workorderdetail] "
+        + "                                                                                                             where wo.StatusId = [status].Id and wo.Id = [workorderdetail].WorkOrderID "
+        + "                                                                                                             order by wo.StatusID desc, wo.PriorityID desc "
+        + "                                                                                                             for json path)) as [WorkOrders] "
+        + "                                                                                     from EquipmentItem as ei "
+        + "                                                                                             join Equipment as e4 on ei.EquipmentID = e4.Id "
+        + "                                                                                             join EquipmentStatus as es on ei.StatusId = es.Id "
+        + "                                                                                     where ei.EquipmentID = e.Id "
+        + "                                                                                     order by (select count(wo.Id) "
+        + "                                                                                               from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
+        + "                                                                                               where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id "
+        + "                                                                                                                                                     from WorkOrderStatus "
+        + "                                                                                                                                                     where [Name] != N'Cancelled' and [Name] != N'Closed' and [Name] != N'Rejected')) asc, ei.RuntimeDays asc, ei.LastMaintainDate desc, ei.NextMaintainDate desc "
+        + "                                                                                                                                                     for json path)) as [Table] "
+        + "                                         from Equipment as e "
+        + "                                         where e.Id in (select distinct e.Id "
+        + "                                                        from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID "
+        + "                                                        where ei.id in (select wod.EquipmentItemID "
+        + "                                                                        from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
+        + "                                                                        where wo.Id = @orderId)) "
+        + "                                         for json path)) as [Equipments] "
+        + " from WorkOrder as wo "
+        + " where Id = @orderId "
+        + " for json path, without_array_wrapper")
+        .param("orderId", request.params.orderId, TYPES.Int)
+        .into(response);
+});
 
 // ChauBQN
 // get work orders
@@ -74,10 +131,10 @@ router.get('/:id/equipments', (request, response) => {
                 + "                                                     where wo2.Id = @workOrderId and ei2.EquipmentID = e.Id for json path) as [EquipmentItems] "
                 + " from Equipment as e join [Unit] as u on e.UnitID = u.Id "
                 + " where e.Id in (select distinct e.Id "
-                + " from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID "
-                + " where ei.id in (select wod.EquipmentItemID "
-                + "         from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
-                + "         where wo.Id = @workOrderId)) "
+                + "                 from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID "
+                + "                 where ei.id in (select wod.EquipmentItemID "
+                + "                                 from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
+                + "                                 where wo.Id = @workOrderId)) "
                 + " for json path")
         .param('workOrderId', request.params.id, TYPES.Int)
         .into(response);
@@ -128,10 +185,10 @@ router.get('/get_equipment_detail/:id', (req, res) => {
             "        join EquipmentStatus as es on ei.StatusId = es.Id " +
             " where ei.EquipmentID = @equipmentId " +
             " order by (select count(wo.Id) " +
-            "    from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID " +
-            "    where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id " +
-            "                                                        from WorkOrderStatus " +
-            "                                                        where [Name] != N'Cancelled' and [Name] != N'Closed' and [Name] != N'Rejected')) asc, ei.RuntimeDays asc, ei.LastMaintainDate desc, ei.NextMaintainDate desc " +
+            "           from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID " +
+            "           where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id " +
+            "                                                                 from WorkOrderStatus " +
+            "                                                                 where [Name] != N'Cancelled' and [Name] != N'Closed' and [Name] != N'Rejected')) asc, ei.RuntimeDays asc, ei.LastMaintainDate desc, ei.NextMaintainDate desc " +
             " for json path")
         .param('equipmentId', req.params.id, TYPES.Int)
         .into(res);
@@ -151,6 +208,10 @@ router.get('/get_equipment_detail/:id', (req, res) => {
 router.post('/', (req, res) => {
     req.sql(" declare @newWorkOrderId int; " +
             " declare @categoryId int; " +
+            " declare @createDate datetime; " +
+            " declare @statusId int; " +
+            " set @createDate = getdate(); " +
+            " set @statusId = (select Id from WorkOrderStatus where [Name] = N'Requested'); " +
             " set @categoryId = (select Id from WorkOrderCategory where [Name] = @categoryName); " +
             " insert into [WorkOrder]([Name], RequestUserID, CreateDate, [Description], PriorityID, StatusID, CategoryID, TeamLocationID) " +
             "     values(@name, @requestUserId, @createDate, @description, @priorityId, @statusId, @categoryId, @teamLocationId); " +
@@ -160,10 +221,8 @@ router.post('/', (req, res) => {
             "       values(@newWorkOrderId, @requestUserId, @createDate, null, @statusId, @description);")
         .param('name', req.body.name, TYPES.NVarChar)
         .param('requestUserId', req.body.requestUserId, TYPES.Int)
-        .param('createDate', req.body.createDate, TYPES.NVarChar)
         .param('description', req.body.description, TYPES.NVarChar)
         .param('priorityId', req.body.priorityId, TYPES.Int)
-        .param('statusId', req.body.statusId, TYPES.Int)
         .param('categoryName', req.body.categoryName, TYPES.NVarChar)
         .param('teamLocationId', req.body.teamLocationId, TYPES.Int)
         .into(res);
@@ -172,7 +231,7 @@ router.post('/', (req, res) => {
 /* ChauBQN */
 router.post('/detail', (req, res) => {
     req.sql('insert into WorkOrderDetail(EquipmentItemID, WorkOrderID, ExpectingStartDate, ExpectingDueDate, MaintainceCost, [Description]) ' +
-            'values(@equipmentItemId, @workOrderId, @startDate, @dueDate, @maintainceCost, @description);')
+            '   values(@equipmentItemId, @workOrderId, @startDate, @dueDate, @maintainceCost, @description);')
         .param('workOrderId', req.body.workOrderId, TYPES.Int)
         .param('equipmentItemId', req.body.equipmentItemId, TYPES.Int)
         .param('startDate', req.body.startDate, TYPES.NVarChar)
@@ -192,24 +251,18 @@ router.post('/close_detail/:workOrderDetailId', (req, res) => {
     req.sql("declare @workOrderId int; "
         + "  declare @currentItemStatusId int; "
         + "  declare @newStatusId int; "
-    
         + "  set @workOrderId = (select WorkOrderId from WorkOrderDetail where Id = @workOrderDetailId); "
         + "  set @currentItemStatusId = (select StatusId from EquipmentItem where Id = @itemId); "
         + "  set @newStatusId = (select Id from EquipmentStatus where [Name] = @newItemStatus); "
-   
         + "  insert into WorkOrderDetailReturn(WorkOrderDetailId, ByUserId, [DateTime], NewItemStatusId) values(@workOrderDetailId, @userId, getdate(), @newStatusId); "
         + "  update WorkOrderDetail set ClosedDate = getdate() where Id = @workOrderDetailId; "
-
         + "  declare @currentRuntimeDays int; "
         + "  declare @orderDetailStartDate datetime; "
         + "  set @orderDetailStartDate = (select StartDate from WorkOrderDetail where Id = @workOrderDetailId); "
         + "  set @currentRuntimeDays = (select RuntimeDays from EquipmentItem where Id = @itemId); "
-
         + "  update EquipmentItem set RuntimeDays = (DATEDIFF(day, @orderDetailStartDate, getdate()) + @currentRuntimeDays) where Id = @itemId; "
-  
         + "  declare @totalOrderDetail int; "
         + "  declare @totalOrderDetailReturned int; "
-        
         + "  set @totalOrderDetail = (select count(*) from WorkOrderDetail where WorkOrderID = @workOrderId); "
         + "  set @totalOrderDetailReturned = (select count(*)  "
         + "                                   from WorkOrderDetail as wod  "
@@ -221,15 +274,11 @@ router.post('/close_detail/:workOrderDetailId', (req, res) => {
         + "     declare @newWorkOrderStatusId int; "
         + "     set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); "
         + "     set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = N'Closed'); "
-        
         + "     update WorkOrderDetail set ClosedDate = getdate() where Id = @workOrderDetailId "
-        
         + "     update [WorkOrder] set StatusID = @newWorkOrderStatusId, ClosedDate = getdate() where Id = @workOrderId; "
-        
         + "     insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) "
         + "         values(@workOrderId, @userId, getdate(), @oldWorkOrderStatusId, @newWorkOrderStatusId, @description); "
-        + " end "
-        
+        + " end "        
         + "  update EquipmentItem set StatusId = @newStatusId where Id = @itemId; "
         + "  insert into EquipmentItemHistory(EquipmentItemID, ByUserID, OldStatusID, NewStatusID, [Date], [Description]) "
         + "     values(@itemId, @userId, @currentItemStatusId, @newStatusId, getdate(), @description)")
@@ -265,4 +314,22 @@ router.put('/status/:orderId', (req, res) => {
         .exec(res);
 
 });
+
+// ChauBQN
+// update team location of work order
+router.put('/team_location/:workOrderId', (req, res) => {
+    req.sql('update WorkOrder set TeamLocationID = @teamLocationId where Id = @workOrderId')
+        .param('workOrderId', req.params.workOrderId, TYPES.Int)
+        .param('teamLocationId', req.body.teamLocationId, TYPES.Int)
+        .exec(res);
+});
+
+// ChauBQN
+// delete work order detail
+router.delete('/detail/:workOrderId', (req, res) => {
+    req.sql('delete from WorkOrderDetail where WorkOrderId = @workOrderId')
+        .param('workOrderId', req.params.workOrderId, TYPES.Int)
+        .exec(res);
+})
+
 module.exports = router;
