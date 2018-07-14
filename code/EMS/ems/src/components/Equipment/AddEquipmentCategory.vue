@@ -9,7 +9,7 @@
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  Category Name <span style="color:red;">*</span></strong>
+                <strong>  Category Name <span style="color:red;">*</span></strong><span v-if="CreateCateErrors.NoCate != ''">. <span></span> <span class="error-text">{{ CreateCateErrors.NoCate }}</span></span><span v-if="CreateCateErrors.MaxCateCha != ''">. <span></span> <span class="error-text">{{ CreateCateErrors.MaxCateCha }}</span></span>
                 </div>
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
                     <input v-model="EquipmentCate.Name" class="input " type="text" placeholder="Text input" >
@@ -48,6 +48,17 @@
 export default {
   data() {
     return {
+      sending: false,
+      ErrorStrings: {
+        NoCate: "You must provide name for this category",
+
+        // MinCateCha: "Minimum category length is 6 characters",
+        MaxCateCha: "Maximum category length is 50 characters"
+      },
+      CreateCateErrors: {
+        NoCate: "",
+        MaxCateCha: ""
+      },
       EquipmentCate: {
         Name: "",
         Description: ""
@@ -56,13 +67,37 @@ export default {
   },
   methods: {
     createEquimentCategory() {
-      this.axios
-        .post("http://localhost:3000/api/EquipmentCategory", {
-          EquipmentCate: this.EquipmentCate
-        })
-        .then(res => {
-          this.$router.push("/equipment");
-        });
+      if (this.EquipmentCate.Name === "") {
+        this.CreateCateErrors.NoCate = this.ErrorStrings.NoCate;
+      }
+      if (this.EquipmentCate.Name.length < 5) {
+        this.CreateCateErrors.MaxCateCha = this.ErrorStrings.MaxCateCha;
+      }
+      if (this.validateCate()) {
+        this.axios
+          .post("http://localhost:3000/api/EquipmentCategory", {
+            EquipmentCate: this.EquipmentCate
+          })
+          .then(res => {
+            this.$router.push("/equipment");
+          });
+      }
+    },
+    validateCate() {
+      return (
+        this.CreateCateErrors.NoCate === "" &&
+        this.CreateCateErrors.MaxCateCha === ""
+      );
+    }
+  },
+  watch: {
+    "EquipmentCate.Name": function() {
+      if (this.EquipmentCate.Name != "") {
+        this.CreateCateErrors.NoCate = "";
+      }
+      if (this.EquipmentCate.Name.length > 4) {
+        this.CreateCateErrors.MaxCateCha = "";
+      }
     }
   }
 };

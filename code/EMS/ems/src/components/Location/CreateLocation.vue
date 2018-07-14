@@ -5,39 +5,36 @@
             Add New Location
           </div>
           <div class="form-title-end">              
-                <button id="" class="button is-rounded is-primary" style="margin-right: .6rem" v-on:click="createLocation()">Create New Location</button>
-                <button id="" class="button is-rounded"  v-on:click="$router.push('/location')">Cancel</button>
+                
+                <button id="" class="button" style="margin-right: .6rem"  v-on:click="$router.push('/location')">Cancel</button>
+                <button id="" class="button is-primary"  v-on:click="createLocation()">Create New Location</button>
           </div>  
         </div>
-        <div class="form-input" >   
+        <div class="form-content" >   
             <div class="form-field" style="padding-top:1.5rem">
                 <div class="form-field-title">
-                    Name of location (required)
+                    <strong>Name <span style="color:red;">*</span></strong>  <span v-if="CreateLocationErrors.NoName != ''"><span class="error-text">  {{ CreateLocationErrors.NoName }}</span></span>
                 </div>
-                <div>
+                <div class="form-field-input">
                     <input v-model="newLocation.name" type="text" class="input">
                 </div>
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Address (required)
+                    <strong>Address <span style="color:red;">*</span></strong>  <span v-if="CreateLocationErrors.NoAddress != ''"></span> <span class="error-text">  {{ CreateLocationErrors.NoAddress }}</span>
                 </div>
-                <div>
-                  
-                    <div>
-                    
-                    <label class="ggSearch" style="width: 100%">
-                      <gmap-autocomplete  class="input" 
-                        @place_changed="setPlace">
-                      </gmap-autocomplete>
-                      <!-- <button  id="clear-btn" v-if="currentPlace" v-on:click="() => {}">
-                        <i class="material-icons">close</i>
-                      </button> -->
-                      <!-- <button @click="addMarker" class="btn" style="position: relative; bottom: 8px;">Check</button> -->
-                    </label>
-                    <br/>
-
-                  </div>
+                <div class="form-field-input">                  
+                    <div>                    
+                      <label class="ggSearch" style="width: 100%">
+                        <gmap-autocomplete  class="input" 
+                          @place_changed="setPlace">
+                        </gmap-autocomplete>
+                        <!-- <button  id="clear-btn" v-if="currentPlace" v-on:click="() => {}">
+                          <i class="material-icons">close</i>
+                        </button> -->
+                        <!-- <button @click="addMarker" class="btn" style="position: relative; bottom: 8px;">Check</button> -->
+                      </label>                   
+                    </div>
                   <br>
                   <gmap-map
                     :center="marker?  marker : center"
@@ -49,26 +46,25 @@
                       :position="marker"
                       
                     ></gmap-marker>
-                  </gmap-map>
-                
+                  </gmap-map>                
                 </div>
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Description
+                   <strong>Description</strong>
                 </div>
-                <div >
+                <div class="form-field-input">
                     <!-- <input type="text" class="input" > -->
                     <textarea id="text-descrip" v-model="newLocation.description"  cols="80" rows="10"></textarea>
                 </div>
             </div>
             <div class="form-field" style=" display:grid ; grid-template-columns: 7% 20% auto">
                 <div class="form-field-title">
-                    Team
+                    <strong>Team</strong>
                 </div>
-                <div class="select" style="width: 100% !important" >
+                <div class="select form-field-input" style="width: 100% !important" >
                     <select v-model="selectedTeam" style="width:100%">
-                        <option :disabled="selectedTeams.length > 0" value=null> --Choose new team</option>
+                        <option disabled=disabled value=null> -- Choose new team --</option>
                         <!-- <option :disabled="selectedTeams.length > 0" v- value="null">Not now</option> -->
                         <option v-bind:key='team.Id' v-for='team in teams' :value="team">{{team.Name}}</option>
                     </select>
@@ -80,19 +76,7 @@
                     </div>
             </div>
             
-        </div>
-        <!-- <div class="form-button">
-            <div style="text-align: right; padding-right: 2rem">
-                <button id="btn-create" class="button" v-on:click="createLocation()" >
-                    Create
-                </button>
-            </div>
-            <div>
-                <button id="btn-cancel" class="button" >
-                    Cancel
-                </button>
-            </div>
-        </div> -->
+        </div>    
     </div>        
 </template>
 
@@ -121,7 +105,21 @@ export default {
       center: { lat: 45.508, lng: -73.587 },
       marker: null,
       place: null,
-      currentPlace: null
+      currentPlace: null,
+      CreateLocationErrors: {
+        NoName: "",
+        NoAddress: ""
+      },
+      ErrorStrings: {
+        NoName: "Please enter name!",
+        ShortName: "Use 6 characters or more for location's name",
+        LongName: "Use 100 characters or fewer for location's name",
+        NoAddress: "Please enter and choose address"
+      },
+      form: {
+        Name: "",
+        Address: ""
+      }
     };
   },
   mounted() {
@@ -143,15 +141,26 @@ export default {
   },
   methods: {
     createLocation() {
-      if (this.newLocation.name.trim() == "" || !this.currentPlace) {
-        alert("Please fill out the required fields");
-      } else {
+      if (this.newLocation.name.trim() == "") {
+        this.CreateLocationErrors.NoName = this.ErrorStrings.NoName;
+      } else if (this.newLocation.name.trim().length < 6) {
+        this.CreateLocationErrors.NoName = this.ErrorStrings.ShortName;
+      } else if (this.newLocation.name.trim().length > 100) {
+        this.CreateLocationErrors.NoName = this.ErrorStrings.LongName;
+      }
+      if (!this.currentPlace) {
+        this.CreateLocationErrors.NoAddress = this.ErrorStrings.NoAddress;
+      }
+      if (
+        this.CreateLocationErrors.NoName == "" &&
+        this.CreateLocationErrors.NoAddress == ""
+      ) {
         this.axios
           .post(Server.LOCATION_CREATE_API_PATH, {
             newLocation: {
-              name: this.newLocation.name,
+              name: this.newLocation.name.trim(),
               address: this.currentPlace.formatted_address,
-              description: this.newLocation.description,
+              description: this.newLocation.description.trim(),
               longtitude: this.currentPlace.geometry.location.lng(),
               latitude: this.currentPlace.geometry.location.lat()
             }
@@ -168,6 +177,7 @@ export default {
                 });
               }
             }
+            alert("Successfully!!!");
             this.$router.push("/location");
           })
           .catch(error => {
@@ -220,6 +230,11 @@ export default {
     }
   },
   watch: {
+    "newLocation.name": function() {
+      if (this.newLocation.name.trim() != "") {
+        this.CreateLocationErrors.NoName = "";
+      }
+    },
     selectedTeam: function() {
       if (this.selectedTeam) {
         if (this.selectedTeams.length == 0) {
@@ -231,6 +246,9 @@ export default {
       }
     },
     currentPlace: function() {
+      if (this.currentPlace) {
+        this.CreateLocationErrors.NoAddress = "";
+      }
       if (this.currentPlace) {
         const tmpMarker = {
           lat: this.currentPlace.geometry.location.lat(),
@@ -257,40 +275,47 @@ export default {
 
   color: red;
 } */
+
 .form {
   background-color: white;
   padding: 0 !important;
   grid-template-columns: 20% 20% 60%;
 }
+.form-content {
+  font-size: 0.9rem;
+  position: fixed;
+  max-height: 82.5%;
+  width: 82%;
+  overflow-y: auto;
+
+  /* display: flex;
+        flex-direction: column;  */
+}
+
+.form-field {
+  /* margin-bottom: 5px; */
+  width: 100%;
+  padding: 1rem 2rem;
+}
+
 .form-title {
   display: grid;
-  grid-template-columns: 73% auto;
-  border-bottom: 0.02px solid;
-
-  height: 50px;
-  line-height: 50px;
-  padding-left: 30px;
-  top: 10px;
-  /* font-weight: bold; */
-  font-size: 20px;
-  color: #616161;
+  grid-template-columns: 65% 35%;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem 2rem;
 }
-/* .form-title-start {
+.form-title-start {
   position: relative;
   top: 10px;
   font-weight: bold;
   font-size: 20px;
   color: #616161;
-} */
+}
 .form-title-end {
-  /* width: 100%; */
-  /* display: flex;
-  justify-content: flex-end; */
-
-  /* bottom: 20px; */
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
   /* align-content: center; */
-  position: relative;
-  top: 0.5rem;
 }
 .form-input {
   padding-left: 50px;

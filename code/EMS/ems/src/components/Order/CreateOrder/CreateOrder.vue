@@ -722,8 +722,8 @@ export default {
         InvalidTitleLength: '',
         NoEquipmentSelected: '',
         EquipmentErrors: [],
-        NoLocation: '',
-        NoTeam: '',
+        NoLocation: "",
+        NoTeam: ""
       },
       workOrderTitle: "",
       workOrderDescription: "",
@@ -770,7 +770,7 @@ export default {
       } else if (this.authUser.Role == 'Maintainer') {
         return 'Maintain'; // maintain order
       }
-    },
+    }
   },
   created() {
     // this.axios.get(Server.WORKORDER_CATEGORIES_API_PATH).then(res => {
@@ -786,7 +786,9 @@ export default {
         data.forEach(element => {
           let quantity = parseInt(element.Equipment.Quantity);
           let option = {
-            text: `${element.Equipment.Name}, quantity: ${quantity} ${quantity > 0 ? element.Equipment.Unit : ''}`,
+            text: `${element.Equipment.Name}, quantity: ${quantity} ${
+              quantity > 0 ? element.Equipment.Unit : ""
+            }`,
             value: element.Equipment.Id,
             image: element.Equipment.Image,
             totalQuantity: quantity
@@ -824,10 +826,12 @@ export default {
     addEquipment() {
       if (this.selectedEquipment.value == "") {
         this.AddEquipmentWarnings.MustSelectEquipment = this.ErrorStrings.MustSelectEquipment;
-      } 
+      }
       if (this.validateAddEquipment()) {
-        if (this.selectedEquipment.value != "" &&
-          this.selectedEquipment.totalQuantity > 0) {
+        if (
+          this.selectedEquipment.value != "" &&
+          this.selectedEquipment.totalQuantity > 0
+        ) {
           let index = this.selectedEquipments.findIndex(
             equipment => equipment.id == this.selectedEquipment.value
           );
@@ -840,9 +844,7 @@ export default {
               name: this.selectedEquipment.text,
               quantity: parseInt(this.selectedEquipmentQuantity),
               image: this.selectedEquipment.image,
-              totalQuantity: parseInt(
-                this.selectedEquipment.totalQuantity
-              ),
+              totalQuantity: parseInt(this.selectedEquipment.totalQuantity),
               fromDate: this.selectedEquipmentFromDate,
               toDate: this.selectedEquipmentToDate,
               equipmentItemIds: this.selectedEquipmentItemIds,
@@ -855,10 +857,12 @@ export default {
               addEquipmentWarnings: warningOb,
             };
             this.selectedEquipments.push(equipment);
-          } else { // this equipment is already added to the list, so modified the quantity
+          } else {
+            // this equipment is already added to the list, so modified the quantity
             // TODO
           }
           this.toDisplayEquipmentOptions = this.toDisplayEquipmentOptions.filter(option => parseInt(option.value) != parseInt(this.selectedEquipment.value));
+
           // reset values
           this.selectedEquipment = {
             text: "",
@@ -868,7 +872,7 @@ export default {
           };
           this.resetEquipmentSelection();
         }
-      } 
+      }
     },
     removeEquipment(equipment) {
       this.selectedEquipments = this.selectedEquipments.filter(
@@ -892,10 +896,10 @@ export default {
       if (this.selectedEquipments.length == 0) {
         this.CreateWorkOrderErrors.NoEquipmentSelected = this.ErrorStrings.NoEquipmentSelected;
       }
-      if (this.selectedLocation.value === '') {
+      if (this.selectedLocation.value === "") {
         this.CreateWorkOrderErrors.NoLocation = this.ErrorStrings.NoLocation;
       }
-      if (this.selectedTeam.value === '') {
+      if (this.selectedTeam.value === "") {
         this.CreateWorkOrderErrors.NoTeam = this.ErrorStrings.NoTeam;
       }
       if (this.validateCreateOrder()) {
@@ -976,7 +980,7 @@ export default {
               && this.AddEquipmentWarnings.AvailableQuantityIsZero === '' && this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero === ''
               && this.AddEquipmentWarnings.FromDateIsFromThePast === '' && this.AddEquipmentWarnings.UnableToSelectItem === '';
     },
-    validateCreateOrder() {      
+    validateCreateOrder() {
       var checkSelectedItems = true; // check if currently there is no error messages of items are displaying
       for (var i = 0; i < this.selectedEquipments.length; i++) {
         let selectedEquipment = this.selectedEquipments[i];
@@ -1002,36 +1006,43 @@ export default {
       this.checkAllItems = false;
       // if selectedEquipmentItemIds already has equipmentItemId, we decrease the selectedEquipmentQuantity, then remove the equipmentItemId from the selectedEquipmentItemIds
       if (this.selectedEquipmentItemIds.includes(equipmentItemId)) {
-        this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) - 1;
-        this.selectedEquipmentItemIds = this.selectedEquipmentItemIds.filter(itemId => itemId != equipmentItemId);
+        this.selectedEquipmentQuantity =
+          parseInt(this.selectedEquipmentQuantity) - 1;
+        this.selectedEquipmentItemIds = this.selectedEquipmentItemIds.filter(
+          itemId => itemId != equipmentItemId
+        );
         if (this.selectedEquipmentItemIds.length == 0) {
           this.indeterminate = false;
           this.checkAllItems = false;
           this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
         }
-      } 
-      else {
-        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
-        this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) + 1;
+      } else {
+        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = "";
+        this.selectedEquipmentQuantity =
+          parseInt(this.selectedEquipmentQuantity) + 1;
         this.selectedEquipmentItemIds.push(equipmentItemId);
-        if (this.selectedEquipmentItemIds.length == this.equipmentTable.length) {
-            this.indeterminate = false;
-            this.checkAllItems = true;
+        if (
+          this.selectedEquipmentItemIds.length == this.equipmentTable.length
+        ) {
+          this.indeterminate = false;
+          this.checkAllItems = true;
         }
       }
-      
+
       this.conflictItems = [];
       this.unableSelectItems = [];
         // check if from date conflicts any item in work orders
       let tempItems = [];
       this.selectedEquipmentItemIds.forEach(itemId => {
-        tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-      })
+        tempItems = tempItems.concat(
+          this.equipmentTable.filter(item => item.Id == itemId)
+        );
+      });
       // get the selected items in equipmentTable to tempItems
       this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems,
                         this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
       if (this.conflictItems.length == 0) {
-        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
       } else {
         this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
       }
@@ -1052,7 +1063,9 @@ export default {
       if (this.checkAllItems) {
         this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
         this.selectedEquipmentItemIds = [];
-        this.equipmentTable.forEach(item => this.selectedEquipmentItemIds.push(item.Id));
+        this.equipmentTable.forEach(item =>
+          this.selectedEquipmentItemIds.push(item.Id)
+        );
         this.selectedEquipmentQuantity = this.equipmentTable.length;
 
         this.conflictItems = [];
@@ -1060,13 +1073,15 @@ export default {
           // check if from date conflicts any item in work orders
         let tempItems = [];
         this.selectedEquipmentItemIds.forEach(itemId => {
-          tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-        })
+          tempItems = tempItems.concat(
+            this.equipmentTable.filter(item => item.Id == itemId)
+          );
+        });
         // get the selected items in equipmentTable to tempItems
         this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems,
                           this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
         if (this.conflictItems.length == 0) {
-          this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+          this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
         } else {
           this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
         }
@@ -1136,10 +1151,10 @@ export default {
                   conflictItems.push({itemId: item.Id, workOrderId: order.Id});
                 }
             }
-          })
+          });
         }
-      });          
-    },
+      });
+    }
   },
   watch: {
     'workOrderTitle': function() {
@@ -1147,49 +1162,51 @@ export default {
         this.CreateWorkOrderErrors.InvalidTitleLength = '';
       }
     },
-    'selectedEquipment': function() {
+    selectedEquipment: function() {
       // selecte another equipment
-      if (this.selectedEquipment.value != '') {
-         this.resetEquipmentSelection(); // reset after selected another equipment 
-        if (this.AddEquipmentWarnings.MustSelectEquipment != '') { // error 'Must select equipment' displaying
-          this.AddEquipmentWarnings.MustSelectEquipment = '';
+      if (this.selectedEquipment.value != "") {
+        this.resetEquipmentSelection(); // reset after selected another equipment
+        if (this.AddEquipmentWarnings.MustSelectEquipment != "") {
+          // error 'Must select equipment' displaying
+          this.AddEquipmentWarnings.MustSelectEquipment = "";
         }
         // check if selected equipment has equipment item(s)
         if (this.selectedEquipment.totalQuantity == 0) {
           this.AddEquipmentWarnings.AvailableQuantityIsZero = this.ErrorStrings.AvailableQuantityIsZero;
         } else {
-          this.AddEquipmentWarnings.AvailableQuantityIsZero = ''; // set warning to empty text         
+          this.AddEquipmentWarnings.AvailableQuantityIsZero = ""; // set warning to empty text
 
           // get all the equipment items with work order detail info (if available)
-          let url = `${Server.WORKORDER_API_PATH}/get_equipment_detail/${this.selectedEquipment.value}`;
-          this.axios.get(url)
-            .then((res) => {
-              if (res.status == 200 && res.data) {
-                this.equipmentTable = res.data;
-                this.selectedEquipmentItemIds.push(res.data[0].Id);
-                this.selectedEquipmentQuantity = 1;
-                this.indeterminate = true;
-                this.selectedEquipmentFromDate = this.getToday();
-                this.selectedEquipmentToDate = this.getToday();
-              }
-            })
+          let url = `${Server.WORKORDER_API_PATH}/get_equipment_detail/${
+            this.selectedEquipment.value
+          }`;
+          this.axios.get(url).then(res => {
+            if (res.status == 200 && res.data) {
+              this.equipmentTable = res.data;
+              this.selectedEquipmentItemIds.push(res.data[0].Id);
+              this.selectedEquipmentQuantity = 1;
+              this.indeterminate = true;
+              this.selectedEquipmentFromDate = this.getToday();
+              this.selectedEquipmentToDate = this.getToday();
+            }
+          });
         }
       }
     },
-    'selectedEquipments': function() {
+    selectedEquipments: function() {
       if (this.selectedEquipments.length > 0) {
-        this.CreateWorkOrderErrors.NoEquipmentSelected = '';
+        this.CreateWorkOrderErrors.NoEquipmentSelected = "";
       }
     },
-    'selectedLocation': function() {
+    selectedLocation: function() {
       this.teamOptions = [];
       this.selectedTeam = {
         text: "",
         value: ""
       };
-      if (this.selectedLocation.value != '') {
-        if (this.CreateWorkOrderErrors.NoLocation != '') {
-          this.CreateWorkOrderErrors.NoLocation = '';
+      if (this.selectedLocation.value != "") {
+        if (this.CreateWorkOrderErrors.NoLocation != "") {
+          this.CreateWorkOrderErrors.NoLocation = "";
         }
         // alert('in 2')
         let url = `${Server.LOCATION_API_PATH}/${
@@ -1209,8 +1226,8 @@ export default {
         });
       }
     },
-    'selectedEquipmentFromDate': function() {
-      if (this.selectedEquipmentFromDate === '') {
+    selectedEquipmentFromDate: function() {
+      if (this.selectedEquipmentFromDate === "") {
         this.selectedEquipmentFromDate = this.getToday();
       } else {
         let fromDate = this.getMilis(this.selectedEquipmentFromDate);
@@ -1223,54 +1240,22 @@ export default {
         if (fromDate > toDate) {
           this.AddEquipmentWarnings.FromDateIsLargerThanToDate = this.ErrorStrings.FromDateIsLargerThanToDate;
         } else if (fromDate <= toDate) {
-          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = '';
+          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = "";
           this.conflictItems = [];
           this.unableSelectItems = [];
             // check if from date conflicts any item in work orders
           let tempItems = [];
           this.selectedEquipmentItemIds.forEach(itemId => {
-            tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-          })
+            tempItems = tempItems.concat(
+              this.equipmentTable.filter(item => item.Id == itemId)
+            );
+          });
           // get the selected items in equipmentTable to tempItems
           this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems,
                             this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
-          if (this.conflictItems.length == 0) {
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-          } else {
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
-          }
-          if (this.unableSelectItems.length == 0) {
-            this.AddEquipmentWarnings.UnableToSelectItem = '';
-          } else {
-            this.AddEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
-          }
-        }
-      }
-    }
-    ,
-    'selectedEquipmentToDate': function() {
-      if (this.selectedEquipmentToDate === '') {
-        this.selectedEquipmentToDate = this.getToday();
-      } else {
-        let fromDate = moment(this.selectedEquipmentFromDate).valueOf();
-        let toDate = moment(this.selectedEquipmentToDate).valueOf();
-        if (fromDate > toDate) {
-          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = this.ErrorStrings.FromDateIsLargerThanToDate;
-        } else if (fromDate <= toDate){
-          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = '';
 
-          this.conflictItems = [];
-          this.unableSelectItems = [];
-          // check if from date conflicts any item in work orders
-          let tempItems = [];
-          // get the selected items in equipmentTable to tempItems
-          this.selectedEquipmentItemIds.forEach(itemId => {
-            tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-          })
-          // get the selected items in equipmentTable to tempItems
-          this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems, fromDate, toDate);
           if (this.conflictItems.length == 0) {
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
           } else {
             this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
           }
@@ -1282,19 +1267,61 @@ export default {
         }
       }
     },
-    'selectedEquipmentQuantity': function() {
-      if (this.selectedEquipmentQuantity === '') {
+    selectedEquipmentToDate: function() {
+      if (this.selectedEquipmentToDate === "") {
+        this.selectedEquipmentToDate = this.getToday();
+      } else {
+        let fromDate = moment(this.selectedEquipmentFromDate).valueOf();
+        let toDate = moment(this.selectedEquipmentToDate).valueOf();
+        if (fromDate > toDate) {
+          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = this.ErrorStrings.FromDateIsLargerThanToDate;
+        } else if (fromDate <= toDate) {
+          this.AddEquipmentWarnings.FromDateIsLargerThanToDate = "";
+
+          this.conflictItems = [];
+          this.unableSelectItems = [];
+          // check if from date conflicts any item in work orders
+          let tempItems = [];
+          // get the selected items in equipmentTable to tempItems
+          this.selectedEquipmentItemIds.forEach(itemId => {
+            tempItems = tempItems.concat(
+              this.equipmentTable.filter(item => item.Id == itemId)
+            );
+          });
+          // get the selected items in equipmentTable to tempItems          
+          this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems,
+                            this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
+          if (this.conflictItems.length == 0) {
+            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
+          } else {
+            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
+          }
+          if (this.unableSelectItems.length == 0) {
+            this.AddEquipmentWarnings.UnableToSelectItem = '';
+          } else {
+            this.AddEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
+          }
+        }
+      }
+    },
+    selectedEquipmentQuantity: function() {
+      if (this.selectedEquipmentQuantity === "") {
         this.selectedEquipmentQuantity = 0;
         this.selectedEquipmentItemIds = [];
         this.conflictItems = [];
         this.indeterminate = false;
         this.checkAllItems = false;
-        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
         this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
       } else {
-        if (this.selectedEquipment.value != '' && this.selectedEquipment.totalQuantity > 0) {
+        if (
+          this.selectedEquipment.value != "" &&
+          this.selectedEquipment.totalQuantity > 0
+        ) {
           var currentQuantity = parseInt(this.selectedEquipmentQuantity);
-          let equipmentQuantity = parseInt(this.selectedEquipment.totalQuantity);
+          let equipmentQuantity = parseInt(
+            this.selectedEquipment.totalQuantity
+          );
           if (currentQuantity < 0) {
             this.selectedEquipmentQuantity = 0;
           } else if (currentQuantity > equipmentQuantity) {
@@ -1304,35 +1331,44 @@ export default {
           // if the selectedEquipmentQuantity = 0, we should display a warning to user
           if (currentQuantity == 0) {
             this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
             this.selectedEquipmentItemIds = [];
             this.conflictItems = [];
             this.indeterminate = false;
             this.checkAllItems = false;
           } else {
-            this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
+            this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = "";
             this.indeterminate = true;
             // if the selectedEquipmentQuantity is greater than selectedEquipmentItemIds.length
             //, it means we should add the next item to selectedEquipmentItemIds
             if (currentQuantity >= this.selectedEquipmentItemIds.length) {
-              while(this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
+              while (
+                this.selectedEquipmentItemIds.length !=
+                parseInt(this.selectedEquipmentQuantity)
+              ) {
                 let tempItems = this.equipmentTable;
                 this.selectedEquipmentItemIds.forEach(itemId => {
                   tempItems = tempItems.filter(item => item.Id != itemId);
-                })
+                });
                 this.selectedEquipmentItemIds.push(tempItems[0].Id);
               }
-              if (this.selectedEquipmentItemIds.length == this.equipmentTable.length) {
+              if (
+                this.selectedEquipmentItemIds.length ==
+                this.equipmentTable.length
+              ) {
                 this.indeterminate = false;
                 this.checkAllItems = true;
-              } 
+              }
             } else if (currentQuantity < this.selectedEquipmentItemIds.length) {
               // the code below will simply pop the last id out of the list, so if user has pick an equipment by hand (not using the number input)
               // and then use the number input, the item is not automatically calculate to choose the best ideal one
               // in other words, the order of item will not be the best ideal order the algorithm should give out
               // then the user would see item unchecks in the incorrect descending order
               // but i think we should respect the user's choice
-              while(this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
+              while (
+                this.selectedEquipmentItemIds.length !=
+                parseInt(this.selectedEquipmentQuantity)
+              ) {
                 this.selectedEquipmentItemIds.pop();
               }
             }
@@ -1342,13 +1378,16 @@ export default {
             let tempItems = [];
             // get the selected items in equipmentTable to tempItems
             this.selectedEquipmentItemIds.forEach(itemId => {
-              tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-            })
+              tempItems = tempItems.concat(
+                this.equipmentTable.filter(item => item.Id == itemId)
+              );
+            });
             // get the selected items in equipmentTable to tempItems
             this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems,
                           this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
+
             if (this.conflictItems.length == 0) {
-              this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+              this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
             } else {
               this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
             }
@@ -1357,13 +1396,16 @@ export default {
             } else {
               this.AddEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
             }
-          }          
+          }        
         }
       }
     },
-    'selectedTeam': function() {
-      if (this.selectedTeam.value != '' && this.CreateWorkOrderErrors.NoTeam != '') {
-        this.CreateWorkOrderErrors.NoTeam = '';
+    selectedTeam: function() {
+      if (
+        this.selectedTeam.value != "" &&
+        this.CreateWorkOrderErrors.NoTeam != ""
+      ) {
+        this.CreateWorkOrderErrors.NoTeam = "";
       }
     }
   }
@@ -1468,10 +1510,10 @@ thead {
 }
 
 th {
-  font-size: .95rem !important;
+  font-size: 0.95rem !important;
   font-weight: 450 !important;
   height: 3rem;
-  padding: 0 .5rem;
+  padding: 0 0.5rem;
   vertical-align: middle !important;
 }
 
@@ -1481,7 +1523,7 @@ tr {
 
 td {
   height: 3rem;
-  padding: .8rem .5rem 0 .5rem;
+  padding: 0.8rem 0.5rem 0 0.5rem;
 }
 
 .row-odd {
@@ -1493,11 +1535,11 @@ td {
 }
 
 .row-warning-light {
-  background: #FFF1B5 !important;
+  background: #fff1b5 !important;
 }
 
 .row-warning-dark {
-  background: #FFE99E !important;
+  background: #ffe99e !important;
 }
 
 .row-danger-light {

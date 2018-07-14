@@ -12,7 +12,7 @@
                 <strong>  Business name (required)</strong><span v-if="CreateVendorErrors.NoBusinessName != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessName }}</span></span>
                 </div>
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.BusinessName" class="input " type="text" placeholder="Text input" >
+                    <input v-model.trim="Vendor.BusinessName" class="input " type="text" placeholder="Text input" >
 
                         <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
@@ -30,7 +30,7 @@
                 <div class="form-field-title">
                 <strong>Business address  (required)</strong><span v-if="CreateVendorErrors.NoBusinessAddress != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span>
             <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.BusinessAddress" class="input " type="text" placeholder="Text input">
+                    <input v-model.trim="Vendor.BusinessAddress" class="input " type="text" placeholder="Text input">
                         <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
                         </span>
@@ -51,7 +51,7 @@
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.Website" class="input " type="text" placeholder="Text input" >
+                    <input v-model.trim="Vendor.Website" class="input " type="text" placeholder="Text input" >
                         <span class="icon is-small is-left">
                         <i class="fa fa-firefox"></i>
                         </span>
@@ -72,7 +72,7 @@
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.ContactName" class="input " type="text" placeholder="Text input" >
+                    <input v-model.trim="Vendor.ContactName" class="input " type="text" placeholder="Text input" >
                         <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
                         </span>
@@ -93,7 +93,7 @@
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.ContactEmail" class="input" type="email" placeholder="Text input" >
+                    <input v-model.trim="Vendor.ContactEmail" class="input" type="email" placeholder="Text input" >
                         <span class="icon is-small is-left">
                         <i class="fa fa-envelope"></i>
                         </span>

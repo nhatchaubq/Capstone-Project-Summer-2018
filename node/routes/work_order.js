@@ -4,15 +4,20 @@ const TYPES = require("tedious").TYPES;
 router.get("/workorderbylocationId/:id", (request, response) => {
   request
     .sql(
-      "select distinct wo.*, (select COUNT(*) " +
+      "select distinct wo.*,t.Name as 'Team' ,p.[Name] as 'Priority',p.TagHexColor,ws.Name as 'Status',wc.Name as 'Category',(select distinct e.Id,e.Name,wd.WorkOrderID,wd.StartDate,wd.FinishedDate,wd.ReturnDate,(select wd.*,ei.SerialNumber,ei.EquipmentID " +
+        "     from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id								 " +
+        " where wd.WorkOrderID = wo.Id and ei.EquipmentID = e.Id for json path) as 'EquipmentItems' " +
+        " from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id " +
+        " join Equipment as e on e.Id = ei.EquipmentID " +
+        " where wd.WorkOrderID = wo.Id  for json path) as 'WorkorderDetail' " +
         " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
+        " join Team as t on t.Id = tl.TeamId " +
         " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
-        " where tl.LocationID = @locationId) as Quantity " +
-        " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
-        " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
-        " where tl.LocationID = @locationId and wo.ClosedDate is null" +
-        " for json path"
-      //   "exec [GetWorkOrderByLocationId] @locationId"
+        " join[Priority] as p on p.Id = wo.PriorityID " +
+        " join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
+        " join WorkOrderCategory as wc on wc.Id = wo.CategoryID " +
+        "  where tl.LocationID = @locationId for json path"
+      // "exec [GetWorkOrderByLocationId] @locationId"
     )
     .param("locationId", request.params.id, TYPES.Int)
     .into(response);
@@ -82,39 +87,42 @@ router.get('/id/:orderId', (request, response) => {
 
 // ChauBQN
 // get work orders
-router.get('/', (request, response) => {
-    request.sql("select (select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], " +
-            "        json_query((select * from [Location] where tl.LocationID = Id for json path, without_array_wrapper)) as [Location], " +
-            "        t.Id as [Team.Id], t.[Name] as [Team.Name], " +
-            "       (json_query((select wod.*, json_query((select ei.*, e.Name as [Name], e.Image as [Image] " +
-            "                                               from EquipmentItem as ei join Equipment as e on ei.EquipmentId = e.Id " +
-            "                                               where ei.Id = wod.EquipmentItemId for json path, without_array_wrapper)) as [EquipmentItem] " +
-            "                       from WorkOrderDetail as wod " +
-            "                       where wod.WorkOrderID = wo.Id " +
-            "            for json path))) as [WorkOrderDetails], (select wor.*, json_query((select [Name] " +
-            "                                                                                from WorkOrderStatus " +
-            "                                                                                where wor.OldStatusID = Id " +
-            "                                                                                for json path, without_array_wrapper)) as [OldStatus], " +
-            "                                                                        json_query((select [Name] " +
-            "                                                                                    from WorkOrderStatus " +
-            "                                                                                    where wor.NewStatusID = Id " +
-            "                                                                                    for json path, without_array_wrapper)) as NewStatus, " +
-            "                                                                            json_query((select acc.*, ro.[Name] as [Role] " +
-            "                                                                                        from Account as acc join [Role] as ro on acc.RoleID = ro.Id " +
-            "                                                                                        where acc.Id = wor.ModifiedByUserID " +
-            "                                                                                        for json path, without_array_wrapper)) as [ModifiedUser] " +
-            "                                                    from WorkOrderRecord as wor " +
-            "                                                    where wor.WorkOrderID = wo.Id " +
-            "                                                    order by wor.ModifiedByDateTime desc " +
-            "                                                    for json path) as [WorkOrderRecord] " +
-            " from WorkOrder as wo join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
-            " join Account as acc on wo.RequestUserID = acc.Id " +
-            " join [Priority] as p on wo.PriorityID = p.Id " +
-            " join TeamLocation as tl on wo.TeamLocationID = tl.Id " +
-            " join Team as t on tl.TeamID = t.Id " +
-            " order by wo.CreateDate desc " +
-            " for json path) as [WorkOrders] for json path, without_array_wrapper")
-        .into(response);
+router.get("/", (request, response) => {
+  request
+    .sql(
+      "select (select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], " +
+        "        json_query((select * from [Location] where tl.LocationID = Id for json path, without_array_wrapper)) as [Location], " +
+        "        t.Id as [Team.Id], t.[Name] as [Team.Name], " +
+        "       (json_query((select wod.*, json_query((select ei.*, e.Name as [Name], e.Image as [Image] " +
+        "                                               from EquipmentItem as ei join Equipment as e on ei.EquipmentId = e.Id " +
+        "                                               where ei.Id = wod.EquipmentItemId for json path, without_array_wrapper)) as [EquipmentItem] " +
+        "                       from WorkOrderDetail as wod " +
+        "                       where wod.WorkOrderID = wo.Id " +
+        "            for json path))) as [WorkOrderDetails], (select wor.*, json_query((select [Name] " +
+        "                                                                                from WorkOrderStatus " +
+        "                                                                                where wor.OldStatusID = Id " +
+        "                                                                                for json path, without_array_wrapper)) as [OldStatus], " +
+        "                                                                        json_query((select [Name] " +
+        "                                                                                    from WorkOrderStatus " +
+        "                                                                                    where wor.NewStatusID = Id " +
+        "                                                                                    for json path, without_array_wrapper)) as NewStatus, " +
+        "                                                                            json_query((select acc.*, ro.[Name] as [Role] " +
+        "                                                                                        from Account as acc join [Role] as ro on acc.RoleID = ro.Id " +
+        "                                                                                        where acc.Id = wor.ModifiedByUserID " +
+        "                                                                                        for json path, without_array_wrapper)) as [ModifiedUser] " +
+        "                                                    from WorkOrderRecord as wor " +
+        "                                                    where wor.WorkOrderID = wo.Id " +
+        "                                                    order by wor.ModifiedByDateTime desc " +
+        "                                                    for json path) as [WorkOrderRecord] " +
+        " from WorkOrder as wo join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
+        " join Account as acc on wo.RequestUserID = acc.Id " +
+        " join [Priority] as p on wo.PriorityID = p.Id " +
+        " join TeamLocation as tl on wo.TeamLocationID = tl.Id " +
+        " join Team as t on tl.TeamID = t.Id " +
+        " order by wo.CreateDate desc " +
+        " for json path) as [WorkOrders] for json path, without_array_wrapper"
+    )
+    .into(response);
 });
 
 // ChauBQN
@@ -138,7 +146,6 @@ router.get('/:id/equipments', (request, response) => {
                 + " for json path")
         .param('workOrderId', request.params.id, TYPES.Int)
         .into(response);
-
 });
 
 router.get("/status", (request, response) => {
@@ -192,7 +199,6 @@ router.get('/get_equipment_detail/:id', (req, res) => {
             " for json path")
         .param('equipmentId', req.params.id, TYPES.Int)
         .into(res);
-
 });
 
 // router.get('/create/get_date_between/:equipmentId/:startDate/:dueDate', (req, res) => {
@@ -293,26 +299,28 @@ router.post('/close_detail/:workOrderDetailId', (req, res) => {
 
 // ChauBQN
 // update status of work order
-router.put('/status/:orderId', (req, res) => {
-    req.sql("declare @currentDate datetime; " +
-            " declare @oldWorkOrderStatusId int; " +
-            " declare @newWorkOrderStatusId int; " +
-            " set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); " +
-            " set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = @newWorkOrderStatusName); " +
-            " set @currentDate = getdate(); " +
-            " update [WorkOrder] set StatusID = @newWorkOrderStatusId where Id = @workOrderId; " +
-            " if @newWorkOrderStatusName = N'In Progress' " +
-            " begin " +
-            "   update WorkOrderDetail set StartDate = @currentDate " +
-            " end " +
-            " insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) " +
-            " values(@workOrderId, @userId, @currentDate, @oldWorkOrderStatusId, @newWorkOrderStatusId, @description);")
-        .param('workOrderId', req.params.orderId, TYPES.Int)
-        .param('userId', req.body.userId, TYPES.Int)
-        .param('newWorkOrderStatusName', req.body.newStatusName, TYPES.NVarChar)
-        .param('description', req.body.description, TYPES.NVarChar)
-        .exec(res);
-
+router.put("/status/:orderId", (req, res) => {
+  req
+    .sql(
+      "declare @currentDate datetime; " +
+        " declare @oldWorkOrderStatusId int; " +
+        " declare @newWorkOrderStatusId int; " +
+        " set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); " +
+        " set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = @newWorkOrderStatusName); " +
+        " set @currentDate = getdate(); " +
+        " update [WorkOrder] set StatusID = @newWorkOrderStatusId where Id = @workOrderId; " +
+        " if @newWorkOrderStatusName = N'In Progress' " +
+        " begin " +
+        "   update WorkOrderDetail set StartDate = @currentDate " +
+        " end " +
+        " insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) " +
+        " values(@workOrderId, @userId, @currentDate, @oldWorkOrderStatusId, @newWorkOrderStatusId, @description);"
+    )
+    .param("workOrderId", req.params.orderId, TYPES.Int)
+    .param("userId", req.body.userId, TYPES.Int)
+    .param("newWorkOrderStatusName", req.body.newStatusName, TYPES.NVarChar)
+    .param("description", req.body.description, TYPES.NVarChar)
+    .exec(res);
 });
 
 // ChauBQN

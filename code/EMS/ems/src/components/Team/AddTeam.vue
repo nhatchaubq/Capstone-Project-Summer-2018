@@ -15,7 +15,7 @@
                     <strong>  Team's name (required)</strong><span v-if="CreateTeamErrors.NoTeamName != ''">. <span class="error-text">{{ CreateTeamErrors.NoTeamName }}</span></span>
                     </div>
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="team.name" class="input " type="text" placeholder="Text input" >
+                        <input v-model.trim="team.name" class="input " type="text" placeholder="Text input" >
 
                             <span class="icon is-small is-left">
                             <i class="fa fa-user"></i>
@@ -29,7 +29,7 @@
                 
             </div>
             
-            <div>
+            <!-- <div>
                 <div class="form-field">
                     <div class="form-field-title">
                       <strong>Create date (required)</strong><span v-if="CreateTeamErrors.NoCreateDate != ''">. <span class="error-text">{{ CreateTeamErrors.NoCreateDate }}</span></span>  
@@ -40,16 +40,13 @@
                             <span class="icon is-small is-left">
                             <i class="fa fa-calendar"></i>
                             </span>
-                            <!-- <span class="icon is-small is-right">
-                            <i class="fa fa-check"></i>
-                            </span> -->
-                            <!-- {{account.startdate}} -->
+
                         </div>
                     </div>
-                    <!-- <h3>{{account.startdate}}</h3> -->
+
                 </div>
                 
-            </div>
+            </div> -->
             <!-- teset -->
             <div class="form-field">
               <div class="form-field-title">
@@ -100,15 +97,14 @@ import Server from "@/config/config.js";
 export default {
   data() {
     return {
-       sending: false,
+      sending: false,
       ErrorStrings: {
-        NoTeamName: 'You must provide name for this team',
-        NoCreateDate: 'You must provide create date for this team',
+        NoTeamName: "You must provide name for this team"
+        // NoCreateDate: "You must provide create date for this team"
       },
       CreateTeamErrors: {
-        NoTeamName: '',
-        NoCreateDate: '',
-
+        NoTeamName: ""
+        // NoCreateDate: ""
       },
       team: {
         name: "",
@@ -137,37 +133,38 @@ export default {
   },
   methods: {
     createTeam() {
-      if(this.team.name === ''){
-            this.CreateTeamErrors.NoTeamName = this.ErrorStrings.NoTeamName;
-        }
-        if(this.team.createdDate === ''){
-            this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
-        }
-         if(this.validateTeam())
-      this.axios
-        .post("http://localhost:3000/api/team", {
-          team: this.team
-        })
-        .then(res => {
-          if (this.selectedAccounts.length > 0) {
-            if (res.data.NewTeamId) {
-              // alert(res.data.NewTeamId);
-              this.selectedAccounts.forEach(account => {
-                this.axios.post(Server.TEAM_ACCOUNT_CREATE_API_PATH, {
-                  teamId: res.data.NewTeamId,
-                  accountId: account.Id
+      if (this.team.name === "") {
+        this.CreateTeamErrors.NoTeamName = this.ErrorStrings.NoTeamName;
+      }
+      if (this.team.createdDate === "") {
+        this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
+      }
+      if (this.validateTeam())
+        this.axios
+          .post("http://localhost:3000/api/team", {
+            team: this.team
+          })
+          .then(res => {
+            if (this.selectedAccounts.length > 0) {
+              if (res.data.NewTeamId) {
+                // alert(res.data.NewTeamId);
+                this.selectedAccounts.forEach(account => {
+                  this.axios.post(Server.TEAM_ACCOUNT_CREATE_API_PATH, {
+                    teamId: res.data.NewTeamId,
+                    accountId: account.Id
+                  });
+                  // alert("Success!");
                 });
-                // alert("Success!");
-              });
+              }
             }
-          }
-          this.$router.push("/team");
-        });
+            this.$router.push("/team");
+          });
     },
-       validateTeam() {      
-      return this.CreateTeamErrors.NoTeamName === '' && this.CreateVendorErrors.CreateTeamErrors.NoCreateDate === ''
-            
-              
+    validateTeam() {
+      return (
+        this.CreateTeamErrors.NoTeamName === ""
+        // this.CreateTeamErrors.NoCreateDate === ""
+      );
     },
     removeSelectedAccount(tmpAccount) {
       this.selectedAccounts = this.selectedAccounts.filter(
@@ -181,7 +178,7 @@ export default {
       if (this.selectedAccounts.length == 0) {
         this.accounts = this.tempAccounts;
       }
-    },
+    }
   },
   watch: {
     selectedAccount: function() {
@@ -196,16 +193,16 @@ export default {
         this.selectedAccount = null;
       }
     },
-    "team.name": function(){
-      if(this.team.name != ''){
-        this.CreateTeamErrors.NoTeamName = ''
+    "team.name": function() {
+      if (this.team.name != "") {
+        this.CreateTeamErrors.NoTeamName = "";
       }
-    },
-      'team.createdDate': function(){
-      if(this.team.createdDate != ''){
-        this.CreateTeamErrors.NoCreateDate = ''
-      } 
-    },
+    }
+    // "team.createdDate": function() {
+    //   if (this.team.createdDate != "") {
+    //     this.CreateTeamErrors.NoCreateDate = "";
+    //   }
+    // }
   }
 };
 </script>
