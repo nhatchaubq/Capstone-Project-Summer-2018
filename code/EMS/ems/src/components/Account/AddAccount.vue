@@ -12,11 +12,11 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.NoUsername != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.NoUsername }}</span></span> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span>
+                    <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span><span v-if="CreateAccountErrors.UserNameTrim != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UserNameTrim }}</span></span>
                     <!-- <span v-if="CreateWorkOrderErrors.NoTitle != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoTitle }}</span></span> -->
                     </div>
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="account.username" class="input " type="text" placeholder="Text input" >
+                        <input v-model.trim="account.username" class="input " type="text" placeholder="Text input" >
 
                             <span class="icon is-small is-left">
                             <i class="fa fa-user"></i>
@@ -32,9 +32,9 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>   Password (required)</strong> <span v-if="CreateAccountErrors.NoPassword != ''"> <span class="error-text">{{ CreateAccountErrors.NoPassword }}</span></span><span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span>
+                    <strong>   Password (required)</strong> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span>
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="account.password" class="input " type="password" placeholder="Text input" name="password" id="password">
+                        <input v-model.trim="account.password" class="input " type="password" placeholder="Text input" name="password" id="password">
                             <span class="icon is-small is-left">
                             <i class="fa fa-expeditedssl"></i>
                             </span>
@@ -53,11 +53,11 @@
                     <div class="form-field-title">
                         <strong>
                             Fullname (required)
-                        </strong>    <span v-if="CreateAccountErrors.NoFullname != ''">. <span class="error-text">{{ CreateAccountErrors.NoFullname }}</span></span> <span v-if="CreateAccountErrors.FullNameMax != ''">. <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span>
+                        </strong>     <span v-if="CreateAccountErrors.FullNameMax != ''">. <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''">. <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="account.fullname" class="input " type="text" placeholder="Text input" name="fullname" id="fullname">
+                        <input v-model.trim="account.fullname" class="input " type="text" placeholder="Text input" name="fullname" id="fullname">
                             <span class="icon is-small is-left">
                             <i class="fa fa-user"></i>
                             </span>
@@ -77,11 +77,11 @@
                         <strong>
                             Phone (required)
 
-                        </strong> <span v-if="CreateAccountErrors.NoPhone != ''">. <span class="error-text">{{ CreateAccountErrors.NoPhone }}</span></span> <span v-if="CreateAccountErrors.PhoneMax != ''">. <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.PhoneMin != ''">. <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>
+                        </strong>  <span v-if="CreateAccountErrors.PhoneMax != ''">. <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.PhoneMin != ''">. <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="account.phone" class="input " type="text" placeholder="Text input" name="phone" id="phone">
+                        <input v-model.trim="account.phone" class="input " type="text" placeholder="Text input" name="phone" id="phone">
                             <span class="icon is-small is-left">
                             <i class="fa fa-mobile"></i>
                             </span>
@@ -104,7 +104,7 @@
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="account.email" class="input" type="email" placeholder="Text input" name="email" id="email">
+                        <input v-model.trim="account.email" class="input" type="email" placeholder="Text input" >
                             <span class="icon is-small is-left">
                             <i class="fa fa-envelope"></i>
                             </span>
@@ -138,7 +138,7 @@
             <div >
 
             </div>
-            <div>
+            <!-- <div>
                 <div class="form-field">
                     <div class="form-field-title">
                         <strong>
@@ -151,16 +151,13 @@
                             <span class="icon is-small is-left">
                             <i class="fa fa-calendar"></i>
                             </span>
-                            <!-- <span class="icon is-small is-right">
-                            <i class="fa fa-check"></i>
-                            </span> -->
-                            <!-- {{account.startdate}} -->
+
                         </div>
                     </div>
-                    <!-- <h3>{{account.startdate}}</h3> -->
+
                 </div>
                 
-            </div>
+            </div> -->
     
             <div>
                 <div class="form-field">
@@ -243,42 +240,44 @@ export default {
         // NoUsername: "You must provide username for this account",
         // NoPassword: "You must provide password for this account",
         // fullname-start
-        FullNameMax: "Maximum FullName length is 50 characters",
-        NoFullname: "You must provide full name for this account",
+        FullNameMax: "Use 50 characters or fewer for your full name",
+        FullNameMin: "Use 6 characters or more for your full name",
+        // NoFullname: "You must provide full name for this account",
         // fullname-end
         // NoPhone: "You must provide phone number for this account",
-        NoEmail: "You must provide email name for this account",
-        NoRole: "You must provide role for this account",
         // username-start
-        UsernameMin: "Minimum username length is 6 characters",
-        UsernameMax: "Maximum username length is 50 characters",
+        UsernameMax: "Use 50 characters or fewer for your username",
+        UsernameMin: "Use 6 characters or more for your username",
+        UserNameTrim: " No Space Allowed",
         // username-end
         //password
-        WeakAccount: "Minimum password length is 6 characters",
-        MaxPassword: "Maximum password length is 50 characters",
+        MaxPassword: "Use 50 characters or fewer for your password",
+        WeakAccount: "Use 6 characters or more for your password",
         //password-end
 
         // phone-start
-        PhoneMin: "Minimum phone number length is 9 characters",
-        PhoneMax: "Maximum phone number length is 50 characters"
+        PhoneMin: "Use 9 characters or more for your phone number",
+        PhoneMax: "Use 13 characters or fewer for your password",
         // phone-end
+        NoEmail: "Enter email",
+        NoRole: "Select role"
       },
       CreateAccountErrors: {
         // NoUsername: "",
         // NoPassword: "",
-        NoFullname: "",
-        // NoPhone: "",
-        NoEmail: "",
-        NoRole: "",
-
+        // NoFullname: "",
+        UsernameMax: "",
+        UsernameMin: "",
+        UserNameTrim: "",
         WeakAccount: "",
         MaxPassword: "",
         FullNameMax: "",
-        UsernameMax: "",
-
-        UsernameMin: "",
+        FullNameMin: "",
         PhoneMin: "",
-        PhoneMax: ""
+        PhoneMax: "",
+        // NoPhone: "",
+        NoEmail: "",
+        NoRole: ""
       },
       account: {
         username: "",
@@ -303,6 +302,9 @@ export default {
       if (this.account.username.length > 50) {
         this.CreateAccountErrors.UsernameMax = this.ErrorStrings.UsernameMax;
       }
+      if (this.account.username.trim() === "") {
+        this.CreateAccountErrors.UserNameTrim = this.ErrorStrings.UserNameTrim;
+      }
       //   if (this.account.password === "") {
       //     this.CreateAccountErrors.NoPassword = this.ErrorStrings.NoPassword;
       //   }
@@ -312,8 +314,11 @@ export default {
       if (this.account.password.length > 50) {
         this.CreateAccountErrors.MaxPassword = this.ErrorStrings.MaxPassword;
       }
-      if (this.account.fullname === "") {
-        this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
+      // if (this.account.fullname === "") {
+      //   this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
+      // }
+      if (this.account.fullname.length < 6) {
+        this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
       if (this.account.fullname.length > 50) {
         this.CreateAccountErrors.FullNameMax = this.ErrorStrings.FullNameMax;
@@ -324,7 +329,7 @@ export default {
       if (this.account.phone.length < 9) {
         this.CreateAccountErrors.PhoneMin = this.ErrorStrings.PhoneMin;
       }
-      if (this.account.phone.length > 50) {
+      if (this.account.phone.length > 13) {
         this.CreateAccountErrors.PhoneMax = this.ErrorStrings.PhoneMax;
       }
       if (this.account.email === "") {
@@ -346,26 +351,28 @@ export default {
     },
     validateAccount() {
       return (
-        this.CreateAccountErrors.NoUsername === "" &&
-        this.CreateAccountErrors.NoPassword === "" &&
-        this.CreateAccountErrors.NoFullname === "" &&
-        this.CreateAccountErrors.NoPhone === "" &&
-        this.CreateAccountErrors.NoEmail === "" &&
-        this.CreateAccountErrors.NoRole === "" &&
-        this.CreateAccountErrors.WeakAccount === "" &&
-        this.CreateAccountErrors.MaxPassword === "" &&
-        this.CreateAccountErrors.FullNameMax === "" &&
-        this.CreateAccountErrors.UsernameMin === "" &&
-        this.CreateAccountErrors.PhoneMin === "" &&
+        // this.CreateAccountErrors.NoUsername === "" &&
+        // this.CreateAccountErrors.NoPassword === "" &&
+        // this.CreateAccountErrors.NoFullname === "" &&
+        // this.CreateAccountErrors.NoPhone === "" &&
         this.CreateAccountErrors.UsernameMax === "" &&
-        this.CreateAccountErrors.PhoneMax === ""
+        this.CreateAccountErrors.UsernameMin === "" &&
+        this.CreateAccountErrors.UserNameTrim === "" &&
+        this.CreateAccountErrors.MaxPassword === "" &&
+        this.CreateAccountErrors.WeakAccount === "" &&
+        this.CreateAccountErrors.FullNameMax === "" &&
+        this.CreateAccountErrors.FullNameMin === "" &&
+        this.CreateAccountErrors.PhoneMax === "" &&
+        this.CreateAccountErrors.PhoneMin === "" &&
+        this.CreateAccountErrors.NoEmail === "" &&
+        this.CreateAccountErrors.NoRole === ""
       );
     }
   },
   watch: {
     "account.username": function() {
-      if (this.account.username != "") {
-        this.CreateAccountErrors.NoUsername = "";
+      if (this.account.username.trim() != "") {
+        this.CreateAccountErrors.UserNameTrim = "";
       }
       if (this.account.username.length > 5) {
         this.CreateAccountErrors.UsernameMin = "";
@@ -386,21 +393,24 @@ export default {
       }
     },
     "account.fullname": function() {
-      if (this.account.fullname != "") {
-        this.CreateAccountErrors.NoFullname = "";
-      }
+      // if (this.account.fullname != "") {
+      //   this.CreateAccountErrors.NoFullname = "";
+      // }
       if (this.account.fullname.length < 51) {
         this.CreateAccountErrors.FullNameMax = "";
       }
+      if (this.account.fullname.length > 5) {
+        this.CreateAccountErrors.FullNameMin = "";
+      }
     },
     "account.phone": function() {
-      if (this.account.phone != "") {
-        this.CreateAccountErrors.NoPhone = "";
-      }
+      // if (this.account.phone != "") {
+      //   this.CreateAccountErrors.NoPhone = "";
+      // }
       if (this.account.phone.length > 8) {
         this.CreateAccountErrors.PhoneMin = "";
       }
-      if (this.account.phone.length < 51) {
+      if (this.account.phone.length < 14) {
         this.CreateAccountErrors.PhoneMax = "";
       }
     },

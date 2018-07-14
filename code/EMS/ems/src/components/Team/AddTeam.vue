@@ -15,7 +15,7 @@
                     <strong>  Team's name (required)</strong><span v-if="CreateTeamErrors.NoTeamName != ''">. <span class="error-text">{{ CreateTeamErrors.NoTeamName }}</span></span>
                     </div>
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="team.name" class="input " type="text" placeholder="Text input" >
+                        <input v-model.trim="team.name" class="input " type="text" placeholder="Text input" >
 
                             <span class="icon is-small is-left">
                             <i class="fa fa-user"></i>
