@@ -4,7 +4,7 @@
     <router-link to="/account">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Accounts</a>
     </router-link>
-   <!-- <form @submit.prevent="editAccount()"> -->
+
 <div class="grid-wrapper1">
 
   <!-- <button class="button " style="background-color:green;   position: fixed;
@@ -34,32 +34,33 @@
     <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode">Edit</button>
   </div>
 </div>
-<div  class="row " style="height: 36px" >
-    <div class="col-12" style="margin-top:0.5rem" >
-     <strong>Full name</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span>    <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
-    </div>  
-</div>
+<form @submit.prevent="editAccount()">
+  <div  class="row " style="height: 36px" >
+      <div class="col-12" style="margin-top:0.5rem" >
+      <strong>Full name</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span>    <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
+      </div>  
+  </div>
   <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model.trim="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
-<div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
-    <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
-</div>
+  <div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
+      <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
+  </div>
     <input v-if="editMode" v-model.trim ="account.Password"  class="input col-7 " type="password"  placeholder="Text input">
-<!-- <div class="row" style="margin-top:0.5rem;  height: 36px">
+  <!-- <div class="row" style="margin-top:0.5rem;  height: 36px">
     <div class="col-12" style="margin-top:0.5rem">Password: </div>
 
     <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
     <input v-else v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input">
 
-</div> -->
+  </div> -->
 
-<div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class=" col-12" style="margin-top:0.5rem">
-    <strong>
-      Status 
-    </strong>
-  </div>
-</div >
+  <div class="row" style="margin-top:0.5rem; height: 36px">
+    <div class=" col-12" style="margin-top:0.5rem">
+      <strong>
+        Status 
+      </strong>
+    </div>
+  </div >
   <div class="col-7" style="padding-left: 0 !important">
       <div style="margin-top:0.5rem" >
         <label style="margin-right: 1rem;" class="radio"  >
@@ -72,21 +73,21 @@
         </label>
       </div>
   </div>
-<div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" > <strong>Role</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span></div>
-</div>
+  <div class="row" style="margin-top:0.5rem; height: 36px">
+    <div class="col-12" > <strong>Role</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span></div>
+  </div>
   <div class="col-7" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
-<div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12"> <strong>Start date</strong>  </div>
-</div>
+  <div class="row" style="margin-top:0.5rem; height: 36px">
+    <div class="col-12"> <strong>Start date</strong>  </div>
+  </div>
   <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? getDate(account.StartDate): 'N/A' }}</div>
-<!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
-<div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.NoEmail != ''"></span> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span> </div> 
+  <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
+  <div class="row" style="margin-top:0.5rem; height: 36px">
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span> </div> 
   <!-- <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div> -->
 </div>
-  <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-  <input v-else v-model.trim="account.Email" class="input col-7 " type="text"  placeholder="Text input">
+  <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="Text input" disabled="disabled">
+  <input v-else v-model.trim="account.Email" class="input col-7 " type="email"  placeholder="Text input">
 <div class="row" style="margin-top:0.5rem; height: 36px">
   <div class="col-12" style="margin-top:0.5rem"> <strong>Phone</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>  </div> 
   <!-- <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div> -->
@@ -94,7 +95,8 @@
   <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model.trim="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
 <div class="row" v-if="editMode">
-  <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Save change</button>
+  <!-- <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Save change</button> -->
+  <button class="button btn-confirm-edit btn-primary material-shadow-animate" >Save change</button>
     <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
          getAccountDetail($route.params.id);
          editMode = false;
@@ -102,6 +104,7 @@
 
 
 </div>
+</form>
 <!-- <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
 <div v-bind:key="team.id" v-for="team in account.Teams" >
   <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'"> 
@@ -122,7 +125,7 @@
 
 
   </div>
-  <!-- </form> -->
+  
 
 
 
