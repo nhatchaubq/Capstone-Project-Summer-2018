@@ -11,40 +11,40 @@
             </div>
         </div>
        
-        <div class="form-new">
-            <div class="field">
-                <div>
-                <strong>  New Name(required) </strong>
+        <div class="form-content">
+            <div class="form-field">
+                <div class="form-field-title">
+                <strong>  New Name<span style="color:red;">*</span> </strong>  <span v-if="NoName != ''"><span class="error-text">  {{ NoName }}</span></span>
                 </div>
-            <div>
-                    <input  class="input " type="text"  v-model="location.Name" >   
-            </div>
+                <div class="form-field-input">
+                        <input  class="input " type="text"  v-model="location.Name" >   
+                </div>
             </div> 
-            <div class="field">
-                <div>
-                <strong>  New Address(required) </strong>
+            <div class="form-field">
+                <div class="form-field-title">
+                <strong>  New Address<span style="color:red;">*</span> </strong>
                 </div>
-                <div>
+                <div class="form-field-input">
                     <input  class="input " type="text"  v-model="location.Address" disabled="disabled" >
                     <!-- <label v-if="location.WorkOrderQuantity >0" style="color: red">This location have working Work Oders.So you can't edit address!!! </label> -->
                 </div>
             </div>  
-            <div class="field">
-                <div>
+            <div class="form-field">
+                <div class="form-field-title">
                 <strong> New Description </strong>
                 </div>
-                <div>
+                <div class="form-field-input">
                     <textarea v-model="location.Description" cols="100" rows="6" >  </textarea>                              
                 </div>
             </div> 
-            <div class="field">
-                <div>
-                <strong> New Team <span style="color:red;">*</span></strong>
+            <div class="form-field">
+                <div class="form-field-title">
+                <strong> New Team </strong>
                 </div>
                 <div class="team-place">
                     <div class="select"> 
                         <select v-model="tmpTeam">  
-                          <option :value="null">Select a new team</option>                                               
+                          <option disabled=disabled :value="null">--Choose new team</option>                                               
                             <option v-bind:key='team.Id' v-for='team in unselectedTeams' :value="team">{{team.Name}}</option>
                         </select>
                     </div>
@@ -79,7 +79,8 @@ export default {
       selectedTeams: [],
       teams: [],
       woTeams: [],
-      newTeams: []
+      newTeams: [],
+      NoName: ""
     };
   },
   created() {
@@ -126,15 +127,19 @@ export default {
     },
     updateLocation() {
       if (this.location.Name.trim() == "") {
-        alert("Please fill out the required fields");
+        this.NoName = "Please enter new name!";
+      } else if (this.location.Name.trim().length < 6) {
+        this.NoName = "Use 6 characters or more for location's name";
+      } else if (this.location.Name.trim().length > 100) {
+        this.NoName = "Use 100 characters or fewer for location's name";
       } else {
         this.axios
           .put(Server.LOCATION_EDIT_API_PATH, {
             newLocation: {
               id: this.location.Id,
-              name: this.location.Name,
+              name: this.location.Name.trim(),
               address: this.location.Address,
-              description: this.location.Description
+              description: this.location.Description.trim()
             }
           })
           .then(res => {
@@ -171,6 +176,7 @@ export default {
                       });
                     });
                   }
+                  alert("Successfully!!!");
                   this.$router.push("/location");
                 })
                 .catch(error => {
@@ -223,6 +229,11 @@ export default {
     }
   },
   watch: {
+    "location.Name": function() {
+      if (this.location.Name.trim() != "") {
+        this.NoName = "";
+      }
+    },
     tmpTeam: function() {
       Vue.nextTick(() => {
         if (this.tmpTeam) {
@@ -239,45 +250,57 @@ export default {
 </script>
 
 <style scoped>
+.form {
+  background-color: white;
+  padding: 0 !important;
+  grid-template-columns: 20% 20% 60%;
+}
+.form-content {
+  font-size: 0.9rem;
+  position: fixed;
+  max-height: 82.5%;
+  width: 82%;
+  overflow-y: auto;
+
+  /* display: flex;
+        flex-direction: column;  */
+}
+
+.form-field {
+  /* margin-bottom: 5px; */
+  width: 100%;
+  padding: 1rem 2rem;
+}
+
 .form-title {
   display: grid;
-  grid-template-columns: 78% auto;
-  border-bottom: 0.02px solid;
-
-  height: 50px;
-  line-height: 50px;
-
+  grid-template-columns: 65% 35%;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem 2rem;
+}
+.form-title-start {
+  position: relative;
   top: 10px;
-  /* font-weight: bold; */
+  font-weight: bold;
   font-size: 20px;
   color: #616161;
 }
-
-.form-new {
-  padding-top: 2rem;
+.form-title-end {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  /* align-content: center; */
 }
-.field {
-  padding-bottom: 0.5rem;
+.form-input {
+  padding-left: 50px;
+  padding-right: 50px;
 }
-.end {
-  padding-top: 3rem;
-  text-align: center;
-}
-
-#btn-cancel {
-  background-color: #bdbdbd;
-  color: white;
-  margin-right: 0.6rem;
+.form-field {
+  margin-bottom: 1.5rem;
 }
 
-#btn-add {
-  background-color: var(--primary-color);
-  color: white;
-}
-#btn-add:hover {
-  cursor: pointer;
-  background-color: #009688;
-  color: white;
+.form-field-title {
+  font-size: 15px;
 }
 textarea {
   border: 0.5px solid lightgray;
