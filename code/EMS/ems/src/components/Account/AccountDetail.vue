@@ -42,7 +42,7 @@
   <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
 <div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
-    <div class="col-12" style="margin-top:0.5rem">Password: <span v-if="CreateAccountErrors.NoPassword != ''"> <span class="error-text">{{ CreateAccountErrors.NoPassword }}</span></span><span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">.{{ CreateAccountErrors.WeakAccount }}</span></span> </div> 
+    <div class="col-12" style="margin-top:0.5rem">Password: <span v-if="CreateAccountErrors.NoPassword != ''"> <span class="error-text">{{ CreateAccountErrors.NoPassword }}</span></span><span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">.{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">.{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
 </div>
     <input v-if="editMode" v-model ="account.Password"  class="input col-7 " type="password"  placeholder="Text input">
 <!-- <div class="row" style="margin-top:0.5rem;  height: 36px">
@@ -158,7 +158,8 @@ export default {
         NoEmail: "You must provide email name for this account",
         // NoRole: "You must provide role for this account"
 
-        WeakAccount: "Minimum password length is 6 characters"
+        WeakAccount: "Minimum password length is 6 characters",
+        MaxPassword: "Maximum password length is 20 characters"
       },
       CreateAccountErrors: {
         // NoUsername: '',
@@ -168,7 +169,8 @@ export default {
         NoEmail: "",
         // NoRole: ""
 
-        WeakAccount: ""
+        WeakAccount: "",
+        MaxPassword: ""
       },
       account: null,
       checkedActive: [],
@@ -185,6 +187,9 @@ export default {
       }
       if (this.account.Password.length < 6) {
         this.CreateAccountErrors.WeakAccount = this.ErrorStrings.WeakAccount;
+      }
+      if (this.account.Password.length > 21) {
+        this.CreateAccountErrors.MaxPassword = this.ErrorStrings.MaxPassword;
       }
       if (this.account.Fullname === "") {
         this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
@@ -218,7 +223,8 @@ export default {
         this.CreateAccountErrors.NoPhone === "" &&
         this.CreateAccountErrors.NoEmail === "" &&
         //&& this.CreateAccountErrors.NoRole === ""
-        this.CreateAccountErrors.WeakAccount === ""
+        this.CreateAccountErrors.WeakAccount === "" &&
+        this.CreateAccountErrors.MaxPassword === ""
         //  && this.CreateAccountErrors.NoUsername === ''
       );
     },
@@ -245,6 +251,9 @@ export default {
       }
       if (this.account.Password.length > 5) {
         this.CreateAccountErrors.WeakAccount = "";
+      }
+      if (this.account.Password.length < 21) {
+        this.CreateAccountErrors.MaxPassword = "";
       }
     },
     "account.Fullname": function() {
