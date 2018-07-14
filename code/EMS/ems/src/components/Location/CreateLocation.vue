@@ -5,16 +5,17 @@
             Add New Location
           </div>
           <div class="form-title-end">              
-                <button id="" class="button is-rounded is-primary" style="margin-right: .6rem" v-on:click="createLocation()">Create New Location</button>
-                <button id="" class="button is-rounded"  v-on:click="$router.push('/location')">Cancel</button>
+                
+                <button id="" class="button" style="margin-right: .6rem"  v-on:click="$router.push('/location')">Cancel</button>
+                <button id="" class="button is-primary"  v-on:click="createLocation()">Create New Location</button>
           </div>  
         </div>
-        <div class="form-input" >   
+        <div class="form-content" >   
             <div class="form-field" style="padding-top:1.5rem">
                 <div class="form-field-title">
                     Name of location (required)
                 </div>
-                <div>
+                <div class="form-field-input">
                     <input v-model="newLocation.name" type="text" class="input">
                 </div>
             </div>
@@ -22,19 +23,18 @@
                 <div class="form-field-title">
                     Address (required)
                 </div>
-                <div>
-                  
-                    <div>
-                    
-                    <label class="ggSearch" style="width: 100%">
-                      <gmap-autocomplete  class="input" 
-                        @place_changed="setPlace">
-                      </gmap-autocomplete>
-                      <!-- <button @click="addMarker" class="btn" style="position: relative; bottom: 8px;">Check</button> -->
-                    </label>
-                    <br/>
-
-                  </div>
+                <div class="form-field-input">                  
+                    <div>                    
+                      <label class="ggSearch" style="width: 100%">
+                        <gmap-autocomplete  class="input" 
+                          @place_changed="setPlace">
+                        </gmap-autocomplete>
+                        <!-- <button  id="clear-btn" v-if="currentPlace" v-on:click="() => {}">
+                          <i class="material-icons">close</i>
+                        </button> -->
+                        <!-- <button @click="addMarker" class="btn" style="position: relative; bottom: 8px;">Check</button> -->
+                      </label>                   
+                    </div>
                   <br>
                   <gmap-map
                     :center="marker?  marker : center"
@@ -46,26 +46,26 @@
                       :position="marker"
                       
                     ></gmap-marker>
-                  </gmap-map>
-                
+                  </gmap-map>                
                 </div>
             </div>
             <div class="form-field">
                 <div class="form-field-title">
                     Description
                 </div>
-                <div >
+                <div class="form-field-input">
                     <!-- <input type="text" class="input" > -->
                     <textarea id="text-descrip" v-model="newLocation.description"  cols="80" rows="10"></textarea>
                 </div>
             </div>
-            <div class="form-field" style=" display:grid ; grid-template-columns: 10% 20% auto">
+            <div class="form-field" style=" display:grid ; grid-template-columns: 7% 20% auto">
                 <div class="form-field-title">
-                    Choose Team
+                    Team
                 </div>
-                <div class="select" style="width: 100% !important" >
-                    <select v-model="selectedTeam" >
-                        <option :disabled="selectedTeams.length > 0" v- value="null">Not now</option>
+                <div class="select form-field-input" style="width: 100% !important" >
+                    <select v-model="selectedTeam" style="width:100%">
+                        <option :disabled="selectedTeams.length > 0" value=null> --Choose new team</option>
+                        <!-- <option :disabled="selectedTeams.length > 0" v- value="null">Not now</option> -->
                         <option v-bind:key='team.Id' v-for='team in teams' :value="team">{{team.Name}}</option>
                     </select>
                 </div>
@@ -139,33 +139,37 @@ export default {
   },
   methods: {
     createLocation() {
-      this.axios
-        .post(Server.LOCATION_CREATE_API_PATH, {
-          newLocation: {
-            name: this.newLocation.name,
-            address: this.currentPlace.formatted_address,
-            description: this.newLocation.description,
-            longtitude: this.currentPlace.geometry.location.lng(),
-            latitude: this.currentPlace.geometry.location.lat()
-          }
-        })
-        .then(res => {
-          // alert(this.selectedTeams.length);
-          if (this.selectedTeams.length > 0) {
-            if (res.data.NewLocationId) {
-              this.selectedTeams.forEach(async team => {
-                await this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
-                  locationId: res.data.NewLocationId,
-                  teamId: team.Id
-                });
-              });
-              this.$router.push('/location');
+      if (this.newLocation.name.trim() == "" || !this.currentPlace) {
+        alert("Please fill out the required fields");
+      } else {
+        this.axios
+          .post(Server.LOCATION_CREATE_API_PATH, {
+            newLocation: {
+              name: this.newLocation.name,
+              address: this.currentPlace.formatted_address,
+              description: this.newLocation.description,
+              longtitude: this.currentPlace.geometry.location.lng(),
+              latitude: this.currentPlace.geometry.location.lat()
             }
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
+          })
+          .then(res => {
+            // alert(this.selectedTeams.length);
+            if (this.selectedTeams.length > 0) {
+              if (res.data.NewLocationId) {
+                this.selectedTeams.forEach(async team => {
+                  await this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
+                    locationId: res.data.NewLocationId,
+                    teamId: team.Id
+                  });
+                });
+              }
+            }
+            this.$router.push("/location");
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     },
     removeSelectedTeam(tmpTeam) {
       this.selectedTeams = this.selectedTeams.filter(
@@ -238,40 +242,58 @@ export default {
 </script>
 
 <style scoped>
+/* #clear-btn {
+  border-left: 0.5px solid lightgray;
+  border-radius: 3px;
+  position: relative;
+  left: 70.05rem;
+  bottom: 2.25rem;
+  height: 2.4rem;
+  padding-top: 0.25rem;
+
+  color: red;
+} */
+
 .form {
   background-color: white;
   padding: 0 !important;
   grid-template-columns: 20% 20% 60%;
 }
+.form-content {
+  font-size: 0.9rem;
+  position: fixed;
+  max-height: 82.5%;
+  width: 82%;
+  overflow-y: auto;
+
+  /* display: flex;
+        flex-direction: column;  */
+}
+
+.form-field {
+  /* margin-bottom: 5px; */
+  width: 100%;
+  padding: 1rem 2rem;
+}
+
 .form-title {
   display: grid;
-  grid-template-columns: 73% auto;
-  border-bottom: 0.02px solid;
-
-  height: 50px;
-  line-height: 50px;
-  padding-left: 30px;
-  top: 10px;
-  /* font-weight: bold; */
-  font-size: 20px;
-  color: #616161;
+  grid-template-columns: 65% 35%;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem 2rem;
 }
-/* .form-title-start {
+.form-title-start {
   position: relative;
   top: 10px;
   font-weight: bold;
   font-size: 20px;
   color: #616161;
-} */
+}
 .form-title-end {
-  /* width: 100%; */
-  /* display: flex;
-  justify-content: flex-end; */
-
-  /* bottom: 20px; */
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
   /* align-content: center; */
-  position: relative;
-  top: 0.5rem;
 }
 .form-input {
   padding-left: 50px;

@@ -1,21 +1,20 @@
 <template>
 
-    <div v-if="location">
+    <div v-if="location" class="form">
         <div class="form-title">          
             <div class="form-title-start">
                Edit Location 
             </div>
-            <div class="form-title-end">
-              <button id="" class="button is-rounded is-primary" style="margin-right: .6rem" v-on:click="updateLocation()">Save Changes</button>
-              <button id="" class="button is-rounded"  v-on:click="$router.push('/location')">Cancel</button>
-              
+            <div class="form-title-end">              
+              <button  class="button" style="margin-right: .6rem"  v-on:click="$router.push('/location')">Cancel</button>
+              <button  class="button is-primary"  v-on:click="updateLocation()">Save Changes</button>              
             </div>
         </div>
        
         <div class="form-new">
             <div class="field">
                 <div>
-                <strong>  New Name{{this.location.Id}} <span style="color:red;">*</span></strong>
+                <strong>  New Name(required) </strong>
                 </div>
             <div>
                     <input  class="input " type="text"  v-model="location.Name" >   
@@ -23,7 +22,7 @@
             </div> 
             <div class="field">
                 <div>
-                <strong>  New Address <span style="color:red;">*</span></strong>
+                <strong>  New Address(required) </strong>
                 </div>
                 <div>
                     <input  class="input " type="text"  v-model="location.Address" disabled="disabled" >
@@ -32,10 +31,10 @@
             </div>  
             <div class="field">
                 <div>
-                <strong> New Description <span style="color:red;">*</span></strong>
+                <strong> New Description </strong>
                 </div>
                 <div>
-                    <textarea v-model="location.Description" cols="100" rows="10" >  </textarea>                              
+                    <textarea v-model="location.Description" cols="100" rows="6" >  </textarea>                              
                 </div>
             </div> 
             <div class="field">
@@ -126,58 +125,63 @@ export default {
         });
     },
     updateLocation() {
-      this.axios
-        .put(Server.LOCATION_EDIT_API_PATH, {
-          newLocation: {
-            id: this.location.Id,
-            name: this.location.Name,
-            address: this.location.Address,
-            description: this.location.Description
-          }
-        })
-        .then(res => {
-          if (this.selectedTeams.length > 0) {
-            this.axios
-              .delete(
-                Server.LOCATION_DELETE_TEAM_WITHOUT_WORDODER +
-                  "/" +
-                  this.location.Id
-              )
-              .then(res => {
-                if (
-                  this.location.TeamWithWorkOrdering != null &&
-                  this.location.TeamWithWorkOrdering.length > 0
-                ) {
-                  this.newTeams = this.selectedTeams;
-                  this.location.TeamWithWorkOrdering.forEach(team => {
-                    this.newTeams = this.newTeams.filter(
-                      newTeam => newTeam.Id != team.TeamID
-                    );
-                  });
-                  this.newTeams.forEach(team => {
-                    this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
-                      locationId: this.location.Id,
-                      teamId: team.Id
+      if (this.location.Name.trim() == "") {
+        alert("Please fill out the required fields");
+      } else {
+        this.axios
+          .put(Server.LOCATION_EDIT_API_PATH, {
+            newLocation: {
+              id: this.location.Id,
+              name: this.location.Name,
+              address: this.location.Address,
+              description: this.location.Description
+            }
+          })
+          .then(res => {
+            if (this.selectedTeams.length >= 0) {
+              this.axios
+                .delete(
+                  Server.LOCATION_DELETE_TEAM_WITHOUT_WORDODER +
+                    "/" +
+                    this.location.Id
+                )
+                .then(res => {
+                  if (
+                    this.location.TeamWithWorkOrdering != null &&
+                    this.location.TeamWithWorkOrdering.length > 0
+                  ) {
+                    this.newTeams = this.selectedTeams;
+                    this.location.TeamWithWorkOrdering.forEach(team => {
+                      this.newTeams = this.newTeams.filter(
+                        newTeam => newTeam.Id != team.TeamID
+                      );
                     });
-                  });
-                } else {
-                  this.newTeams = this.selectedTeams;
-                  this.newTeams.forEach(team => {
-                    this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
-                      locationId: this.location.Id,
-                      teamId: team.Id
+                    this.newTeams.forEach(team => {
+                      this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
+                        locationId: this.location.Id,
+                        teamId: team.Id
+                      });
                     });
-                  });
-                }
-              })
-              .catch(error => {
-                console.log(error);
-              });
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
+                  } else {
+                    this.newTeams = this.selectedTeams;
+                    this.newTeams.forEach(team => {
+                      this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
+                        locationId: this.location.Id,
+                        teamId: team.Id
+                      });
+                    });
+                  }
+                  this.$router.push("/location");
+                })
+                .catch(error => {
+                  console.log(error);
+                });
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     },
     removeTeam(tmpTeam) {
       var check = true;
@@ -248,8 +252,7 @@ export default {
   font-size: 20px;
   color: #616161;
 }
-.form-title-end {
-}
+
 .form-new {
   padding-top: 2rem;
 }
@@ -292,7 +295,5 @@ textarea {
   position: relative;
   top: 0.2rem;
   font-size: 20px;
-}
-.team-place {
 }
 </style>

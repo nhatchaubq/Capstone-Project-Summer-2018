@@ -10,7 +10,7 @@
             <b>Sort By</b>
           </div> -->
           <div class="location-blocks">
-            <div class="material-box material-shadow-animate" :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
+            <div class="material-box material-shadow-animate" :class="isActive(location.Id)"  :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
               <div class="location-name" >
                 {{location.Name}}
               </div>
@@ -113,12 +113,11 @@
                         {{workorder.Name}}
                     </div>
                     <div style="display: grid; grid-template-rows: auto auto;">                                                                                  
-                        <div style="font-size: .9rem">
-                            <!-- Quantity: {{ equipment.EquipmentItems.length }} -->
+                        <div style="font-size: .9rem">                            
                             Created Date: {{ workorder.CreateDate }}
                         </div>
                         <div>
-                          Quantity of Item: {{workorder.Quantity}}
+                          Quantity of Item: {{workorder.QuantityItem}}
                         </div>
                     </div>
                     <div>
@@ -175,11 +174,19 @@
       </div>
       <div v-else style="height: 100% !important">
         <map-view :locations="locations" :medianLatitude="medianLatitude" :medianLongitude="medianLongitude" :backFromAddBlock="$route.meta && $route.meta.viewMode === 'MapView'"></map-view>     
-      </div>       
+      </div>   
+      <vodal :show="showWorkorderDetailPopup" @hide="!showWorkorderDetailPopup" animation="slideUp">
+        <div v-if="workorderDetails.length > 0" style="max-height:355px;overflow-y:auto;">
+
+        </div>
+      </vodal>    
   </div>
 </template>
 
 <script>
+import "vodal/common.css";
+import "vodal/slide-up.css";
+import Vodal from "vodal";
 import Server from "@/config/config.js";
 import { gmapApi } from "vue2-google-maps";
 
@@ -187,7 +194,8 @@ import MapView from "./MapView";
 
 export default {
   components: {
-    MapView
+    MapView,
+    Vodal
   },
   computed: {
     google: gmapApi,
@@ -197,9 +205,11 @@ export default {
   },
   data() {
     return {
+      showWorkorderDetailPopup: false,
       locations: [],
       equipments: [],
       workorders: [],
+      workorderDetails: [],
       team: [],
       selectedLocation: null,
       currentMode: 4,
@@ -219,6 +229,16 @@ export default {
     };
   },
   methods: {
+
+    isActive(locationId) {
+      if (this.selectedLocation && locationId != this.selectedLocation.Id) {
+        return "is-active-block";
+      } else {
+        return "";
+      }
+    },
+
+
     setSelectedLocation(location) {
       // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
       // this.axios.get(url)
@@ -254,6 +274,7 @@ export default {
           console.log(error);
         });
     },
+
     getWororderFromLocation(location) {
       this.workorders = [];
       let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
@@ -284,18 +305,6 @@ export default {
           console.log(error);
         });
     }
-    // chaubqn - start
-    // getLocationBlockFloorTile(locationId) {
-    //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
-    //   this.axios.get(url)
-    //     .then((res) => {
-    //       this.mapViewSelectedLocation = res.data;
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     })
-    // }
-    // chaubqn - end
   },
   created() {
     this.axios
@@ -401,6 +410,14 @@ export default {
   width: 35%;
   overflow-y: auto;
 }
+/* .location-blocks-choose {
+  position: fixed;
+  height: 88%;
+  padding-right: 1rem;
+  width: 35%;
+  overflow-y: auto;
+  background-color: #263238;
+} */
 
 .location-blocks div {
   margin-bottom: 0.6rem;

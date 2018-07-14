@@ -102,7 +102,7 @@
                                             <a v-on:click="() => {
                                                 currentTileIndex = index;
                                                 showTileEquipment(tile.Id);
-                                            }">{{tile.Name}}</a>
+                                            }">Tile {{tile.Name}}</a>
                                         </div>
                                     </div> <!-- after selected a floor -->
                                 </div>
@@ -114,47 +114,47 @@
             </div>
         </div>
         <!-- tile equipment popup -->
-        <modal v-if="curentBlockIndex >= 0 && currentFloorIndex >= 0 && currentTileIndex >= 0" v-model="showTileEquipmentPopup">
-          <div slot="header">
-              <span style="font-size: 1.3rem">
-                  Tile {{ mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles[currentTileIndex].Name }}
+        <modal v-model="showTileEquipmentPopup">            
+            <div slot="header">
+                <span style="font-size: 1.3rem" v-if="curentBlockIndex >= 0 && currentFloorIndex >= 0 && currentTileIndex >= 0" >
+                    Tile {{ mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles[currentTileIndex].Name }}
                 </span>
-          </div>
-          <div slot="footer">
-              <Button size="large" long class="button btn-primary" @click.native="showTileEquipmentPopup = false">OK</Button>
-          </div>
-          <div :style="{
-              'max-height': '50vh',
-              'overflow-y': 'auto',
-          }">
-            <v-flex v-if="tileEquipments.length > 0">
-                <v-expansion-panel expand>
-                    <v-expansion-panel-content v-for="equipment in tileEquipments" :key="'equipment' + equipment.Id">
-                        <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
-                            <div style="display: flex">
-                                <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
-                            </div>
-                            <div style="display: grid; grid-template-rows: auto auto; font-size: 1rem">
-                                <div>
-                                    {{ equipment.Name }}
-                                </div>                                            
-                                <div style="font-size: .9rem">
-                                    Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
+            </div>
+            <div slot="footer">
+                <Button size="large" long class="button btn-primary" @click="showTileEquipmentPopup = false">OK</Button>
+            </div>
+            <div :style="{
+                'max-height': '50vh',
+                'overflow-y': 'auto',
+            }" v-if="curentBlockIndex >= 0 && currentFloorIndex >= 0 && currentTileIndex >= 0" >
+                <v-flex v-if="tileEquipments.length > 0">
+                    <v-expansion-panel expand>
+                        <v-expansion-panel-content v-for="equipment in tileEquipments" :key="'equipment' + equipment.Id">
+                            <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
+                                <div style="display: flex">
+                                    <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
+                                </div>
+                                <div style="display: grid; grid-template-rows: auto auto; font-size: 1rem">
+                                    <div>
+                                        {{ equipment.Name }}
+                                    </div>                                            
+                                    <div style="font-size: .9rem">
+                                        Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <v-card style="" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
-                            <v-card-text class="grey lighten-3" style="font-size: .9rem">
-                                Serial #: <a>{{ item.SerialNumber }}</a>
-                            </v-card-text>
-                        </v-card>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-            </v-flex>
-            <div v-else style="font-size: 1rem;">
-                There is no equipments in tile {{ mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles[currentTileIndex].Name }}.
+                            <v-card style="" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
+                                <v-card-text class="grey lighten-3" style="font-size: .9rem">
+                                    Serial #: <a>{{ item.SerialNumber }}</a>
+                                </v-card-text>
+                            </v-card>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-flex>
+                <div v-else style="font-size: 1rem;">
+                    There is no equipments in tile {{ mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles[currentTileIndex].Name }}.
+                </div>
             </div>
-          </div>
       </modal>
     </div>    
 </template>
@@ -201,6 +201,11 @@ export default {
     },
     methods: {
         setSelectedLocation(location, index) {
+            this.curentBlockIndex = -1;
+            this.currentFloorIndex = -1;
+            this.currentTileIndex = -1;
+            this.tileEquipments = [];
+            this.imageCache = [];
             if (this.selectedLocation && this.selectedLocation.Id == location.Id) {
                 this.selectedLocation = null;
             } else {
