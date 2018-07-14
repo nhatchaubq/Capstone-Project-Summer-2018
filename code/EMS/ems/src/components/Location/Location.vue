@@ -242,6 +242,48 @@ export default {
       return JSON.parse(window.localStorage.getItem("user"));
     }
   },
+  created() {
+    this.axios
+      .get(Server.LOCATION_API_PATH)
+      .then(response => {
+        let data = response.data;
+        let minLongitude = data[0].Longitude;
+        let maxLongitude = data[0].Longitude;
+        let minLatitude = data[0].Latitude;
+        let maxLatitude = data[0].Latitude;
+        data.forEach(location => {
+          this.locations.push(location);
+          if (location.Longitude <= minLongitude) {
+            minLongitude = location.Longitude;
+          }
+          if (location.Longitude > maxLongitude) {
+            maxLongitude = location.Longitude;
+          }
+          if (location.Latitude <= minLatitude) {
+            minLatitude = location.Latitude;
+          }
+          if (location.Latitude > maxLatitude) {
+            maxLatitude = location.Latitude;
+          }
+        });
+        this.medianLongitude = (minLongitude + maxLongitude) / 2;
+        this.medianLatitude = (minLatitude + maxLatitude) / 2;
+        // this.selectedLocation(this.locations[0]);
+        if (
+          this.$route.meta &&
+          this.$route.viewMode &&
+          this.$route.viewMode === "MapView"
+        ) {
+          let locationId = this.$route.params.locationId;
+          let location = data.filter(l => (l.Id = locationId))[0];
+          this.setSelectedLocation(location);
+          this.isListViewMode = false;
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
   data() {
     return {
       addPopUp: false,
@@ -269,6 +311,7 @@ export default {
       // chaubqn - end
     };
   },
+
   methods: {
     showWorkorderDetail(tmpWorkorder) {
       this.addPopUp = true;
@@ -315,80 +358,41 @@ export default {
         })
         .catch(error => {
           console.log(error);
-        });
-    },
 
-    getWororderFromLocation(location) {
-      this.workorders = [];
-      let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
-      this.axios
-        .get(url)
-        .then(response => {
-          let data = response.data;
-          data.forEach(workorder => {
-            this.workorders.push(workorder);
-          });
-        })
-        .catch(error => {
-          console.log(error);
         });
-    },
-    getTeamFromLocation(location) {
-      this.team = [];
-      let url = `${Server.TEAM_BY_LOCATION_ID_API_PATH}/${location.Id}`;
-      this.axios
-        .get(url)
-        .then(response => {
-          let data = response.data;
-          data.forEach(account => {
-            this.team.push(account);
-          });
-        })
-        .catch(error => {
-          console.log(error);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+
+  getWororderFromLocation(location) {
+    this.workorders = [];
+    let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
+    this.axios
+      .get(url)
+      .then(response => {
+        let data = response.data;
+        data.forEach(workorder => {
+          this.workorders.push(workorder);
         });
+
     },
     getFormatDate(date) {
       return moment(date).format("L");
     }
+
   },
-  created() {
+  getTeamFromLocation(location) {
+    this.team = [];
+    let url = `${Server.TEAM_BY_LOCATION_ID_API_PATH}/${location.Id}`;
     this.axios
-      .get(Server.LOCATION_API_PATH)
+      .get(url)
       .then(response => {
         let data = response.data;
-        let minLongitude = data[0].Longitude;
-        let maxLongitude = data[0].Longitude;
-        let minLatitude = data[0].Latitude;
-        let maxLatitude = data[0].Latitude;
-        data.forEach(location => {
-          this.locations.push(location);
-          if (location.Longitude <= minLongitude) {
-            minLongitude = location.Longitude;
-          }
-          if (location.Longitude > maxLongitude) {
-            maxLongitude = location.Longitude;
-          }
-          if (location.Latitude <= minLatitude) {
-            minLatitude = location.Latitude;
-          }
-          if (location.Latitude > maxLatitude) {
-            maxLatitude = location.Latitude;
-          }
+        data.forEach(account => {
+          this.team.push(account);
         });
-        this.medianLongitude = (minLongitude + maxLongitude) / 2;
-        this.medianLatitude = (minLatitude + maxLatitude) / 2;
-        // this.selectedLocation(this.locations[0]);
-        if (
-          this.$route.meta &&
-          this.$route.viewMode &&
-          this.$route.viewMode === "MapView"
-        ) {
-          let locationId = this.$route.params.locationId;
-          let location = data.filter(l => (l.Id = locationId))[0];
-          this.setSelectedLocation(location);
-          this.isListViewMode = false;
-        }
       })
       .catch(error => {
         console.log(error);
@@ -411,6 +415,18 @@ export default {
         }
       });
   }
+  // chaubqn - start
+  // getLocationBlockFloorTile(locationId) {
+  //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
+  //   this.axios.get(url)
+  //     .then((res) => {
+  //       this.mapViewSelectedLocation = res.data;
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     })
+  // }
+  // chaubqn - end
 };
 </script>
 
