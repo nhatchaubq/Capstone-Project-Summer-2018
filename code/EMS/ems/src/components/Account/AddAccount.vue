@@ -53,7 +53,7 @@
                     <div class="form-field-title">
                         <strong>
                             Fullname (required)
-                        </strong>     <span v-if="CreateAccountErrors.FullNameMax != ''">. <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''">. <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
+                        </strong>     <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -77,7 +77,7 @@
                         <strong>
                             Phone (required)
 
-                        </strong>  <span v-if="CreateAccountErrors.PhoneMax != ''">. <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.PhoneMin != ''">. <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>
+                        </strong>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -100,7 +100,7 @@
                     <div class="form-field-title">
                         <strong>
                             Email (required) 
-                        </strong> <span v-if="CreateAccountErrors.NoEmail != ''">. <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>
+                        </strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
@@ -177,7 +177,7 @@
                     <div class="form-field-title" >
                         <strong>
                             Role (required)
-                        </strong><span v-if="CreateAccountErrors.NoRole != ''">. <span class="error-text">{{ CreateAccountErrors.NoRole }}</span></span>
+                        </strong><span v-if="CreateAccountErrors.NoRole != ''"> <span class="error-text">{{ CreateAccountErrors.NoRole }}</span></span>
                     </div> 
                     <div class="field is-horizontal" >
                         <model-select style="width: 100% !important" :options="roleOptions" v-model="account.roleid" placeholder="Select a role"></model-select>  
@@ -240,24 +240,24 @@ export default {
         // NoUsername: "You must provide username for this account",
         // NoPassword: "You must provide password for this account",
         // fullname-start
-        FullNameMax: "Use 50 characters or fewer for your full name",
-        FullNameMin: "Use 6 characters or more for your full name",
+        FullNameMax: "Use from 6 to 50 characters for your full name",
+        FullNameMin: "Use from 6 to 50 characters for your full name",
         // NoFullname: "You must provide full name for this account",
         // fullname-end
         // NoPhone: "You must provide phone number for this account",
         // username-start
-        UsernameMax: "Use 50 characters or fewer for your username",
-        UsernameMin: "Use 6 characters or more for your username",
-        UserNameTrim: " No Space Allowed",
+        UsernameMax: "Use from 6 to 50 characters for your  username",
+        UsernameMin: "Use from 6 to 50 characters for your username",
+        // UserNameTrim: " No Space Allowed",
         // username-end
         //password
-        MaxPassword: "Use 50 characters or fewer for your password",
-        WeakAccount: "Use 6 characters or more for your password",
+        MaxPassword: "Use from 6 to 50 characters for your password",
+        WeakAccount: "Use from 6 to 50 characters for your password",
         //password-end
 
         // phone-start
-        PhoneMin: "Use 9 characters or more for your phone number",
-        PhoneMax: "Use 13 characters or fewer for your password",
+        PhoneMin: "Use from 9 to 13 characters for your phonenumber",
+        PhoneMax: "Use from 9 to 13 characters for your phonenumber",
         // phone-end
         NoEmail: "Enter email",
         NoRole: "Select role"
@@ -302,9 +302,9 @@ export default {
       if (this.account.username.length > 50) {
         this.CreateAccountErrors.UsernameMax = this.ErrorStrings.UsernameMax;
       }
-      if (this.account.username.trim() === "") {
-        this.CreateAccountErrors.UserNameTrim = this.ErrorStrings.UserNameTrim;
-      }
+      // if (this.account.username.trim() === "") {
+      //   this.CreateAccountErrors.UserNameTrim = this.ErrorStrings.UserNameTrim;
+      // }
       //   if (this.account.password === "") {
       //     this.CreateAccountErrors.NoPassword = this.ErrorStrings.NoPassword;
       //   }
@@ -357,7 +357,7 @@ export default {
         // this.CreateAccountErrors.NoPhone === "" &&
         this.CreateAccountErrors.UsernameMax === "" &&
         this.CreateAccountErrors.UsernameMin === "" &&
-        this.CreateAccountErrors.UserNameTrim === "" &&
+        // this.CreateAccountErrors.UserNameTrim === "" &&
         this.CreateAccountErrors.MaxPassword === "" &&
         this.CreateAccountErrors.WeakAccount === "" &&
         this.CreateAccountErrors.FullNameMax === "" &&
@@ -371,9 +371,9 @@ export default {
   },
   watch: {
     "account.username": function() {
-      if (this.account.username.trim() != "") {
-        this.CreateAccountErrors.UserNameTrim = "";
-      }
+      // if (this.account.username.trim() != "") {
+      //   this.CreateAccountErrors.UserNameTrim = "";
+      // }
       if (this.account.username.length > 5) {
         this.CreateAccountErrors.UsernameMin = "";
       }
