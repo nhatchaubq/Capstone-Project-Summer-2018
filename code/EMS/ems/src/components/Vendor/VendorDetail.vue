@@ -94,11 +94,32 @@
   <div class="grid-wrapper1 col-12">
     <div class="material-box">
       <!-- <div class="grid-wrapper1"> -->
-        <strong>Vendor's equipment</strong> 
-        <div v-if="Vendor.Equipments" >
+        <strong>Vendor's equipment (This vendor have {{Vendor.Equipment.Quantity}} equipment(s) and {{Vendor.EquipmentItems.Quantity}} equipment item(s) ) </strong> 
+        <!-- <div v-if="Vendor.Equipments" >
           <div >
 
             <div :key="Equipment.Id" v-for="Equipment in Vendor.Equipments">
+              <div class="row" style="height:40px; ">
+
+
+                
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+         <div v-if="Vendor.EMayXayDung" >
+          <div>
+            Construction Machine
+          </div>
+
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayXayDung">
               <div class="row" style="height:40px; ">
                 <!-- <div class="col-12 row"> -->
 
@@ -112,8 +133,161 @@
                 <!-- </div > -->
               </div>
             </div>
-          </div>
         </div>
+
+        <div v-if="Vendor.EMayCoKhi" >
+          <div>
+            Mechanical Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayCoKhi">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EMayHan" >
+          <div>
+            Welder
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayHan">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EMayNenKhi" >
+          <div>
+            compressor Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayNenKhi">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EMayBom" >
+          <div>
+            Pump Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayBom">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EMayFax" >
+          <div>
+            Fax Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayFax">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.ECrane" >
+          <div>
+            Crane Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.ECrane">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EExcavator" >
+          <div>
+            Excavator Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EExcavator">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EForklift" >
+          <div>
+            Forklift Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EForklift">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EDungCuDo" >
+          <div>
+            Measure Tools
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EDungCuDo">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EDungCuDien" >
+          <div>
+            electric Tools
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EDungCuDien">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+
+
+        
       <!-- </div> -->
     </div>
   </div>
