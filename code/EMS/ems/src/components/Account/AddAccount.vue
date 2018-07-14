@@ -345,6 +345,7 @@ export default {
             account: this.account
           })
           .then(res => {
+            alert("Add account successful");
             this.$router.push("/account");
           });
       }
