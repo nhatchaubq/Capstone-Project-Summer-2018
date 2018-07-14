@@ -195,116 +195,6 @@ export default {
       return JSON.parse(window.localStorage.getItem("user"));
     }
   },
-  data() {
-    return {
-      locations: [],
-      equipments: [],
-      workorders: [],
-      team: [],
-      selectedLocation: null,
-      currentMode: 4,
-      modes: {
-        EQUIPMENT: 0,
-        WORKORDER: 1,
-        TEAM: 2,
-        POSITION: 3,
-        MAP: 4
-      },
-      // chaubqn - start
-      isListViewMode: true,
-      medianLatitude: null,
-      medianLongitude: null,
-      mapViewSelectedLocation: null
-      // chaubqn - end
-    };
-  },
-  // methods: {
-  //   isActive(locationId) {
-  //     if (this.selectedLocation && locationId != this.location.Id) {
-  //       return "location-block-choose";
-  //     } else {
-  //       return "location-block";
-  //     }
-  //   },
-    setSelectedLocation(location) {
-      // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
-      // this.axios.get(url)
-      //   .then((response) => {
-      //     let data = response.data;
-      //     data.forEach(equipment => {
-      //       this.equipments.push(equipment);
-      //     })
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   })
-      // alert(this.selectedLocation);
-      this.selectedLocation = location;
-      this.getEquipmentFromLocation(location);
-      this.getWororderFromLocation(location);
-      this.getTeamFromLocation(location);
-    },
-    getEquipmentFromLocation(location) {
-      this.equipments = [];
-      let url = `${
-        Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH
-      }/getByEquipmentId/${location.Id}`;
-      this.axios
-        .get(url)
-        .then(response => {
-          let data = response.data;
-          data.forEach(eqtItem => {
-            this.equipments.push(eqtItem);
-          });
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-
-    getWororderFromLocation(location) {
-      this.workorders = [];
-      let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
-      this.axios
-        .get(url)
-        .then(response => {
-          let data = response.data;
-          data.forEach(workorder => {
-            this.workorders.push(workorder);
-          });
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-    getTeamFromLocation(location) {
-      this.team = [];
-      let url = `${Server.TEAM_BY_LOCATION_ID_API_PATH}/${location.Id}`;
-      this.axios
-        .get(url)
-        .then(response => {
-          let data = response.data;
-          data.forEach(account => {
-            this.team.push(account);
-          });
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-    // chaubqn - start
-    // getLocationBlockFloorTile(locationId) {
-    //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
-    //   this.axios.get(url)
-    //     .then((res) => {
-    //       this.mapViewSelectedLocation = res.data;
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     })
-    // }
-    // chaubqn - end
-  },
   created() {
     this.axios
       .get(Server.LOCATION_API_PATH)
@@ -346,7 +236,116 @@ export default {
       .catch(error => {
         console.log(error);
       });
+  },
+  data() {
+    return {
+      locations: [],
+      equipments: [],
+      workorders: [],
+      team: [],
+      selectedLocation: null,
+      currentMode: 4,
+      modes: {
+        EQUIPMENT: 0,
+        WORKORDER: 1,
+        TEAM: 2,
+        POSITION: 3,
+        MAP: 4
+      },
+      // chaubqn - start
+      isListViewMode: true,
+      medianLatitude: null,
+      medianLongitude: null,
+      mapViewSelectedLocation: null
+      // chaubqn - end
+    };
+  },
+  // methods: {
+  //   isActive(locationId) {
+  //     if (this.selectedLocation && locationId != this.location.Id) {
+  //       return "location-block-choose";
+  //     } else {
+  //       return "location-block";
+  //     }
+  //   },
+  setSelectedLocation(location) {
+    // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
+    // this.axios.get(url)
+    //   .then((response) => {
+    //     let data = response.data;
+    //     data.forEach(equipment => {
+    //       this.equipments.push(equipment);
+    //     })
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   })
+    // alert(this.selectedLocation);
+    this.selectedLocation = location;
+    this.getEquipmentFromLocation(location);
+    this.getWororderFromLocation(location);
+    this.getTeamFromLocation(location);
+  },
+  getEquipmentFromLocation(location) {
+    this.equipments = [];
+    let url = `${
+      Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH
+    }/getByEquipmentId/${location.Id}`;
+    this.axios
+      .get(url)
+      .then(response => {
+        let data = response.data;
+        data.forEach(eqtItem => {
+          this.equipments.push(eqtItem);
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+
+  getWororderFromLocation(location) {
+    this.workorders = [];
+    let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
+    this.axios
+      .get(url)
+      .then(response => {
+        let data = response.data;
+        data.forEach(workorder => {
+          this.workorders.push(workorder);
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+  getTeamFromLocation(location) {
+    this.team = [];
+    let url = `${Server.TEAM_BY_LOCATION_ID_API_PATH}/${location.Id}`;
+    this.axios
+      .get(url)
+      .then(response => {
+        let data = response.data;
+        data.forEach(account => {
+          this.team.push(account);
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
+  // chaubqn - start
+  // getLocationBlockFloorTile(locationId) {
+  //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
+  //   this.axios.get(url)
+  //     .then((res) => {
+  //       this.mapViewSelectedLocation = res.data;
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     })
+  // }
+  // chaubqn - end
 };
 </script>
 

@@ -17,7 +17,7 @@
                 <div class="input_picture">                    
                     <label class="file-label" style="width: 100% !important"> 
                     <span class="file-cta">
-                        <input class="file-input" type="file" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
+                        <input class="file-input" type="file" accept="image/*" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
                         <span class="file-icon">
                             <i class="fa fa-upload"></i>
                         </span>
@@ -168,7 +168,7 @@
               Location
           </div>
           <div>
-          <model-select style="width: 100% !important" :options="locationOptions" v-model="selectedLocation" v-on:click="changeLocation" placeholder="Select a location"></model-select>  
+          <model-select style="width: 100% !important" :options="locationOptions" v-model="selectedLocation"  placeholder="Select a location"></model-select>  
           </div>
           <div class="form-field-title">
               Block
