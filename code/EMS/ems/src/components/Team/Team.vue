@@ -14,20 +14,27 @@
     <table class="mytable">
           <thead>
             <tr>
-                <th><strong>ID</strong></th>
-                <th><strong>User name</strong></th>
+                <!-- <th><strong>ID</strong></th> -->
+                <th><strong>Team name</strong></th>
+                <th><strong>Leader </strong></th>
+                <th><strong>Members </strong></th>
                 <th><strong>Create date </strong></th>
+
+
+
 
                 <!-- <th><strong>Department</strong></th> -->
             </tr>
         </thead>  
         <tbody>
             <tr v-bind:key="team.Id" v-for="team in teams" v-on:click="gotoDetail(team.Id)">
-                <td>{{team.Id}}</td>    
-                <!-- <router-link :to="`/team/${team.Id}`">   -->
-                  <td>{{team.Name}}</td>
-                <!-- </router-link> -->
-                <td>{{getDate(team.CreatedDate)}}</td>
+              <!-- <td>{{team.Id}}</td>     -->
+              <td>{{team.Name}}</td>
+              <!-- <router-link :to="`/account/${team.TeamLeader.Id}`">   -->
+                <td>{{ team.TeamLeader ? team.TeamLeader.Username : 'n/a'}}</td>
+              <!-- </router-link> -->
+              <td>{{team.Members.Quantity}}</td>
+              <td>{{getDate(team.CreatedDate)}}</td>
 
             </tr>
         </tbody>

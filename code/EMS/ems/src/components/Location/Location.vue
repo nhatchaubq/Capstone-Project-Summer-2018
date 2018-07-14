@@ -10,7 +10,7 @@
             <b>Sort By</b>
           </div> -->
           <div class="location-blocks">
-            <div class="material-box material-shadow-animate"  :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
+            <div class="material-box material-shadow-animate" :class="isActive(location.Id)"  :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
               <div class="location-name" >
                 {{location.Name}}
               </div>
@@ -53,15 +53,15 @@
                 <div :class="{'is-active': currentMode == modes.TEAM}" v-on:click="currentMode = modes.TEAM">Team</div>
               </div>
             </div>
-            <br>
+          
 
-            <div v-if="currentMode == modes.MAP">
+            <div v-if="currentMode == modes.MAP" style="padding-top: 1rem">
               <div class="ggmap">
                 <GmapMap
                 :center="{lat:selectedLocation.Latitude, lng:selectedLocation.Longitude}"
                 :zoom="16"
                 map-type-id="terrain"
-                style="width: 100%; height:31rem"
+                style="width: 100%; height:27rem"
               >
               <GmapMarker
                 :position="google && new google.maps.LatLng(selectedLocation.Latitude, selectedLocation.Longitude)"
@@ -72,7 +72,7 @@
               </GmapMap>
               </div>
             </div>
-            <div v-if="currentMode == modes.EQUIPMENT" > 
+            <div v-if="currentMode == modes.EQUIPMENT" style="padding-top: 1rem"> 
               
               <div >
                 
@@ -108,21 +108,17 @@
             </div>
             <div v-else-if="currentMode == modes.WORKORDER" style="padding-top:5px">              
               <div v-bind:key='workorder.Id' v-for="workorder in workorders">           
-                <div style="display: grid; grid-template-columns: 40% 40% auto;" class="order-box">
-                    <div style="display: flex">
-                        {{workorder.Name}}
-                    </div>
-                    <div style="display: grid; grid-template-rows: auto auto;">                                                                                  
-                        <div style="font-size: .9rem">
-                            <!-- Quantity: {{ equipment.EquipmentItems.length }} -->
-                            Created Date: {{ workorder.CreateDate }}
-                        </div>
-                        <div>
-                          Quantity of Item: {{workorder.Quantity}}
-                        </div>
-                    </div>
-                    <div>
-                       <a href="" id="show-detail">Show Detail</a>
+                <div style="display: grid; grid-template-columns: 80% auto;border-bottom:0.15px solid;padding-top:1rem" >
+                    <div style=" border-right: 0.25px solid">
+                      <div style="font-size: 25px;font-weight: 500;">{{workorder.Name}}</div>
+                      <div style="display: grid; grid-template-columns: 10% auto 35%;">
+                        <div style="color: white" :style="`background-color: ${workorder.TagHexColor}`"  class="tag"> {{workorder.Priority}}</div>
+                        <div style="padding-left:2rem">  <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">group</i> {{workorder.Team}} </div> 
+                        <div style="position: relative;top: 0.3rem;"> <i class="fa fa-calendar" style="color:gray;"></i> {{getFormatDate(workorder.CreateDate)}} </div>                                             
+                      </div>                      
+                    </div>                    
+                    <div style="text-align:center">
+                       <a  id="show-detail" v-on:click="showWorkorderDetail(workorder)">Show Detail</a>
                     </div>
                 </div>
               </div>
@@ -175,19 +171,70 @@
       </div>
       <div v-else style="height: 100% !important">
         <map-view :locations="locations" :medianLatitude="medianLatitude" :medianLongitude="medianLongitude" :backFromAddBlock="$route.meta && $route.meta.viewMode === 'MapView'"></map-view>     
-      </div>       
+      </div>   
+      <modal v-model="addPopUp" v-if="selectedWorkorder && status.length>0">        
+        <div slot="header" class="title-wd"> 
+          Work Order Detail: {{selectedWorkorder.Name}}
+        </div>
+        <div class="info-wd">
+          <div class="info-field">
+            <div class="info-title">
+              Team:
+            </div>
+            <div class="info-content">
+              {{selectedWorkorder.Team}}
+            </div>
+          </div>
+          <div class="info-field">
+            <div class="info-title">
+              Start Date: 
+            </div>
+            <div class="info-content">
+              {{getFormatDate(selectedWorkorder.CreateDate)}}
+            </div>
+          </div>
+          <div class="info-field">
+            <div class="info-title">
+              Due Date: 
+            </div>
+            <div class="info-content">
+              {{getFormatDate(selectedWorkorder.DueDate)}}
+            </div>
+          </div>
+          <div class="info-field">
+            <div class="info-title">
+              Closed Date:
+            </div>
+            <div class="info-content">
+               {{getFormatDate(selectedWorkorder.ClosedDate)}}
+            </div>
+          </div>                                        
+        </div>        
+        <div style="text-align:center">          
+          <step-progress :workOrderStatus="{id: selectedWorkorder.StatusID, name: selectedWorkorder.Status}" 
+                    :statusList="status.filter(s => s.name != 'Cancelled')"></step-progress>
+          
+        </div>
+        <div slot="footer"><button class="button" v-on:click="addPopUp = false">OK</button></div>
+      </modal>
   </div>
 </template>
 
 <script>
 import Server from "@/config/config.js";
 import { gmapApi } from "vue2-google-maps";
-
+import Vodal from "vodal";
+import "vodal/common.css";
+import "vodal/slide-up.css";
 import MapView from "./MapView";
+import StepProgress from "@/components/StepProgress/StepProgress.vue";
+import moment from "moment";
 
 export default {
   components: {
-    MapView
+    MapView,
+    Vodal,
+    StepProgress
   },
   computed: {
     google: gmapApi,
@@ -239,9 +286,12 @@ export default {
   },
   data() {
     return {
+      addPopUp: false,
       locations: [],
       equipments: [],
       workorders: [],
+      workorderDetails: [],
+      selectedWorkorder: null,
       team: [],
       selectedLocation: null,
       currentMode: 4,
@@ -252,51 +302,63 @@ export default {
         POSITION: 3,
         MAP: 4
       },
-      // chaubqn - start
+      // chaubqn - start chaubqn - start
       isListViewMode: true,
       medianLatitude: null,
       medianLongitude: null,
-      mapViewSelectedLocation: null
+      mapViewSelectedLocation: null,
+      status: []
       // chaubqn - end
     };
   },
-  // methods: {
-  //   isActive(locationId) {
-  //     if (this.selectedLocation && locationId != this.location.Id) {
-  //       return "location-block-choose";
-  //     } else {
-  //       return "location-block";
-  //     }
-  //   },
-  setSelectedLocation(location) {
-    // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
-    // this.axios.get(url)
-    //   .then((response) => {
-    //     let data = response.data;
-    //     data.forEach(equipment => {
-    //       this.equipments.push(equipment);
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   })
-    // alert(this.selectedLocation);
-    this.selectedLocation = location;
-    this.getEquipmentFromLocation(location);
-    this.getWororderFromLocation(location);
-    this.getTeamFromLocation(location);
-  },
-  getEquipmentFromLocation(location) {
-    this.equipments = [];
-    let url = `${
-      Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH
-    }/getByEquipmentId/${location.Id}`;
-    this.axios
-      .get(url)
-      .then(response => {
-        let data = response.data;
-        data.forEach(eqtItem => {
-          this.equipments.push(eqtItem);
+
+  methods: {
+    showWorkorderDetail(tmpWorkorder) {
+      this.addPopUp = true;
+      this.selectedWorkorder = tmpWorkorder;
+    },
+    isActive(locationId) {
+      if (this.selectedLocation && locationId != this.selectedLocation.Id) {
+        return "is-active-block";
+      } else {
+        return "";
+      }
+    },
+
+    setSelectedLocation(location) {
+      // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
+      // this.axios.get(url)
+      //   .then((response) => {
+      //     let data = response.data;
+      //     data.forEach(equipment => {
+      //       this.equipments.push(equipment);
+      //     })
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   })
+      // alert(this.selectedLocation);
+      this.selectedLocation = location;
+      this.getEquipmentFromLocation(location);
+      this.getWororderFromLocation(location);
+      this.getTeamFromLocation(location);
+    },
+    getEquipmentFromLocation(location) {
+      this.equipments = [];
+      let url = `${
+        Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH
+      }/getByEquipmentId/${location.Id}`;
+      this.axios
+        .get(url)
+        .then(response => {
+          let data = response.data;
+          data.forEach(eqtItem => {
+            this.equipments.push(eqtItem);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+
         });
       })
       .catch(error => {
@@ -314,10 +376,12 @@ export default {
         data.forEach(workorder => {
           this.workorders.push(workorder);
         });
-      })
-      .catch(error => {
-        console.log(error);
-      });
+
+    },
+    getFormatDate(date) {
+      return moment(date).format("L");
+    }
+
   },
   getTeamFromLocation(location) {
     this.team = [];
@@ -332,6 +396,23 @@ export default {
       })
       .catch(error => {
         console.log(error);
+      });
+    this.axios
+      .get(Server.WORKORDER_STATUS_API_PATH)
+      .then(response => {
+        let data = response.data;
+        data.forEach(element => {
+          let status = {
+            id: element.Id,
+            name: element.Name
+          };
+          this.status.push(status);
+        });
+      })
+      .catch(error => {
+        if (error == "Request failed with status code 500") {
+          this.$router.push("/500");
+        }
       });
   }
   // chaubqn - start
@@ -407,15 +488,17 @@ export default {
   padding-right: 1rem;
   width: 35%;
   overflow-y: auto;
+  padding-bottom: 2rem;
+  max-height: 83%;
 }
-.location-blocks-choose {
+/* .location-blocks-choose {
   position: fixed;
   height: 88%;
   padding-right: 1rem;
   width: 35%;
   overflow-y: auto;
   background-color: #263238;
-}
+} */
 
 .location-blocks div {
   margin-bottom: 0.6rem;
@@ -439,10 +522,11 @@ export default {
   grid-gap: 0.3rem;
   position: fixed;
   left: 56%;
-  max-height: 88%;
+  max-height: 83.5%;
   overflow-y: auto;
   overflow-x: hidden;
   width: 43%;
+  /* padding-bottom: 5rem; */
   z-index: 2;
 }
 .info-location {
@@ -642,4 +726,19 @@ export default {
 #team-detail:hover{
   color: var(--darken-primary-color);
 } */
+.title-wd {
+  font-size: 24px;
+  font-weight: bold;
+}
+.info-wd {
+  padding-bottom: 0.8rem;
+}
+.info-field {
+  display: grid;
+  grid-template-columns: 23% auto;
+  font-size: 15px;
+}
+.info-title {
+  font-weight: bold;
+}
 </style>

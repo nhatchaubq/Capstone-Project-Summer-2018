@@ -6,8 +6,9 @@
     <table class="mytable">
       <thead>
         <tr>
-          <th><strong>ID</strong></th>
+          <!-- <th><strong>ID</strong></th> -->
           <th><strong>Business name</strong></th>
+          <th><strong>Equipment quantity</strong></th>
           <th><strong>Business address</strong></th>
           <th><strong>Website</strong></th>
           <th><strong>Contact name</strong></th>
@@ -17,12 +18,13 @@
       </thead>  
       <tbody>
           <tr v-bind:key="vendor.Id" v-for="vendor in vendors" class="txtText" v-on:click="gotoDetail(vendor.Id)">
-            <td style="width:3rem">{{vendor.Id}}</td>    
+            <!-- <td style="width:3rem">{{vendor.Id}}</td>     -->
             <!-- <router-link :to="`/team/${team.Id}`">   -->
             <td style="width:15rem">{{vendor.BusinessName}}</td>
+            <td>{{vendor.Vendor.Quantityitems.Quantity}}</td>
             <!-- </router-link> -->
             <td style="width:20rem">{{vendor.BusinessAddress}}</td>
-            <td style="width:15rem">{{vendor.Website}}</td>
+            <td style="width:15rem">{{vendor.Website ? vendor.Website : "N/A"}} </td>
             <td>{{vendor.ContactName}}</td>
           </tr>
       </tbody>

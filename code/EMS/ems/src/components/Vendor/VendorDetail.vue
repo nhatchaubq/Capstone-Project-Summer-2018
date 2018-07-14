@@ -3,49 +3,49 @@
     <router-link to="/vendor">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Vendors</a>
     </router-link>
-<div class="row">
 
-  <div class="grid-wrapper1 col-6">
+
+  <div class="grid-wrapper1 col-12" style="margin-bottom:1rem">
     <div class="material-box" >
       <div class="row" style="margin: 0 !important; margin-bottom: 0.5rem">
         <h2 class="col-11" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{Vendor.BusinessName}}</strong> </h2>
       <button class="button btn-edit btn-primary material-shadow-animate col-1" v-on:click="editMode = !editMode">Edit</button>
       </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem" >
-          Business address  
+        <div class="col-12" style="margin-top:0.5rem" >
+          Business address  <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoBusinessAddress != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span>
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem" >
+        <div class="col-12" style="margin-top:0.5rem" >
           Website
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem;" >
-          Contact name 
+        <div class="col-12" style="margin-top:0.5rem;" >
+          Contact name <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoContactName != ''">. <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span>
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem" >
-          Contact email
+        <div class="col-12" style="margin-top:0.5rem" >
+          Contact email <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''">. <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.ContactEmail" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.ContactEmail" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-4" style="margin-top:0.5rem" >
+        <div class="col-12" style="margin-top:0.5rem" >
           Description
         </div>
+      </div>
         <input v-if="!editMode" v-model="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
         <input v-else v-model="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" >
-      </div>
       <div class="row" v-if="editMode">
         <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editVendor()">Done</button>
         <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Cancel</button>
@@ -91,14 +91,35 @@
 
     </div> -->
         <!-- test- start -->
-
-    <div class="material-box col-6">
+  <div class="grid-wrapper1 col-12">
+    <div class="material-box">
       <!-- <div class="grid-wrapper1"> -->
-        <strong>Vendor's equipment</strong> 
-        <div v-if="Vendor.Equipments" >
+        <strong>Vendor's equipment (This vendor have {{Vendor.Equipment.Quantity}} equipment(s) and {{Vendor.EquipmentItems.Quantity}} equipment item(s) ) </strong> 
+        <!-- <div v-if="Vendor.Equipments" >
           <div >
 
             <div :key="Equipment.Id" v-for="Equipment in Vendor.Equipments">
+              <div class="row" style="height:40px; ">
+
+
+                
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+         <div v-if="Vendor.EMayXayDung" >
+          <div>
+            Construction Machine
+          </div>
+
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayXayDung">
               <div class="row" style="height:40px; ">
                 <!-- <div class="col-12 row"> -->
 
@@ -112,13 +133,167 @@
                 <!-- </div > -->
               </div>
             </div>
-          </div>
         </div>
+
+        <div v-if="Vendor.EMayCoKhi" >
+          <div>
+            Mechanical Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayCoKhi">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EMayHan" >
+          <div>
+            Welder
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayHan">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EMayNenKhi" >
+          <div>
+            compressor Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayNenKhi">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EMayBom" >
+          <div>
+            Pump Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayBom">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EMayFax" >
+          <div>
+            Fax Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayFax">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.ECrane" >
+          <div>
+            Crane Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.ECrane">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EExcavator" >
+          <div>
+            Excavator Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EExcavator">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EForklift" >
+          <div>
+            Forklift Machine
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EForklift">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EDungCuDo" >
+          <div>
+            Measure Tools
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EDungCuDo">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+        <div v-if="Vendor.EDungCuDien" >
+          <div>
+            electric Tools
+          </div>
+            <div :key="Equipment.Id" v-for="Equipment in Vendor.EDungCuDien">
+              <div class="row" style="height:40px; ">
+                <router-link :to="`/equipment/${Equipment.Id}`">
+                <div class="col-12">
+                  <span>-</span> {{Equipment.Name}}
+                </div>
+                </router-link>
+              </div>
+            </div>
+        </div>
+
+
+
+        
       <!-- </div> -->
     </div>
+  </div>
 
     <!-- test end -->
-  </div>    
+
 </div>
   
 </template>
@@ -134,6 +309,19 @@ export default {
   },
   data() {
     return {
+      sending: false,
+      ErrorStrings: {
+        // NoBusinessName: "You must provide business name for this vendor",
+        NoBusinessAddress: "You must provide business address for this vendor",
+        NoContactName: "You must provide contact name for this vendor",
+        NoEmail: "You must provide contact email for this vendor"
+      },
+      CreateVendorErrors: {
+        // NoBusinessName: "",
+        NoBusinessAddress: "",
+        NoContactName: "",
+        NoEmail: ""
+      },
       Vendor: null,
       checkedActive: [],
       editMode: false
@@ -141,18 +329,61 @@ export default {
   },
   methods: {
     editVendor() {
-      this.axios
-        .put(`http://localhost:3000/api/vendor/${this.$route.params.id}`, {
-          Vendor: this.Vendor
-        })
-        .then(res => {
-          this.$router.push("/vendor");
-        });
+      // if (this.Vendor.BusinessName === "") {
+      //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
+      // }
+      if (this.Vendor.BusinessAddress === "") {
+        this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
+      }
+      if (this.Vendor.ContactName === "") {
+        this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
+      }
+      if (this.Vendor.ContactEmail === "") {
+        this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+      if (this.validateVendor())
+        this.axios
+          .put(`http://localhost:3000/api/vendor/${this.$route.params.id}`, {
+            Vendor: this.Vendor
+          })
+          .then(res => {
+            this.$router.push("/vendor");
+          });
     },
     getAccountAvatar(equip) {
       return equip.AvatarImage
         ? equip.AvatarImage
         : "http://citizen.edisha.gov.in/Content/assets/stylesheet/img/placeholder-user.png";
+    },
+    validateVendor() {
+      return (
+        // this.CreateVendorErrors.NoBusinessName === "" &&
+        this.CreateVendorErrors.NoBusinessAddress === "" &&
+        this.CreateVendorErrors.NoContactName === "" &&
+        this.CreateVendorErrors.NoEmail === ""
+      );
+    }
+  },
+  watch: {
+    // "Vendor.BusinessName": function() {
+    //   if (this.Vendor.BusinessName != "") {
+    //     this.CreateVendorErrors.NoBusinessName = "";
+    //   }
+    // },
+    "Vendor.BusinessAddress": function() {
+      if (this.Vendor.BusinessAddress != "") {
+        this.CreateVendorErrors.NoBusinessAddress = "";
+      }
+    },
+    "Vendor.ContactName": function() {
+      if (this.Vendor.ContactName != "") {
+        this.CreateVendorErrors.NoContactName = "";
+      }
+    },
+    "Vendor.ContactEmail": function() {
+      if (this.Vendor.ContactEmail != "") {
+        this.CreateVendorErrors.NoEmail = "";
+      }
     }
   }
 };
