@@ -128,12 +128,12 @@
                     <input type="text" class="input" placeholder="Description" v-model="form.Description">
                 </div>
             </div>
-            <div class="form-field">
+            <!-- <div class="form-field">
               <label class="checkbox">
                 <input type="checkbox" id="checkbox" v-model="checked">
                 Do you want to add item(s) for this equipment?
               </label>
-            </div>
+            </div> -->
             <div class="hr" v-if="checked"  >
               <div class="form-field" style="margin: 1rem -3rem;">
                 <div class="form-field-title">

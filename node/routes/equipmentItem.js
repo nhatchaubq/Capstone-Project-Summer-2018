@@ -176,13 +176,15 @@ router.put("/tileId/:id", (req, res) => {
 router.put("/status/:id", (req, res) => {
     req
         .sql("declare @currentItemStatusId int; " +
+            "declare @newItemStatusId int; " +
             "set @currentItemStatusId = (select StatusId from EquipmentItem where Id = @itemId); " +
-            "update EquipmentItem set StatusId = @newStatusId where Id = @itemId; " +
+            "set @newItemStatusId = (select Id from EquipmentStatus where [Name] = @newStatusName); " +
+            "update EquipmentItem set StatusId = @newItemStatusId where Id = @itemId; " +
             "insert into EquipmentItemHistory(EquipmentItemID, ByUserID, OldStatusID, NewStatusID, [Date], [Description]) " +
-            "values(@itemId, @userId, @currentItemStatusId, @newStatusId, getdate(), @description)")
+            "values(@itemId, @userId, @currentItemStatusId, @newItemStatusId, getdate(), @description)")
         .param("itemId", req.params.id, TYPES.Int)
         .param("userId", req.body.userId, TYPES.Int)
-        .param("newStatusId", req.body.newStatusId, TYPES.NVarChar)
+        .param("newStatusName", req.body.newStatusName, TYPES.NVarChar)
         .param("description", req.body.description, TYPES.NVarChar)
         .exec(res);
 });
@@ -192,7 +194,7 @@ router.put("/:eid", (req, res) => {
         .sql(
             "Update EquipmentItem " +
             "SET WarrantyDuration = @warrantyDuration, RuntimeDays = @runtimeDays, Price = @price, ImportDate = @importdate, " +
-            "LastMaintainDate = @lastmaintaindate, NextMaintainDate =@nextmaintaindate, Description = @description " +
+            "LastMaintainDate = @lastmaintaindate, NextMaintainDate =@nextmaintaindate, Description = @description, TileID = @tileID " +
             "WHERE Id = @id"
         )
         .param("warrantyDuration", req.body.warrantyDuration, TYPES.Int)
@@ -203,6 +205,7 @@ router.put("/:eid", (req, res) => {
         .param("nextmaintaindate", req.body.nextmaintaindate, TYPES.NVarChar)
         // .param("statusId", req.body.statusId, TYPES.Int)
         .param("description", req.body.description, TYPES.NVarChar)
+        .param("tileID", req.body.tileID, TYPES.Int)
         .param("id", req.params.eid, TYPES.Int)
         .exec(res);
 });
