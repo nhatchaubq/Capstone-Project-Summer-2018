@@ -64,11 +64,11 @@
   <div class="col-7" style="padding-left: 0 !important">
       <div style="margin-top:0.5rem" >
         <label style="margin-right: 1rem;" class="radio"  >
-          <input type="radio" name="active" v-on:change="account.IsActive = true" checked="checked" :disabled="!editMode">
+          <input type="radio" name="active" v-on:change="account.IsActive = true" :checked="account.IsActive" :disabled="!editMode">
           Active
         </label>
         <label class="radio">
-          <input type="radio" style="margin-top: 0.5rem" name="active" v-on:change="account.IsActive = false" :disabled="!editMode">
+          <input type="radio" style="margin-top: 0.5rem" name="active" v-on:change="account.IsActive = false" :checked="!account.IsActive" :disabled="!editMode">
           Inactive
         </label>
       </div>
@@ -163,16 +163,16 @@ export default {
       ErrorStrings: {
         // NoUsername: 'You must provide username for this account',
         // NoFullname: "You must provide full name for this account",
-        FullNameMax: "Use 50 characters or fewer for your full name",
-        FullNameMin: "Use 6 characters or more for your full name",
+        FullNameMax: "Use from 6 to 50 characters for your full name",
+        FullNameMin: "Use from 6 to 50 characters for your full name",
 
         // NoPassword: "You must provide password for this account",
-        MaxPassword: "Use 50 characters or fewer for your password",
-        WeakAccount: "Use 6 characters or more for your password",
+        MaxPassword: "Use from 6 to 50 characters for your password",
+        WeakAccount: "Use from 6 to 50 characters for your password",
 
         // NoPhone: "You must provide phone number for this account",
-        PhoneMin: "Use 9 characters or more for your phone number",
-        PhoneMax: "Use 13 characters or fewer for your password",
+        PhoneMin: "Use from 6 to 50 characters for your phone number",
+        PhoneMax: "Use from 6 to 50 characters for your phone number",
 
         NoEmail: "Enter email"
         // NoRole: "You must provide role for this account"
