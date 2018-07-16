@@ -13,7 +13,7 @@
         <div class="form-content" >   
             <div class="form-field" style="padding-top:1.5rem">
                 <div class="form-field-title">
-                    Name of location (required)
+                    <strong>Name <span style="color:red;">*</span></strong>  <span v-if="CreateLocationErrors.NoName != ''"><span class="error-text">  {{ CreateLocationErrors.NoName }}</span></span>
                 </div>
                 <div class="form-field-input">
                     <input v-model="newLocation.name" type="text" class="input">
@@ -21,7 +21,7 @@
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Address (required)
+                    <strong>Address <span style="color:red;">*</span></strong>  <span v-if="CreateLocationErrors.NoAddress != ''"></span> <span class="error-text">  {{ CreateLocationErrors.NoAddress }}</span>
                 </div>
                 <div class="form-field-input">                  
                     <div>                    
@@ -51,7 +51,7 @@
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                    Description
+                   <strong>Description</strong>
                 </div>
                 <div class="form-field-input">
                     <!-- <input type="text" class="input" > -->
@@ -60,11 +60,11 @@
             </div>
             <div class="form-field" style=" display:grid ; grid-template-columns: 7% 20% auto">
                 <div class="form-field-title">
-                    Team
+                    <strong>Team</strong>
                 </div>
                 <div class="select form-field-input" style="width: 100% !important" >
                     <select v-model="selectedTeam" style="width:100%">
-                        <option :disabled="selectedTeams.length > 0" value=null> --Choose new team</option>
+                        <option disabled=disabled value=null> -- Choose new team --</option>
                         <!-- <option :disabled="selectedTeams.length > 0" v- value="null">Not now</option> -->
                         <option v-bind:key='team.Id' v-for='team in teams' :value="team">{{team.Name}}</option>
                     </select>
@@ -76,19 +76,7 @@
                     </div>
             </div>
             
-        </div>
-        <!-- <div class="form-button">
-            <div style="text-align: right; padding-right: 2rem">
-                <button id="btn-create" class="button" v-on:click="createLocation()" >
-                    Create
-                </button>
-            </div>
-            <div>
-                <button id="btn-cancel" class="button" >
-                    Cancel
-                </button>
-            </div>
-        </div> -->
+        </div>    
     </div>        
 </template>
 
@@ -117,7 +105,21 @@ export default {
       center: { lat: 45.508, lng: -73.587 },
       marker: null,
       place: null,
-      currentPlace: null
+      currentPlace: null,
+      CreateLocationErrors: {
+        NoName: "",
+        NoAddress: ""
+      },
+      ErrorStrings: {
+        NoName: "Please enter name!",
+        ShortName: "Use 6 characters or more for location's name",
+        LongName: "Use 100 characters or fewer for location's name",
+        NoAddress: "Please enter and choose address"
+      },
+      form: {
+        Name: "",
+        Address: ""
+      }
     };
   },
   mounted() {
@@ -139,15 +141,26 @@ export default {
   },
   methods: {
     createLocation() {
-      if (this.newLocation.name.trim() == "" || !this.currentPlace) {
-        alert("Please fill out the required fields");
-      } else {
+      if (this.newLocation.name.trim() == "") {
+        this.CreateLocationErrors.NoName = this.ErrorStrings.NoName;
+      } else if (this.newLocation.name.trim().length < 6) {
+        this.CreateLocationErrors.NoName = this.ErrorStrings.ShortName;
+      } else if (this.newLocation.name.trim().length > 100) {
+        this.CreateLocationErrors.NoName = this.ErrorStrings.LongName;
+      }
+      if (!this.currentPlace) {
+        this.CreateLocationErrors.NoAddress = this.ErrorStrings.NoAddress;
+      }
+      if (
+        this.CreateLocationErrors.NoName == "" &&
+        this.CreateLocationErrors.NoAddress == ""
+      ) {
         this.axios
           .post(Server.LOCATION_CREATE_API_PATH, {
             newLocation: {
-              name: this.newLocation.name,
+              name: this.newLocation.name.trim(),
               address: this.currentPlace.formatted_address,
-              description: this.newLocation.description,
+              description: this.newLocation.description.trim(),
               longtitude: this.currentPlace.geometry.location.lng(),
               latitude: this.currentPlace.geometry.location.lat()
             }
@@ -164,6 +177,7 @@ export default {
                 });
               }
             }
+            alert("Successfully!!!");
             this.$router.push("/location");
           })
           .catch(error => {
@@ -216,6 +230,11 @@ export default {
     }
   },
   watch: {
+    "newLocation.name": function() {
+      if (this.newLocation.name.trim() != "") {
+        this.CreateLocationErrors.NoName = "";
+      }
+    },
     selectedTeam: function() {
       if (this.selectedTeam) {
         if (this.selectedTeams.length == 0) {
@@ -227,6 +246,9 @@ export default {
       }
     },
     currentPlace: function() {
+      if (this.currentPlace) {
+        this.CreateLocationErrors.NoAddress = "";
+      }
       if (this.currentPlace) {
         const tmpMarker = {
           lat: this.currentPlace.geometry.location.lat(),
