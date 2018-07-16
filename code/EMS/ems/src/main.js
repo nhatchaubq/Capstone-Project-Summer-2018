@@ -50,6 +50,10 @@ router.beforeEach((to, from, next) => {
       authUser.Role != "Equipment Staff"
     ) {
       next("/");
+    } else if (to.name == 'edit_order' 
+              && (authUser.Role != 'Staff' && authUser.Role != 'Maintainer')
+              && !to.params.edit_order) {
+      next('/work_order');
     } else {
       next();
     }

@@ -28,7 +28,7 @@
                       </div>
                     </div>
                   </div>
-                    <doughnut-chart :data="doughnutChartData" styles="height: 40vh"></doughnut-chart>
+                    <doughnut-chart :data="doughnutChartData" styles="height: 36vh"></doughnut-chart>
                 </div>
                 <!-- DoughnutChart- end -->
 
@@ -516,7 +516,7 @@ export default {
           data.Doughnut.Today.AvailableItemCount
         );
         this.doughnutChartData.TodayData.push(
-          data.Doughnut.Today.UnavailableItemCount
+          data.Doughnut.Today.UnAvailableItemCount
         );
 
         // doughnut chart data - end

@@ -19,11 +19,12 @@
                     <span class="file-cta">
                         <input class="file-input" type="file" accept="image/*" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
                         <span class="file-icon">
+
                             <i class="fa fa-upload"></i>
                         </span>
                         <span class="file-label">
                             Choose images...
-                        </span>
+                        </span> -->
                     </span>
                         <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
                             {{ file.name }}
@@ -126,12 +127,12 @@
                     <input type="text" class="input" placeholder="Description" v-model="form.Description">
                 </div>
             </div>
-            <div class="form-field">
+            <!-- <div class="form-field">
               <label class="checkbox">
                 <input type="checkbox" id="checkbox" v-model="checked">
                 Do you want to add item(s) for this equipment?
               </label>
-            </div>
+            </div> -->
             <div class="hr" v-if="checked"  >
               <div class="form-field" style="margin: 1rem -3rem;">
                 <div class="form-field-title">

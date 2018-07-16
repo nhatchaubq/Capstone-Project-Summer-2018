@@ -7,7 +7,7 @@
   
         <tr class="txtText">
   
-          <th><strong>ID</strong></th>
+          <!-- <th><strong>ID</strong></th> -->
   
           <th><strong>User name</strong></th>
   
@@ -29,7 +29,7 @@
   
         <tr v-bind:key="account.id" v-for="account in accounts" class="txtText" v-on:click="gotoDetail(account.Id)">
           <!-- <td>{{ index + 1 }}</td>    -->
-          <td>{{account.Id}}</td>
+          <!-- <td>{{account.Id}}</td> -->
   
   
   

@@ -1,18 +1,31 @@
 <template>
 <div class="form"> 
-    <!-- <form @submit.prevent="createVendor()"> -->
-        <div class="form-title">
+    <form @submit.prevent="createVendor()">
+      <div class="form-title">
+        <div class="form-title-start ">
+          <div>
+            Add New Vendor
+          </div>
+        </div>
+          <div class="form-title-end">
+                <router-link to='/vendor'>
+                    <button id="btn-cancel" class="button" >Cancel</button>
+                </router-link>
+            <button id="btn-add"  class="button" v-on:click="createVendor()" >Create Vendor</button>
+        </div>
+      </div>
+        <!-- <div class="form-title">
             <div class="form-title-start">
                 Add New Vendor
             </div>
-        </div>
-
+        </div> -->
+        <div class="form-content">
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  Business name  (required)</strong><span v-if="CreateVendorErrors.NoBusinessName != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessName }}</span></span>
+                <strong>  Business name (required)</strong><span v-if="CreateVendorErrors.NoBusinessName != ''"> <span class="error-text">{{ CreateVendorErrors.NoBusinessName }}</span></span> <span v-if="CreateVendorErrors.BusinessNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessNameMin }}</span></span> <span v-if="CreateVendorErrors.BusinessNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessNameMax }}</span></span>
                 </div>
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.BusinessName" class="input " type="text" placeholder="Text input" >
+                    <input v-model.trim="Vendor.BusinessName" class="input " type="text" placeholder="Text input" >
 
                         <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
@@ -28,9 +41,9 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>Business address  (required)</strong><span v-if="CreateVendorErrors.NoBusinessAddress != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span>
+                <strong>Business address  (required)</strong><span v-if="CreateVendorErrors.NoBusinessAddress != ''"> <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
             <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.BusinessAddress" class="input " type="text" placeholder="Text input">
+                    <input v-model.trim="Vendor.BusinessAddress" class="input " type="text" placeholder="Text input">
                         <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
                         </span>
@@ -47,11 +60,11 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                     <strong>Website</strong>
+                     <strong>Website</strong> <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span>
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.Website" class="input " type="text" placeholder="Text input" >
+                    <input v-model.trim="Vendor.Website" class="input " type="text" placeholder="Text input" >
                         <span class="icon is-small is-left">
                         <i class="fa fa-firefox"></i>
                         </span>
@@ -68,11 +81,11 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                     <strong>Contact name (required)</strong><span v-if="CreateVendorErrors.NoContactName != ''">. <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span>
+                     <strong>Contact name (required)</strong><span v-if="CreateVendorErrors.NoContactName != ''"> <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span> <span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span>
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.ContactName" class="input " type="text" placeholder="Text input" >
+                    <input v-model.trim="Vendor.ContactName" class="input " type="text" placeholder="Text input" >
                         <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
                         </span>
@@ -89,11 +102,11 @@
                 <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''">. <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
+                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model="Vendor.ContactEmail" class="input" type="email" placeholder="Text input" >
+                    <input v-model.trim="Vendor.ContactEmail" class="input" type="email" placeholder="Text input" >
                         <span class="icon is-small is-left">
                         <i class="fa fa-envelope"></i>
                         </span>
@@ -110,31 +123,30 @@
         </div>
         <div>
             <div class="form-field" >
-                <div class="form-field-title">
+                <div class="form-field-title ">
                      <strong>Description</strong>
                 </div>   
-                    <textarea class="control has-icons-left" id="text-descrip" rows="4" v-model="Vendor.Description" >
-                    </textarea>
+                    <textarea  id="text-descrip" rows="4" cols="55" v-model.trim="Vendor.Description"  >
+                    </textarea><span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
                 <!-- <h3>{{account.startdate}}</h3> -->
             </div>
             
         </div>
 
-        <div class="form-title-end" style="margin-bottom:2rem">
-                <router-link to='/vendor'>
-                    <button id="btn-cancel" class="button" >Cancel</button>
-                </router-link>
+        <!-- <div class="form-title-end" style="margin-bottom:2rem">
+
+        </div> -->
 
                 <!-- <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
                 <button id="btn-add" class="button" v-on:click="createAccountTrueEnd()">Create Account true end</button> -->
                 <!-- <router-link to='/account/'>
                 <button id="btn-add" class="button">Create Account</button>
                 </router-link> -->
-                <button id="btn-add"  class="button" v-on:click="createVendor()" >Create Vendor</button>
-            </div>
+                
+            <!-- </form> -->
     <!-- <div>&nbsp</div> -->
-    <!-- </form> -->
-    <!-- </form> -->
+      </div>
+    </form>
     </div>
 </template>
 
@@ -142,20 +154,39 @@
 export default {
   data() {
     return {
-         sending: false,
+      sending: false,
       ErrorStrings: {
-        NoBusinessName: 'You must provide business name for this vendor',
-        NoBusinessAddress: 'You must provide business address for this vendor',
-        NoContactName: 'You must provide contact name for this vendor',
-        NoEmail: 'You must provide contact email for this vendor'
-       
+        // NoBusinessName: "You must provide business name for this vendor",
+        BusinessNameMin: " Use from 6 to 50 characters for your business name",
+        BusinessNameMax: " Use from 6 to 50 characters for your business name",
+        // NoBusinessAddress: "You must provide business address for this vendor",
+        BusinessAddressMax:
+          " Use from 6 to 50 characters for your business address",
+        BusinessAddressMin:
+          " Use from 6 to 50 characters for your business address",
+        // NoContactName: "You must provide contact name for this vendor",
+        ContactNameMin: " Use from 6 to 50 characters for your contact name",
+        ContactNameMax: " Use from 6 to 50 characters for your contact name",
 
+        WebMax: " Use 200 characters or fewer for your website",
+        DesMax: " Use 500 characters or fewer for your description",
+
+        NoEmail: " Enter email"
       },
       CreateVendorErrors: {
-        NoBusinessName: '',
-        NoBusinessAddress: '',
-        NoContactName: '',
-        NoEmail: ''
+        // NoBusinessName: "",
+        BusinessNameMin: "",
+        BusinessNameMax: "",
+        // NoBusinessAddress: "",
+        BusinessAddressMin: "",
+        BusinessAddressMax: "",
+
+        WebMax: "",
+        // NoContactName: "",
+        ContactNameMin: "",
+        ContactNameMax: "",
+        NoEmail: "",
+        DesMax: ""
       },
       Vendor: {
         BusinessName: "",
@@ -169,58 +200,119 @@ export default {
   },
   methods: {
     createVendor() {
-        if(this.Vendor.BusinessName === ''){
-            this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
-        }
-        if(this.Vendor.BusinessAddress === ''){
-            this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
-        }
-        if(this.Vendor.ContactName === ''){
-            this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
-        }
-        if(this.Vendor.ContactEmail === ''){
-            this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
-        }
-        
-        if(this.validateVendor())
-      this.axios
-        .post("http://localhost:3000/api/Vendor", {
-          Vendor: this.Vendor
-        })
-        .then(res => {
-          this.$router.push("/vendor");
-        });
+      // if (this.Vendor.BusinessName === "") {
+      //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
+      // }
+      if (this.Vendor.BusinessName.length < 6) {
+        this.CreateVendorErrors.BusinessNameMin = this.ErrorStrings.BusinessNameMin;
+      }
+      if (this.Vendor.BusinessName.length > 50) {
+        this.CreateVendorErrors.BusinessNameMax = this.ErrorStrings.BusinessNameMax;
+      }
+      // if (this.Vendor.BusinessAddress === "") {
+      //   this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
+      // }
+      if (this.Vendor.BusinessAddress.length < 6) {
+        this.CreateVendorErrors.BusinessAddressMin = this.ErrorStrings.BusinessAddressMin;
+      }
+      if (this.Vendor.BusinessAddress.length > 50) {
+        this.CreateVendorErrors.BusinessAddressMax = this.ErrorStrings.BusinessAddressMax;
+      }
+      // if (this.Vendor.ContactName === "") {
+      //   this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
+      // }
+      if (this.Vendor.ContactName.length < 6) {
+        this.CreateVendorErrors.ContactNameMin = this.ErrorStrings.ContactNameMin;
+      }
+      if (this.Vendor.ContactName.length > 50) {
+        this.CreateVendorErrors.ContactNameMax = this.ErrorStrings.ContactNameMax;
+      }
+      if (this.Vendor.Website.length > 200) {
+        this.CreateVendorErrors.WebMax = this.ErrorStrings.WebMax;
+      }
+      if (this.Vendor.Description.length > 500) {
+        this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
+      }
+      if (this.Vendor.ContactEmail === "") {
+        this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+
+      if (this.validateVendor())
+        this.axios
+          .post("http://localhost:3000/api/Vendor", {
+            Vendor: this.Vendor
+          })
+          .then(res => {
+            this.$router.push("/vendor");
+          });
     },
-   validateVendor() {      
-      return this.CreateVendorErrors.NoBusinessName === '' && this.CreateVendorErrors.NoBusinessAddress === ''
-              && this.CreateVendorErrors.NoContactName === '' && this.CreateVendorErrors.NoEmail === ''
-              
-    },
+    validateVendor() {
+      return (
+        // this.CreateVendorErrors.NoBusinessName === "" &&
+        this.CreateVendorErrors.BusinessNameMin === "" &&
+        this.CreateVendorErrors.BusinessNameMax === "" &&
+        // this.CreateVendorErrors.NoBusinessAddress === "" &&
+        this.CreateVendorErrors.BusinessAddressMin === "" &&
+        this.CreateVendorErrors.BusinessAddressMax === "" &&
+        // this.CreateVendorErrors.NoContactName === "" &&
+        this.CreateVendorErrors.ContactNameMin === "" &&
+        this.CreateVendorErrors.ContactNameMax === "" &&
+        this.CreateVendorErrors.WebMax === "" &&
+        this.CreateVendorErrors.DesMax === "" &&
+        this.CreateVendorErrors.NoEmail === ""
+      );
+    }
   },
 
-      watch:{
-      "Vendor.BusinessName": function(){
-          if(this.Vendor.BusinessName != ''){
-              this.CreateVendorErrors.NoBusinessName = ''
-          }
-      },
-      'Vendor.BusinessAddress': function(){
-          if(this.Vendor.BusinessAddress != ''){
-              this.CreateVendorErrors.NoBusinessAddress = ''
-          }
-      },
-      'Vendor.ContactName': function(){
-          if(this.Vendor.ContactName != ''){
-              this.CreateVendorErrors.NoContactName = ''
-          }
-      },
-      'Vendor.ContactEmail': function(){
-          if(this.Vendor.ContactEmail != ''){
-              this.CreateVendorErrors.NoEmail = ''
-          }
-      },
-      
-      
+  watch: {
+    "Vendor.BusinessName": function() {
+      // if (this.Vendor.BusinessName != "") {
+      //   this.CreateVendorErrors.NoBusinessName = "";
+      // }
+      if (this.Vendor.BusinessName.length > 5) {
+        this.CreateVendorErrors.BusinessNameMin = "";
+      }
+      if (this.Vendor.BusinessName.length < 51) {
+        this.CreateVendorErrors.BusinessNameMax = "";
+      }
+    },
+    "Vendor.BusinessAddress": function() {
+      // if (this.Vendor.BusinessAddress != "") {
+      //   this.CreateVendorErrors.NoBusinessAddress = "";
+      // }
+      if (this.Vendor.BusinessAddress.length > 5) {
+        this.CreateVendorErrors.BusinessAddressMin = "";
+      }
+      if (this.Vendor.BusinessAddress.length < 51) {
+        this.CreateVendorErrors.BusinessAddressMax = "";
+      }
+    },
+    "Vendor.ContactName": function() {
+      // if (this.Vendor.ContactName != "") {
+      //   this.CreateVendorErrors.NoContactName = "";
+      // }
+      if (this.Vendor.ContactName.length > 5) {
+        this.CreateVendorErrors.ContactNameMin = "";
+      }
+      if (this.Vendor.ContactName.length < 51) {
+        this.CreateVendorErrors.ContactNameMax = "";
+      }
+    },
+    "Vendor.ContactEmail": function() {
+      if (this.Vendor.ContactEmail != "") {
+        this.CreateVendorErrors.NoEmail = "";
+      }
+    },
+    "Vendor.Website": function() {
+      if (this.Vendor.Website.length < 201) {
+        this.CreateVendorErrors.WebMax = "";
+      }
+    },
+    "Vendor.Description": function() {
+      if (this.Vendor.Description.length < 501) {
+        this.CreateVendorErrors.DesMax = "";
+      }
+    }
   }
 };
 </script>
@@ -232,7 +324,7 @@ export default {
 }
 .form-title {
   display: grid;
-  grid-template-columns: 25% 40% 35%;
+  grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem 2rem;
 }
@@ -244,12 +336,20 @@ export default {
   font-size: 20px;
   color: #616161;
 }
-
 .form-title-end {
   width: 100%;
-  /* float: left; */
+  display: flex;
+  justify-content: flex-end;
   /* align-content: center; */
-  margin-left: 25rem;
+}
+.form-content {
+  font-size: 0.9rem;
+  position: fixed;
+  max-height: 82.5%;
+  width: 82%;
+  overflow-y: auto;
+  /* display: flex;
+        flex-direction: column;  */
 }
 
 #btn-cancel {
@@ -277,10 +377,13 @@ export default {
   font-size: 13px;
 }
 #text-descrip {
-  border: 0.5px solid lightgray;
+  border: 0.5px solid;
+  border-color: silver;
+  border-width: 1px;
   border-radius: 5px;
   padding: 0.3rem;
-  width: 100%;
+  /* width: 100%; */
+  margin: 0 0.5rem 0 0.5rem;
 }
 #text-descrip:hover {
   border: 1px solid grey;
