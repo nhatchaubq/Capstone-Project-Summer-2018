@@ -10,14 +10,15 @@
             <b>Sort By</b>
           </div> -->
           <div class="location-blocks">
-            <div class="material-box material-shadow-animate" :class="isActive(location.Id)"  :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)">
-              <div class="location-name" >
-                {{location.Name}}
+            <div class="material-box material-shadow-animate" :class="isActive(location.Id)"  :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)" >
+              <div class="location-name" >                
+                <div>{{location.Name}}</div>
+                <div v-if="location.IsActive == 0" class="tag" style="background-color:red;color:white">Inactive</div>
+                <div v-else class="tag" style="background-color:green;color:white">Active</div>
               </div>
               <div class="location-address">
                 <i class="material-icons">place</i>
-                {{location.Address}}
-                
+                {{location.Address}}                
               </div>
             </div>         
           </div>
@@ -177,7 +178,7 @@
           Work Order Detail: {{selectedWorkorder.Name}}
         </div>
         <div class="info-wd">
-          <div class="info-field">
+          <div class="" style="display:grid; grid-template-columns: 16% auto; font-size:20px">
             <div class="info-title">
               Team:
             </div>
@@ -185,36 +186,68 @@
               {{selectedWorkorder.Team}}
             </div>
           </div>
-          <div class="info-field">
+          <div class="" style="display:grid;grid-template-columns:auto auto auto auto;font-size:15px">
             <div class="info-title">
-              Start Date: 
+              <i class="fa fa-calendar" style="color:gray;"></i> Start Date: 
             </div>
             <div class="info-content">
               {{getFormatDate(selectedWorkorder.CreateDate)}}
             </div>
-          </div>
-          <div class="info-field">
             <div class="info-title">
-              Due Date: 
+               <i class="fa fa-calendar" style="color:gray;"></i> Due Date: 
             </div>
             <div class="info-content">
-              {{getFormatDate(selectedWorkorder.DueDate)}}
+               {{getFormatDate(selectedWorkorder.DueDate)}}
             </div>
           </div>
+          
           <div class="info-field">
+            <div></div><div></div>
             <div class="info-title">
-              Closed Date:
+             <i class="fa fa-calendar" style="color:gray;"></i>  Closed Date:
             </div>
             <div class="info-content">
                {{getFormatDate(selectedWorkorder.ClosedDate)}}
             </div>
           </div>                                        
-        </div>        
-        <div style="text-align:center">          
-          <step-progress :workOrderStatus="{id: selectedWorkorder.StatusID, name: selectedWorkorder.Status}" 
-                    :statusList="status.filter(s => s.name != 'Cancelled')"></step-progress>
-          
         </div>
+        <div style="text-align:center; padding-bottom: 1.5rem">          
+          <step-progress :workOrderStatus="{id: selectedWorkorder.StatusID, name: selectedWorkorder.Status}" 
+                    :statusList="status.filter(s => s.name != 'Cancelled')"></step-progress>          
+        </div>   
+        <div >          
+            <table style="width:100%"> 
+              <thead >
+                <tr style="width:100%">
+                  <th><strong>Equipment</strong></th>
+                  <th><strong>Serial #</strong></th>
+                  <th><strong>Status</strong></th>
+                </tr>                
+              </thead>
+              <tbody style="font-size:14px" :class="{'row-even': index % 2 != 0}" :key='workorderDetail.Id' v-for="(workorderDetail, index) in selectedWorkorder.WorkorderDetail">
+                <tr >
+                  <td :rowspan="`${workorderDetail.EquipmentItems.length + 1}`">{{workorderDetail.Name}}</td>
+                </tr>
+                <tr :key="item.Id" v-for="item in workorderDetail.EquipmentItems">                  
+                  <td >{{item.SerialNumber}}</td>
+                  <td :style="{color: item.ClosedDate? 'blue' : 'var(--success-color)'}">{{item.ClosedDate? "Returned" : "Working" }}</td>
+                </tr>
+              </tbody>
+            </table>            
+            <!-- <div style="display: flex">
+              {{workorderDetail.Id}}
+              {{workorderDetail.StartDate}}   
+              {{workorderDetail.FinishedDate}}           
+            </div>
+            <div style="display: grid; grid-template-rows: auto auto;">
+                <div>
+                    {{ workorderDetail.Name }}
+                </div>                                            
+                <div style="font-size: .9rem">                  
+                    Quantity: {{ workorderDetail.EquipmentItems.length }}
+                </div>
+            </div> -->
+          </div>                     
         <div slot="footer"><button class="button" v-on:click="addPopUp = false">OK</button></div>
       </modal>
   </div>
@@ -506,6 +539,8 @@ export default {
 }
 
 .location-name {
+  display: grid;
+  grid-template-columns: auto 10%;
   font-size: 1.5rem;
 }
 .location-address {
@@ -735,10 +770,14 @@ export default {
 }
 .info-field {
   display: grid;
-  grid-template-columns: 23% auto;
+  grid-template-columns: 25% 25.6% auto auto;
   font-size: 15px;
 }
 .info-title {
   font-weight: bold;
 }
+
+/* dien */
+
+/* dienend */
 </style>

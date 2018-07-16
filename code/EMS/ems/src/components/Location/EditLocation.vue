@@ -29,13 +29,42 @@
                     <!-- <label v-if="location.WorkOrderQuantity >0" style="color: red">This location have working Work Oders.So you can't edit address!!! </label> -->
                 </div>
             </div>  
-            <div class="form-field">
+            <div class="form-field" style="display:grid; grid-template-columns: 25% auto">
+              <div>
+                <div class="form-field-title">
+                <strong> Status </strong>
+                </div>
+                <div class="form-field-input" style="padding-left:30px;padding-top:10px;">
+                  <label class="radio" v-on:click="location.IsActive = true" style="margin-right:25px;">
+                    <input type="radio" name="status"  :checked="location.IsActive"> Active
+                  </label>
+                  <label class="radio" v-on:click="() => {
+                      if (!location.Items) {
+                        location.IsActive = false
+                      }
+                    }">
+                    <input type="radio" name="status" :disabled="location.Items" :checked="!location.IsActive"> Inactive
+                  </label>                                                  
+                </div>
+              </div>
+              <div v-if="location.Items" style="color:red;font-size:20px">
+                <br>
+                NOTE: <label style="font-size:18px; color: black"> There are the equipments in this location. Can't change the activity status!!!</label>
+              </div>
+                
+                
+              </div>
+            <div class="form-field" >
+              <div>
                 <div class="form-field-title">
                 <strong> New Description </strong>
                 </div>
                 <div class="form-field-input">
-                    <textarea v-model="location.Description" cols="100" rows="6" >  </textarea>                              
+                    <textarea v-model="location.Description" cols="80" rows="7" >  </textarea>                              
                 </div>
+              </div>
+              
+                
             </div> 
             <div class="form-field">
                 <div class="form-field-title">
@@ -44,7 +73,7 @@
                 <div class="team-place">
                     <div class="select"> 
                         <select v-model="tmpTeam">  
-                          <option disabled=disabled :value="null">--Choose new team</option>                                               
+                          <option disabled=disabled :value="null">-- Choose new team --</option>                                               
                             <option v-bind:key='team.Id' v-for='team in unselectedTeams' :value="team">{{team.Name}}</option>
                         </select>
                     </div>
@@ -133,13 +162,15 @@ export default {
       } else if (this.location.Name.trim().length > 100) {
         this.NoName = "Use 100 characters or fewer for location's name";
       } else {
+        
         this.axios
           .put(Server.LOCATION_EDIT_API_PATH, {
             newLocation: {
               id: this.location.Id,
               name: this.location.Name.trim(),
               address: this.location.Address,
-              description: this.location.Description.trim()
+              description: this.location.Description.trim(),
+              isActive: this.location.IsActive
             }
           })
           .then(res => {
@@ -222,9 +253,7 @@ export default {
         //   team => (!this.selectedTeams.includes(team))
         // );
       } else {
-        alert(
-          "This team have working Work Order. So you can't delete this team!!!"
-        );
+        alert("This team have working Order. So you can't delete this team!!!");
       }
     }
   },
