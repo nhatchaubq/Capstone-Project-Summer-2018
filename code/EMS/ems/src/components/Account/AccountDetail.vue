@@ -245,6 +245,7 @@ export default {
           .then(res => {
             // this.$router.push("/account");
             if (res.status == 200) {
+              alert("Change successful");
               this.getAccountDetail(this.$route.params.id);
               this.editMode = false;
             }

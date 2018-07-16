@@ -12,7 +12,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Team's name (required)</strong><span v-if="CreateTeamErrors.NoTeamName != ''">. <span class="error-text">{{ CreateTeamErrors.NoTeamName }}</span></span>
+                    <strong>  Team's name (required)</strong> <span v-if="CreateTeamErrors.TeamNameMax != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMax }}</span></span> <span v-if="CreateTeamErrors.TeamNameMin != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMin }}</span></span>
                     </div>
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
                         <input v-model.trim="team.name" class="input " type="text" placeholder="Text input" >
@@ -54,8 +54,8 @@
                  
               </div>
               <div class="select" style="margin-left:0.5rem; margin-bottom:1rem">
-                <select v-model="selectedAccount" style="width:62rem">
-                  <option :disabled="selectedAccounts.length > 0"  value="null">No account is selected</option>
+                <select v-model="selectedAccount" style="width: 70rem">
+                  <option :disabled="selectedAccounts.length > 0"  value="null"></option>
                   <option v-bind:key='account.Id' v-for='account in accounts' :value="account">{{account.Fullname}}</option>
                 </select>
               </div>
@@ -99,11 +99,15 @@ export default {
     return {
       sending: false,
       ErrorStrings: {
-        NoTeamName: "You must provide name for this team"
+        // NoTeamName: "You must provide name for this team",
+        TeamNameMax: "Use from 6 to 50 characters for your team name",
+        TeamNameMin: "Use from 6 to 50 characters for your team name"
         // NoCreateDate: "You must provide create date for this team"
       },
       CreateTeamErrors: {
-        NoTeamName: ""
+        // NoTeamName: "",
+        TeamNameMax: "",
+        TeamNameMin: ""
         // NoCreateDate: ""
       },
       team: {
@@ -133,12 +137,18 @@ export default {
   },
   methods: {
     createTeam() {
-      if (this.team.name === "") {
-        this.CreateTeamErrors.NoTeamName = this.ErrorStrings.NoTeamName;
+      // if (this.team.name === "") {
+      //   this.CreateTeamErrors.NoTeamName = this.ErrorStrings.NoTeamName;
+      // }
+      if (this.team.name.length > 50) {
+        this.CreateTeamErrors.TeamNameMax = this.ErrorStrings.TeamNameMax;
       }
-      if (this.team.createdDate === "") {
-        this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
+      if (this.team.name.length < 6) {
+        this.CreateTeamErrors.TeamNameMin = this.ErrorStrings.TeamNameMin;
       }
+      // if (this.team.createdDate === "") {
+      //   this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
+      // }
       if (this.validateTeam())
         this.axios
           .post("http://localhost:3000/api/team", {
@@ -162,7 +172,9 @@ export default {
     },
     validateTeam() {
       return (
-        this.CreateTeamErrors.NoTeamName === ""
+        // this.CreateTeamErrors.NoTeamName === "" &&
+        this.CreateTeamErrors.TeamNameMax === "" &&
+        this.CreateTeamErrors.TeamNameMin === ""
         // this.CreateTeamErrors.NoCreateDate === ""
       );
     },
@@ -194,8 +206,14 @@ export default {
       }
     },
     "team.name": function() {
-      if (this.team.name != "") {
-        this.CreateTeamErrors.NoTeamName = "";
+      // if (this.team.name != "") {
+      //   this.CreateTeamErrors.NoTeamName = "";
+      // }
+      if (this.team.name.length > 5) {
+        this.CreateTeamErrors.TeamNameMin = "";
+      }
+      if (this.team.name.length < 51) {
+        this.CreateTeamErrors.TeamNameMax = "";
       }
     }
     // "team.createdDate": function() {
