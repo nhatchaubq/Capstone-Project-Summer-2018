@@ -8,9 +8,10 @@
             <div class="">
               <div class="field" style=" display: grid; grid-template-columns: 70% 20% 10%">
                   <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{equipmentName}}</strong>
-                  <button  class="btn-Add"   v-on:click="addItem">Add Item</button>
-                  <button v-if="!editMode" class="btn-edit" :class="{'is-active-option': editMode}" v-on:click="editMode = !editMode">Edit</button> 
-                  <div class="" v-else><button class="btn-edit" style="color: black;border-bottom: 1px solid black;" :class="{'is-active-option': editMode}">Edit</button> </div>
+                  <button v-if="!addItemMode" class="btn-Add"   v-on:click="addItem">Add Item</button>
+                  <div class="" v-else ><button  class="btn-Add" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" >Add Item</button></div>
+                  <button v-if="!editMode" class="btn-edit"  v-on:click="editMode = !editMode">Edit</button> 
+                  <div class="" v-else><button class="btn-edit" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" :class="{'is-active-option': editMode}">Edit</button> </div>
              </div>
               <span v-if="editMode"  style="color:red; font-size:14px">* is required, please input these fields</span>
               <div class="row" style="height:36px" >
@@ -169,7 +170,8 @@
                   <span><strong>  Price (required) </strong></span>
                   </div>
                   <div class="field is-horizontal" style="margin-right:1rem">
-                    <input type="number" class="input" placeholder="Price" v-model="form.price">
+                    <input type="number" min="50000" style="text-align: right" class="input" placeholder="Price" v-model="form.price">
+                    <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">VNĐ</label>
                   </div>
                     <span v-if="CreateItemErrors.NoPrice != ''">. <span class="error-text">{{ CreateItemErrors.NoPrice }}</span></span>                  
               </div>
@@ -178,7 +180,8 @@
                    <span><strong> Warranty (required) </strong></span>
                   </div>
                   <div class="field is-horizontal" >
-                    <input type="number" min="1" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration">
+                    <input type="number" min="1" style="text-align: right" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration">
+                    <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Month</label>
                   </div> 
                     <span v-if="CreateItemErrors.NoWarranty != ''">. <span class="error-text">{{ CreateItemErrors.NoWarranty }}</span></span>                  
               </div>
@@ -228,11 +231,11 @@
       <modal v-model="detailPopUp" >
          <div v-if="selectedItem!=null" > 
           <div slot="header">
-              <div class="field" style=" display: grid; grid-template-columns: 10% 75% 15%">
+              <div class="field" style=" display: grid; grid-template-columns: 10% 75% 10%">
                 <i class="material-icons" style="font-size: 2rem;">clear_all</i>
                 <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong>
                 <div class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button></div>  
-                <div class="" v-else><button class="btn-edit" style="color: black; border-bottom: 1px solid black;" disabled="disabled">Edit</button></div>  
+                <div class="" v-else><button class="btn-edit" style="color: white; border-bottom: 1px solid black;background-color: #26a69a; border-radius: 5px" disabled="disabled">Edit</button></div>  
               </div>
           </div>
           <div style="font-size: 0.9rem; font:roboto">  
@@ -321,7 +324,8 @@
                         </select>
                       </div> 
                       <div>
-                        <button class="btn-changeStt" v-on:click="changeItemStatus">Change Status</button>
+                      <div class="" v-if="!editItemMode"> <button class="" style="background-color: #bdbdbd8f; color: white;font-size: 18px;border-radius: 8px;height: 36px;width: 130px;" disabled="disabled">Change Status</button></div>
+                      <div class="" v-else> <button class="btn-changeStt" v-on:click="changeItemStatus">Change Status</button></div>
                       </div>
                     </div>
                     <div class="rowpu" style="display: grid; grid-template-columns: 18% 82%;" >
@@ -357,14 +361,6 @@
                 <div v-if="currentViewMode ==  viewModes.Position">
                   <div class="rowpu" style="height: 36px" >
                     <div class="" style="margin-top:0.5rem" >
-                        Address:  
-                    </div>
-                    <div class="">
-                      <input v-if="!editItemMode" v-model="selectedItem.Item.Address" class="input col-7 " type="text" disabled="disabled">
-                    </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
                         Location:  
                     </div>
                     <div class="">
@@ -373,9 +369,17 @@
                       <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%"  v-model="selectedItem.Item.LocationID">
                         <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"
                           :selected="selectedItem.Item.LocationID == location.Id "                    
-                          v-bind:value="location.Id">{{location.Name}}</option>
+                          v-bind:value="location.Id" value>{{location.Name}}</option>
                       </select>
                       </div> 
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px" >
+                    <div class="" style="margin-top:0.5rem" >
+                        Address:  
+                    </div>
+                    <div class="">
+                      <input  v-model="selectedItem.Item.Address" class="input col-7 " type="text" disabled="disabled">
                     </div>
                   </div>
                   <div class="rowpu" style="height: 36px" >
@@ -401,9 +405,9 @@
                       <input v-if="!editItemMode" v-model="selectedItem.Item.FLoor" class="input col-7 " type="text" disabled="disabled">
                       <div v-else class="select" style="width: 100%">
                           <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%"  v-model="selectedItem.Item.FloorID">
-                            <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"
-                              :selected="selectedItem.Item.FloorID == floor.Id "                    
-                              v-bind:value="floor.Id">{{floor.Name}}</option>
+                            <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"            
+                              :value="floor.Id">{{floor.Name}}
+                            </option>
                           </select>
                       </div>
                     </div>
@@ -586,7 +590,7 @@ export default {
         alert(error);
       });
     //GET LOcation to import model-select
-     this.axios
+    this.axios
       .get("http://localhost:3000/api/location")
       .then(response => {
         let data = response.data;
@@ -602,7 +606,6 @@ export default {
       .catch(error => {
         alert(error);
       });
-    
   },
   // data() {
   //   return {
@@ -622,9 +625,9 @@ export default {
         NoBarcode: ""
       },
       ErrorStrings: {
-        NoQuantity: "Quantity must be bigger than 1",
-        NoPrice: "Please enter price",
-        NoWarranty: "Please enter warranty duration",
+        NoQuantity: "Quantity must be from 1 to 50",
+        NoPrice: "Price must be more than 50,000",
+        NoWarranty: "Warranty duration must be bigger than 1",
         NoLocation: "Please choose location",
         NoBlock: "Please choose block",
         NoFloor: "Please choose floor",
@@ -640,6 +643,7 @@ export default {
       changeItemSttDescription: "",
       show: false,
       addPopUp: false,
+      addItemMode: false,
       detailPopUp: false,
       selectedItem: null,
       itemId: "",
@@ -691,7 +695,7 @@ export default {
         text: "",
         value: ""
       },
-       tileModalSelect: [],
+      tileModalSelect: [],
       tileOptions: [],
       vendorOptions: [],
       selectedVendor: {
@@ -739,13 +743,12 @@ export default {
       },
       itemPrice: "",
       itemDescription: "",
-      itemWarranty:"",
+      itemWarranty: "",
       itemNextMaintainDate: "",
       itemLocationID: "",
       itemBlockID: "",
       itemFloorID: "",
-      itemTileID: "",
-
+      itemTileID: ""
     };
   },
   methods: {
@@ -766,7 +769,7 @@ export default {
       this.selectedItem.Item.WarrantyDuration = this.itemWarranty;
       this.selectedItem.Item.NextMaintainDate = this.itemNextMaintainDate;
     },
-    cancelUpdatePosition(){
+    cancelUpdatePosition() {
       this.editItemMode = !this.editItemMode;
       this.selectedItem.Item.LocationID = this.itemLocationID;
       this.selectedItem.Item.BlockID = this.itemBlockID;
@@ -774,13 +777,12 @@ export default {
       this.selectedItem.Item.TileID = this.itemTileID;
       // alert(this.itemTileID);
       // alert(this.selectedItem.Item.TileID);
-      
     },
     setViewMode(mode) {
       this.currentViewMode = mode;
     },
     async createNewEquipentItem() {
-      if (this.quantity === "" || this.quantity < 1) {
+      if (this.quantity === "" || this.quantity < 1 || this.quantity > 50) {
         this.CreateItemErrors.NoQuantity = this.ErrorStrings.NoQuantity;
       }
       if (this.form.price === "" || this.form.price < 50000) {
@@ -789,7 +791,7 @@ export default {
       if (this.form.warrantyDuration === "" || this.form.warrantyDuration < 1) {
         this.CreateItemErrors.NoWarranty = this.ErrorStrings.NoWarranty;
       }
-      if (this.randomNumbers.length == 0) {
+      if (this.randomNumbers.length != this.quantity) {
         this.CreateItemErrors.NoBarcode = this.ErrorStrings.NoBarcode;
       }
       if (this.form.selectedLocation.value === "") {
@@ -892,11 +894,11 @@ export default {
           this.itemPrice = this.selectedItem.Item.Price;
           this.itemDescription = this.selectedItem.Item.Description;
           this.itemWarranty = this.selectedItem.Item.WarrantyDuration;
-          this.itemNextMaintainDate = this.selectedItem.Item.NextMaintainDate ;
-          this.itemLocationID = this.selectedItem.Item.LocationID,
-          this.itemBlockID = this.selectedItem.Item.BlockID,
-          this.itemFloorID = this.selectedItem.Item.FloorID,
-          this.itemTileID = this.selectedItem.Item.TileID,
+          this.itemNextMaintainDate = this.selectedItem.Item.NextMaintainDate;
+          this.itemLocationID = this.selectedItem.Item.LocationID;
+          this.itemBlockID = this.selectedItem.Item.BlockID;
+          this.itemFloorID = this.selectedItem.Item.FloorID;
+          this.itemTileID = this.selectedItem.Item.TileID;
           this.oldstt = this.selectedItem.Item.StatusID;
           this.statusHistories = [];
           this.allworkorder = [];
@@ -934,7 +936,7 @@ export default {
         this.editMode = false;
       }
       this.addPopUp = true;
-      
+      this.addItemMode = !this.addItemMode;
       // this.editMode = !this.addPopUp;
     },
 
@@ -989,19 +991,22 @@ export default {
           });
       }
     },
-    updatePositionItem(){
+    updatePositionItem() {
       this.axios
-          .put("http://localhost:3000/api/equipmentItem/position/tile/" + this.selectedItem.Item.Id, {
+        .put(
+          "http://localhost:3000/api/equipmentItem/position/tile/" +
+            this.selectedItem.Item.Id,
+          {
             tileId: this.selectedItem.Item.TileID
-          })
-          .then(function(respone) {
-            alert("Update successfully");
-            location.reload();
-            
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+          }
+        )
+        .then(function(respone) {
+          alert("Update successfully");
+          location.reload();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
     changeItemStatus() {
       let authUser = JSON.parse(window.localStorage.getItem("user"));
@@ -1083,7 +1088,6 @@ export default {
               lastmaintaindate: this.selectedItem.Item.LastMaintainDate,
               nextmaintaindate: this.selectedItem.Item.NextMaintainDate,
               description: this.selectedItem.Item.Description
-              
             }
           )
           .then(function(respone) {
@@ -1100,21 +1104,53 @@ export default {
   watch: {
     addPopUp: function() {
       if (this.addPopUp == false) {
+        this.addItemMode = !this.addItemMode;
         this.quantity = 1;
         this.randomNumbers = [];
         this.form.price = 50000;
         this.form.warrantyDuration = 1;
-        //  this.form.selectedLocation.value = "";
-        // this.locationModalSelect = [];
+        this.form.selectedLocation.value = "";
+        this.form.selectedLocation.text = "";
+        this.locationModalSelect = [];
+        this.form.selectedBlock.value = "";
+        this.form.selectedBlock.text = "";
         this.blockModalSelect = [];
+        this.form.selectedFloor.value = "";
+        this.form.selectedFloor.text = "";
         this.floorModalSelect = [];
+        this.form.selectedTile.value = "";
+        this.form.selectedTile.text = "";
         this.tileModalSelect = [];
         // this.form.selectedBlock = "";
         // this.form.selectedFloor = "";
         // this.form.selectedTile = "";
+        this.CreateItemErrors.NoQuantity = "";
+        this.CreateItemErrors.NoPrice = "";
+        this.CreateItemErrors.NoWarranty = "";
+        this.CreateItemErrors.NoLocation = "";
+        this.CreateItemErrors.NoBlock = "";
+        this.CreateItemErrors.NoFloor = "";
+        this.CreateItemErrors.NoTile = "";
+        this.CreateItemErrors.NoBarcode = "";
       }
-      
-      
+      if(this.addPopUp == true){
+        this.axios
+      .get("http://localhost:3000/api/location")
+      .then(response => {
+        let data = response.data;
+        data.forEach(location => {
+          let option = {
+            text: location.Name,
+            value: location.Id
+          };
+          this.locationModalSelect.push(option);
+          // alert(this.locationModalSelect[0].value);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
+      }
     },
     detailPopUp: function() {
       if (this.detailPopUp == false) {
@@ -1122,24 +1158,27 @@ export default {
           this.editItemMode = false;
         }
         this.selectedItem.Item.Price = this.selectedItem.Item.Price;
-        this.selectedItem.Item.WarrantyDuration = this.selectedItem.Item.WarrantyDuration;
         this.selectedItem.Item.NextMaintainDate = this.selectedItem.Item.NextMaintainDate;
         this.selectedItem.Item.Description = this.selectedItem.Item.Description;
+        this.selectedItem.Item.LocationID = this.itemLocationID;
+        this.selectedItem.Item.BlockID = this.itemBlockID;
+        this.selectedItem.Item.FloorID = this.itemFloorID;
+        this.selectedItem.Item.TileID = this.itemTileID;
       }
     },
     quantity: function() {
-      if (this.quantity != "" && this.CreateItemErrors.NoQuantity != "") {
+      if (this.quantity != "" && this.quantity <50 && this.CreateItemErrors.NoQuantity != "") {
         this.CreateItemErrors.NoQuantity = "";
       }
     },
     "form.price": function() {
-      if (this.form.price != "" && this.CreateItemErrors.NoPrice != "") {
+      if (this.form.price >= 50000 && this.CreateItemErrors.NoPrice != "") {
         this.CreateItemErrors.NoPrice = "";
       }
     },
     "form.warrantyDuration": function() {
       if (
-        this.form.warrantyDuration != "" &&
+        this.form.warrantyDuration > 1 &&
         this.CreateItemErrors.NoWarranty != ""
       ) {
         this.CreateItemErrors.NoWarranty = "";
@@ -1147,7 +1186,7 @@ export default {
     },
     randomNumbers: function() {
       if (
-        this.randomNumbers.length > 0 &&
+        this.randomNumbers.length == this.quantity &&
         this.CreateItemErrors.NoBarcode != ""
       ) {
         this.CreateItemErrors.NoBarcode = "";
@@ -1158,6 +1197,9 @@ export default {
       this.blockOptions = [];
       this.floorOptions = [];
       this.tileOptions = [];
+      if (this.editItemMode) {
+        this.selectedItem.Item.BlockID = null;
+      }
       this.axios
         .get(
           `http://localhost:3000/api/block/location/${
@@ -1174,46 +1216,6 @@ export default {
               // };
               this.blockOptions.push(block);
             });
-            this.floorOptions = [];
-            this.tileOptions = [];
-            // this.selectedItem.Item.BlockID = "";
-            this.axios
-            .get(
-              `http://localhost:3000/api/floor/block/${
-                this.selectedItem.Item.BlockID
-              }`
-            )
-            .then(res => {
-              if (res.status == 200) {
-                let floors = res.data;
-                floors.forEach(floor => {
-                  // let option = {
-                  //   value: floor.Id,
-                  //   text: floor.Name
-                  // };
-                  this.floorOptions.push(floor);
-                });
-                this.tileOptions = [];
-                this.axios
-                  .get(
-                    `http://localhost:3000/api/tile/floor/${
-                      this.selectedItem.Item.FloorID
-                    }`
-                  )
-                  .then(res => {
-                    if (res.status == 200) {
-                      let tiles = res.data;
-                      tiles.forEach(tile => {
-                        // let option = {
-                        //   value: tile.Id,
-                        //   text: tile.Name
-                        // };
-                        this.tileOptions.push(tile);
-                      });
-                    }
-                  });
-              }
-            });
           }
         });
       // }
@@ -1226,27 +1228,40 @@ export default {
     },
     "selectedItem.Item.BlockID": function() {
       // if (this.selectedBlock.value != "") {
-      this.floorOptions = [];
-      this.tileOptions = [];
-      this.axios
-        .get(
-          `http://localhost:3000/api/floor/block/${
-            this.selectedItem.Item.BlockID
-          }`
-        )
-        .then(res => {
-          if (res.status == 200) {
-            let floors = res.data;
-            floors.forEach(floor => {
-              // let option = {
-              //   value: floor.Id,
-              //   text: floor.Name
-              // };
-              this.floorOptions.push(floor);
-            });
-          }
-        });
+     
+      if (this.editItemMode && this.selectedItem.Item.BlockID == null ) {
+        this.selectedItem.Item.FloorID = null;
+        this.selectedItem.Item.TileID = null;
+          alert('BlockID == null');
+        
+      }
+      if (this.editItemMode && this.selectedItem.Item.BlockID != null ) {
+        alert('BlockID != null');
+          // this.selectedItem.Item.FloorID = null;
+        // this.selectedItem.Item.TileID = null;
+          this.floorOptions = [];
+          this.tileOptions = [];
+        alert(this.selectedItem.Item.BlockID.value);
       // }
+      }
+      this.axios
+          .get(
+            `http://localhost:3000/api/floor/block/${
+              this.selectedItem.Item.BlockID
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let floors = res.data;
+              floors.forEach(floor => {
+                // let option = {
+                //   value: floor.Id,
+                //   text: floor.Name
+                // };
+                this.floorOptions.push(floor);
+              });
+            }
+          });
       if (
         this.form.selectedBlock.value != "" &&
         this.CreateItemErrors.NoBlock != ""
@@ -1257,26 +1272,39 @@ export default {
     "selectedItem.Item.FloorID": function() {
       // alert(this.selectedFloor.value);
       // if (this.selectedFloor.value != "") {
-      this.tileOptions = [];
-      this.axios
-        .get(
-          `http://localhost:3000/api/tile/floor/${
-            this.selectedItem.Item.FloorID
-          }`
-        )
-        .then(res => {
-          if (res.status == 200) {
-            let tiles = res.data;
-            tiles.forEach(tile => {
-              // let option = {
-              //   value: tile.Id,
-              //   text: tile.Name
-              // };
-              this.tileOptions.push(tile);
-            });
-          }
-        });
-      // }
+      // alert(this.tileOptions.length);  
+      // this.selectedItem.Item.Tile = "";  
+      if (this.editItemMode && this.selectedItem.Item.FloorID == null) {
+        this.selectedItem.Item.TileID = null; 
+        // this.tileOptions = [];
+        alert('floorID==null')
+        
+      }
+      
+      if (this.editItemMode && this.selectedItem.Item.FloorID != null) {
+        this.tileOptions = [];
+        alert('floorID != null')
+        
+      }
+        this.axios
+          .get(
+            `http://localhost:3000/api/tile/floor/${
+              this.selectedItem.Item.FloorID
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let tiles = res.data;
+              tiles.forEach(tile => {
+                // let option = {
+                //   value: tile.Id,
+                //   text: tile.Name
+                // };
+                this.tileOptions.push(tile);
+              });
+            }
+          });
+        // }
       if (
         this.selectedFloor.value != "" &&
         this.CreateItemErrors.NoFloor != ""
@@ -1284,29 +1312,35 @@ export default {
         this.CreateItemErrors.NoFloor = "";
       }
     },
-    'form.selectedLocation': function(){
+    "form.selectedLocation": function() {
       if (this.form.selectedLocation.value != "") {
+        this.form.selectedBlock.value = "";
+        this.form.selectedBlock.text = "";
+        this.form.selectedFloor.value = "";
+        this.form.selectedFloor.text = "";
+        this.form.selectedTile.value = "";
+        this.form.selectedTile.text = "";
         this.blockModalSelect = [];
         this.floorModalSelect = [];
         this.tileModalSelect = [];
         this.axios
-        .get(
-          `http://localhost:3000/api/block/location/${
-            this.form.selectedLocation.value
-          }`
-        )
-        .then(res => {
-          if (res.status == 200) {
-            let blocks = res.data;
-            blocks.forEach(block => {
-              let option = {
-                value: block.Id,
-                text: block.Name
-              };
-              this.blockModalSelect.push(option);
-            });
-          }
-        });
+          .get(
+            `http://localhost:3000/api/block/location/${
+              this.form.selectedLocation.value
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let blocks = res.data;
+              blocks.forEach(block => {
+                let option = {
+                  value: block.Id,
+                  text: block.Name
+                };
+                this.blockModalSelect.push(option);
+              });
+            }
+          });
       }
       if (
         this.form.selectedLocation.value != "" &&
@@ -1315,28 +1349,28 @@ export default {
         this.CreateItemErrors.NoLocation = "";
       }
     },
-    'form.selectedBlock': function(){
+    "form.selectedBlock": function() {
       if (this.form.selectedBlock.value != "") {
-      this.floorModalSelect = [];
-      this.tileModalSelect = [];
-      this.axios
-        .get(
-          `http://localhost:3000/api/floor/block/${
-            this.form.selectedBlock.value
-          }`
-        )
-        .then(res => {
-          if (res.status == 200) {
-            let floors = res.data;
-            floors.forEach(floor => {
-              let option = {
-                value: floor.Id,
-                text: floor.Name
-              };
-              this.floorModalSelect.push(option);
-            });
-          }
-        });
+        this.floorModalSelect = [];
+        this.tileModalSelect = [];
+        this.axios
+          .get(
+            `http://localhost:3000/api/floor/block/${
+              this.form.selectedBlock.value
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let floors = res.data;
+              floors.forEach(floor => {
+                let option = {
+                  value: floor.Id,
+                  text: floor.Name
+                };
+                this.floorModalSelect.push(option);
+              });
+            }
+          });
       }
       if (
         this.form.selectedBlock.value != "" &&
@@ -1345,7 +1379,7 @@ export default {
         this.CreateItemErrors.NoBlock = "";
       }
     },
-    'form.selectedFloor': function(){
+    "form.selectedFloor": function() {
       if (this.form.selectedFloor.value != "") {
         this.tileModalSelect = [];
         this.axios
@@ -1374,8 +1408,11 @@ export default {
         this.CreateItemErrors.NoFloor = "";
       }
     },
-    'form.selectedTile': function() {
-      if (this.form.selectedTile.value != "" && this.CreateItemErrors.NoTile != "") {
+    "form.selectedTile": function() {
+      if (
+        this.form.selectedTile.value != "" &&
+        this.CreateItemErrors.NoTile != ""
+      ) {
         this.CreateItemErrors.NoTile = "";
       }
     }
@@ -1384,6 +1421,9 @@ export default {
 </script>
 
 <style scoped>
+/* .th{
+  padding: 0.5rem !important;
+} */
 .btn-edit:hover {
   cursor: pointer;
   color: black;
@@ -1444,7 +1484,6 @@ export default {
   color: white;
   font-size: 18px;
   border-radius: 8px;
-  /* margin-left: 0.25rem; */
   height: 36px;
   width: 130px;
 }
@@ -1528,7 +1567,7 @@ th {
   background-color: #cfd8dc;
   height: 30px;
   line-height: 30px;
-  padding: 0rem 0rem 0.75rem 0rem !important;
+  padding: 0rem 0rem 0.75rem 0.3rem !important;
 }
 
 td {
@@ -1536,7 +1575,7 @@ td {
   vertical-align: middle !important;
   height: 25px;
   line-height: 25px;
-  padding: 0rem 0rem 0.5rem 0rem !important;
+  padding: 0rem 0rem 0.5rem 0.3rem !important;
   /* text-align: justify; */
 }
 
