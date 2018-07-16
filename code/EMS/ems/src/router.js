@@ -31,6 +31,7 @@ import TestComponent from "./components/TestSite/Test.vue";
 import LocationMapViewComponent from "./components/Location/MapView.vue";
 import AddBlockFloorTileComponent from "./components/Location/AddBlockFloorTile.vue";
 import Component500 from './components/Error/500.vue';
+import EditWorkOrder from './components/Order/EditOrder.vue';
 // chaubqn - end
 
 // hau - start
@@ -111,6 +112,17 @@ let router = new Router({
     },
     {
       path: "/work_order",
+      component: OrderComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.WorkOrder);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/work_order/:orderId",
       component: OrderComponent,
       beforeEnter: (to, from, next) => {
         store.set("title", menu.WorkOrder);
@@ -341,6 +353,19 @@ let router = new Router({
 
       beforeEnter: (to, from, next) => {
         store.set("title", '');
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      name: 'edit_order',
+      path: "/work_order/edit/:orderId",
+      component: EditWorkOrder,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.WorkOrder);
         next();
       },
       meta: {
