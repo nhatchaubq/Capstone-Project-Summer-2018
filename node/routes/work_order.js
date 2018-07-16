@@ -4,20 +4,20 @@ const TYPES = require("tedious").TYPES;
 router.get("/workorderbylocationId/:id", (request, response) => {
   request
     .sql(
-      "select distinct wo.*,t.Name as 'Team' ,p.[Name] as 'Priority',p.TagHexColor,ws.Name as 'Status',wc.Name as 'Category',(select distinct e.Id,e.Name,wd.WorkOrderID,wd.StartDate,wd.FinishedDate,wd.ReturnDate,(select wd.*,ei.SerialNumber,ei.EquipmentID " +
-        "     from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id								 " +
-        " where wd.WorkOrderID = wo.Id and ei.EquipmentID = e.Id for json path) as 'EquipmentItems' " +
-        " from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id " +
-        " join Equipment as e on e.Id = ei.EquipmentID " +
-        " where wd.WorkOrderID = wo.Id  for json path) as 'WorkorderDetail' " +
-        " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
-        " join Team as t on t.Id = tl.TeamId " +
-        " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
-        " join[Priority] as p on p.Id = wo.PriorityID " +
-        " join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
-        " join WorkOrderCategory as wc on wc.Id = wo.CategoryID " +
-        "  where tl.LocationID = @locationId for json path"
-      // "exec [GetWorkOrderByLocationId] @locationId"
+      // "select distinct wo.*,t.Name as 'Team' ,p.[Name] as 'Priority',p.TagHexColor,ws.Name as 'Status',wc.Name as 'Category',(select distinct e.Id,e.Name,wd.WorkOrderID,wd.StartDate,wd.FinishedDate,wd.ReturnDate,(select wd.*,ei.SerialNumber,ei.EquipmentID " +
+      //   "     from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id								 " +
+      //   " where wd.WorkOrderID = wo.Id and ei.EquipmentID = e.Id for json path) as 'EquipmentItems' " +
+      //   " from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id " +
+      //   " join Equipment as e on e.Id = ei.EquipmentID " +
+      //   " where wd.WorkOrderID = wo.Id  for json path) as 'WorkorderDetail' " +
+      //   " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
+      //   " join Team as t on t.Id = tl.TeamId " +
+      //   " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
+      //   " join[Priority] as p on p.Id = wo.PriorityID " +
+      //   " join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
+      //   " join WorkOrderCategory as wc on wc.Id = wo.CategoryID " +
+      //   "  where tl.LocationID = @locationId for json path"
+      "exec [GetWorkOrderByLocationId] @locationId"
     )
     .param("locationId", request.params.id, TYPES.Int)
     .into(response);
