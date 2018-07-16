@@ -55,4 +55,14 @@ router.put("/changeMemberToLeader", (request, response) => {
     .into(response);
 });
 
+router.put('/:id', function (request, response) {
+  request.sql('update [Team] set Name = @Name where Id = @id')
+    .param('id', request.params.id, TYPES.Int)
+    .param('Name', request.body.team.Name, TYPES.NVarChar)
+
+    .exec(response);
+});
+
+
+
 module.exports = router;

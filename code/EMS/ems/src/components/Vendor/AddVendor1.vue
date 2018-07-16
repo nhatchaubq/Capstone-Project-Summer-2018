@@ -125,9 +125,9 @@
             <div class="form-field" >
                 <div class="form-field-title ">
                      <strong>Description</strong>
-                </div>   
+                </div>   <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
                     <textarea  id="text-descrip" rows="4" cols="55" v-model.trim="Vendor.Description"  >
-                    </textarea><span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
+                    </textarea>
                 <!-- <h3>{{account.startdate}}</h3> -->
             </div>
             
@@ -353,8 +353,8 @@ export default {
 }
 
 #btn-cancel {
-  background-color: #bdbdbd;
-  color: white;
+  background-color: white;
+  color: black;
   margin-right: 0.6rem;
 }
 

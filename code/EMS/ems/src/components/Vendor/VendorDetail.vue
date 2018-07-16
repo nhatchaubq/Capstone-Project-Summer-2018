@@ -3,56 +3,60 @@
     <router-link to="/vendor">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Vendors</a>
     </router-link>
-
+      <div class="row" style="margin: 0 !important; margin-bottom: 0.5rem">
+        <h2 class="col-11" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{Vendor.BusinessName}}</strong> </h2>
+      <button  v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate col-1" v-on:click="editMode = !editMode">Edit</button>
+      </div>
+  <form @submit.prevent="editVendor()">
 
   <div class="grid-wrapper1 col-12" style="margin-bottom:1rem">
     <div class="material-box" >
-      <div class="row" style="margin: 0 !important; margin-bottom: 0.5rem">
-        <h2 class="col-11" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{Vendor.BusinessName}}</strong> </h2>
-      <button class="button btn-edit btn-primary material-shadow-animate col-1" v-on:click="editMode = !editMode">Edit</button>
-      </div>
-      <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-12" style="margin-top:0.5rem" >
-          Business address  <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoBusinessAddress != ''">. <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span>
+
+        <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
+          <div class="col-12" style="margin-top:0.5rem" >
+            Business address  <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
+          </div>
         </div>
-      </div>
-        <input v-if="!editMode" v-model="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-        <input v-else v-model="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" >
-      <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-12" style="margin-top:0.5rem" >
-          Website
+          <input v-if="!editMode" v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+          <input v-else v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" >
+        <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
+          <div class="col-12" style="margin-top:0.5rem" >
+            Website <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span>
+          </div>
         </div>
-      </div>
-        <input v-if="!editMode" v-model="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-        <input v-else v-model="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" >
-      <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-12" style="margin-top:0.5rem;" >
-          Contact name <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoContactName != ''">. <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span>
+          <input v-if="!editMode" v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled"> 
+          <input v-else v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" >
+        <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
+          <div class="col-12" style="margin-top:0.5rem;" >
+            Contact name <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span>
+          </div>
         </div>
-      </div>
-        <input v-if="!editMode" v-model="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-        <input v-else v-model="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" >
-      <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-12" style="margin-top:0.5rem" >
-          Contact email <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''">. <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
+          <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+          <input v-else v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" >
+        <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
+          <div class="col-12" style="margin-top:0.5rem"  >
+            Contact email <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
+          </div>
         </div>
-      </div>
-        <input v-if="!editMode" v-model="Vendor.ContactEmail" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-        <input v-else v-model="Vendor.ContactEmail" class="input col-7 " type="text"  placeholder="Text input" >
-      <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
-        <div class="col-12" style="margin-top:0.5rem" >
-          Description
+          <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="Text input" disabled="disabled">
+          <input v-else v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="Text input" >
+        <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
+          <div class="col-12" style="margin-top:0.5rem" >
+            Description <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
+          </div> 
+        </div> 
+          <input v-if="!editMode" v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+          <input v-else v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" >
+        <div class="row" v-if="editMode">
+          <button class="button btn-confirm-edit btn-primary material-shadow-animate" >Save change</button>
+          <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
+         created($route.params.id);
+         editMode = false;
+      }">Cancel</button>
         </div>
-      </div>
-        <input v-if="!editMode" v-model="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-        <input v-else v-model="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" >
-      <div class="row" v-if="editMode">
-        <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editVendor()">Done</button>
-        <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="editMode = !editMode">Cancel</button>
-      </div>
 
 
-
+ 
 
 
     </div>
@@ -293,7 +297,7 @@
   </div>
 
     <!-- test end -->
-
+ </form>
 </div>
   
 </template>
@@ -313,14 +317,28 @@ export default {
       ErrorStrings: {
         // NoBusinessName: "You must provide business name for this vendor",
         NoBusinessAddress: "You must provide business address for this vendor",
+        BusinessAddressMax:
+          " Use from 6 to 200 characters for your business address",
+        BusinessAddressMin:
+          " Use from 6 to 200 characters for your business address",
         NoContactName: "You must provide contact name for this vendor",
-        NoEmail: "You must provide contact email for this vendor"
+        ContactNameMin: " Use from 6 to 50 characters for your contact name",
+        ContactNameMax: " Use from 6 to 50 characters for your contact name",
+        NoEmail: " Enter email",
+        WebMax: " Use 200 characters or fewer for your website",
+        DesMax: " Use 500 characters or fewer for your description"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
+        BusinessAddressMin: "",
+        BusinessAddressMax: "",
         NoBusinessAddress: "",
         NoContactName: "",
-        NoEmail: ""
+        ContactNameMin: "",
+        ContactNameMax: "",
+        NoEmail: "",
+        WebMax: "",
+        DesMax: ""
       },
       Vendor: null,
       checkedActive: [],
@@ -335,11 +353,29 @@ export default {
       if (this.Vendor.BusinessAddress === "") {
         this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
       }
+      if (this.Vendor.BusinessAddress.length < 6) {
+        this.CreateVendorErrors.BusinessAddressMin = this.ErrorStrings.BusinessAddressMin;
+      }
+      if (this.Vendor.BusinessAddress.length > 200) {
+        this.CreateVendorErrors.BusinessAddressMax = this.ErrorStrings.BusinessAddressMax;
+      }
       if (this.Vendor.ContactName === "") {
         this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
       }
+      if (this.Vendor.ContactName.length < 6) {
+        this.CreateVendorErrors.ContactNameMin = this.ErrorStrings.ContactNameMin;
+      }
+      if (this.Vendor.ContactName.length > 50) {
+        this.CreateVendorErrors.ContactNameMax = this.ErrorStrings.ContactNameMax;
+      }
       if (this.Vendor.ContactEmail === "") {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+      if (this.Vendor.Website.length > 200) {
+        this.CreateVendorErrors.WebMax = this.ErrorStrings.WebMax;
+      }
+      if (this.Vendor.Description.length > 500) {
+        this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
       }
       if (this.validateVendor())
         this.axios
@@ -359,7 +395,13 @@ export default {
       return (
         // this.CreateVendorErrors.NoBusinessName === "" &&
         this.CreateVendorErrors.NoBusinessAddress === "" &&
+        this.CreateVendorErrors.BusinessAddressMin === "" &&
+        this.CreateVendorErrors.BusinessAddressMax === "" &&
         this.CreateVendorErrors.NoContactName === "" &&
+        this.CreateVendorErrors.ContactNameMin === "" &&
+        this.CreateVendorErrors.ContactNameMax === "" &&
+        this.CreateVendorErrors.WebMax === "" &&
+        this.CreateVendorErrors.DesMax === "" &&
         this.CreateVendorErrors.NoEmail === ""
       );
     }
@@ -374,8 +416,20 @@ export default {
       if (this.Vendor.BusinessAddress != "") {
         this.CreateVendorErrors.NoBusinessAddress = "";
       }
+      if (this.Vendor.BusinessAddress.length > 5) {
+        this.CreateVendorErrors.BusinessAddressMin = "";
+      }
+      if (this.Vendor.BusinessAddress.length < 201) {
+        this.CreateVendorErrors.BusinessAddressMax = "";
+      }
     },
     "Vendor.ContactName": function() {
+      if (this.Vendor.ContactName.length > 5) {
+        this.CreateVendorErrors.ContactNameMin = "";
+      }
+      if (this.Vendor.ContactName.length < 51) {
+        this.CreateVendorErrors.ContactNameMax = "";
+      }
       if (this.Vendor.ContactName != "") {
         this.CreateVendorErrors.NoContactName = "";
       }
@@ -383,6 +437,16 @@ export default {
     "Vendor.ContactEmail": function() {
       if (this.Vendor.ContactEmail != "") {
         this.CreateVendorErrors.NoEmail = "";
+      }
+    },
+    "Vendor.Website": function() {
+      if (this.Vendor.Website.length < 201) {
+        this.CreateVendorErrors.WebMax = "";
+      }
+    },
+    "Vendor.Description": function() {
+      if (this.Vendor.Description.length < 501) {
+        this.CreateVendorErrors.DesMax = "";
       }
     }
   }
