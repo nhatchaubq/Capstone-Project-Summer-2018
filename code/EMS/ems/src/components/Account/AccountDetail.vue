@@ -74,7 +74,7 @@
       </div>
   </div>
   <div class="row" style="margin-top:0.5rem; height: 36px">
-    <div class="col-12" > <strong>Role</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span></div>
+    <div class="col-12" > <strong>Role</strong> </div>
   </div>
   <div class="col-7" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
   <div class="row" style="margin-top:0.5rem; height: 36px">
@@ -97,14 +97,15 @@
 <div class="row" v-if="editMode">
   <!-- <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Save change</button> -->
   <button class="button btn-confirm-edit btn-primary material-shadow-animate" >Save change</button>
-    <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
+</div>
+
+</form>
+
+    <button v-if="editMode" class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
          getAccountDetail($route.params.id);
          editMode = false;
       }">Cancel</button>
 
-
-</div>
-</form>
 <!-- <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
 <div v-bind:key="team.id" v-for="team in account.Teams" >
   <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'"> 
@@ -163,18 +164,18 @@ export default {
       ErrorStrings: {
         // NoUsername: 'You must provide username for this account',
         // NoFullname: "You must provide full name for this account",
-        FullNameMax: "Use from 6 to 50 characters for your full name",
-        FullNameMin: "Use from 6 to 50 characters for your full name",
+        FullNameMax: " Use from 6 to 50 characters for your full name",
+        FullNameMin: " Use from 6 to 50 characters for your full name",
 
         // NoPassword: "You must provide password for this account",
-        MaxPassword: "Use from 6 to 50 characters for your password",
-        WeakAccount: "Use from 6 to 50 characters for your password",
+        MaxPassword: " Use from 6 to 50 characters for your password",
+        WeakAccount: " Use from 6 to 50 characters for your password",
 
         // NoPhone: "You must provide phone number for this account",
-        PhoneMin: "Use from 6 to 50 characters for your phone number",
-        PhoneMax: "Use from 6 to 50 characters for your phone number",
+        PhoneMin: " Use from 9 to 13 characters for your phone number",
+        PhoneMax: " Use from 9 to 13 characters for your phone number",
 
-        NoEmail: "Enter email"
+        NoEmail: " Enter email"
         // NoRole: "You must provide role for this account"
       },
       CreateAccountErrors: {
@@ -246,8 +247,8 @@ export default {
             // this.$router.push("/account");
             if (res.status == 200) {
               alert("Change successful");
-              this.getAccountDetail(this.$route.params.id);
               this.editMode = false;
+              this.getAccountDetail(this.$route.params.id);
             }
           });
     },

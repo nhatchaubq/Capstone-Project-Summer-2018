@@ -6,8 +6,12 @@
                 <div class="form-title-start">
                     Add New Team
                 </div>
-                <div></div>
-
+            <div class="form-title-end">
+              <router-link to='/team'>
+                    <button id="btn-cancel" class="button" >Cancel</button>
+              </router-link>
+              <button id="btn-add" class="button">Create Team</button>
+            </div>
             </div>
             <div>
                 <div class="form-field">
@@ -72,20 +76,15 @@
 
             
     
-    <div class="form-title-end" style="margin-bottom:1rem">
+    <!-- <div class="form-title-end" style="margin-bottom:1rem">
                     <router-link to='/team'>
                         <button id="btn-cancel" class="button" >Cancel</button>
                     </router-link>
 
-                    <!-- <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
-                    <button id="btn-add" class="button" v-on:click="createAccountTrueEnd()">Create Account true end</button> -->
-                    <!-- <router-link to='/team/'>
-                    <button id="btn-add" class="button">Create Team</button>
-                    </router-link> -->
+
                     <button id="btn-add" class="button">Create Team</button>
 
-                    <!-- <button id="btn-add" class="button">Create Account</button> -->
-                </div>
+                </div> -->
 
          </form>
         
@@ -121,13 +120,14 @@ export default {
     };
   },
   created() {
-    let url = Server.ACCOUNT_API_PATH;
+    let url = "http://localhost:3000/api/allaccwithout";
     this.axios
       .get(url)
       .then(response => {
         let data = response.data;
         data.forEach(element => {
-          let account = element.Account;
+          let account = element;
+          // let account = element.Account;
           this.accounts.push(account);
         });
       })
@@ -232,7 +232,7 @@ export default {
 }
 .form-title {
   display: grid;
-  grid-template-columns: 25% 40% 35%;
+  grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem 2rem;
 }
@@ -244,17 +244,16 @@ export default {
   font-size: 20px;
   color: #616161;
 }
-
 .form-title-end {
   width: 100%;
-  /* float: left; */
+  display: flex;
+  justify-content: flex-end;
   /* align-content: center; */
-  margin-left: 25rem;
 }
 
 #btn-cancel {
-  background-color: #bdbdbd;
-  color: white;
+  background-color: White;
+  color: black;
   margin-right: 0.6rem;
 }
 
