@@ -99,7 +99,7 @@ router.get("/editLocation/:id", (request, response) => {
         " where tl.LocationID = @locationId for json path) as 'Team', (select distinct tl.Id, tl.TeamID " +
         " from TeamLocation as tl join WorkOrder as wo on tl.Id = wo.TeamLocationID " +
         " join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
-        " where tl.LocationID = @locationId and ws.Name != 'Closed' and ws.Name != 'Closed'  for json path) as 'TeamWithWorkOrdering', " +
+        " where tl.LocationID = @locationId and ws.Name != 'Closed' and ws.Name != 'Cancelled'  for json path) as 'TeamWithWorkOrdering', " +
         " (select ei.Id " +
         "   from EquipmentItem as ei join Tile as t on ei.TileID = t.Id " +
         "   join[Floor] as f on f.Id = t.FloorID " +
