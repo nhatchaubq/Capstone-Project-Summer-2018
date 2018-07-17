@@ -29,10 +29,10 @@
                     <!-- <label v-if="location.WorkOrderQuantity >0" style="color: red">This location have working Work Oders.So you can't edit address!!! </label> -->
                 </div>
             </div>  
-            <div class="form-field" style="display:grid; grid-template-columns: 25% auto">
+            <div class="form-field" >
               <div>
                 <div class="form-field-title">
-                <strong> Status </strong>
+                <strong> Status </strong> <span v-if="location.Items" class="error-text"> (There are the equipments in this location. Can't change the activity status)</span>
                 </div>
                 <div class="form-field-input" style="padding-left:30px;padding-top:10px;">
                   <label class="radio" v-on:click="location.IsActive = true" style="margin-right:25px;">
@@ -47,10 +47,7 @@
                   </label>                                                  
                 </div>
               </div>
-              <div v-if="location.Items" style="color:red;font-size:20px">
-                <br>
-                NOTE: <label style="font-size:18px; color: black"> There are the equipments in this location. Can't change the activity status!!!</label>
-              </div>
+              
                 
                 
               </div>
@@ -162,7 +159,6 @@ export default {
       } else if (this.location.Name.trim().length > 100) {
         this.NoName = "Use 100 characters or fewer for location's name";
       } else {
-        
         this.axios
           .put(Server.LOCATION_EDIT_API_PATH, {
             newLocation: {

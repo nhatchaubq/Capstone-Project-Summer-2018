@@ -98,8 +98,7 @@
                                 </div>
                                 <v-card v-for="eqtItem in equipment.EquipmentItems" :key="eqtItem.Id">
                                     <v-card-text style="font-size: .9rem">
-                                        Serial #: <a>{{ eqtItem.SerialNumber }}</a> | 
-                                        <a href="">View position</a>
+                                        Serial #: <a>{{ eqtItem.SerialNumber }}</a> | Current in: Block {{eqtItem.Block}} - Floor {{eqtItem.Floor}} - Tile {{eqtItem.Tile}}
                                     </v-card-text>
                                 </v-card>
                             </v-expansion-panel-content>
@@ -143,20 +142,30 @@
                                         <div class="acc-img">
                                           <img v-show="account.AvatarImage" :src="account.AvatarImage" >
                                         </div>
-                                      <div >
-                                        <div>
-                                          <h2 id="info-title">Information</h2>
-                                        </div>
-                                        <div class="acc-info">
-                                          <div><i class="material-icons">credit_card</i> Name: {{account.Fullname}}  </div>
-                                          <div><i class="material-icons">settings_phone  </i> Phone: {{account.Phone}} </div>
-                                          <div><i class="material-icons">email</i> Email: {{account.Email}} </div>
-                                          <div><i class="material-icons">date_range</i> StartDate: {{account.StartDate}}</div>
-                                          <div id="team-detail">
-                                            <router-link :to="'/team/' + account.IdOfTeam" >Show Team Detail </router-link>
+                                        <div >
+                                          <div>
+                                            <h2 id="info-title">Team Leader</h2>
                                           </div>
-                                        </div>                        
+                                          <div class="acc-info">
+                                            <div><i class="material-icons">credit_card</i> Name: {{account.Fullname}}  </div>
+                                            <div><i class="material-icons">settings_phone  </i> Phone: {{account.Phone}} </div>
+                                            <div><i class="material-icons">email</i> Email: {{account.Email}} </div>
+                                            <div><i class="material-icons">date_range</i> StartDate: {{getFormatDate(account.StartDate)}}</div>
+                                            <!-- <div id="team-detail">
+                                              <router-link :to="'/team/' + account.IdOfTeam" >Show Team Detail </router-link>
+                                            </div> -->
+                                          </div>                                         
+                                        </div>
                                       </div>
+                                      <div style="display:grid; grid-template-columns:20% auto;padding-left:3rem; background-color:#F5F5F5">
+                                        <div style="font-weight:bold; font-size:18px">
+                                          Members:
+                                        </div>
+                                        <div style="font-size:15px;">
+                                          <div style="margin-bottom:0.2rem" :key="member.Id" v-for="member in account.Members">
+                                            -  {{member.Fullname}}<br>
+                                          </div>                                          
+                                        </div>
                                       </div>
                                     </v-card-text>
                                 </v-card>
@@ -354,7 +363,8 @@ export default {
         return "is-active-block";
       } else {
         return "";
-    }},
+      }
+    },
     setSelectedLocation(location) {
       // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
       // this.axios.get(url)
@@ -388,21 +398,19 @@ export default {
         })
         .catch(error => {
           console.log(error);
-
         });
-      },
+    },
     getWororderFromLocation(location) {
       this.workorders = [];
       let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
-      this.axios
-        .get(url)
-        .then(response => {
-          let data = response.data;
-          data.forEach(workorder => {
-            this.workorders.push(workorder);
-          })});
+      this.axios.get(url).then(response => {
+        let data = response.data;
+        data.forEach(workorder => {
+          this.workorders.push(workorder);
+        });
+      });
     },
-    getFormatDate(date){
+    getFormatDate(date) {
       return moment(date).format("L");
     },
     getTeamFromLocation(location) {
@@ -437,20 +445,20 @@ export default {
           }
         });
     }
-  // chaubqn - start
-  // getLocationBlockFloorTile(locationId) {
-  //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
-  //   this.axios.get(url)
-  //     .then((res) => {
-  //       this.mapViewSelectedLocation = res.data;
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     })
-  // }
-  // chaubqn - end
-},
-}
+    // chaubqn - start
+    // getLocationBlockFloorTile(locationId) {
+    //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
+    //   this.axios.get(url)
+    //     .then((res) => {
+    //       this.mapViewSelectedLocation = res.data;
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     })
+    // }
+    // chaubqn - end
+  }
+};
 </script>
 
 <style scoped>
