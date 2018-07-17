@@ -111,11 +111,13 @@
               <div v-bind:key='workorder.Id' v-for="workorder in workorders">           
                 <div style="display: grid; grid-template-columns: 80% auto;border-bottom:0.15px solid;padding-top:1rem" >
                     <div style=" border-right: 0.25px solid">
-                      <div style="font-size: 25px;font-weight: 500;">{{workorder.Name}}</div>
-                      <div style="display: grid; grid-template-columns: 10% auto 35%;">
-                        <div style="color: white" :style="`background-color: ${workorder.TagHexColor}`"  class="tag"> {{workorder.Priority}}</div>
-                        <div style="padding-left:2rem">  <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">group</i> {{workorder.Team}} </div> 
+                      <div style="font-size: 25px;font-weight: 500">
+                        <div>{{workorder.Name}}</div>                        
+                      </div>
+                      <div style="display: grid; grid-template-columns:auto 35% 20%;">                        
+                        <div style="padding-left:1rem">  <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">group</i> {{workorder.Team}} </div> 
                         <div style="position: relative;top: 0.3rem;"> <i class="fa fa-calendar" style="color:gray;"></i> {{getFormatDate(workorder.CreateDate)}} </div>                                             
+                        <div style="color: white;margin-right:0.5rem" :style="{'background-color': workorder.Status == 'Closed'? 'var(--status-closed)' : 'var(--status-in-progress)'}"  class="tag"> {{workorder.Status}}</div>
                       </div>                      
                     </div>                    
                     <div style="text-align:center">
@@ -211,10 +213,10 @@
             </div>
           </div>                                        
         </div>
-        <div style="text-align:center; padding-bottom: 1.5rem">          
+        <!-- <div style="text-align:center; padding-bottom: 1.5rem">          
           <step-progress :workOrderStatus="{id: selectedWorkorder.StatusID, name: selectedWorkorder.Status}" 
                     :statusList="status.filter(s => s.name != 'Cancelled')"></step-progress>          
-        </div>   
+        </div>    -->
         <div >          
             <table style="width:100%"> 
               <thead >
@@ -260,14 +262,14 @@ import Vodal from "vodal";
 import "vodal/common.css";
 import "vodal/slide-up.css";
 import MapView from "./MapView";
-import StepProgress from "@/components/StepProgress/StepProgress.vue";
+// import StepProgress from "@/components/StepProgress/StepProgress.vue";
 import moment from "moment";
 
 export default {
   components: {
     MapView,
-    Vodal,
-    StepProgress
+    Vodal
+    // StepProgress
   },
   computed: {
     google: gmapApi,
