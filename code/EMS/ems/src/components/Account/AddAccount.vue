@@ -3,13 +3,21 @@
          
          <form @submit.prevent="createAccount1()">
             <div class="form-title">
-                <div class="form-title-start">
+                <div class="form-title-start ">
+                  <div>
                     Add New Account
+                  </div>
                 </div>
-                <div></div>
-
+                  <div class="form-title-end">
+                    <router-link to='/account'>
+                      <button id="btn-cancel" class="button" >Cancel</button>
+                    </router-link>
+                    <button id="btn-add" class="button">Create Account</button>
+                </div>
             </div>
-            <div>
+            
+            <div class="form-content">
+            <div >
                 <div class="form-field">
                     <div class="form-field-title">
                     <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span><span v-if="CreateAccountErrors.UserNameTrim != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UserNameTrim }}</span></span>
@@ -27,7 +35,7 @@
 
                     </div>
                 </div>
-                
+
             </div>
             <div>
                 <div class="form-field">
@@ -189,20 +197,13 @@
 
             
     
-    <div class="form-title-end" style="margin-bottom:2rem">
+    <!-- <div class="form-title-end" style="margin-bottom:2rem">
                     <router-link to='/account'>
                         <button id="btn-cancel" class="button" >Cancel</button>
                     </router-link>
-
-                    <!-- <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
-                    <button id="btn-add" class="button" v-on:click="createAccountTrueEnd()">Create Account true end</button> -->
-                    <!-- <router-link to='/account/'>
                     <button id="btn-add" class="button">Create Account</button>
-                    </router-link> -->
-                    <button id="btn-add" class="button">Create Account</button>
-                </div>
-            <!-- <div>&nbsp</div> -->
-         <!-- </form> -->
+                </div> -->
+          </div>
          </form>
     </div>
 </template>
@@ -240,27 +241,27 @@ export default {
         // NoUsername: "You must provide username for this account",
         // NoPassword: "You must provide password for this account",
         // fullname-start
-        FullNameMax: "Use from 6 to 50 characters for your full name",
-        FullNameMin: "Use from 6 to 50 characters for your full name",
+        FullNameMax: " Use from 6 to 50 characters for your full name",
+        FullNameMin: " Use from 6 to 50 characters for your full name",
         // NoFullname: "You must provide full name for this account",
         // fullname-end
         // NoPhone: "You must provide phone number for this account",
         // username-start
-        UsernameMax: "Use from 6 to 50 characters for your  username",
-        UsernameMin: "Use from 6 to 50 characters for your username",
+        UsernameMax: " Use from 6 to 50 characters for your  username",
+        UsernameMin: " Use from 6 to 50 characters for your username",
         // UserNameTrim: " No Space Allowed",
         // username-end
         //password
-        MaxPassword: "Use from 6 to 50 characters for your password",
-        WeakAccount: "Use from 6 to 50 characters for your password",
+        MaxPassword: " Use from 6 to 50 characters for your password",
+        WeakAccount: " Use from 6 to 50 characters for your password",
         //password-end
 
         // phone-start
-        PhoneMin: "Use from 9 to 13 characters for your phonenumber",
-        PhoneMax: "Use from 9 to 13 characters for your phonenumber",
+        PhoneMin: " Use from 9 to 13 characters for your phonenumber",
+        PhoneMax: " Use from 9 to 13 characters for your phonenumber",
         // phone-end
-        NoEmail: "Enter email",
-        NoRole: "Select role"
+        NoEmail: " Enter email",
+        NoRole: " Select role"
       },
       CreateAccountErrors: {
         // NoUsername: "",
@@ -345,6 +346,7 @@ export default {
             account: this.account
           })
           .then(res => {
+            alert("Add account successful");
             this.$router.push("/account");
           });
       }
@@ -435,7 +437,7 @@ export default {
 }
 .form-title {
   display: grid;
-  grid-template-columns: 25% 40% 35%;
+  grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem 2rem;
 }
@@ -447,17 +449,25 @@ export default {
   font-size: 20px;
   color: #616161;
 }
-
 .form-title-end {
   width: 100%;
-  /* float: left; */
+  display: flex;
+  justify-content: flex-end;
   /* align-content: center; */
-  margin-left: 25rem;
+}
+.form-content {
+  font-size: 0.9rem;
+  position: fixed;
+  max-height: 82.5%;
+  width: 82%;
+  overflow-y: auto;
+  /* display: flex;
+        flex-direction: column;  */
 }
 
 #btn-cancel {
-  background-color: #bdbdbd;
-  color: white;
+  background-color: white;
+  color: black;
   margin-right: 0.6rem;
 }
 

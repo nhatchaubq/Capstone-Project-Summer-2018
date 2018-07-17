@@ -22,7 +22,7 @@ import ProjectComponent from "./components/Project/Project.vue";
 import CreateLocation from "./components/Location/CreateLocation.vue";
 import VendorComponent from "./components/Vendor/Vendor.vue";
 import VendorDetailComponent from "./components/Vendor/VendorDetail.vue";
-import AddVendorComponent from "./components/Vendor/AddVendor.vue";
+// import AddVendorComponent from "./components/Vendor/AddVendor.vue";
 import AddVendor1Component from "./components/Vendor/AddVendor1.vue";
 import EditLocation from "./components/Location/EditLocation.vue";
 
@@ -270,14 +270,14 @@ let router = new Router({
         showSearchBar: true
       }
     },
-    {
-      path: "/vendor/add",
-      component: AddVendorComponent,
-      beforeEnter: (to, from, next) => {
-        store.set("title", menu.Vendors);
-        next();
-      }
-    },
+    // {
+    //   path: "/vendor/add",
+    //   component: AddVendorComponent,
+    //   beforeEnter: (to, from, next) => {
+    //     store.set("title", menu.Vendors);
+    //     next();
+    //   }
+    // },
     {
       path: "/vendor1/add",
       component: AddVendor1Component,

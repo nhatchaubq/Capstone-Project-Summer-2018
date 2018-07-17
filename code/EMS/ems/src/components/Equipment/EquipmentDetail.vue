@@ -1,16 +1,18 @@
 <template>
     <div>
         <!-- <h1>{{this.EquimentByID.Name}}</h1> -->
-        <div class="field" style=" display: grid; grid-template-columns: 50% 50%; width: 100;">
+        <div class="field" style=" display: grid; grid-template-columns: 45% 55%; width: 100;">
             <div class="left" style="padding-top:0.5rem; padding-left:1rem ">
                 <img :src= "this.EquimentByID.Image" style="width: 400px; height: 350px; ">
             </div>
             <div class="">
               <div class="field" style=" display: grid; grid-template-columns: 70% 20% 10%">
                   <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{equipmentName}}</strong>
-                  <button  class="btn-Add"   v-on:click="addItem">Add Item</button>
-                  <button class="btn-edit" :class="{'is-active-option': editMode}" v-on:click="editMode = !editMode">Edit</button> 
-              </div>
+                  <button v-if="!addItemMode" class="btn-Add"   v-on:click="addItem">Add Item</button>
+                  <div class="" v-else ><button  class="btn-Add" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" >Add Item</button></div>
+                  <button v-if="!editMode" class="btn-edit"  v-on:click="editMode = !editMode">Edit</button> 
+                  <div class="" v-else><button class="btn-edit" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" :class="{'is-active-option': editMode}">Edit</button> </div>
+             </div>
               <span v-if="editMode"  style="color:red; font-size:14px">* is required, please input these fields</span>
               <div class="row" style="height:36px" >
                   <div class="" style="margin-top:0.5rem" >
@@ -52,11 +54,18 @@
                     </select>
                   </div>
               </div>
-              <div  class="row" style="height:36px" >
-                  <div class="" style="margin-top:0.5rem" >
+              <div class="row" style=" display: grid;grid-template-columns: 50% 50%;">
+                <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 40% 60%;" >
+                  <div class="" style="padding-top:0.25rem; " >
+                      Quantity:  
+                  </div>
+                  <input v-model="this.Items.length" class="input col-5 " type="text" disabled="disabled"> 
+               </div>
+               <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 20% 80%; padding-left:2rem " >
+                <div class="" style="padding-top:0.25rem;" >
                       Unit:  <span v-if="editMode" style="color:red; font-size:18px">*</span>
                   </div>
-                  <input v-if="!editMode" v-model="this.EquimentByID.Unit.Name" class="input col-7 " type="text" disabled="disabled"> 
+                  <input v-if="!editMode" v-model="this.EquimentByID.Unit.Name" class="input col-5 " type="text" disabled="disabled"> 
                   <div class="select" v-else>
                     <select class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width:100%"  v-model="EquimentByID.UnitID">
                               <option :key="'equipmentUnit' + unit.Id" v-for="unit in unitOptions"
@@ -64,6 +73,7 @@
                                 v-bind:value="unit.Id">{{unit.Name}}</option>
                     </select>
                   </div>
+               </div>
               </div>
               <div  class="row" style="height:36px" >
                   <div class="" style="margin-top:0.5rem" >
@@ -72,12 +82,7 @@
                   <input v-if="!editMode" v-model="this.EquimentByID.Description" class="input col-7 " type="text" disabled="disabled"> 
                   <input v-else v-model="EquimentByID.Description" class="input col-7 " type="text" >
               </div>
-              <div  class="row" style="height:36px" >
-                  <div class="" style="margin-top:0.5rem" >
-                      Quantity:  
-                  </div>
-                  <input v-model="this.Items.length" class="input col-7 " type="text" disabled="disabled"> 
-              </div>
+              
               <div class="row" style="height:30px" v-if="editMode">
                 <div class="" style="margin-top:0.5rem">
                   Picture:
@@ -85,8 +90,8 @@
                 <div class="input_picture">                  
                   <label class="file-label"  > 
                   <span class="file-cta">
-                      <input v-if="!editMode" class="file-input" type="file" style="opacity:0" ref="fileInput"  disabled="disabled" />
-                      <input v-else class="file-input" type="file" style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
+                      <input v-if="!editMode" class="file-input" type="file" accept="image/*" style="opacity:0" ref="fileInput"  disabled="disabled" />
+                      <input v-else class="file-input" type="file" accept="image/*"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
                       <span class="file-icon" style="margin-right=0;">
                           <i class="fa fa-upload"></i>
                       </span>
@@ -165,7 +170,8 @@
                   <span><strong>  Price (required) </strong></span>
                   </div>
                   <div class="field is-horizontal" style="margin-right:1rem">
-                    <input type="number" class="input" placeholder="Price" v-model="form.price">
+                    <input type="number" min="50000" style="text-align: right" class="input" placeholder="Price" v-model="form.price">
+                    <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">VNĐ</label>
                   </div>
                     <span v-if="CreateItemErrors.NoPrice != ''">. <span class="error-text">{{ CreateItemErrors.NoPrice }}</span></span>                  
               </div>
@@ -174,7 +180,8 @@
                    <span><strong> Warranty (required) </strong></span>
                   </div>
                   <div class="field is-horizontal" >
-                    <input type="number" min="1" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration">
+                    <input type="number" min="1" style="text-align: right" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration">
+                    <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Month</label>
                   </div> 
                     <span v-if="CreateItemErrors.NoWarranty != ''">. <span class="error-text">{{ CreateItemErrors.NoWarranty }}</span></span>                  
               </div>
@@ -182,34 +189,30 @@
             <div class="form-field-title">
                <span><strong>  Location (required) </strong></span>
                <span v-if="CreateItemErrors.NoLocation != ''">. <span class="error-text">{{ CreateItemErrors.NoLocation }}</span></span>
-               
             </div>
             <div>
-            <model-select style="width: 100% !important" :options="locationOptions" v-model="selectedLocation" placeholder="Select a location"></model-select>  
+              <model-select style="width: 100% !important" :options="locationModalSelect" v-model="form.selectedLocation" placeholder="Select a location  "></model-select>  
             </div>
             <div class="form-field-title">
               <span><strong>  Block (required) </strong></span>
               <span v-if="CreateItemErrors.NoBlock != ''">. <span class="error-text">{{ CreateItemErrors.NoBlock }}</span></span>
             </div>
             <div>
-            <model-select style="width: 100% !important" :options="blockOptions" v-model="selectedBlock" placeholder="Select a block  "></model-select> 
+              <model-select style="width: 100% !important" :options="blockModalSelect" v-model="form.selectedBlock" placeholder="Select a block  "></model-select>               
             </div>
             <div class="form-field-title">
               <span><strong>  Floor (required) </strong></span>
               <span v-if="CreateItemErrors.NoFloor != ''">. <span class="error-text">{{ CreateItemErrors.NoFloor }}</span></span>
             </div>
             <div>
-            <model-select style="width: 100% !important" :options="floorOptions" v-model="selectedFloor" placeholder="Select a floor  "></model-select>  
-            
+              <model-select style="width: 100% !important" :options="floorModalSelect" v-model="form.selectedFloor" placeholder="Select a floor  "></model-select>             
             </div>
-
             <div class="form-field-title">
               <span><strong>  Tile (required) </strong></span>
               <span v-if="CreateItemErrors.NoTile != ''">. <span class="error-text">{{ CreateItemErrors.NoTile }}</span></span>
             </div>
             <div>
-            <model-select style="width: 100% !important" :options="tileOptions" v-model="selectedTile" placeholder="Select a tile  "></model-select>  
-            
+            <model-select style="width: 100% !important" :options="tileModalSelect" v-model="form.selectedTile" placeholder="Select a tile  "></model-select>  
             </div>
             </div>
           </div>          
@@ -228,10 +231,11 @@
       <modal v-model="detailPopUp" >
          <div v-if="selectedItem!=null" > 
           <div slot="header">
-              <div class="field" style=" display: grid; grid-template-columns: 10% 75% 15%">
+              <div class="field" style=" display: grid; grid-template-columns: 10% 75% 10%">
                 <i class="material-icons" style="font-size: 2rem;">clear_all</i>
                 <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong>
-                <button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button>  
+                <div class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button></div>  
+                <div class="" v-else><button class="btn-edit" style="color: white; border-bottom: 1px solid black;background-color: #26a69a; border-radius: 5px" disabled="disabled">Edit</button></div>  
               </div>
           </div>
           <div style="font-size: 0.9rem; font:roboto">  
@@ -301,7 +305,7 @@
                       <textarea v-else v-model="selectedItem.Item.Description" cols="7" rows="10" style="border-style:solid; border-color:#b0bec5;"> </textarea>
                   </div>
                     <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
-                    <button  class="btn-UpdateItem" v-on:click="UpdateItem">Update Item</button>
+                    <button class="btn-UpdateItem" v-on:click="updateItem">Update Item</button>
                     <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
                     </div>
                   </div>
@@ -313,14 +317,15 @@
                         Status:  
                       </div>
                       <div class="select">
-                      <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem"  v-model="selectedItem.Item.StatusID">
-                        <option :key="'equipmentItemStatus' + status.Id" v-for="status in statusOptions"
-                          :selected="selectedItem.Item.StatusID == status.Id "                    
-                          v-bind:value="status.Id">{{status.Name}}</option>
-                      </select>
+                        <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem"  v-model="selectedItem.Item.StatusID">
+                          <option :key="'equipmentItemStatus' + status.Id" v-for="status in statusOptions"
+                            :selected="selectedItem.Item.StatusID == status.Id "                    
+                            v-bind:value="status.Id">{{status.Name}}</option>
+                        </select>
                       </div> 
                       <div>
-                        <button class="btn-changeStt" v-on:click="changeItemStatus">Change Status</button>
+                      <div class="" v-if="!editItemMode"> <button class="" style="background-color: #bdbdbd8f; color: white;font-size: 18px;border-radius: 8px;height: 36px;width: 130px;" disabled="disabled">Change Status</button></div>
+                      <div class="" v-else> <button class="btn-changeStt" v-on:click="changeItemStatus">Change Status</button></div>
                       </div>
                     </div>
                     <div class="rowpu" style="display: grid; grid-template-columns: 18% 82%;" >
@@ -356,14 +361,6 @@
                 <div v-if="currentViewMode ==  viewModes.Position">
                   <div class="rowpu" style="height: 36px" >
                     <div class="" style="margin-top:0.5rem" >
-                        Address:  
-                    </div>
-                    <div class="">
-                      <input v-if="!editItemMode" v-model="selectedItem.Item.Address" class="input col-7 " type="text" disabled="disabled">
-                    </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
                         Location:  
                     </div>
                     <div class="">
@@ -372,9 +369,17 @@
                       <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%"  v-model="selectedItem.Item.LocationID">
                         <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"
                           :selected="selectedItem.Item.LocationID == location.Id "                    
-                          v-bind:value="location.Id">{{location.Name}}</option>
+                          v-bind:value="location.Id" value>{{location.Name}}</option>
                       </select>
                       </div> 
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px" >
+                    <div class="" style="margin-top:0.5rem" >
+                        Address:  
+                    </div>
+                    <div class="">
+                      <input  v-model="selectedItem.Item.Address" class="input col-7 " type="text" disabled="disabled">
                     </div>
                   </div>
                   <div class="rowpu" style="height: 36px" >
@@ -400,9 +405,9 @@
                       <input v-if="!editItemMode" v-model="selectedItem.Item.FLoor" class="input col-7 " type="text" disabled="disabled">
                       <div v-else class="select" style="width: 100%">
                           <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%"  v-model="selectedItem.Item.FloorID">
-                            <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"
-                              :selected="selectedItem.Item.FloorID == floor.Id "                    
-                              v-bind:value="floor.Id">{{floor.Name}}</option>
+                            <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"            
+                              :value="floor.Id">{{floor.Name}}
+                            </option>
                           </select>
                       </div>
                     </div>
@@ -423,8 +428,8 @@
                     </div>
                   </div>
                   <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
-                    <button  class="btn-UpdateItem" v-on:click="updateItem">Update Item</button>
-                    <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
+                    <button  class="btn-UpdateItem" v-on:click="updatePositionItem">Update Item</button>
+                    <button class="btn-CancelItem" v-on:click="cancelUpdatePosition">Cancel</button>
                   </div>
                 </div>
                 <div v-if="currentViewMode ==  viewModes.WorkOrder">
@@ -489,6 +494,9 @@ export default {
           this.equipmentName = this.EquimentByID.Name;
           this.equipmentDescription = this.EquimentByID.Description;
           this.equipmentMadein = this.EquimentByID.MadeIn;
+          this.equipmentVendorId = this.EquimentByID.VendorId;
+          this.equipmentCategoryId = this.EquimentByID.CategoryId;
+          this.equipmentUnitId = this.EquimentByID.UnitID;
         });
       });
 
@@ -581,6 +589,23 @@ export default {
       .catch(error => {
         alert(error);
       });
+    //GET LOcation to import model-select
+    this.axios
+      .get("http://localhost:3000/api/location")
+      .then(response => {
+        let data = response.data;
+        data.forEach(location => {
+          let option = {
+            text: location.Name,
+            value: location.Id
+          };
+          this.locationModalSelect.push(option);
+          // alert(this.locationModalSelect[0].value);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
   },
   // data() {
   //   return {
@@ -600,9 +625,9 @@ export default {
         NoBarcode: ""
       },
       ErrorStrings: {
-        NoQuantity: "Quantity must be bigger than 1",
-        NoPrice: "Please enter price",
-        NoWarranty: "Please enter warranty duration",
+        NoQuantity: "Quantity must be from 1 to 50",
+        NoPrice: "Price must be more than 50,000",
+        NoWarranty: "Warranty duration must be bigger than 1",
         NoLocation: "Please choose location",
         NoBlock: "Please choose block",
         NoFloor: "Please choose floor",
@@ -618,6 +643,7 @@ export default {
       changeItemSttDescription: "",
       show: false,
       addPopUp: false,
+      addItemMode: false,
       detailPopUp: false,
       selectedItem: null,
       itemId: "",
@@ -634,6 +660,9 @@ export default {
       equipmentName: "",
       equipmentDescription: "",
       equipmentMadein: "",
+      equipmentVendorId: "",
+      equipmentCategoryId: "",
+      equipmentUnitId: "",
       statusOptions: [],
       randomNumbers: [],
       statusHistories: [],
@@ -648,21 +677,25 @@ export default {
         text: "",
         value: ""
       },
+      locationModalSelect: [],
       locationOptions: [],
       selectedBlock: {
         text: "",
         value: ""
       },
+      blockModalSelect: [],
       blockOptions: [],
       selectedFloor: {
         text: "",
         value: ""
       },
+      floorModalSelect: [],
       floorOptions: [],
       selectedTile: {
         text: "",
         value: ""
       },
+      tileModalSelect: [],
       tileOptions: [],
       vendorOptions: [],
       selectedVendor: {
@@ -682,7 +715,23 @@ export default {
       form: {
         warrantyDuration: 1,
         price: 50000,
-        description: ""
+        description: "",
+        selectedLocation: {
+          text: "",
+          value: ""
+        },
+        selectedBlock: {
+          text: "",
+          value: ""
+        },
+        selectedFloor: {
+          text: "",
+          value: ""
+        },
+        selectedTile: {
+          text: "",
+          value: ""
+        }
       },
       currentViewMode: 0,
       viewModes: {
@@ -692,31 +741,48 @@ export default {
         WorkOrder: 3,
         RunTime: 4
       },
-      itemPrice: ""
+      itemPrice: "",
+      itemDescription: "",
+      itemWarranty: "",
+      itemNextMaintainDate: "",
+      itemLocationID: "",
+      itemBlockID: "",
+      itemFloorID: "",
+      itemTileID: ""
     };
   },
   methods: {
     cancelUpdateEquipment() {
       this.editMode = !this.editMode;
       this.EquimentByID.Name = this.equipmentName;
-      this.EquimentByID.Vendor.Name = this.EquimentByID.Vendor.Name;
+      this.EquimentByID.VendorId = this.equipmentVendorId;
       this.EquimentByID.MadeIn = this.equipmentMadein;
-      this.EquimentByID.Category.Name = this.EquimentByID.Category.Name;
-      this.EquimentByID.Unit.Name = this.EquimentByID.Unit.Name;
+      this.EquimentByID.CategoryId = this.equipmentCategoryId;
+      this.EquimentByID.UnitID = this.equipmentUnitId;
       this.EquimentByID.Description = this.equipmentDescription;
       this.files = [];
     },
     cancelUpdateItem() {
-      // alert(this.itemPrice);
-
       this.editItemMode = !this.editItemMode;
       this.selectedItem.Item.Price = this.itemPrice;
+      this.selectedItem.Item.Description = this.itemDescription;
+      this.selectedItem.Item.WarrantyDuration = this.itemWarranty;
+      this.selectedItem.Item.NextMaintainDate = this.itemNextMaintainDate;
+    },
+    cancelUpdatePosition() {
+      this.editItemMode = !this.editItemMode;
+      this.selectedItem.Item.LocationID = this.itemLocationID;
+      this.selectedItem.Item.BlockID = this.itemBlockID;
+      this.selectedItem.Item.FloorID = this.itemFloorID;
+      this.selectedItem.Item.TileID = this.itemTileID;
+      // alert(this.itemTileID);
+      // alert(this.selectedItem.Item.TileID);
     },
     setViewMode(mode) {
       this.currentViewMode = mode;
     },
     async createNewEquipentItem() {
-      if (this.quantity === "" || this.quantity < 1) {
+      if (this.quantity === "" || this.quantity < 1 || this.quantity > 50) {
         this.CreateItemErrors.NoQuantity = this.ErrorStrings.NoQuantity;
       }
       if (this.form.price === "" || this.form.price < 50000) {
@@ -725,19 +791,19 @@ export default {
       if (this.form.warrantyDuration === "" || this.form.warrantyDuration < 1) {
         this.CreateItemErrors.NoWarranty = this.ErrorStrings.NoWarranty;
       }
-      if (this.randomNumbers.length == 0) {
+      if (this.randomNumbers.length != this.quantity) {
         this.CreateItemErrors.NoBarcode = this.ErrorStrings.NoBarcode;
       }
-      if (this.selectedLocation.value === "") {
+      if (this.form.selectedLocation.value === "") {
         this.CreateItemErrors.NoLocation = this.ErrorStrings.NoLocation;
       }
-      if (this.selectedBlock.value === "") {
+      if (this.form.selectedBlock.value === "") {
         this.CreateItemErrors.NoBlock = this.ErrorStrings.NoBlock;
       }
-      if (this.selectedFloor.value === "") {
+      if (this.form.selectedFloor.value === "") {
         this.CreateItemErrors.NoFloor = this.ErrorStrings.NoFloor;
       }
-      if (this.selectedTile.value === "") {
+      if (this.form.selectedTile.value === "") {
         this.CreateItemErrors.NoTile = this.ErrorStrings.NoTile;
       }
       if (
@@ -762,7 +828,7 @@ export default {
                 price: this.form.price,
                 statusId: 1,
                 description: "No description",
-                tileID: this.selectedTile.value
+                tileID: this.form.selectedTile.value
               }
             );
             if (res.status == 200) {
@@ -820,9 +886,19 @@ export default {
       this.axios
         .get("http://localhost:3000/api/equipmentItem/Item/" + itemId)
         .then(response => {
+          if (this.editMode == true) {
+            this.editMode = false;
+          }
           this.detailPopUp = true;
           this.selectedItem = response.data;
           this.itemPrice = this.selectedItem.Item.Price;
+          this.itemDescription = this.selectedItem.Item.Description;
+          this.itemWarranty = this.selectedItem.Item.WarrantyDuration;
+          this.itemNextMaintainDate = this.selectedItem.Item.NextMaintainDate;
+          this.itemLocationID = this.selectedItem.Item.LocationID;
+          this.itemBlockID = this.selectedItem.Item.BlockID;
+          this.itemFloorID = this.selectedItem.Item.FloorID;
+          this.itemTileID = this.selectedItem.Item.TileID;
           this.oldstt = this.selectedItem.Item.StatusID;
           this.statusHistories = [];
           this.allworkorder = [];
@@ -856,7 +932,11 @@ export default {
         });
     },
     addItem() {
+      if (this.editMode == true) {
+        this.editMode = false;
+      }
       this.addPopUp = true;
+      this.addItemMode = !this.addItemMode;
       // this.editMode = !this.addPopUp;
     },
 
@@ -867,8 +947,8 @@ export default {
       this.files = this.$refs.fileInput.files;
     },
     async updateEquipment() {
-      if (this.EquimentByID.Name == "") {
-        alert("Please enter equipment name");
+      if (this.EquimentByID.Name.trim().length < 5) {
+        alert("Equipment name must contain more than 5 characters");
       } else {
         this.imageUrl = this.EquimentByID.Image;
         if (this.files[0] && this.files[0].name) {
@@ -910,6 +990,23 @@ export default {
             console.log(error);
           });
       }
+    },
+    updatePositionItem() {
+      this.axios
+        .put(
+          "http://localhost:3000/api/equipmentItem/position/tile/" +
+            this.selectedItem.Item.Id,
+          {
+            tileId: this.selectedItem.Item.TileID
+          }
+        )
+        .then(function(respone) {
+          alert("Update successfully");
+          location.reload();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
     changeItemStatus() {
       let authUser = JSON.parse(window.localStorage.getItem("user"));
@@ -965,7 +1062,6 @@ export default {
       let nextmaintaindate = moment(
         this.selectedItem.Item.NextMaintainDate
       ).format("L");
-
       if (
         this.selectedItem.Item.Price === "" ||
         this.selectedItem.Item.Price < 50000
@@ -1008,10 +1104,52 @@ export default {
   watch: {
     addPopUp: function() {
       if (this.addPopUp == false) {
+        this.addItemMode = !this.addItemMode;
         this.quantity = 1;
         this.randomNumbers = [];
         this.form.price = 50000;
         this.form.warrantyDuration = 1;
+        this.form.selectedLocation.value = "";
+        this.form.selectedLocation.text = "";
+        this.locationModalSelect = [];
+        this.form.selectedBlock.value = "";
+        this.form.selectedBlock.text = "";
+        this.blockModalSelect = [];
+        this.form.selectedFloor.value = "";
+        this.form.selectedFloor.text = "";
+        this.floorModalSelect = [];
+        this.form.selectedTile.value = "";
+        this.form.selectedTile.text = "";
+        this.tileModalSelect = [];
+        // this.form.selectedBlock = "";
+        // this.form.selectedFloor = "";
+        // this.form.selectedTile = "";
+        this.CreateItemErrors.NoQuantity = "";
+        this.CreateItemErrors.NoPrice = "";
+        this.CreateItemErrors.NoWarranty = "";
+        this.CreateItemErrors.NoLocation = "";
+        this.CreateItemErrors.NoBlock = "";
+        this.CreateItemErrors.NoFloor = "";
+        this.CreateItemErrors.NoTile = "";
+        this.CreateItemErrors.NoBarcode = "";
+      }
+      if(this.addPopUp == true){
+        this.axios
+      .get("http://localhost:3000/api/location")
+      .then(response => {
+        let data = response.data;
+        data.forEach(location => {
+          let option = {
+            text: location.Name,
+            value: location.Id
+          };
+          this.locationModalSelect.push(option);
+          // alert(this.locationModalSelect[0].value);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
       }
     },
     detailPopUp: function() {
@@ -1020,24 +1158,27 @@ export default {
           this.editItemMode = false;
         }
         this.selectedItem.Item.Price = this.selectedItem.Item.Price;
-        this.selectedItem.Item.WarrantyDuration = this.selectedItem.Item.WarrantyDuration;
         this.selectedItem.Item.NextMaintainDate = this.selectedItem.Item.NextMaintainDate;
         this.selectedItem.Item.Description = this.selectedItem.Item.Description;
+        this.selectedItem.Item.LocationID = this.itemLocationID;
+        this.selectedItem.Item.BlockID = this.itemBlockID;
+        this.selectedItem.Item.FloorID = this.itemFloorID;
+        this.selectedItem.Item.TileID = this.itemTileID;
       }
     },
     quantity: function() {
-      if (this.quantity != "" && this.CreateItemErrors.NoQuantity != "") {
+      if (this.quantity != "" && this.quantity <50 && this.CreateItemErrors.NoQuantity != "") {
         this.CreateItemErrors.NoQuantity = "";
       }
     },
     "form.price": function() {
-      if (this.form.price != "" && this.CreateItemErrors.NoPrice != "") {
+      if (this.form.price >= 50000 && this.CreateItemErrors.NoPrice != "") {
         this.CreateItemErrors.NoPrice = "";
       }
     },
     "form.warrantyDuration": function() {
       if (
-        this.form.warrantyDuration != "" &&
+        this.form.warrantyDuration > 1 &&
         this.CreateItemErrors.NoWarranty != ""
       ) {
         this.CreateItemErrors.NoWarranty = "";
@@ -1045,7 +1186,7 @@ export default {
     },
     randomNumbers: function() {
       if (
-        this.randomNumbers.length > 0 &&
+        this.randomNumbers.length == this.quantity &&
         this.CreateItemErrors.NoBarcode != ""
       ) {
         this.CreateItemErrors.NoBarcode = "";
@@ -1056,6 +1197,9 @@ export default {
       this.blockOptions = [];
       this.floorOptions = [];
       this.tileOptions = [];
+      if (this.editItemMode) {
+        this.selectedItem.Item.BlockID = null;
+      }
       this.axios
         .get(
           `http://localhost:3000/api/block/location/${
@@ -1076,7 +1220,7 @@ export default {
         });
       // }
       if (
-        this.selectedLocation.value != "" &&
+        this.form.selectedLocation.value != "" &&
         this.CreateItemErrors.NoLocation != ""
       ) {
         this.CreateItemErrors.NoLocation = "";
@@ -1084,29 +1228,42 @@ export default {
     },
     "selectedItem.Item.BlockID": function() {
       // if (this.selectedBlock.value != "") {
-      this.floorOptions = [];
-      this.tileOptions = [];
-      this.axios
-        .get(
-          `http://localhost:3000/api/floor/block/${
-            this.selectedItem.Item.BlockID
-          }`
-        )
-        .then(res => {
-          if (res.status == 200) {
-            let floors = res.data;
-            floors.forEach(floor => {
-              // let option = {
-              //   value: floor.Id,
-              //   text: floor.Name
-              // };
-              this.floorOptions.push(floor);
-            });
-          }
-        });
+     
+      if (this.editItemMode && this.selectedItem.Item.BlockID == null ) {
+        this.selectedItem.Item.FloorID = null;
+        this.selectedItem.Item.TileID = null;
+          alert('BlockID == null');
+        
+      }
+      if (this.editItemMode && this.selectedItem.Item.BlockID != null ) {
+        alert('BlockID != null');
+          // this.selectedItem.Item.FloorID = null;
+        // this.selectedItem.Item.TileID = null;
+          this.floorOptions = [];
+          this.tileOptions = [];
+        alert(this.selectedItem.Item.BlockID.value);
       // }
+      }
+      this.axios
+          .get(
+            `http://localhost:3000/api/floor/block/${
+              this.selectedItem.Item.BlockID
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let floors = res.data;
+              floors.forEach(floor => {
+                // let option = {
+                //   value: floor.Id,
+                //   text: floor.Name
+                // };
+                this.floorOptions.push(floor);
+              });
+            }
+          });
       if (
-        this.selectedBlock.value != "" &&
+        this.form.selectedBlock.value != "" &&
         this.CreateItemErrors.NoBlock != ""
       ) {
         this.CreateItemErrors.NoBlock = "";
@@ -1115,26 +1272,39 @@ export default {
     "selectedItem.Item.FloorID": function() {
       // alert(this.selectedFloor.value);
       // if (this.selectedFloor.value != "") {
-      this.tileOptions = [];
-      this.axios
-        .get(
-          `http://localhost:3000/api/tile/floor/${
-            this.selectedItem.Item.FloorID
-          }`
-        )
-        .then(res => {
-          if (res.status == 200) {
-            let tiles = res.data;
-            tiles.forEach(tile => {
-              // let option = {
-              //   value: tile.Id,
-              //   text: tile.Name
-              // };
-              this.tileOptions.push(tile);
-            });
-          }
-        });
-      // }
+      // alert(this.tileOptions.length);  
+      // this.selectedItem.Item.Tile = "";  
+      if (this.editItemMode && this.selectedItem.Item.FloorID == null) {
+        this.selectedItem.Item.TileID = null; 
+        // this.tileOptions = [];
+        alert('floorID==null')
+        
+      }
+      
+      if (this.editItemMode && this.selectedItem.Item.FloorID != null) {
+        this.tileOptions = [];
+        alert('floorID != null')
+        
+      }
+        this.axios
+          .get(
+            `http://localhost:3000/api/tile/floor/${
+              this.selectedItem.Item.FloorID
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let tiles = res.data;
+              tiles.forEach(tile => {
+                // let option = {
+                //   value: tile.Id,
+                //   text: tile.Name
+                // };
+                this.tileOptions.push(tile);
+              });
+            }
+          });
+        // }
       if (
         this.selectedFloor.value != "" &&
         this.CreateItemErrors.NoFloor != ""
@@ -1142,8 +1312,107 @@ export default {
         this.CreateItemErrors.NoFloor = "";
       }
     },
-    selectedTile: function() {
-      if (this.selectedTile.value != "" && this.CreateItemErrors.NoTile != "") {
+    "form.selectedLocation": function() {
+      if (this.form.selectedLocation.value != "") {
+        this.form.selectedBlock.value = "";
+        this.form.selectedBlock.text = "";
+        this.form.selectedFloor.value = "";
+        this.form.selectedFloor.text = "";
+        this.form.selectedTile.value = "";
+        this.form.selectedTile.text = "";
+        this.blockModalSelect = [];
+        this.floorModalSelect = [];
+        this.tileModalSelect = [];
+        this.axios
+          .get(
+            `http://localhost:3000/api/block/location/${
+              this.form.selectedLocation.value
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let blocks = res.data;
+              blocks.forEach(block => {
+                let option = {
+                  value: block.Id,
+                  text: block.Name
+                };
+                this.blockModalSelect.push(option);
+              });
+            }
+          });
+      }
+      if (
+        this.form.selectedLocation.value != "" &&
+        this.CreateItemErrors.NoLocation != ""
+      ) {
+        this.CreateItemErrors.NoLocation = "";
+      }
+    },
+    "form.selectedBlock": function() {
+      if (this.form.selectedBlock.value != "") {
+        this.floorModalSelect = [];
+        this.tileModalSelect = [];
+        this.axios
+          .get(
+            `http://localhost:3000/api/floor/block/${
+              this.form.selectedBlock.value
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let floors = res.data;
+              floors.forEach(floor => {
+                let option = {
+                  value: floor.Id,
+                  text: floor.Name
+                };
+                this.floorModalSelect.push(option);
+              });
+            }
+          });
+      }
+      if (
+        this.form.selectedBlock.value != "" &&
+        this.CreateItemErrors.NoBlock != ""
+      ) {
+        this.CreateItemErrors.NoBlock = "";
+      }
+    },
+    "form.selectedFloor": function() {
+      if (this.form.selectedFloor.value != "") {
+        this.tileModalSelect = [];
+        this.axios
+          .get(
+            `http://localhost:3000/api/tile/floor/${
+              this.form.selectedFloor.value
+            }`
+          )
+          .then(res => {
+            if (res.status == 200) {
+              let tiles = res.data;
+              tiles.forEach(tile => {
+                let option = {
+                  value: tile.Id,
+                  text: tile.Name
+                };
+                this.tileModalSelect.push(option);
+              });
+            }
+          });
+      }
+      if (
+        this.form.selectedFloor.value != "" &&
+        this.CreateItemErrors.NoFloor != ""
+      ) {
+        this.CreateItemErrors.NoFloor = "";
+      }
+    },
+    "form.selectedTile": function() {
+      if (
+        this.form.selectedTile.value != "" &&
+        this.CreateItemErrors.NoTile != ""
+      ) {
         this.CreateItemErrors.NoTile = "";
       }
     }
@@ -1152,6 +1421,9 @@ export default {
 </script>
 
 <style scoped>
+/* .th{
+  padding: 0.5rem !important;
+} */
 .btn-edit:hover {
   cursor: pointer;
   color: black;
@@ -1212,7 +1484,6 @@ export default {
   color: white;
   font-size: 18px;
   border-radius: 8px;
-  /* margin-left: 0.25rem; */
   height: 36px;
   width: 130px;
 }
@@ -1296,7 +1567,7 @@ th {
   background-color: #cfd8dc;
   height: 30px;
   line-height: 30px;
-  padding: 0rem 0rem 0.75rem 0rem !important;
+  padding: 0rem 0rem 0.75rem 0.3rem !important;
 }
 
 td {
@@ -1304,7 +1575,7 @@ td {
   vertical-align: middle !important;
   height: 25px;
   line-height: 25px;
-  padding: 0rem 0rem 0.5rem 0rem !important;
+  padding: 0rem 0rem 0.5rem 0.3rem !important;
   /* text-align: justify; */
 }
 
