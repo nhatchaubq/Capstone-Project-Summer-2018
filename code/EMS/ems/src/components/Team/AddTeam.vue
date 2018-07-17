@@ -6,16 +6,20 @@
                 <div class="form-title-start">
                     Add New Team
                 </div>
-                <div></div>
-
+            <div class="form-title-end">
+              <router-link to='/team'>
+                    <button id="btn-cancel" class="button" >Cancel</button>
+              </router-link>
+              <button id="btn-add" class="button">Create Team</button>
+            </div>
             </div>
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Team's name (required)</strong><span v-if="CreateTeamErrors.NoTeamName != ''">. <span class="error-text">{{ CreateTeamErrors.NoTeamName }}</span></span>
+                    <strong>  Team's name (required)</strong> <span v-if="CreateTeamErrors.TeamNameMax != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMax }}</span></span> <span v-if="CreateTeamErrors.TeamNameMin != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMin }}</span></span>
                     </div>
                     <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model="team.name" class="input " type="text" placeholder="Text input" >
+                        <input v-model.trim="team.name" class="input " type="text" placeholder="Text input" >
 
                             <span class="icon is-small is-left">
                             <i class="fa fa-user"></i>
@@ -29,7 +33,7 @@
                 
             </div>
             
-            <div>
+            <!-- <div>
                 <div class="form-field">
                     <div class="form-field-title">
                       <strong>Create date (required)</strong><span v-if="CreateTeamErrors.NoCreateDate != ''">. <span class="error-text">{{ CreateTeamErrors.NoCreateDate }}</span></span>  
@@ -40,16 +44,13 @@
                             <span class="icon is-small is-left">
                             <i class="fa fa-calendar"></i>
                             </span>
-                            <!-- <span class="icon is-small is-right">
-                            <i class="fa fa-check"></i>
-                            </span> -->
-                            <!-- {{account.startdate}} -->
+
                         </div>
                     </div>
-                    <!-- <h3>{{account.startdate}}</h3> -->
+
                 </div>
                 
-            </div>
+            </div> -->
             <!-- teset -->
             <div class="form-field">
               <div class="form-field-title">
@@ -57,8 +58,8 @@
                  
               </div>
               <div class="select" style="margin-left:0.5rem; margin-bottom:1rem">
-                <select v-model="selectedAccount" style="width:62rem">
-                  <option :disabled="selectedAccounts.length > 0"  value="null">No account is selected</option>
+                <select v-model="selectedAccount" style="width: 70rem">
+                  <option :disabled="selectedAccounts.length > 0"  value="null"></option>
                   <option v-bind:key='account.Id' v-for='account in accounts' :value="account">{{account.Fullname}}</option>
                 </select>
               </div>
@@ -75,20 +76,15 @@
 
             
     
-    <div class="form-title-end" style="margin-bottom:1rem">
+    <!-- <div class="form-title-end" style="margin-bottom:1rem">
                     <router-link to='/team'>
                         <button id="btn-cancel" class="button" >Cancel</button>
                     </router-link>
 
-                    <!-- <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
-                    <button id="btn-add" class="button" v-on:click="createAccountTrueEnd()">Create Account true end</button> -->
-                    <!-- <router-link to='/team/'>
-                    <button id="btn-add" class="button">Create Team</button>
-                    </router-link> -->
+
                     <button id="btn-add" class="button">Create Team</button>
 
-                    <!-- <button id="btn-add" class="button">Create Account</button> -->
-                </div>
+                </div> -->
 
          </form>
         
@@ -100,15 +96,18 @@ import Server from "@/config/config.js";
 export default {
   data() {
     return {
-       sending: false,
+      sending: false,
       ErrorStrings: {
-        NoTeamName: 'You must provide name for this team',
-        NoCreateDate: 'You must provide create date for this team',
+        // NoTeamName: "You must provide name for this team",
+        TeamNameMax: "Use from 6 to 50 characters for your team name",
+        TeamNameMin: "Use from 6 to 50 characters for your team name"
+        // NoCreateDate: "You must provide create date for this team"
       },
       CreateTeamErrors: {
-        NoTeamName: '',
-        NoCreateDate: '',
-
+        // NoTeamName: "",
+        TeamNameMax: "",
+        TeamNameMin: ""
+        // NoCreateDate: ""
       },
       team: {
         name: "",
@@ -121,13 +120,14 @@ export default {
     };
   },
   created() {
-    let url = Server.ACCOUNT_API_PATH;
+    let url = "http://localhost:3000/api/allaccwithout";
     this.axios
       .get(url)
       .then(response => {
         let data = response.data;
         data.forEach(element => {
-          let account = element.Account;
+          let account = element;
+          // let account = element.Account;
           this.accounts.push(account);
         });
       })
@@ -137,37 +137,46 @@ export default {
   },
   methods: {
     createTeam() {
-      if(this.team.name === ''){
-            this.CreateTeamErrors.NoTeamName = this.ErrorStrings.NoTeamName;
-        }
-        if(this.team.createdDate === ''){
-            this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
-        }
-         if(this.validateTeam())
-      this.axios
-        .post("http://localhost:3000/api/team", {
-          team: this.team
-        })
-        .then(res => {
-          if (this.selectedAccounts.length > 0) {
-            if (res.data.NewTeamId) {
-              // alert(res.data.NewTeamId);
-              this.selectedAccounts.forEach(account => {
-                this.axios.post(Server.TEAM_ACCOUNT_CREATE_API_PATH, {
-                  teamId: res.data.NewTeamId,
-                  accountId: account.Id
+      // if (this.team.name === "") {
+      //   this.CreateTeamErrors.NoTeamName = this.ErrorStrings.NoTeamName;
+      // }
+      if (this.team.name.length > 50) {
+        this.CreateTeamErrors.TeamNameMax = this.ErrorStrings.TeamNameMax;
+      }
+      if (this.team.name.length < 6) {
+        this.CreateTeamErrors.TeamNameMin = this.ErrorStrings.TeamNameMin;
+      }
+      // if (this.team.createdDate === "") {
+      //   this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
+      // }
+      if (this.validateTeam())
+        this.axios
+          .post("http://localhost:3000/api/team", {
+            team: this.team
+          })
+          .then(res => {
+            if (this.selectedAccounts.length > 0) {
+              if (res.data.NewTeamId) {
+                // alert(res.data.NewTeamId);
+                this.selectedAccounts.forEach(account => {
+                  this.axios.post(Server.TEAM_ACCOUNT_CREATE_API_PATH, {
+                    teamId: res.data.NewTeamId,
+                    accountId: account.Id
+                  });
+                  // alert("Success!");
                 });
-                // alert("Success!");
-              });
+              }
             }
-          }
-          this.$router.push("/team");
-        });
+            this.$router.push("/team");
+          });
     },
-       validateTeam() {      
-      return this.CreateTeamErrors.NoTeamName === '' && this.CreateVendorErrors.CreateTeamErrors.NoCreateDate === ''
-            
-              
+    validateTeam() {
+      return (
+        // this.CreateTeamErrors.NoTeamName === "" &&
+        this.CreateTeamErrors.TeamNameMax === "" &&
+        this.CreateTeamErrors.TeamNameMin === ""
+        // this.CreateTeamErrors.NoCreateDate === ""
+      );
     },
     removeSelectedAccount(tmpAccount) {
       this.selectedAccounts = this.selectedAccounts.filter(
@@ -181,7 +190,7 @@ export default {
       if (this.selectedAccounts.length == 0) {
         this.accounts = this.tempAccounts;
       }
-    },
+    }
   },
   watch: {
     selectedAccount: function() {
@@ -196,16 +205,22 @@ export default {
         this.selectedAccount = null;
       }
     },
-    "team.name": function(){
-      if(this.team.name != ''){
-        this.CreateTeamErrors.NoTeamName = ''
+    "team.name": function() {
+      // if (this.team.name != "") {
+      //   this.CreateTeamErrors.NoTeamName = "";
+      // }
+      if (this.team.name.length > 5) {
+        this.CreateTeamErrors.TeamNameMin = "";
       }
-    },
-      'team.createdDate': function(){
-      if(this.team.createdDate != ''){
-        this.CreateTeamErrors.NoCreateDate = ''
-      } 
-    },
+      if (this.team.name.length < 51) {
+        this.CreateTeamErrors.TeamNameMax = "";
+      }
+    }
+    // "team.createdDate": function() {
+    //   if (this.team.createdDate != "") {
+    //     this.CreateTeamErrors.NoCreateDate = "";
+    //   }
+    // }
   }
 };
 </script>
@@ -217,7 +232,7 @@ export default {
 }
 .form-title {
   display: grid;
-  grid-template-columns: 25% 40% 35%;
+  grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem 2rem;
 }
@@ -229,17 +244,16 @@ export default {
   font-size: 20px;
   color: #616161;
 }
-
 .form-title-end {
   width: 100%;
-  /* float: left; */
+  display: flex;
+  justify-content: flex-end;
   /* align-content: center; */
-  margin-left: 25rem;
 }
 
 #btn-cancel {
-  background-color: #bdbdbd;
-  color: white;
+  background-color: White;
+  color: black;
   margin-right: 0.6rem;
 }
 

@@ -74,16 +74,18 @@
                         </span>
                     </div>
                     <!-- edit/cancel work order -->
-                    <div style="margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="selectedOrder.StatusID < 3 && authUser.Id == selectedOrder.RequestUserID">
+                    <div style="margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="selectedOrder.WorkOrderStatus == 'Requested' && authUser.Id == selectedOrder.RequestUserID">
                         <div class="" style="">
                             <!-- cancel work order -->
                             <a v-on:click="() => {
                                 showChangeStatusDialog = true;
                                 newStatusName = 'Cancelled';
                             }">Cancel</a> <!-- cancel work order -->
-                            <span> | </span>
-                            <!-- cancel work order -->
-                            <a v-on:click="showEditDialog = true">Edit</a> <!-- cancel work order -->
+                            <span v-if="selectedOrder.WorkOrderStatus == 'Rejected'">
+                                <span> | </span>
+                                <!-- cancel work order -->
+                                <a v-on:click="$router.push(`/work_order/edit/${selectedOrder.Id}`)">Edit</a> <!-- cancel work order -->
+                            </span>
                         </div> 
                     </div> <!-- edit/cancel work order -->
                   </div>
@@ -122,17 +124,25 @@
                                     toCloseEquipments = []; 
                                     equipments.forEach(equipment => {
                                         equipment.EquipmentItems.forEach(item => {
-                                            if (!item.DetailReturnDate) {
+                                            if (!item.DetailReturn) {
                                                 toCloseEquipments.push({
                                                     equipment: equipment,
                                                     item: item,
                                                     status: 'Available',
-                                                    description: ''
+                                                    description: '',
+                                                    locationOption: null,
+                                                    blockOption: null,
+                                                    floorOption: null,
+                                                    tileOption: null,
+                                                    blockError: '',
+                                                    floorError: '',
+                                                    tileError: '',
                                                 });
                                             }
                                         })
                                     })
                                     showCloseWorkOrderDetailDialog = true;
+                                    newStatusName = 'Closed';
                                 }">Close this work order</button>
                             </div>
                       </div>
@@ -143,6 +153,9 @@
                       </div><!-- order detail view mode -->
                       <!-- detail view mode -->
                       <div v-if="viewDetailMode">
+                            <div class="detail-contents" style="width: 100%;">                                    
+                                <span class="detail-label">Team: </span><span>{{ selectedOrder.Team.Name }}</span>
+                            </div>
                             <div class="detail-contents" style="width: 100%;">
                                 <span class="detail-label">Equipments:</span>
                                 <v-flex>
@@ -155,7 +168,7 @@
                                                     </div>
                                                     <div style="display: grid; grid-template-rows: auto auto;">
                                                         <div>
-                                                            {{ equipment.Name }}
+                                                            {{ equipment.Name.trim() }}
                                                         </div>                                            
                                                         <div style="font-size: .9rem">
                                                             Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
@@ -171,7 +184,7 @@
                                                     <div>
                                                         Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a>
                                                         <span v-if="(authUser.Role == 'Staff' || authUser.Role == 'Maintainer')
-                                                                    && selectedOrder.WorkOrderStatus == 'In Progress' && !item.DetailReturnDate" >
+                                                                    && selectedOrder.WorkOrderStatus == 'In Progress' && !item.DetailReturn" >
                                                              | 
                                                             <a v-on:click="() => {
                                                                 showUpdateItemPosition = true;
@@ -179,7 +192,7 @@
                                                             }">Update position</a>
                                                         </span>
                                                         <span v-if="(authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus === 'In Progress')
-                                                                        && !item.DetailReturnDate">
+                                                                        && !item.DetailReturn">
                                                             | 
                                                             <a v-on:click="() => {
                                                                 //toCloseEquipment = equipment;
@@ -189,17 +202,21 @@
                                                                     equipment: equipment,
                                                                     item: item,
                                                                     status: 'Available',
-                                                                    description: ''
+                                                                    description: '',
+                                                                    locationOption: null,
+                                                                    blockOption: null,
+                                                                    floorOption: null,
+                                                                    tileOption: null,
                                                                 });
 
                                                                 showCloseWorkOrderDetailDialog = true;
                                                             }">Close</a>
                                                         </span>
-                                                        <span v-if="item.DetailReturnDate"> - Closed at {{ getDateWithTime(item.DetailReturnDate) }}</span>
+                                                        <span v-if="item.DetailReturn"> - Closed at <strong>{{ getDateWithTime(item.DetailReturn.DateTime) }}</strong> with status <strong>{{ item.DetailReturn.ReturnedStatusName == 'Available' ? 'OK' : item.DetailReturn.ReturnedStatusName }}</strong></span>
                                                     </div>                                                        
                                                     <div v-if="selectedOrder.WorkOrderStatus != 'Cancelled' 
                                                                 && selectedOrder.WorkOrderStatus != 'Closed'
-                                                                && !item.DetailReturnDate">
+                                                                && !item.DetailReturn">
                                                         Current in: 
                                                         <span v-if="item.BlockFloorTile">
                                                             {{ item.BlockFloorTile.Location.Name }}
@@ -213,22 +230,27 @@
                                         </v-expansion-panel-content>
                                     </v-expansion-panel>
                                 </v-flex>
-                            </div>
+                            </div>                            
                             <div class="detail-contents">
-                                    <span class="detail-label">Location: {{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
+                                    <span class="detail-label">Location: </span><span>{{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
                                     <!-- <img src="http://images.indianexpress.com/2016/11/hazaribagh-759.jpg" /> -->
                                     <GmapMap
                                         :center="{lat:selectedOrder.Location.Latitude, lng:selectedOrder.Location.Longitude}"
                                         :zoom="16"
                                         map-type-id="terrain"
                                         style="width: 100%; height:25rem"
+                                        :options="{gestureHandling: 'cooperative'}"
                                     >
                                     <GmapMarker
                                         :position="google && new google.maps.LatLng(selectedOrder.Location.Latitude, selectedOrder.Location.Longitude)"
                                         :clickable="true"
-                                        :draggable="true"
-                                        @click="showAlert(selectedOrder.Location.Name + ' - ' + selectedOrder.Location.Address)"
-                                        />
+                                    >
+                                        <GmapInfoWindow v-if="(selectedOrder)"
+                                                    :position="google && new google.maps.LatLng(selectedOrder.Location.Latitude, 
+                                                                selectedOrder.Location.Longitude)">
+                                        {{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}
+                                        </GmapInfoWindow>
+                                    </GmapMarker>
                                     </GmapMap>
                             </div>
                       </div><!-- detail view mode -->
@@ -249,186 +271,321 @@
               </div>            
           </div>
         </div> <!-- order detail -->
-        <router-link to="/work_order/create" v-if="authUser.Role === 'Staff' || authUser.Role === 'Maintainer'">
+        <router-link :to="{name: 'create_work_order'}" v-if="authUser.Role === 'Staff' || authUser.Role === 'Maintainer'">
             <button id="btn-add-work-order" class="button is-primary material-shadow-animate">
                 Add Work Order
             </button>
         </router-link>
+
       <!-- equipment detail dialog -->
       <vodal :height="500" :show="equipmentItem != null" @hide="equipmentItem = null" animation="slideUp">
         <equipment-detail-popup :equipment="equipmentItem" class=""></equipment-detail-popup>
       </vodal> <!-- equipment detail dialog -->
 
       <!-- approve / reject dialog -->
-      <vodal :show="showApproveRejectDialog" :height="Errors.RejectedDescriptionNotProvided != '' ? 390 : 350" @hide="showApproveRejectDialog = false" animation="slideUp" :closeButton="false">
-          <div v-if="selectedOrder">
-              <div class="my-dialog">
-                <div class="my-dialog-title">
-                    Confirm
+      <modal v-model="showApproveRejectDialog" style="font-family: Roboto" @on-cancel="() => {
+            Errors.RejectedDescriptionNotProvided = '';
+            showApproveRejectDialog = false
+          }" :mask-closable="false">
+            <div slot="header" style="font-weight: bold">
+                Confirm
+            </div>
+            <div v-if="selectedOrder" style="font-size: 1rem">
+                <span>Are you sure to {{ approveWorkOrder ? 'approve' : 'reject' }} this order <strong>#{{ selectedOrder.Id }} - {{ selectedOrder.Name }}</strong>?</span>
+                <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
+                    <span v-if="approveWorkOrder">Description (optional)</span>
+                    <span v-else>Why do you reject this order (required)</span>
                 </div>
-                <div class="my-dialog-content">
-                    <span>Are you sure to {{ approveWorkOrder ? 'approve' : 'reject' }} this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
+                <textarea v-model="changeStatusDescription" class="input" style="min-height: 7rem; max-height: 7rem; overflow-y: auto" cols="30" rows="10"></textarea>
+                <div class="error-text" style="font-weight: bold !importa3nt"
+                        v-if="Errors.RejectedDescriptionNotProvided != ''">
+                    {{ Errors.RejectedDescriptionNotProvided }}
+                </div>
+            </div>
+            <div slot="footer">
+                <button class="button" @click="showApproveRejectDialog = false">No</button>
+                <button :class="{'btn-primary': approveWorkOrder, 'btn-danger': !approveWorkOrder}" 
+                        class="button" 
+                        @click="approveRejectWorkOrder(selectedOrder.Id)">
+                    {{ approveWorkOrder ? 'Approve' : 'Reject' }}
+                </button>
+            </div>
+      </modal> <!-- approve / reject dialog -->
+
+      <!-- change status dialog -->
+      <modal v-model="showChangeStatusDialog" @on-cancel="showChangeStatusDialog = false" :mask-closable="false" style="font-family: Roboto">
+          <div slot="header" style="font-weight: bold">
+                Confirm
+            </div>
+            <div v-if="selectedOrder" style="font-size: 1rem">
+                <div v-if="newStatusName != 'Closed'">
+                    <span v-if="newStatusName != 'Cancelled'">Are you sure to change status of this order <strong style="font-style: italic">#{{ selectedOrder.Id }} - {{ selectedOrder.Name }}</strong> to <strong style="font-style: italic">{{ newStatusName }}</strong>?</span>
+                    <span v-if="newStatusName == 'Cancelled'">Are you sure to cancel this order <strong style="font-style: italic">#{{ selectedOrder.Id }} - {{ selectedOrder.Name }}</strong>?</span>
                     <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
-                        <span v-if="approveWorkOrder">Description (optional)</span>
-                        <span v-else>Describe the reason you reject this order (required)</span>
+                        Description (optional):
                     </div>
                     <textarea v-model="changeStatusDescription" class="input" style="min-height: 7rem; max-height: 7rem; overflow-y: auto" cols="30" rows="10"></textarea>
-                    <div style="color: var(--danger-color); font-weight: 500; font-size: .95rem; margin-top: 1rem" 
-                            v-if="Errors.RejectedDescriptionNotProvided != ''">
-                        {{ Errors.RejectedDescriptionNotProvided }}
-                    </div>
-                    <button class="button vodal-cancel-btn" @click="showApproveRejectDialog = false">Cancel</button>
-                    <button :class="{'btn-primary': approveWorkOrder, 'btn-danger': !approveWorkOrder}" 
-                            class="button vodal-confirm-btn" 
-                            @click="approveRejectWorkOrder(selectedOrder.Id)">
-                        {{ approveWorkOrder ? 'Approve' : 'Reject' }}
-                    </button>
                 </div>
-              </div>
-          </div>
-      </vodal> <!-- approve / reject dialog -->
-      <!-- change status dialog -->
-      <vodal :show="showChangeStatusDialog" :height="350" @hide="showChangeStatusDialog = false" animation="slideUp" :closeButton="false">
-          <div v-if="selectedOrder">
-              <div class="my-dialog">
-                <div class="my-dialog-title">
-                    Confirm
-                </div>
-                <div class="my-dialog-content">
-                    <div v-if="newStatusName != 'Closed'">
-                        <span v-if="newStatusName != 'Cancelled'">Are you sure to change status of this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }} to {{ newStatusName }}?</span>
-                        <span v-if="newStatusName == 'Cancelled'">Are you sure to cancel this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }}?</span>
-                        <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
-                            Description (optional):
-                        </div>
-                        <textarea v-model="changeStatusDescription" class="input" style="min-height: 7rem; max-height: 7rem; overflow-y: auto" cols="30" rows="10"></textarea>
-                    </div>
-                    <div v-else>
-                        <div>
-                            Please recheck the equipments' status of this order #{{ selectedOrder.Id }} - {{ selectedOrder.Name }} before closing
-                        </div>
-                    </div>
-                    <button class="button vodal-cancel-btn" @click="showChangeStatusDialog = false">No</button>
-                    <button class="btn-primary button vodal-confirm-btn" @click="changeWorkOrderStatus(selectedOrder.Id, newStatusName)">Yes</button>
-                </div>
-              </div>
-          </div>
-      </vodal> <!-- change status dialog -->
-
-      <modal v-if="selectedOrder" v-model="showEditDialog" @on-ok="showEditDialog = false" @on-cancel="showEditDialog = false"
-        ok-text="Save changes" cancel-text="Cancel">
-          <div slot="header">
-              <span :style="{
-                  'background-color': selectedOrder.PriorityColor,
-                  'color': 'white',                  
-                  'margin-right': '0.5rem',
-                  'position': 'relative',
-                  'top': '-.2rem'
-                  }" class="tag">{{selectedOrder.Priority}}</span> <span style="font-size: 1.5rem;">{{ selectedOrder.Name }}</span>
-          </div>
-          <div :style="{
-              'max-height': '50vh',
-              'overflow-y': 'auto',
-          }">
-            <v-flex>
-                <v-expansion-panel popout>
-                    <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
-                        <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
-                            <div style="display: flex">
-                                <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
-                            </div>
-                            <div style="display: grid; grid-template-rows: auto auto;">
-                                <div>
-                                    {{ equipment.Name }}
-                                </div>                                            
-                                <div style="font-size: .9rem">
-                                    Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
-                                </div>
-                            </div>
-                        </div>
-                        <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
-                            <v-card-text style="font-size: .9rem">
-                                Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a> | 
-                                <a>View position</a>
-                            </v-card-text>
-                        </v-card>
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-            </v-flex>
-          </div>
-      </modal>
+            </div>
+            <div slot="footer">
+                <button style="width: 5rem" class="button" v-on:click="showChangeStatusDialog = false">
+                    No
+                </button>
+                <button style="width: 5rem" class="button btn-primary" v-on:click="changeWorkOrderStatus(selectedOrder.Id, newStatusName)">
+                    Yes
+                </button>
+            </div>
+      </modal> <!-- change status dialog -->
 
       <!-- close work detail dialog -->
-      <modal width="800" v-if="toCloseEquipments.length > 0" v-model="showCloseWorkOrderDetailDialog">
-          <div slot="header">
-              Close Order Detail
+      <modal width="900" v-model="showCloseWorkOrderDetailDialog" style="font-family: Roboto" :mask-closable="false">
+          <div slot="header" style="font-weight: bold;">
+              <span v-if="toCloseEquipments.length > 0 && selectedOrder">
+                    {{ toCloseEquipments.length == selectedOrder.WorkOrderDetails.length ? 'Close Order' : 'Close Order Detail' }}
+              </span>
           </div>
           <div :style="{
               'font-size': '1rem', 
               'max-height': '50vh',
               'overflow-y': 'auto',
           }">
-            <div style="font-size: 0.95rem; margin-bottom: 1rem; display: grid; grid-template-columns: 40% 10% 10% 10% 30%;">
-                <div>Equipment Item</div>
-                <div style="text-align: center">Good</div>
-                <div style="text-align: center">Damaged</div>
-                <div style="text-align: center">Lost</div>
-                <div>Description</div>
-            </div>
-            <div style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%; margin-bottom: 1rem;"
-                    :key="'toCloseItem' + index" v-for="(value, index) in toCloseEquipments">
-                <div style="display: flex">
-                    <img v-show="value.equipment.Image" :src="value.equipment.Image" :alt="value.equipment.Name" style="width: 3rem; height: 3rem;">
+            <div v-if="closeOrderDetailStep == 0">
+                <div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 2rem; display: grid; grid-template-columns: 40% 10% 10% 10% 30%;">
+                    <div>Equipment Item</div>
+                    <div style="text-align: center">Good</div>
+                    <div style="text-align: center">Damaged</div>
+                    <div style="text-align: center">Lost</div>
+                    <div>Description</div>
                 </div>
-                <div style="display: grid; grid-template-rows: auto auto;">
+                <div v-if="toCloseEquipments.length > 0" style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%; padding: .5rem;"
+                        :style="{'background': value.status == 'Damaged' ? '#fff1b5' : (value.status == 'Lost' ? '#FF9898' : '')}"
+                        :key="'toCloseItem' + index" v-for="(value, index) in toCloseEquipments">
+                    <div style="display: flex">
+                        <img v-show="value.equipment.Image" :src="value.equipment.Image" :alt="value.equipment.Name" style="width: 3rem; height: 3rem;">
+                    </div>
+                    <div style="display: grid; grid-template-rows: auto auto;">
+                        <div style="font-size: .95rem">
+                            {{ value.equipment.Name.trim() }}
+                        </div>                                            
+                        <div style="font-size: .9rem">
+                            Serial #: <strong>{{ value.item.SerialNumber }}</strong>
+                        </div>
+                    </div>
+                    <div style="text-align: center">
+                        <label class="radio">
+                            <input type="radio" :checked="value.status == 'Available'"
+                                    :name="`${value.equipment.Name}${value.item.Id}`"
+                                    v-on:click="value.status = 'Available'">
+                        </label>
+                    </div>
+                    <div style="text-align: center">
+                        <label class="radio">
+                            <input type="radio" :checked="value.status == 'Damaged'"
+                                :name="`${value.equipment.Name}${value.item.Id}`"
+                                v-on:click="value.status = 'Damaged'">
+                        </label>
+                    </div>
+                    <div style="text-align: center">
+                        <label class="radio">
+                            <input type="radio" :checked="value.status == 'Lost'"
+                                :name="`${value.equipment.Name}${value.item.Id}`"
+                                v-on:click="value.status = 'Lost'">
+                        </label>
+                    </div>
                     <div>
-                        {{ value.equipment.Name }}
-                    </div>                                            
-                    <div style="font-size: .9rem">
-                        Serial #: <strong>{{ value.item.SerialNumber }}</strong>
+                        <textarea class="input" cols="30" rows="10" 
+                                v-model="value.description"
+                                style="width: 100%; min-height: 3rem; max-height: 3rem"></textarea>
                     </div>
                 </div>
-                <div style="text-align: center">
-                    <label class="radio">
-                        <input type="radio" :checked="value.status == 'Available'"
-                                :name="`${value.equipment.Name}${value.item.Id}`"
-                                v-on:click="value.status = 'Available'">
-                    </label>
+            </div>
+            <div v-if="closeOrderDetailStep == 1">                
+                <div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 2rem; display: grid; grid-template-columns: 40% 20% 20% 20%;">
+                    <div>Equipment Item</div>
+                    <div style="margin: 0 .5rem">Block</div>
+                    <div style="margin: 0 .5rem">Floor</div>
+                    <div style="margin: 0 .5rem">Tile</div>
                 </div>
-                <div style="text-align: center">
-                    <label class="radio">
-                        <input type="radio" :checked="value.status == 'Damaged'"
-                            :name="`${value.equipment.Name}${value.item.Id}`"
-                            v-on:click="value.status = 'Damaged'">
-                    </label>
-                </div>
-                <div style="text-align: center">
-                    <label class="radio">
-                        <input type="radio" :checked="value.status == 'Lost'"
-                            :name="`${value.equipment.Name}${value.item.Id}`"
-                            v-on:click="value.status = 'Lost'">
-                    </label>
-                </div>
-                <div>
-                    <textarea class="input" cols="30" rows="10" 
-                            v-model="value.description"
-                            style="width: 100%; min-height: 3rem; max-height: 3rem"></textarea>
+                <div v-if="toCloseEquipments.length > 0" style="display: grid; grid-template-columns: 10% 30% 20% 20% 20%; padding: .5rem;"
+                        :style="{'background': value.status == 'Damaged' ? '#fff1b5' : (value.status == 'Lost' ? '#FF9898' : '')}"
+                        :key="'toCloseItem' + index" 
+                        v-for="(value, index) in toCloseEquipments">
+                    <div style="display: flex">
+                        <img v-show="value.equipment.Image" :src="value.equipment.Image" :alt="value.equipment.Name" style="width: 3rem; height: 3rem;">
+                    </div>
+                    <div style="display: grid; grid-template-rows: auto auto;">
+                        <div style="font-size: .95rem">
+                            {{ value.equipment.Name.trim() }}
+                        </div>                                            
+                        <div style="font-size: .9rem">
+                            Serial #: <strong>{{ value.item.SerialNumber }}</strong>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="select" style="margin: 0 .5rem; width: 95%"
+                            v-if="value.locationOption && value.locationOption.blockOptions.length > 0 && value.status != 'Lost'">
+                            <select :disabled="value.status == 'Lost'" style="width: 100%" 
+                                    :style="value.blockError != '' ? 'border: 1px solid var(--danger-color); border-radius: 5px;' : ''" 
+                                    v-model="value.blockOption"
+                                    v-on:change="() => {
+                                        if (value.blockOption.totalFloor && value.blockOption.floorOptions.length > 0) {
+                                            let groundIndex = value.blockOption.totalFloor - 1;
+                                            value.floorOption = value.blockOption.floorOptions[groundIndex];
+                                            value.floorError = '';
+                                            if (value.floorOption.tileOptions.length > 0) {
+                                                value.tileOption = value.floorOption.tileOptions[0];
+                                                value.tileError = '';
+                                            } else {
+                                                value.tileOption = null;
+                                            }
+                                        } else {
+                                            value.floorOption = null;
+                                            value.tileOption = null;
+                                        }
+                                        value.blockError = '';
+                                    }">
+                                <option disabled :value="null">Select a block</option>
+                                <option :value="blockOption" 
+                                        :key="'blockOption' + value.item.Id + blockOption.value" 
+                                        v-for="blockOption in value.locationOption.blockOptions" >{{ blockOption.text }}</option>
+                            </select>
+                        </div>
+                        <div class="select" style="margin: 0 .5rem; width: 95%" v-else>
+                            <select :disabled="value.status == 'Lost'" style="width: 100%" 
+                                    :style="value.blockError != '' ? 'border: 1px solid var(--danger-color); border-radius: 5px;' : ''" 
+                                    v-model="value.blockOption">
+                                <option disabled :value="null">Select a block</option>                                
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="select" style="margin: 0 .5rem; width: 95%"
+                            v-if="value.blockOption && value.blockOption.floorOptions.length > 0 && value.status != 'Lost'">
+                            <select :disabled="value.status == 'Lost'" style="width: 100%" 
+                                    :style="value.floorError != '' ? 'border: 1px solid var(--danger-color); border-radius: 5px;' : ''" 
+                                    v-model="value.floorOption"
+                                    v-on:change="() => {
+                                        if (value.floorOption.tileOptions.length > 0) {
+                                            value.tileOption = value.floorOption.tileOptions[0];
+                                            value.tileError = '';
+                                        }
+                                        value.floorError = '';
+                                    }">
+                                <option disabled :value="null">Select a floor</option>
+                                <option :value="floorOption" 
+                                        :key="'floorOption' + value.item.Id + floorOption.value" 
+                                        v-for="floorOption in value.blockOption.floorOptions" >{{ floorOption.text }}</option>
+                            </select>
+                        </div>
+                        <div class="select" style="margin: 0 .5rem; width: 95%"  v-else>
+                            <select :disabled="value.status == 'Lost'" style="width: 100%" 
+                                    :style="value.floorError != '' ? 'border: 1px solid var(--danger-color); border-radius: 5px;' : ''" 
+                                    v-model="value.floorOption">
+                                <option disabled :value="null">Select a floor</option>                                
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="select" style="margin-left: .5rem; width: 95%"                             
+                            v-if="value.floorOption && value.floorOption.tileOptions.length > 0 && value.status != 'Lost'">
+                            <select :disabled="value.status == 'Lost'" style="width: 100%"
+                                    :style="value.tileError != '' ? 'border: 1px solid var(--danger-color); border-radius: 5px;' : ''"
+                                    v-model="value.tileOption" 
+                                    v-on:change="() => {
+                                        value.tileError = '';
+                                    }">
+                                <option disabled :value="null">Select a tile</option>
+                                <option :value="tileOption" 
+                                        :key="'tileOption' + value.item.Id + tileOption.value" 
+                                        v-for="tileOption in value.floorOption.tileOptions" >{{ tileOption.text }}</option>
+                            </select>
+                        </div>
+                        <div class="select" style="margin-left: .5rem;; width: 95%" v-else>
+                            <select :disabled="value.status == 'Lost'" style="width: 100%" 
+                                    :style="value.tileError != '' ? 'border: 1px solid var(--danger-color); border-radius: 5px;' : ''" 
+                                    v-model="value.tileOption" >
+                                <option disabled :value="null">Select a tile</option>                                
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
           </div>
           <div slot="footer">
-                <button v-on:click="showCloseWorkOrderDetailDialog = false" 
-                            class="button">Cancel</button>
-                <button class="button btn-primary" 
-                        v-on:click="closeWorkOrderDetails()">
-                    Close Order Detail
-                </button>
+              <div class="row col-12" style="margin: 0; padding: 0; width: 100%">
+                <div v-if="closeOrderDetailStep == 1" class="row col-8" style="margin: 0; padding: 0; width: 60%">
+                    <div style="margin: 0; padding: 0; text-align: left" class="col-2">
+                        <span style="font-weight: bold; font-size: 0.95rem; margin-right: 1rem; position: relative; top: .5rem">Location: </span>
+                    </div>
+                    <div style="width: 100%; margin: 0; padding: 0;" class="col-8">
+                        <basic-select :options="locationOptions" 
+                            :selected-option="selectedLocationOption"
+                            :style="selectedLocationOptionError != '' ? 'border: 1px solid var(--danger-color)' : ''"
+                            placeholder="Select a location" 
+                            @select="locationOption => {
+                                selectedLocationOptionError = '';
+                                selectedLocationOption = locationOption;
+                                    toCloseEquipments.forEach(value => {
+                                        if (value.status != 'Lost') {
+                                            value.locationOption = locationOption; // detect the ground floor and select its first tile
+                                            if (locationOption && locationOption.blockOptions.length > 0) { // check if location has blocks
+                                                value.blockOption = locationOption.blockOptions[0]; // select first block
+                                                if (value.blockOption.totalFloor && value.blockOption.floorOptions.length > 0) { // check if the block has floors
+                                                    let groundIndex = value.blockOption.totalFloor - 1;
+                                                    value.floorOption = value.blockOption.floorOptions[groundIndex]; // get the ground floor
+                                                    if (value.floorOption.tileOptions.length > 0) { // check if the floor has tiles
+                                                        value.tileOption = value.floorOption.tileOptions[0];
+                                                        value.tileError = '';
+                                                    } else {
+                                                        value.tileOption = null;
+                                                    } // check if the floor has tiles - end
+                                                    value.floorError = '';
+                                                } else {
+                                                    value.floorOption = null;
+                                                    value.tileOption = null;
+                                                } // check if the block has floors - end
+                                                value.blockError = '';
+                                            } else {
+                                                value.blockOption = null;
+                                                value.floorOption = null;
+                                                value.tileOption = null;
+                                            } // check if location has blocks - end
+                                        }
+                                    })
+                            }"></basic-select>
+                            <div class="error-text" style="text-align: left" v-if="selectedLocationOptionError != ''">
+                                {{ selectedLocationOptionError }}
+                            </div>
+                    </div>
+                </div>
+                <div v-else class="row col-8" style="margin: 0; padding: 0; width: 60%">
+                    <!-- this is dummy div for creating empty space -->
+                </div>
+                <div class="col-4" style="margin: 0; padding: 0; width: 100%">
+                    <button v-if="closeOrderDetailStep == 1" v-on:click="closeOrderDetailStep = 0" 
+                                class="button">Back</button>
+                    <button class="button btn-primary" 
+                            v-on:click="() => {
+                                if (closeOrderDetailStep == 0) {
+                                    closeOrderDetailStep = 1;
+                                } else if (closeOrderDetailStep == 1) {
+                                    if (!selectedLocationOption.value) {
+                                        selectedLocationOptionError = 'You must select a location';
+                                    } else {
+                                        closeWorkOrderDetails();
+                                    }
+                                }
+                            }">
+                        {{ closeOrderDetailStep == 0 ? 
+                            'Next: Update Position' : ((toCloseEquipments.length == selectedOrder.WorkOrderDetails.length) ? 'Close Order' : 'Close Order Detail') }}
+                    </button>
+                </div>
+              </div>
           </div>
       </modal> <!-- close work detail dialog -->
       
-      <modal v-if="mapViewSelectedLocation" v-model="showUpdateItemPosition"
-            ok-text="Save changes" cancel-text="Cancel">
-            <div slot="header">
+      <modal v-model="showUpdateItemPosition" style="font-family: Roboto">
+            <div slot="header" style="font-weight: bold">
                 <span>Update Position</span>
             </div>
             <div :style="{
@@ -436,15 +593,15 @@
                 'overflow-y': 'auto',
                 'font-size': '.95rem',
             }">
-                <div>
-                    {{mapViewSelectedLocation.Name}} - {{mapViewSelectedLocation.Address}}
+                <div v-if="toUpdateSelectedLocation">
+                    {{toUpdateSelectedLocation.Name}} - {{toUpdateSelectedLocation.Address}}
                 </div>
-                <div style="display: grid; grid-template-columns: 30% 30% 30%; grid-column-gap: 5%; margin: 2rem 0;">
+                <div style="display: grid; grid-template-columns: 30% 30% 30%; grid-column-gap: 5%; margin: 2rem 0;" v-if="toUpdateSelectedLocation">
                     <div style="width: 100%">
                             <div style="width: 100%" class="select">
                                 <select style="width: 100%" v-model="updateBlock">
                                     <option disabled :value="null">Select a block</option>
-                                    <option :value="block" :key="'updateBlock' + block.Id" v-for="block in mapViewSelectedLocation.Blocks">
+                                    <option :value="block" :key="'updateBlock' + block.Id" v-for="block in toUpdateSelectedLocation.Blocks">
                                         Block {{ block.Name }}
                                     </option>
                                 </select>
@@ -479,15 +636,19 @@
                     <button class="button" 
                         v-on:click="() => {
                             showUpdateItemPosition = false;
+                            toUpdatePositionItem = null;
                             updateBlock = null;
                             updateFloor = null;
                             updateTile = null;
                         }">Cancel</button>
                     <button class="button btn-primary" 
                         v-on:click="() => {
+                            if (!updateBlock || !updateFloor || !updateTile) {
+                                errorUpdatePosition = 'You must select block, floor and tile to update position.';
+                            }
                             if (errorUpdatePosition == '' && updateTile) {
-                                updateItemPosition();
-                        }
+                                updateItemPosition(toUpdatePositionItem.Id, updateTile.Id);
+                            }
                     }">Save changes</button>
             </div>
       </modal>
@@ -508,6 +669,7 @@ import "vodal/slide-up.css";
 import EquipmentDetailPopup from "@/components/Equipment/EquipmentDetailPopup";
 import Vodal from "vodal";
 import { gmapApi } from "vue2-google-maps";
+import { BasicSelect } from "vue-search-select";
 
 export default {
   components: {
@@ -515,10 +677,12 @@ export default {
     OrderBlock,
     Vodal,
     EquipmentDetailPopup,
-    StepProgress
+    StepProgress,
+    BasicSelect
   },
   created() {
     this.getWorkOrders();
+    this.getBlockFloorTile();
     this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
       let data = response.data;
       data.forEach(element => {
@@ -591,9 +755,11 @@ export default {
         Errors: {
             RejectedDescriptionNotProvided: '',
         },
-        showEditDialog: false,
         showUpdateItemPosition: false,
-        mapViewSelectedLocation: null,
+        
+        blockFloorTiles: [],
+        toUpdateSelectedLocation: null,
+        locationOptions: [],        
 
         toUpdatePositionItem: null,
         updateBlock: null,
@@ -606,7 +772,10 @@ export default {
         toCloseItemStatus: 'Available',
         toCloseItemDescription: '',
         toCloseEquipments: [],
+        closeOrderDetailStep: 0,
+        selectedLocationOptionError: '',
 
+        selectedLocationOption: {},
     };
   },
   computed: {
@@ -633,8 +802,10 @@ export default {
                 }
                 if (this.selectedOrder) {
                     this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
-                    // this.getEquipmentsOfWorkOrder(this.selectedOrder);
-                    // this.getLocationBlockFloorTile(this.selectedOrder);
+                }
+                if (this.$route.params && this.$route.params.orderId) {
+                    this.selectedOrder = data.filter(order => order.Id == this.$route.params.orderId)[0];
+                    this.getEquipmentsOfWorkOrder(this.selectedOrder);
                 }
             }
         }).catch(error => {
@@ -642,6 +813,61 @@ export default {
                 this.$router.push('/500');
             }
         });
+    },
+    getBlockFloorTile() {
+        let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}`;
+        this.axios.get(url)
+            .then((res) => {
+                if (res.status == 200) {
+                    this.blockFloorTiles = res.data;
+                    this.blockFloorTiles.forEach(location => {
+                        let blockOptions = [];              
+                        if (location.Blocks) {
+                            location.Blocks.forEach(block => {
+                                let floorOptions = [];
+                                if (block.Floors) {
+                                    block.Floors.forEach(floor => {
+                                        let tileOptions = [];
+                                        if (floor.Tiles) {
+                                            floor.Tiles.forEach(tile => {
+                                                let tileOption = {
+                                                    value: parseInt(tile.Id),
+                                                    text: tile.Name,
+                                                };
+                                                tileOptions.push(tileOption);
+                                            })
+                                        }
+        
+                                        let floorOption = {
+                                            value: parseInt(floor.Id),
+                                            text: floor.Name,
+                                            tileOptions: tileOptions
+                                        };
+                                        floorOptions.push(floorOption);
+                                    });
+                                }
+    
+                                let blockOption = {
+                                    value: parseInt(block.Id),
+                                    text: block.Name,
+                                    floorOptions: floorOptions,
+                                    totalFloor: block.TotalFloor,
+                                    totalBasementFloor: block.TotalBasementFloor,
+                                };
+                                blockOptions.push(blockOption);
+                            })
+                        }
+
+                        let locationOption = {
+                            value: parseInt(location.Id),
+                            text: `${location.Name} - ${location.Address}`,
+                            blockOptions: blockOptions,
+                        }
+                        this.locationOptions.push(locationOption);
+                    });
+                }
+            })
+
     },
     setSelectedOrder(order) {
         this.equipmentPanelIndex = -1;
@@ -652,7 +878,7 @@ export default {
             this.selectedOrder = order;
             // get equipments in the selected work order - start
             this.getEquipmentsOfWorkOrder(order);
-            this.getLocationBlockFloorTile(order);
+            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.Location.Id)[0];
             // get equipments in the selected work order - end
         }
     },
@@ -669,17 +895,6 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    },
-    getLocationBlockFloorTile(workOrder) {
-      this.mapViewSelectedLocation = null;
-      let positionUrl = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${
-        workOrder.Location.Id
-      }`;
-      this.axios.get(positionUrl).then(res => {
-        if (res.data) {
-          this.mapViewSelectedLocation = res.data;
-        }
-      });
     },
     // when click on an orderblock, add 'is-active-block' class to it
     isActive(orderId) {
@@ -840,7 +1055,7 @@ export default {
             ) {
               let newItemStatusName = "";
               if (newOrderStatusName == "Approved") {
-                newItemStatusName = "Working Requested";
+                newItemStatusName = "Working Approved";
               } else if (newOrderStatusName == "In Progress") {
                 newItemStatusName = "Working";
               } else if (newOrderStatusName == "Closed") {
@@ -861,11 +1076,6 @@ export default {
             this.showApproveRejectDialog = false;
             this.showChangeStatusDialog = false;
             this.getWorkOrders();
-            // this.selectedOrder.StatusID = newStatusId;
-            // this.selectedOrder.WorkOrderStatus = `${newStatusName}`;
-            // if (newStatusName == 'Closed' || newStatusId == 'Cancelled') {
-            //     url = `${Server.EQUIPMENTITEM_API_PATH}/status/${}`
-            // }
           }
         })
         .catch(error => {
@@ -916,65 +1126,105 @@ export default {
     getDateWithTime(date) {
         return moment(date).format('LLL');
     },
-    updateItemPosition() {
+    updateItemPosition(itemId, tileId) {
         this.equipmentPanelIndex = -1;
-        let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${this.toUpdatePositionItem.Id}`;
+        let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${itemId}`;
         this.axios.put(url, {
-            tileId: this.updateTile.Id,
+            tileId: tileId,
         }).then(async (res) => {
             if (res.status == 200) {
-                this.toUpdatePositionItem = null,
-                this.updateBlock = null;
-                this.updateFloor = null;
-                this.updateTile = null;
-                this.showUpdateItemPosition = false;
-                await this.getEquipmentsOfWorkOrder(this.selectedOrder);
-                this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
+                if (this.showUpdateItemPosition) { // if update item position dialog is displaying
+                    this.toUpdatePositionItem = null;
+                    this.updateBlock = null;
+                    this.updateFloor = null;
+                    this.updateTile = null;
+                    this.showUpdateItemPosition = false;
+
+                    await this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                    this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
+                }
             }
         });
     },
     async closeWorkOrderDetails() {
-        var check = true;
-        this.toCloseEquipments.forEach(async value => {
-            var workOrderDetail = null;
-            for (var i = 0; i < this.selectedOrder.WorkOrderDetails.length; i++) {
-                let detail = this.selectedOrder.WorkOrderDetails[i];
-                if (detail.EquipmentItemID == value.item.Id) {
-                    workOrderDetail = detail;
-                    break;
+        if (this.validateCloseWorkOrder()) {
+            var check = true;
+            this.toCloseEquipments.forEach(async value => {
+                var workOrderDetail = null;
+                for (var i = 0; i < this.selectedOrder.WorkOrderDetails.length; i++) {
+                    let detail = this.selectedOrder.WorkOrderDetails[i];
+                    if (detail.EquipmentItemID == value.item.Id) {
+                        workOrderDetail = detail;
+                        break;
+                    }
                 }
-            }
-            try {
-                let url = `${Server.WORKORDER_API_PATH}/close_detail/${workOrderDetail.Id}`;
-                let response = await this.axios.post(url, {                
-                    userId: this.authUser.Id,
-                    itemId: value.item.Id,
-                    newItemStatus: value.status,
-                    currentDate: moment(),
-                    description: value.description,
-                });
-                if (response.status == 200) {
-                    check = true;
-                } else {
+                try {
+                    let url = `${Server.WORKORDER_API_PATH}/close_detail/${workOrderDetail.Id}`;
+                    let response = await this.axios.post(url, {                
+                        userId: this.authUser.Id,
+                        itemId: value.item.Id,
+                        newItemStatus: value.status,
+                        currentDate: moment(),
+                        description: value.description,
+                    });
+                    if (response.status == 200) {
+                        check = true;
+                        var tileId = null;
+                        if (value.status != 'Lost') {
+                            tileId = parseInt(value.tileOption.value);
+                        }
+                        this.updateItemPosition(parseInt(value.item.Id), tileId);                    
+                    } else {
+                        check = false;
+                    }
+                } catch(error)  { 
+                    console.log(error);
                     check = false;
                 }
-            } catch(error)  { 
-                console.log(error);
-                check = false;
+            });
+            if (check) {
+                this.getWorkOrders();
+                this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                this.showCloseWorkOrderDetailDialog = false;
+            } else {
+                alert('Error occured!')
+            }
+        }
+    },
+    validateCloseWorkOrder() {
+        var check = true;
+        this.toCloseEquipments.forEach(value => {
+            if (value.status != 'Lost') {
+                if (!value.blockOption) {
+                    value.blockError = 'You must select a block';
+                    check = false;
+                }
+                if (!value.floorOption) {
+                    value.floorError = 'You must select a floor';
+                    check = false;
+                }
+                if (!value.tileOption) {
+                    value.tileError = 'You must select a tile';
+                    check = false;
+                }
             }
         });
-        if (check) {
-            this.getWorkOrders();
-            this.getEquipmentsOfWorkOrder(this.selectedOrder);
-            this.showCloseWorkOrderDetailDialog = false;
-        } else {
-            alert('Error occured!')
-        }
+        return check;
     }
-
   },
   watch: {
-    changeStatusDescription: function() {
+    'showCloseWorkOrderDetailDialog': function() {
+        if (!this.showCloseWorkOrderDetailDialog) {
+            this.toCloseEquipments = [];
+            this.selectedLocationOption = {};
+            this.closeOrderDetailStep = 0;
+            this.newStatusName = null;
+        }
+    },
+    'showApproveRejectDialog': function() {
+        this.Errors.RejectedDescriptionNotProvided = '';
+    },
+    'changeStatusDescription': function() {
       if (
         this.showApproveRejectDialog &&
         !this.approveWorkOrder &&
@@ -983,8 +1233,7 @@ export default {
         this.Errors.RejectedDescriptionNotProvided = "";
       }
     },
-    myWorkOrderViewMode: function() {
-
+    'myWorkOrderViewMode': function() {
         this.selectedOrder = null;
         this.toDisplayWorkOrders = [];
         if (this.myWorkOrderViewMode) {
@@ -995,15 +1244,22 @@ export default {
         this.tempValues = null;
         this.filterOrders();
     },
-    updateTile: function() {
+    'updateTile': function() {
         Vue.nextTick(() => {
             if (this.updateTile && this.updateTile.Id == this.toUpdatePositionItem.TileID) {
                 this.errorUpdatePosition = 'This item is already in this position';
-            } else {
+            } else if (this.updateTile) {
                 this.errorUpdatePosition = '';
             }
         })
-
+    },
+    'showUpdateItemPosition': function() {
+        if (!this.showUpdateItemPosition) {
+            this.toUpdatePositionItem = null;
+            this.updateBlock = null;
+            this.updateFloor = null;
+            this.updateTile = null;
+        }
     }
   }
 };
@@ -1113,14 +1369,16 @@ export default {
 }
 
 .detail-title {
-  font-size: 2rem;
+  font-size: 1.7rem;
 }
 
 .detail-label {
-  font-size: 0.98rem;
+  font-size: 0.95rem;
+  font-weight: bold;
 }
 
 .detail-contents {
+  font-size: 0.95rem;
   margin-bottom: 1rem;
 }
 

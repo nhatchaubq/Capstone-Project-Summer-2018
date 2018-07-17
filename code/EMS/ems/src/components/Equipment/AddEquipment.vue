@@ -17,15 +17,14 @@
                 <div class="input_picture">                    
                     <label class="file-label" style="width: 100% !important"> 
                     <span class="file-cta">
-
-                        <input class="file-input" type="file" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
+                        <input class="file-input" type="file" accept="image/*" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
                         <span class="file-icon">
 
                             <i class="fa fa-upload"></i>
                         </span>
                         <span class="file-label">
                             Choose images...
-                        </span> -->
+                        </span>
                     </span>
                         <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
                             {{ file.name }}
@@ -38,7 +37,9 @@
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                   <span><strong> Equipment Name (required) </strong></span><span v-if="CreateEquipmentErrors.NoName != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoName }}</span></span>
+                   <span><strong> Equipment Name (required) 
+                  </strong></span><span v-if="CreateEquipmentErrors.NoName != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoName }}</span></span>
+                  </strong></span><span v-if="CreateEquipmentErrors.NameLength != ''">. <span class="error-text">{{ CreateEquipmentErrors.NameLength }}</span></span>
                 </div>
                 <div class="form-field-input" >
                   <!-- <Autocomplete :items="equipmentOptions"
@@ -128,12 +129,12 @@
                     <input type="text" class="input" placeholder="Description" v-model="form.Description">
                 </div>
             </div>
-            <div class="form-field">
+            <!-- <div class="form-field">
               <label class="checkbox">
                 <input type="checkbox" id="checkbox" v-model="checked">
                 Do you want to add item(s) for this equipment?
               </label>
-            </div>
+            </div> -->
             <div class="hr" v-if="checked"  >
               <div class="form-field" style="margin: 1rem -3rem;">
                 <div class="form-field-title">
@@ -170,7 +171,7 @@
               Location
           </div>
           <div>
-          <model-select style="width: 100% !important" :options="locationOptions" v-model="selectedLocation" v-on:click="changeLocation" placeholder="Select a location"></model-select>  
+          <model-select style="width: 100% !important" :options="locationOptions" v-model="selectedLocation"  placeholder="Select a location"></model-select>  
           </div>
           <div class="form-field-title">
               Block
@@ -299,13 +300,15 @@ export default {
       CreateEquipmentErrors:{
         NoImage: "",
         NoName: "",
+        NameLength: "",
         NoCategory: "",
         NoVendor: "",
         NoUnit: "", 
       },
       ErrorStrings:{
         NoImage: 'You must choose an image',
-        NoName: 'You must enter name to add equipment',
+        NoName: 'You must enter equipment name',
+        NameLength: "The length of name must be more than 5 characters",
         NoCategory: 'Please choose a category',
         NoVendor: 'Please choose a vendor',
         NoUnit: 'Please choose a unit'
@@ -424,11 +427,11 @@ export default {
         });
     },
     createNewCategory() {
-      if(this.newCategory == ""){
+      if(this.newCategory.trim() == ""){
         alert("Please enter Category name");
       }else{
         this.axios
-        .post("http://localhost:3000/api/EquipmentCategory", {
+        .post("http://localhost:3000/api/EquipmentCategory/categoryName", {
           name: this.newCategory
         })
         .then(function(respone) {
@@ -439,15 +442,14 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
-      }
-      
+      } 
     },
     createNewVendor() {
       if (this.newVendor == ""){
          alert("Please enter vendor name");
       }else{
-          this.axios
-        .post("http://localhost:3000/api/Vendor", {
+        this.axios
+        .post("http://localhost:3000/api/Vendor/vendorName", {
           businessName: this.newVendor
         })
         .then(function(respone) {
@@ -488,8 +490,12 @@ export default {
       // else {
       // this.files[0].name = "";
       // alert(this.files[0].name);
+      let context = this;
       if(this.form.EquipmentName.trim() === ''){
         this.CreateEquipmentErrors.NoName = this.ErrorStrings.NoName;
+      }
+      if(this.form.EquipmentName.trim().length <5){
+        this.CreateEquipmentErrors.NameLength = this.ErrorStrings.NameLength;
       }
       if(this.selectedVendor.value  === ''){
         this.CreateEquipmentErrors.NoVendor = this.ErrorStrings.NoVendor;
@@ -530,19 +536,22 @@ export default {
           this.CreateEquipmentErrors.NoVendor === '' &&
           this.CreateEquipmentErrors.NoUnit === ''
       ){
-           this.axios
+           context.axios
           .post("http://localhost:3000/api/equipment", {
-            name: this.form.EquipmentName,
-            vendorID: this.selectedVendor.value,
-            image: this.imageUrl,
-            madein: this.form.MadeIn,
-            description: this.form.Description,
-            categoryID: this.form.Category,
-            unitID: this.form.Unit
+            name: context.form.EquipmentName,
+            vendorID: context.selectedVendor.value,
+            image: context.imageUrl,
+            madein: context.form.MadeIn,
+            description: context.form.Description,
+            categoryID: context.form.Category,
+            unitID: context.form.Unit
           })
           .then(function(respone) {
             // console.log(respone);
-            alert("Add successfully!!!");
+            if (respone.status == 200) {
+              alert("Add successfully!!!");
+              context.$router.push('/equipment');
+            }
           })
           .catch(function(error) {
             console.log(error);
@@ -643,6 +652,9 @@ export default {
     'form.EquipmentName': function() {
       if (this.form.EquipmentName.trim() != '' && this.CreateEquipmentErrors.NoName != '') {
         this.CreateEquipmentErrors.NoName = '';
+      }
+      if(this.form.EquipmentName.trim().length >=5 && this.CreateEquipmentErrors.NameLength != ''){
+        this.CreateEquipmentErrors.NameLength = '';
       }
     },
     'selectedVendor': function() {

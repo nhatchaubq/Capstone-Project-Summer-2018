@@ -22,7 +22,7 @@ import ProjectComponent from "./components/Project/Project.vue";
 import CreateLocation from "./components/Location/CreateLocation.vue";
 import VendorComponent from "./components/Vendor/Vendor.vue";
 import VendorDetailComponent from "./components/Vendor/VendorDetail.vue";
-import AddVendorComponent from "./components/Vendor/AddVendor.vue";
+// import AddVendorComponent from "./components/Vendor/AddVendor.vue";
 import AddVendor1Component from "./components/Vendor/AddVendor1.vue";
 import EditLocation from "./components/Location/EditLocation.vue";
 
@@ -31,6 +31,7 @@ import TestComponent from "./components/TestSite/Test.vue";
 import LocationMapViewComponent from "./components/Location/MapView.vue";
 import AddBlockFloorTileComponent from "./components/Location/AddBlockFloorTile.vue";
 import Component500 from './components/Error/500.vue';
+import EditWorkOrder from './components/Order/EditOrder.vue';
 // chaubqn - end
 
 // hau - start
@@ -110,7 +111,19 @@ let router = new Router({
       }
     },
     {
+      name: 'work_order',
       path: "/work_order",
+      component: OrderComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.WorkOrder);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+    {
+      path: "/work_order/:orderId",
       component: OrderComponent,
       beforeEnter: (to, from, next) => {
         store.set("title", menu.WorkOrder);
@@ -257,14 +270,14 @@ let router = new Router({
         showSearchBar: true
       }
     },
-    {
-      path: "/vendor/add",
-      component: AddVendorComponent,
-      beforeEnter: (to, from, next) => {
-        store.set("title", menu.Vendors);
-        next();
-      }
-    },
+    // {
+    //   path: "/vendor/add",
+    //   component: AddVendorComponent,
+    //   beforeEnter: (to, from, next) => {
+    //     store.set("title", menu.Vendors);
+    //     next();
+    //   }
+    // },
     {
       path: "/vendor1/add",
       component: AddVendor1Component,
@@ -341,6 +354,19 @@ let router = new Router({
 
       beforeEnter: (to, from, next) => {
         store.set("title", '');
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      name: 'edit_order',
+      path: "/work_order/edit/:orderId",
+      component: EditWorkOrder,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.WorkOrder);
         next();
       },
       meta: {

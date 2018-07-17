@@ -24,7 +24,7 @@ router.post("/", (request, response) => {
     .sql(
 
       "insert into [Account](Username, Password, Email, Fullname, Phone, IsActive, StartDate, EndDate, RoleId, AvatarImage)" +
-      " values(@username, @password, @email, @fullname, @phone, @isActive, @startdate, @enddate, @roleid, @avatarimage)"
+      " values(@username, @password, @email, @fullname, @phone, 'True', getdate(), @enddate, @roleid, @avatarimage)"
     )
     .param("username", request.body.account.username, TYPES.NVarChar)
     .param("password", request.body.account.password, TYPES.NVarChar)
