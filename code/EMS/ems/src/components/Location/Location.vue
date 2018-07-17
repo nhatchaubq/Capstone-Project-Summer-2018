@@ -171,7 +171,7 @@
             <div v-else>position</div>
       </div>
       <div v-else style="height: 100% !important">
-        <map-view :locations="locations" :medianLatitude="medianLatitude" :medianLongitude="medianLongitude" :backFromAddBlock="$route.meta && $route.meta.viewMode === 'MapView'"></map-view>     
+        <map-view :locations="locations"></map-view>     
       </div>   
       <modal v-model="addPopUp" v-if="selectedWorkorder && status.length>0">        
         <div slot="header" class="title-wd"> 
@@ -337,9 +337,6 @@ export default {
       },
       // chaubqn - start chaubqn - start
       isListViewMode: true,
-      medianLatitude: null,
-      medianLongitude: null,
-      mapViewSelectedLocation: null,
       status: []
       // chaubqn - end
     };

@@ -312,7 +312,7 @@ router.get("/getByEquipmentId/:id", (request, response) => {
 // chau - update pos of equipment item
 router.put("/position/tile/:itemId", (req, res) => {
   req
-    .sql("update EquipmentItem set TileID = @tileId where Id = @itemId")
+    .sql("update EquipmentItem set TileID = @tileId where Id = @itemId ")
     .param("itemId", req.params.itemId, TYPES.Int)
     .param("tileId", req.body.tileId, TYPES.Int)
     .exec(res);
