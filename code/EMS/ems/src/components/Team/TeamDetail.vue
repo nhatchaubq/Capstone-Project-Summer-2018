@@ -1,13 +1,28 @@
 <template>
 <div>
-    <router-link to="/team">
-      <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams</a>
-    </router-link>
+  <div class="row">
+    <div class="col-4">
+      <router-link to="/team">
+        <span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams
+      </router-link>
+    </div>
+    <div class="col-8">
+      <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
+    </div>
+  </div>
   <div v-if="team" class="material-box" style="width: 50%">
 
       <div class="row">
-        <h2 class="col-10" style="font-size: 30px; color: #3960A4">{{team.Name}}</h2>
-        <button class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
+        <div v-if="!editMode" class="col-9 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important">{{team.Name}}</div>
+        <input v-if="editMode" v-model.trim="team.Name" class="col-12 input1" style="font-size: 30px; color: var(--primary-color); width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important" >
+        <span v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
+      </div>
+      <div class="row">
+        <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save change</button>
+        <button v-if="editMode" id=" btn-cancel" class="button btn-confirm-edit material-shadow-animate" style="margin:0 0 1rem 1rem" v-on:click="() => {
+          this.$router.go(this.$router.currentRoute)
+          //location.reload()
+      }">Cancel</button>
       </div>
       <div>
         <h2>Create date: {{getDate(team.CreatedDate)}} </h2>
@@ -155,6 +170,15 @@ export default {
 
   data() {
     return {
+      sending: false,
+      ErrorStrings: {
+        NameMax: " Use from 6 to 50 characters for your team name",
+        NameMin: " Use from 6 to 50 characters for your team name"
+      },
+      CreateTeamErrors: {
+        NameMax: "",
+        NameMin: ""
+      },
       team: null,
       memberOptions: [],
       toLeaderOptions: [],
@@ -188,6 +212,37 @@ export default {
           this.$router.push("/team/:id");
         });
     },
+    editTeam() {
+      if (this.team.Name.length < 6) {
+        this.CreateTeamErrors.NameMin = this.ErrorStrings.NameMin;
+      }
+      if (this.team.Name.length > 50) {
+        this.CreateTeamErrors.NameMax = this.ErrorStrings.NameMax;
+      }
+      if (this.validateTeam())
+        this.axios
+          .put(`http://localhost:3000/api/team/${this.$route.params.id}`, {
+            team: this.team
+          })
+          .then(res => {
+            // this.$router.push("/account");
+            if (res.status == 200) {
+              // this.editMode = false;
+              alert("Change successful");
+              // this.getTeamDetail(this.$route.params.id);
+  location.reload();
+
+              
+            }
+          });
+    },
+    validateTeam() {
+      return (
+        this.CreateTeamErrors.NameMax === "" &&
+        this.CreateTeamErrors.NameMin === "" 
+      );
+    },
+
     onSelect(items, lastSelectItem) {
       this.selectedMemberList = items;
       this.lastSelectItem = lastSelectItem;
@@ -251,10 +306,8 @@ export default {
     },
     gotoDetail(memberID, memberName) {
       this.show = true;
-      //alert(this.team.LeaderAccount.Id);
       this.SelectedMemberId = memberID;
       this.SelectedMemberName = memberName;
-      // alert(memberID);
     },
     confirmKick(memberID, memberName) {
       this.showConfirm = true;
@@ -264,13 +317,16 @@ export default {
     getDate(date) {
       return moment(date).format("L");
     }
-    // changeNewLeader(leaderId, memberID) {
-    //   this.axios.push(
-    //     `http://localhost:3000/api/team/id/${
-    //       this.$route.params.id
-    //     }/${memberID}/${leaderId}`
-    //   );
-    // }
+  },
+  watch: {
+    "team.Name": function() {
+      if (this.team.Name.length > 5) {
+        this.CreateTeamErrors.NameMin = "";
+      }
+      if (this.team.Name.length < 51) {
+        this.CreateTeamErrors.NameMax = "";
+      }
+    }
   }
 };
 </script>
@@ -336,5 +392,20 @@ export default {
   cursor: pointer;
   /* background-color: #009688;
   color: white; */
+}
+.input1 {
+  border-style: solid;
+  border-width: 1px;
+  border-color: silver;
+}
+.input2 {
+  border-style: solid;
+  border-width: 1px;
+  border-color: white;
+}
+#btn-cancel {
+  background-color: white;
+  color: black;
+  margin-right: 0.6rem;
 }
 </style>

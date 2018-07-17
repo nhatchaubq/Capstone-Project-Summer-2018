@@ -323,4 +323,36 @@ button.btn-green:active {
   border: 1px solid var(--status-cancelled) !important;
   color: white;
 }
+
+thead {
+  cursor: default;
+  user-select: none;
+  background: #eeeeee;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+th {
+  font-size: 0.95rem !important;
+  font-weight: 450 !important;
+  height: 3rem;
+  padding: 0 0.5rem !important;
+  vertical-align: middle !important;
+}
+
+tr {
+  cursor: pointer;
+}
+
+td {
+  height: 3rem;
+  padding: 0.8rem 0.5rem 0 0.5rem !important;
+}
+
+.row-odd {
+  background: white;
+}
+
+.row-even {
+  background: #eeeeee;
+}
 </style>

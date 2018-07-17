@@ -3,7 +3,7 @@
         <GmapMap          
             :center="google && new google.maps.LatLng(selectedLocation ? selectedLocation.Latitude : medianLatitude, 
                         selectedLocation ? selectedLocation.Longitude : medianLongitude)"
-            :zoom="selectedLocation ? 16 : 13"
+            :zoom="selectedLocation ? 16 : zoomfactor"
             map-type-id="terrain"
             class="material-box material-shadow"
             style="width: 100%; height: 80vh; padding: 0; transition: all .25s ease-in-out;"
@@ -166,8 +166,6 @@ import { gmapApi } from "vue2-google-maps";
 export default {
     props: {
         locations: null,
-        medianLatitude: null,
-        medianLongitude: null,
     },
     mounted() {
         if (this.locations) {
@@ -177,6 +175,27 @@ export default {
                 }
                 this.imageCache.push(cache);
             }
+            
+            let minLongitude = this.locations[0].Longitude;
+            let maxLongitude = this.locations[0].Longitude;
+            let minLatitude = this.locations[0].Latitude;
+            let maxLatitude = this.locations[0].Latitude;
+            this.locations.forEach(location => {        
+                if (location.Longitude <= minLongitude) {
+                    minLongitude = location.Longitude;
+                }
+                if (location.Longitude > maxLongitude) {
+                    maxLongitude = location.Longitude;
+                }
+                if (location.Latitude <= minLatitude) {
+                    minLatitude = location.Latitude;
+                }
+                if (location.Latitude > maxLatitude) {
+                    maxLatitude = location.Latitude;
+                }
+            });
+            this.medianLongitude = (minLongitude + maxLongitude) / 2;
+            this.medianLatitude = (minLatitude + maxLatitude) / 2;
         } 
     },
     computed: {
@@ -186,7 +205,10 @@ export default {
         google: gmapApi,
     },
     data() {
-        return {
+        return {            
+            medianLatitude: null,
+            medianLongitude: null,
+            zoomfactor: 11,
             mapViewSelectedLocation: null,
             selectedLocation: null,
             selectedLocationIndex: -1,
