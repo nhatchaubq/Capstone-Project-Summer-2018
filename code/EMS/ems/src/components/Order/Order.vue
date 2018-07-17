@@ -252,7 +252,7 @@
               </div>            
           </div>
         </div> <!-- order detail -->
-        <router-link to="/work_order/create" v-if="authUser.Role === 'Staff' || authUser.Role === 'Maintainer'">
+        <router-link :to="{name: 'create_work_order'}" v-if="authUser.Role === 'Staff' || authUser.Role === 'Maintainer'">
             <button id="btn-add-work-order" class="button is-primary material-shadow-animate">
                 Add Work Order
             </button>
