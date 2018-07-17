@@ -4,7 +4,7 @@ const TYPES = require("tedious").TYPES;
 router.get("/workorderbylocationId/:id", (request, response) => {
   request
     .sql(
-      "select distinct wo.*,t.Name as 'Team' ,p.[Name] as 'Priority',p.TagHexColor,ws.Name as 'Status',wc.Name as 'Category',(select distinct e.Id,e.Name,wd.WorkOrderID,wd.StartDate,wd.FinishedDate,wd.ReturnDate,(select wd.*,ei.SerialNumber,ei.EquipmentID " +
+      "select distinct wo.*,t.Name as 'Team' ,p.[Name] as 'Priority',p.TagHexColor,ws.Name as 'Status',wc.Name as 'Category',(select distinct e.Id,e.Name,wd.WorkOrderID,wd.ExpectingStartDate,wd.ExpectingDueDate,wd.ClosedDate,(select wd.*,ei.SerialNumber,ei.EquipmentID " +
         "     from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id								 " +
         " where wd.WorkOrderID = wo.Id and ei.EquipmentID = e.Id for json path) as 'EquipmentItems' " +
         " from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id " +
@@ -128,12 +128,17 @@ router.get("/", (request, response) => {
 // ChauBQN
 // get equipments and equipment items to display on work order
 router.get('/:id/equipments', (request, response) => {
-    request.sql("select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei2.*, wod2.ClosedDate as [DetailReturnDate], json_query((select lo.[Name] as [Location.Name], lo.[Address] as [Location.Address], " +
-    "                                                                                                   bl.[Name] as [BlockName], fl.[Name] as [FloorName], ti.[Name] as [TileName] " +
-    "                                                                                           from [Location] as lo join [Block] as bl on lo.Id = bl.LocationID " +
-    "                                                                                                                   join [Floor] as fl on bl.Id = fl.BlockID " +
-    "                                                                                                                   join Tile as ti on fl.Id = ti.FloorID " +
-    "                                                                                           where ti.Id = ei2.TileID for json path, without_array_wrapper)) as [BlockFloorTile] "
+    request.sql("select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei2.*, json_query((select lo.[Name] as [Location.Name], lo.[Address] as [Location.Address], " +
+    "                                                                                                                                           bl.[Name] as [BlockName], fl.[Name] as [FloorName], ti.[Name] as [TileName] " +
+    "                                                                                                                                   from [Location] as lo join [Block] as bl on lo.Id = bl.LocationID " +
+    "                                                                                                                                               join [Floor] as fl on bl.Id = fl.BlockID " +
+    "                                                                                                                                               join Tile as ti on fl.Id = ti.FloorID " +
+    "                                                                                                                                   where ti.Id = ei2.TileID for json path, without_array_wrapper)) as [BlockFloorTile], " +
+    "                                                                                                                                           json_query((select wodr.*, es.[Name] as [ReturnedStatusName] " +
+    "                                                                                                                                                       from WorkOrderDetailReturn as wodr " +
+    "                                                                                                                                                               join EquipmentStatus as es on wodr.ReturnedStatusId = es.Id " +
+    "                                                                                                                                                       where wodr.WorkOrderDetailId = wod2.Id " +
+    "                                                                                                                                                       for json path, without_array_wrapper)) as [DetailReturn] "
                 + "                                                     from WorkOrder as wo2 join WorkOrderDetail as wod2 on wo2.Id = wod2.WorkOrderID "
                 + "                                                                         join EquipmentItem as ei2 on wod2.EquipmentItemID = ei2.Id "
                 + "                                                     where wo2.Id = @workOrderId and ei2.EquipmentID = e.Id for json path) as [EquipmentItems] "
@@ -190,7 +195,7 @@ router.get('/get_equipment_detail/:id', (req, res) => {
             " from EquipmentItem as ei " +
             "        join Equipment as e on ei.EquipmentID = e.Id " +
             "        join EquipmentStatus as es on ei.StatusId = es.Id " +
-            " where ei.EquipmentID = @equipmentId " +
+            " where ei.EquipmentID = @equipmentId and ei.StatusID in (select Id from EquipmentStatus where [Name] != N'Damaged' and [Name] != N'Lost' and [Name] != N'Archived') " +
             " order by (select count(wo.Id) " +
             "           from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID " +
             "           where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id " +
@@ -260,7 +265,7 @@ router.post('/close_detail/:workOrderDetailId', (req, res) => {
         + "  set @workOrderId = (select WorkOrderId from WorkOrderDetail where Id = @workOrderDetailId); "
         + "  set @currentItemStatusId = (select StatusId from EquipmentItem where Id = @itemId); "
         + "  set @newStatusId = (select Id from EquipmentStatus where [Name] = @newItemStatus); "
-        + "  insert into WorkOrderDetailReturn(WorkOrderDetailId, ByUserId, [DateTime], NewItemStatusId) values(@workOrderDetailId, @userId, getdate(), @newStatusId); "
+        + "  insert into WorkOrderDetailReturn(WorkOrderDetailId, ByUserId, [DateTime], ReturnedStatusId) values(@workOrderDetailId, @userId, getdate(), @newStatusId); "
         + "  update WorkOrderDetail set ClosedDate = getdate() where Id = @workOrderDetailId; "
         + "  declare @currentRuntimeDays int; "
         + "  declare @orderDetailStartDate datetime; "

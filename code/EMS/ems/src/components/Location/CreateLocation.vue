@@ -99,7 +99,8 @@ export default {
         address: "",
         description: "",
         longtitude: "",
-        latitude: ""
+        latitude: "",
+        idActive: null
       },
 
       center: { lat: 45.508, lng: -73.587 },
@@ -162,7 +163,8 @@ export default {
               address: this.currentPlace.formatted_address,
               description: this.newLocation.description.trim(),
               longtitude: this.currentPlace.geometry.location.lng(),
-              latitude: this.currentPlace.geometry.location.lat()
+              latitude: this.currentPlace.geometry.location.lat(),
+              isActive: 1
             }
           })
           .then(res => {

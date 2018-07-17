@@ -808,11 +808,13 @@ export default {
       if (res.data) {
         let data = res.data;
         data.forEach(location => {
-          let option = {
-            value: location.Id,
-            text: `${location.Name} - ${location.Address}`
-          };
-          this.locationOptions.push(option);
+          if (location.IsActive) {
+            let option = {
+              value: location.Id,
+              text: `${location.Name} - ${location.Address}`
+            };
+            this.locationOptions.push(option);
+          }
         });
       }
     });
