@@ -5,6 +5,7 @@
                 <tr>
                     <th><strong>Order #</strong></th>
                     <th><strong>Equipment name</strong></th>
+                    <th><strong>Available</strong></th>
                     <th><strong>Vendor name</strong></th>
                     <th><strong>Made In</strong></th>
                     <th><strong>Description</strong></th>
@@ -15,6 +16,7 @@
                 <tr v-bind:key="equipment.Id" v-for="(equipment, index) in equipments" v-on:click="gotoDetail(equipment.Id)">
                     <td>{{ index + 1 }}</td>   
                     <td>{{equipment.Name}}</td>
+                    <td>{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
                     <td>{{equipment.Vendor.Name}}</td>
                     <td>{{equipment.MadeIn}}</td>
                     <!-- <td>{{equipment.Price ? equipment.Price : 'n/a'}}</td> -->

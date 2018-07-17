@@ -28,7 +28,7 @@ router.get("/:id", (req, res) => {
             "ei.WarrantyDuration, ei.RuntimeDays, es.Name as Status, ei.Description " +
             "From EquipmentItem as ei " +
             "JOIN EquipmentStatus as es ON ei.StatusId = es.Id " +
-            "Where ei.EquipmentID = @id " +
+            "Where ei.EquipmentID = @id ORDER BY es.Name ASC " +
             "for json path"
         )
         .param("id", req.params.id, TYPES.Int)
@@ -107,7 +107,7 @@ router.get("/allworkorder/:id", (req, res) => {
 router.get("/sttItem/:id", (request, response) => {
     request
         .sql(
-            "Select es.Name From EquipmentItem as ei JOIN EquipmentStatus as es on es.Id = ei.StatusID Where ei.ID = @id for json path, without_array_wrapper"
+            "Select es.Name, es.Id From EquipmentItem as ei JOIN EquipmentStatus as es on es.Id = ei.StatusID Where ei.ID = @id for json path, without_array_wrapper"
         )
         .param("id", request.params.id, TYPES.Int)
         .into(response);
@@ -132,6 +132,37 @@ router.post("/", (request, response) => {
     console.log(request.body);
 });
 
+// router.get("/:id/getByLocationId", (request, response) => {
+//   request
+//     .sql(
+//       "select eqti.*,eqt.Name,eqt.Image from [EquipmentItem] as eqti join [Position] as pos on eqti.PositionID = pos.Id " +
+//         "join [Equipment] as eqt on eqti.EquipmentID = eqt.ID " +
+//         "where pos.LocationID = @locationId for json path"
+//     )
+//     .param("locationId", request.params.id, TYPES.Int)
+//     .into(response);
+// });
+
+// router.get("/getByEquipmentId/:id", (request, response) => {
+//   request
+//     .sql(
+//       "select distinct e.*, (select ei.* " +
+//         " from EquipmentItem as ei join Tile as t on ei.TileID = t.Id  " +
+//         "                          join [Floor] as f on t.FloorID = f.Id " +
+//         "                          join [Block] as b on f.BlockID = b.Id " +
+//         " where b.LocationID = @locationId and ei.EquipmentId =  [LocationEquipment].Id for JSON path) as [EquipmentItems] " +
+//         " from Equipment as e, (select eqt.Id as [Id] " +
+//         "            from EquipmentItem as ei join Tile as t on ei.TileID = t.Id  " +
+//         "                          join [Floor] as f on t.FloorID = f.Id " +
+//         "                          join [Block] as b on f.BlockID = b.Id " +
+//         "                                    join Equipment as eqt on eqt.Id = ei.EquipmentID " +
+//         "            where b.LocationID = @locationId) as [LocationEquipment] " +
+//         " where e.Id = [LocationEquipment].Id " +
+//         " for json path"
+//     )
+//     .param("locationId", request.params.id, TYPES.Int)
+//     .into(response);
+// });
 
 // router.get("/:id/getByLocationId", (request, response) => {
 //     request
@@ -163,7 +194,6 @@ router.post("/", (request, response) => {
 //         .into(response);
 // });
 
-
 router.get("/oldstt/:id", (request, response) => {
     request
         .sql(
@@ -185,7 +215,7 @@ router.put("/tileId/:id", (req, res) => {
 
 router.put("/status/:id", (req, res) => {
     req
-.sql(
+        .sql(
             "declare @currentItemStatusId int; " +
             "set @currentItemStatusId = (select StatusId from EquipmentItem where Id = @itemId); " +
             "update EquipmentItem set StatusId = @newStatusId where Id = @itemId; " +
@@ -204,7 +234,7 @@ router.put("/:eid", (req, res) => {
         .sql(
             "Update EquipmentItem " +
             "SET WarrantyDuration = @warrantyDuration, RuntimeDays = @runtimeDays, Price = @price, ImportDate = @importdate, " +
-            "LastMaintainDate = @lastmaintaindate, NextMaintainDate =@nextmaintaindate, Description = @description, TileID = @tileID " +
+            "LastMaintainDate = @lastmaintaindate, NextMaintainDate =@nextmaintaindate, Description = @description " +
             "WHERE Id = @id"
         )
         .param("warrantyDuration", req.body.warrantyDuration, TYPES.Int)
@@ -258,36 +288,34 @@ router.get("/:id/getByLocationId", (request, response) => {
 });
 
 router.get("/getByEquipmentId/:id", (request, response) => {
-  request
-    .sql(
-      "select distinct e.*, (select ei.* " +
-        "                   from EquipmentItem as ei join Tile as t on ei.TileID = t.Id  " +
-        " 						                    join[Floor] as f on t.FloorID = f.Id " +
-        " 							                join[Block] as b on f.BlockID = b.Id " +
-        " 	                where b.LocationID = @locationId and ei.EquipmentId = [LocationEquipment].Id for JSON path) as[EquipmentItems] " +
-        " from Equipment as e, (select eqt.Id as [Id] " +
-        "                       from EquipmentItem as ei join Tile as t on ei.TileID = t.Id " +
-        "                                               join[Floor] as f on t.FloorID = f.Id " +
-        "                                               join[Block] as b on f.BlockID = b.Id " +
-        "                                               join Equipment as eqt on eqt.Id = ei.EquipmentID " +
-        "                       where b.LocationID = @locationId) as [LocationEquipment] " +
-        " where e.Id = [LocationEquipment].Id " +
-        " for json path "
-      // "exec [GetEquipmentItemByEquipmentIdAndLocationId] @locationId"
-    )
-    .param("locationId", request.params.id, TYPES.Int)
-    .into(response);
-
-
+    request
+        .sql(
+            "select distinct e.*, (select ei.* " +
+            "                   from EquipmentItem as ei join Tile as t on ei.TileID = t.Id  " +
+            " 						                    join[Floor] as f on t.FloorID = f.Id " +
+            " 							                join[Block] as b on f.BlockID = b.Id " +
+            " 	                where b.LocationID = @locationId and ei.EquipmentId = [LocationEquipment].Id for JSON path) as[EquipmentItems] " +
+            " from Equipment as e, (select eqt.Id as [Id] " +
+            "                       from EquipmentItem as ei join Tile as t on ei.TileID = t.Id " +
+            "                                               join[Floor] as f on t.FloorID = f.Id " +
+            "                                               join[Block] as b on f.BlockID = b.Id " +
+            "                                               join Equipment as eqt on eqt.Id = ei.EquipmentID " +
+            "                       where b.LocationID = @locationId) as [LocationEquipment] " +
+            " where e.Id = [LocationEquipment].Id " +
+            " for json path "
+            // "exec [GetEquipmentItemByEquipmentIdAndLocationId] @locationId"
+        )
+        .param("locationId", request.params.id, TYPES.Int)
+        .into(response);
 });
 
 // chau - update pos of equipment item
 router.put("/position/tile/:itemId", (req, res) => {
-    req
-        .sql("update EquipmentItem set TileID = @tileId where Id = @itemId")
-        .param("itemId", req.params.itemId, TYPES.Int)
-        .param("tileId", req.body.tileId, TYPES.Int)
-        .exec(res);
+  req
+    .sql("update EquipmentItem set TileID = @tileId where Id = @itemId ")
+    .param("itemId", req.params.itemId, TYPES.Int)
+    .param("tileId", req.body.tileId, TYPES.Int)
+    .exec(res);
 });
 
 module.exports = router;

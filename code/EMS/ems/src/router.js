@@ -111,6 +111,7 @@ let router = new Router({
       }
     },
     {
+      name: 'work_order',
       path: "/work_order",
       component: OrderComponent,
       beforeEnter: (to, from, next) => {

@@ -12,7 +12,10 @@ router.get("/", (request, response) => {
     "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId', " +
     "u.[Name] as [Equipment.Unit], " +
     "ec.Name as 'Equipment.Category.Name', (select count(Id)  from EquipmentItem where EquipmentID = e.Id) as [Equipment.Quantity], " +
-    "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 1) as [Equipment.AvailableQuantity], " +
+    "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = (select Id from EquipmentStatus where [Name] = N'Available')) as [Equipment.AvailableQuantity], " +
+    "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = (select Id from EquipmentStatus where [Name] = N'Working Approved')) as [Equipment.WorkingApprovedQuantity], " +
+    "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 2) as [Equipment.NotAvailableQuantity], " +
+    "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 2) as [Equipment.NotAvailableQuantity], " +
     "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 2) as [Equipment.NotAvailableQuantity], " +
     "(select * from EquipmentItem where EquipmentID = e.Id for json path) as [Equipment.EquipmentItems] " +
     "FROM [Equipment] as e " +

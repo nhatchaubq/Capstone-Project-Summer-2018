@@ -66,7 +66,14 @@ router.post("/", (request, response) => {
     .param("Description", request.body.Vendor.Description, TYPES.NVarChar)
     .exec(response);
 });
-
+router.post("/vendorName/", (request, response) => {
+  request
+    .sql(
+      "INSERT INTO [Vendor](BusinessName) VALUES(@businessName)"
+    )
+    .param("BusinessName", request.body.businessName, TYPES.NVarChar)
+    .exec(response);
+});
 router.put("/:id", (request, response) => {
   request
     .sql(
