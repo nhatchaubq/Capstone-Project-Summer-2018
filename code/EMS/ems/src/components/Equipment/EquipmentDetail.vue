@@ -1297,11 +1297,11 @@ export default {
         this.selectedItem.Item.BlockID = null;
       }
       if(this.selectedItem.Item.LocationID === this.lostLocation){
-        alert(this.selectedItem.Item.LocationID)
-        alert(this.lostLocation)
+        // alert(this.selectedItem.Item.LocationID)
+        // alert(this.lostLocation)
       }else{
-        alert(this.selectedItem.Item.LocationID);
-        alert(this.lostLocation);
+        // alert(this.selectedItem.Item.LocationID);
+        // alert(this.lostLocation);
         this.axios
           .get(
             `http://localhost:3000/api/block/location/${
@@ -1606,15 +1606,15 @@ export default {
 }
 .btn-Cancel:hover {
   cursor: pointer;
-  background-color: #bdbdbda1;
+  background-color:  #9e9e9e;
   /* margin-left: 150px; */
 }
 .btn-Cancel:hover {
   cursor: pointer;
-  background-color: #bdbdbda1;
+  background-color:  #9e9e9e;
 }
 .btn-CancelItem {
-  background-color: #bdbdbd8f;
+  background-color: #9e9e9e ;
   color: white;
   font-size: 18px;
   border-radius: 8px;
@@ -1626,7 +1626,7 @@ export default {
 }
 .btn-Cancel {
   /* position: relative; */
-  background-color: #bdbdbd8f;
+  background-color: #9e9e9e;
   color: white;
   font-size: 18px;
   border-radius: 8px;
