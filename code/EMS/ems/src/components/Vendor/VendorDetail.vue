@@ -49,7 +49,7 @@
           <input v-else v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" >
         <div class="row" v-if="editMode">
           <button class="button btn-confirm-edit btn-primary material-shadow-animate" >Save change</button>
-          <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
+          <button class="button btn-cancel material-shadow-animate" v-on:click="() => {
          created($route.params.id);
          editMode = false;
       }">Cancel</button>
@@ -350,31 +350,29 @@ export default {
       // if (this.Vendor.BusinessName === "") {
       //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
       // }
-      // if (this.Vendor.BusinessAddress === "") {
-      //   this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
-      // }
-      if (this.Vendor.BusinessAddress.length < 6) {
+      if (!this.Vendor.BusinessAddress || (this.Vendor.BusinessAddress && this.Vendor.BusinessAddress == "")) {
+        this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
+      }
+      if (!this.Vendor.BusinessAddress 
+          || (this.Vendor.BusinessAddress 
+              && (this.Vendor.BusinessAddress.length < 6 || this.Vendor.BusinessAddress.length > 200))) {
         this.CreateVendorErrors.BusinessAddressMin = this.ErrorStrings.BusinessAddressMin;
       }
-      if (this.Vendor.BusinessAddress.length > 200) {
-        this.CreateVendorErrors.BusinessAddressMax = this.ErrorStrings.BusinessAddressMax;
+      if (!this.Vendor.ContactName || (this.Vendor.ContactName && this.Vendor.ContactName == "")) {
+        this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
       }
-      // if (this.Vendor.ContactName === "") {
-      //   this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
-      // }
-      if (this.Vendor.ContactName.length < 6) {
+      if (!this.Vendor.ContactName 
+          || (this.Vendor.ContactName 
+              && (this.Vendor.ContactName.length < 6 || this.Vendor.ContactName.length > 50))) {
         this.CreateVendorErrors.ContactNameMin = this.ErrorStrings.ContactNameMin;
       }
-      if (this.Vendor.ContactName.length > 50) {
-        this.CreateVendorErrors.ContactNameMax = this.ErrorStrings.ContactNameMax;
-      }
-      if (this.Vendor.ContactEmail === "") {
+      if (!this.Vendor.ContactEmail || (this.Vendor.ContactEmail && this.Vendor.ContactEmail == "")) {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
-      if (this.Vendor.Website.length > 200) {
+      if (this.Vendor.Website && this.Vendor.Website.length > 200) {
         this.CreateVendorErrors.WebMax = this.ErrorStrings.WebMax;
       }
-      if (this.Vendor.Description.length > 500) {
+      if (this.Vendor.Description && this.Vendor.Description.length > 500) {
         this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
       }
       if (this.validateVendor())

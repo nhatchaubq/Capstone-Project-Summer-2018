@@ -490,6 +490,7 @@ export default {
       // else {
       // this.files[0].name = "";
       // alert(this.files[0].name);
+      let context = this;
       if(this.form.EquipmentName.trim() === ''){
         this.CreateEquipmentErrors.NoName = this.ErrorStrings.NoName;
       }
@@ -535,19 +536,22 @@ export default {
           this.CreateEquipmentErrors.NoVendor === '' &&
           this.CreateEquipmentErrors.NoUnit === ''
       ){
-           this.axios
+           context.axios
           .post("http://localhost:3000/api/equipment", {
-            name: this.form.EquipmentName,
-            vendorID: this.selectedVendor.value,
-            image: this.imageUrl,
-            madein: this.form.MadeIn,
-            description: this.form.Description,
-            categoryID: this.form.Category,
-            unitID: this.form.Unit
+            name: context.form.EquipmentName,
+            vendorID: context.selectedVendor.value,
+            image: context.imageUrl,
+            madein: context.form.MadeIn,
+            description: context.form.Description,
+            categoryID: context.form.Category,
+            unitID: context.form.Unit
           })
           .then(function(respone) {
             // console.log(respone);
-            alert("Add successfully!!!");
+            if (respone.status == 200) {
+              alert("Add successfully!!!");
+              context.$router.push('/equipment');
+            }
           })
           .catch(function(error) {
             console.log(error);
