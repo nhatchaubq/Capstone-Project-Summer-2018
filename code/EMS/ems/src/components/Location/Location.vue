@@ -170,7 +170,7 @@
             <div v-else>position</div>
       </div>
       <div v-else style="height: 100% !important">
-        <map-view :locations="locations" :medianLatitude="medianLatitude" :medianLongitude="medianLongitude" :backFromAddBlock="$route.meta && $route.meta.viewMode === 'MapView'"></map-view>     
+        <map-view :locations="locations"></map-view>     
       </div>   
       <modal v-model="addPopUp" v-if="selectedWorkorder && status.length>0">        
         <div slot="header" class="title-wd"> 
@@ -262,9 +262,6 @@ export default {
       },
       // chaubqn - start chaubqn - start
       isListViewMode: true,
-      medianLatitude: null,
-      medianLongitude: null,
-      mapViewSelectedLocation: null,
       status: []
       // chaubqn - end
     };
@@ -356,28 +353,10 @@ export default {
     this.axios
       .get(Server.LOCATION_API_PATH)
       .then(response => {
-        let data = response.data;
-        let minLongitude = data[0].Longitude;
-        let maxLongitude = data[0].Longitude;
-        let minLatitude = data[0].Latitude;
-        let maxLatitude = data[0].Latitude;
+        let data = response.data;        
         data.forEach(location => {
           this.locations.push(location);
-          if (location.Longitude <= minLongitude) {
-            minLongitude = location.Longitude;
-          }
-          if (location.Longitude > maxLongitude) {
-            maxLongitude = location.Longitude;
-          }
-          if (location.Latitude <= minLatitude) {
-            minLatitude = location.Latitude;
-          }
-          if (location.Latitude > maxLatitude) {
-            maxLatitude = location.Latitude;
-          }
         });
-        this.medianLongitude = (minLongitude + maxLongitude) / 2;
-        this.medianLatitude = (minLatitude + maxLatitude) / 2;
         // this.selectedLocation(this.locations[0]);
         if (
           this.$route.meta &&
