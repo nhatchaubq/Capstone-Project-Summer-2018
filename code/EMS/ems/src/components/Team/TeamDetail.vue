@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="row">
+  <div class="row" style="margin-bottom:1rem">
     <div class="col-4">
       <router-link to="/team">
         <span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams
@@ -12,12 +12,12 @@
   </div>
   <div v-if="team" class="material-box" style="width: 50%">
 
-      <div class="row">
+      <div class="row" >
         <div v-if="!editMode" class="col-9 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important">{{team.Name}}</div>
-        <input v-if="editMode" v-model.trim="team.Name" class="col-12 input1" style="font-size: 30px; color: var(--primary-color); width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important" >
-        <span v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
+        <input v-if="editMode" v-model.trim="team.Name" class="col-9 input1" style="font-size: 30px; color: var(--primary-color);height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important" >
+        <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
       </div>
-      <div class="row">
+      <div class="row" style="margin: 0 0 0.5rem 0">
         <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save change</button>
         <button v-if="editMode" id=" btn-cancel" class="button btn-confirm-edit material-shadow-animate" style="margin:0 0 1rem 1rem" v-on:click="() => {
           this.$router.go(this.$router.currentRoute)
@@ -401,7 +401,7 @@ export default {
 .input2 {
   border-style: solid;
   border-width: 1px;
-  border-color: white;
+  border-color: silver;
 }
 #btn-cancel {
   background-color: white;

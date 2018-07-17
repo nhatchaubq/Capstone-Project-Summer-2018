@@ -74,16 +74,18 @@
                         </span>
                     </div>
                     <!-- edit/cancel work order -->
-                    <div style="margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="selectedOrder.StatusID < 3 && authUser.Id == selectedOrder.RequestUserID">
+                    <div style="margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="selectedOrder.WorkOrderStatus == 'Requested' && authUser.Id == selectedOrder.RequestUserID">
                         <div class="" style="">
                             <!-- cancel work order -->
                             <a v-on:click="() => {
                                 showChangeStatusDialog = true;
                                 newStatusName = 'Cancelled';
                             }">Cancel</a> <!-- cancel work order -->
-                            <span> | </span>
-                            <!-- cancel work order -->
-                            <a v-on:click="$router.push(`/work_order/edit/${selectedOrder.Id}`)">Edit</a> <!-- cancel work order -->
+                            <span v-if="selectedOrder.WorkOrderStatus == 'Rejected'">
+                                <span> | </span>
+                                <!-- cancel work order -->
+                                <a v-on:click="$router.push(`/work_order/edit/${selectedOrder.Id}`)">Edit</a> <!-- cancel work order -->
+                            </span>
                         </div> 
                     </div> <!-- edit/cancel work order -->
                   </div>
@@ -117,7 +119,7 @@
                                     showChangeStatusDialog = true;
                                 }">Change status to In Progress</button>
                             </div>
-                            <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff'">
+                            <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'In Progress'">
                                 <button class="button btn-primary material-shadow-animate" v-on:click="() => {
                                     toCloseEquipments = []; 
                                     equipments.forEach(equipment => {

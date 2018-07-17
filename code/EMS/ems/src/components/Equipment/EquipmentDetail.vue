@@ -1297,11 +1297,11 @@ export default {
         this.selectedItem.Item.BlockID = null;
       }
       if(this.selectedItem.Item.LocationID === this.lostLocation){
-        alert(this.selectedItem.Item.LocationID)
-        alert(this.lostLocation)
+        // alert(this.selectedItem.Item.LocationID)
+        // alert(this.lostLocation)
       }else{
-        alert(this.selectedItem.Item.LocationID);
-        alert(this.lostLocation);
+        // alert(this.selectedItem.Item.LocationID);
+        // alert(this.lostLocation);
         this.axios
           .get(
             `http://localhost:3000/api/block/location/${

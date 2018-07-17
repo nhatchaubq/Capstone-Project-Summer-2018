@@ -49,7 +49,7 @@
           <input v-else v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" >
         <div class="row" v-if="editMode">
           <button class="button btn-confirm-edit btn-primary material-shadow-animate" >Save change</button>
-          <button class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
+          <button class="button btn-cancel material-shadow-animate" v-on:click="() => {
          created($route.params.id);
          editMode = false;
       }">Cancel</button>
@@ -316,12 +316,12 @@ export default {
       sending: false,
       ErrorStrings: {
         // NoBusinessName: "You must provide business name for this vendor",
-        NoBusinessAddress: "You must provide business address for this vendor",
+        // NoBusinessAddress: "You must provide business address for this vendor",
         BusinessAddressMax:
           " Use from 6 to 200 characters for your business address",
         BusinessAddressMin:
           " Use from 6 to 200 characters for your business address",
-        NoContactName: "You must provide contact name for this vendor",
+        // NoContactName: "You must provide contact name for this vendor",
         ContactNameMin: " Use from 6 to 50 characters for your contact name",
         ContactNameMax: " Use from 6 to 50 characters for your contact name",
         NoEmail: " Enter email",
@@ -333,7 +333,7 @@ export default {
         BusinessAddressMin: "",
         BusinessAddressMax: "",
         NoBusinessAddress: "",
-        NoContactName: "",
+        // NoContactName: "",
         ContactNameMin: "",
         ContactNameMax: "",
         NoEmail: "",
@@ -350,31 +350,29 @@ export default {
       // if (this.Vendor.BusinessName === "") {
       //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
       // }
-      if (this.Vendor.BusinessAddress === "") {
+      if (!this.Vendor.BusinessAddress || (this.Vendor.BusinessAddress && this.Vendor.BusinessAddress == "")) {
         this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
       }
-      if (this.Vendor.BusinessAddress.length < 6) {
+      if (!this.Vendor.BusinessAddress 
+          || (this.Vendor.BusinessAddress 
+              && (this.Vendor.BusinessAddress.length < 6 || this.Vendor.BusinessAddress.length > 200))) {
         this.CreateVendorErrors.BusinessAddressMin = this.ErrorStrings.BusinessAddressMin;
       }
-      if (this.Vendor.BusinessAddress.length > 200) {
-        this.CreateVendorErrors.BusinessAddressMax = this.ErrorStrings.BusinessAddressMax;
-      }
-      if (this.Vendor.ContactName === "") {
+      if (!this.Vendor.ContactName || (this.Vendor.ContactName && this.Vendor.ContactName == "")) {
         this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
       }
-      if (this.Vendor.ContactName.length < 6) {
+      if (!this.Vendor.ContactName 
+          || (this.Vendor.ContactName 
+              && (this.Vendor.ContactName.length < 6 || this.Vendor.ContactName.length > 50))) {
         this.CreateVendorErrors.ContactNameMin = this.ErrorStrings.ContactNameMin;
       }
-      if (this.Vendor.ContactName.length > 50) {
-        this.CreateVendorErrors.ContactNameMax = this.ErrorStrings.ContactNameMax;
-      }
-      if (this.Vendor.ContactEmail === "") {
+      if (!this.Vendor.ContactEmail || (this.Vendor.ContactEmail && this.Vendor.ContactEmail == "")) {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
-      if (this.Vendor.Website.length > 200) {
+      if (this.Vendor.Website && this.Vendor.Website.length > 200) {
         this.CreateVendorErrors.WebMax = this.ErrorStrings.WebMax;
       }
-      if (this.Vendor.Description.length > 500) {
+      if (this.Vendor.Description && this.Vendor.Description.length > 500) {
         this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
       }
       if (this.validateVendor())
@@ -394,10 +392,10 @@ export default {
     validateVendor() {
       return (
         // this.CreateVendorErrors.NoBusinessName === "" &&
-        this.CreateVendorErrors.NoBusinessAddress === "" &&
+        // this.CreateVendorErrors.NoBusinessAddress === "" &&
         this.CreateVendorErrors.BusinessAddressMin === "" &&
         this.CreateVendorErrors.BusinessAddressMax === "" &&
-        this.CreateVendorErrors.NoContactName === "" &&
+        // this.CreateVendorErrors.NoContactName === "" &&
         this.CreateVendorErrors.ContactNameMin === "" &&
         this.CreateVendorErrors.ContactNameMax === "" &&
         this.CreateVendorErrors.WebMax === "" &&
@@ -413,9 +411,9 @@ export default {
     //   }
     // },
     "Vendor.BusinessAddress": function() {
-      if (this.Vendor.BusinessAddress != "") {
-        this.CreateVendorErrors.NoBusinessAddress = "";
-      }
+      // if (this.Vendor.BusinessAddress != "") {
+      //   this.CreateVendorErrors.NoBusinessAddress = "";
+      // }
       if (this.Vendor.BusinessAddress.length > 5) {
         this.CreateVendorErrors.BusinessAddressMin = "";
       }
@@ -430,9 +428,9 @@ export default {
       if (this.Vendor.ContactName.length < 51) {
         this.CreateVendorErrors.ContactNameMax = "";
       }
-      if (this.Vendor.ContactName != "") {
-        this.CreateVendorErrors.NoContactName = "";
-      }
+      // if (this.Vendor.ContactName != "") {
+      //   this.CreateVendorErrors.NoContactName = "";
+      // }
     },
     "Vendor.ContactEmail": function() {
       if (this.Vendor.ContactEmail != "") {
