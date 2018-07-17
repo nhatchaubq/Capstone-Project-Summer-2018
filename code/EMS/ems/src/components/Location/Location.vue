@@ -352,9 +352,7 @@ export default {
         return "is-active-block";
       } else {
         return "";
-      }
-    },
-
+    }},
     setSelectedLocation(location) {
       // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
       // this.axios.get(url)
@@ -390,61 +388,53 @@ export default {
           console.log(error);
 
         });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  },
-
-  getWororderFromLocation(location) {
-    this.workorders = [];
-    let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
-    this.axios
-      .get(url)
-      .then(response => {
-        let data = response.data;
-        data.forEach(workorder => {
-          this.workorders.push(workorder);
-        });
-
+      },
+    getWororderFromLocation(location) {
+      this.workorders = [];
+      let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
+      this.axios
+        .get(url)
+        .then(response => {
+          let data = response.data;
+          data.forEach(workorder => {
+            this.workorders.push(workorder);
+          })});
     },
-    getFormatDate(date) {
+    getFormatDate(date){
       return moment(date).format("L");
+    },
+    getTeamFromLocation(location) {
+      this.team = [];
+      let url = `${Server.TEAM_BY_LOCATION_ID_API_PATH}/${location.Id}`;
+      this.axios
+        .get(url)
+        .then(response => {
+          let data = response.data;
+          data.forEach(account => {
+            this.team.push(account);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      this.axios
+        .get(Server.WORKORDER_STATUS_API_PATH)
+        .then(response => {
+          let data = response.data;
+          data.forEach(element => {
+            let status = {
+              id: element.Id,
+              name: element.Name
+            };
+            this.status.push(status);
+          });
+        })
+        .catch(error => {
+          if (error == "Request failed with status code 500") {
+            this.$router.push("/500");
+          }
+        });
     }
-
-  },
-  getTeamFromLocation(location) {
-    this.team = [];
-    let url = `${Server.TEAM_BY_LOCATION_ID_API_PATH}/${location.Id}`;
-    this.axios
-      .get(url)
-      .then(response => {
-        let data = response.data;
-        data.forEach(account => {
-          this.team.push(account);
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    this.axios
-      .get(Server.WORKORDER_STATUS_API_PATH)
-      .then(response => {
-        let data = response.data;
-        data.forEach(element => {
-          let status = {
-            id: element.Id,
-            name: element.Name
-          };
-          this.status.push(status);
-        });
-      })
-      .catch(error => {
-        if (error == "Request failed with status code 500") {
-          this.$router.push("/500");
-        }
-      });
-  }
   // chaubqn - start
   // getLocationBlockFloorTile(locationId) {
   //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
@@ -457,7 +447,8 @@ export default {
   //     })
   // }
   // chaubqn - end
-};
+},
+}
 </script>
 
 <style scoped>
