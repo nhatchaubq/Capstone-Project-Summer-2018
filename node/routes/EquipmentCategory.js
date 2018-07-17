@@ -12,4 +12,9 @@ router.post('/', (request, response) => {
         .param('description', request.body.EquipmentCate.Description, TYPES.NVarChar)
         .exec(response);
 });
+router.post('/categoryName/', (request, response) => {
+    request.sql("INSERT INTO EquipmentCategory (Name) VALUES (@name)")
+        .param('name', request.body.name, TYPES.NVarChar)
+        .exec(response);
+});
 module.exports = router;
