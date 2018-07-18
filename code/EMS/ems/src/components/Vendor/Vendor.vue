@@ -23,9 +23,9 @@
             <td style="width:15rem">{{vendor.BusinessName}}</td>
             <td>{{vendor.Vendor.Quantityitems.Quantity}}</td>
             <!-- </router-link> -->
-            <td style="width:20rem">{{vendor.BusinessAddress}}</td>
+            <td style="width:20rem">{{vendor.BusinessAddress ? vendor.BusinessAddress : "N/A" }}</td>
             <td style="width:15rem">{{vendor.Website ? vendor.Website : "N/A"}} </td>
-            <td>{{vendor.ContactName}}</td>
+            <td>{{vendor.ContactName ? vendor.ContactName : "N/A"}}</td>
           </tr>
       </tbody>
     </table>
