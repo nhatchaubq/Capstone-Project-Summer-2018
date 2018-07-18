@@ -112,6 +112,18 @@ router.get("/sttItem/:id", (request, response) => {
         .param("id", request.params.id, TYPES.Int)
         .into(response);
 });
+/* GET CloseDate in last work order detail of an item  */
+router.get("/closedate/:id", (req, res) => {
+    req
+        .sql(
+            "select wod.ClosedDate " +
+            "from WorkOrderDetail as wod " +
+            "where wod.EquipmentItemID = @id " +
+            "for json path"
+        )
+        .param("id", req.params.id, TYPES.Int)
+        .into(res);
+});
 
 /* POST request, for insert */
 router.post("/", (request, response) => {
@@ -311,11 +323,11 @@ router.get("/getByEquipmentId/:id", (request, response) => {
 
 // chau - update pos of equipment item
 router.put("/position/tile/:itemId", (req, res) => {
-  req
-    .sql("update EquipmentItem set TileID = @tileId where Id = @itemId ")
-    .param("itemId", req.params.itemId, TYPES.Int)
-    .param("tileId", req.body.tileId, TYPES.Int)
-    .exec(res);
+    req
+        .sql("update EquipmentItem set TileID = @tileId where Id = @itemId ")
+        .param("itemId", req.params.itemId, TYPES.Int)
+        .param("tileId", req.body.tileId, TYPES.Int)
+        .exec(res);
 });
 
 module.exports = router;
