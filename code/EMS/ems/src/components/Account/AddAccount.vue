@@ -209,11 +209,11 @@
 </template>
 
 <script>
-// import VueBase64FileUpload from "vue-base64-file-upload";
+import VueBase64FileUpload from "vue-base64-file-upload";
 import { ModelSelect } from "vue-search-select";
 export default {
   components: {
-    // VueBase64FileUpload,
+    VueBase64FileUpload,
     ModelSelect
   },
   created() {

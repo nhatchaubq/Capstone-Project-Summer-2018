@@ -71,6 +71,7 @@
             </div>
         </div>
       </div>
+
     <strong v-if="editMode">Add new members: </strong>
     <div class="field is-horizontal">
       <multi-select  v-if="editMode" style="width: 100% !important; height:36px; margin-right: 1rem"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
@@ -120,6 +121,47 @@
   <!-- confirm kick popup-end -->
 
   </div>
+  <!-- test -->
+
+  <div class="grid-wrapper1 col-12">
+    <div class="material-box">
+
+      <div v-if="!team.Location">
+        There is no vendor detail yet.
+      </div>
+      <div v-else>
+      <table class="mytable">
+        <thead>
+          <tr>
+
+            <th><strong>Location Name </strong></th>
+            <th><strong>Location Address</strong></th>
+            <th><strong>Position Name </strong></th>
+            <th><strong>Block</strong></th>
+            <th><strong>Floor</strong></th>
+            <th><strong>Tile</strong></th>
+
+
+
+
+          </tr>
+        </thead>  
+        <tbody>
+            <tr :key="Loca.Id" v-for="Loca in team.Location" class="txtText" >
+              <td style="width:20rem">{{Loca.Name ? Loca.Name : "N/A" }}</td>
+              <td style="width:15rem">{{Loca.Address ? Loca.Address : "N/A"}} </td>
+              <td style="width:15rem">{{Loca.PositionName ? Loca.PositionName : "N/A"}} </td>
+              <td style="width:15rem">{{Loca.Block ? Loca.Block : "N/A"}} </td>
+              <td style="width:15rem">{{Loca.Floor ? Loca.Floor : "N/A"}} </td>
+              <td style="width:15rem">{{Loca.Tile ? Loca.Tile : "N/A"}} </td>
+
+            </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- test-end -->
 </div>
          
 
@@ -132,11 +174,11 @@ import "vodal/common.css";
 import "vodal/slide-up.css";
 import Vodal from "vodal";
 import moment from "moment";
-// import VueBase64FileUpload from "vue-base64-file-upload";
+import VueBase64FileUpload from "vue-base64-file-upload";
 import { BasicSelect, MultiSelect, ModelSelect } from "vue-search-select";
 export default {
   components: {
-    // VueBase64FileUpload,
+    VueBase64FileUpload,
     MultiSelect,
     BasicSelect,
     ModelSelect,
@@ -230,16 +272,14 @@ export default {
               // this.editMode = false;
               alert("Change successful");
               // this.getTeamDetail(this.$route.params.id);
-  location.reload();
-
-              
+              location.reload();
             }
           });
     },
     validateTeam() {
       return (
         this.CreateTeamErrors.NameMax === "" &&
-        this.CreateTeamErrors.NameMin === "" 
+        this.CreateTeamErrors.NameMin === ""
       );
     },
 
@@ -407,5 +447,69 @@ export default {
   background-color: white;
   color: black;
   margin-right: 0.6rem;
+}
+
+th {
+  text-align: left;
+  background-color: #cfd8dc;
+  height: 30px;
+  line-height: 30px;
+  padding: 0.5rem !important;
+}
+
+td {
+  vertical-align: middle;
+  height: 40px;
+  line-height: 25px;
+  padding: 0.5rem;
+}
+td:hover {
+  cursor: pointer;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+  color: #263238;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+  color: #263238;
+}
+
+#th1:curve {
+  text-align: justify;
+
+  background-color: #b0bec5;
+}
+
+tr:hover {
+  background-color: #eceff1;
+}
+
+.txtText {
+  text-align: left;
+
+  /*margin: 0.3rem;*/
+
+  padding: 0.5rem;
+
+  background-color: #cfd8dc;
+}
+
+table {
+  /* border: 1px solid black; */
+
+  width: 100%;
+
+  font-size: 15px;
+
+  /* text-align: right; */
+}
+.grid-wrapper1 {
+  /* display: grid; */
+  /* grid-template-columns: 50% 50%; */
+  grid-column-gap: 1rem;
+  grid-row-gap: 2rem;
 }
 </style>
