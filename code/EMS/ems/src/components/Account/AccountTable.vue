@@ -8,18 +8,20 @@
         <tr class="txtText">
   
           <!-- <th><strong>ID</strong></th> -->
+
   
-          <th><strong>User name</strong></th>
+          <th style="width:3% !important"><strong >#</strong></th>
+          <th style="width:20% !important"><strong>User name</strong></th>
   
-          <th><strong>Full name </strong></th>
+          <th style="width:25% !important"><strong>Full name </strong></th>
   
-          <th><strong>Email </strong></th>
+          <th style="width:20% !important"><strong>Email </strong></th>
   
-          <th><strong>Phone</strong></th>
+          <th style="width:15% !important"><strong>Phone</strong></th>
   
-          <th><strong>Role</strong></th>
+          <th style="width:10% !important"><strong>Role</strong></th>
   
-          <th><strong>Status</strong></th>
+          <th style="width:7% !important"><strong>Status</strong></th>
           <!-- <th><strong>Department</strong></th> -->
   
         </tr>
@@ -28,11 +30,11 @@
   
       <tbody>
   
-        <tr v-bind:key="account.id" v-for="account in accounts" class="txtText" v-on:click="gotoDetail(account.Id)">
+        <tr v-bind:key="account.id" v-for="(account, index) in accounts" class="txtText" v-on:click="gotoDetail(account.Id)">
           <!-- <td>{{ index + 1 }}</td>    -->
           <!-- <td>{{account.Id}}</td> -->
   
-  
+          <td>{{ index + 1 }}</td>   
   
 
   

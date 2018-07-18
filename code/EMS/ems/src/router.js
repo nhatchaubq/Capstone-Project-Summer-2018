@@ -263,7 +263,7 @@ let router = new Router({
       path: "/vendor/:id",
       component: VendorDetailComponent,
       beforeEnter: (to, from, next) => {
-        store.set("title", menu.Vendors);
+        store.set("title", menu.VendorDetails);
         next();
       },
       meta: {
