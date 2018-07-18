@@ -157,10 +157,10 @@
                                 <span class="detail-label">Team: </span><span>{{ selectedOrder.Team.Name }}</span>
                             </div>
                             <div class="detail-contents" style="width: 100%;">
-                                <span class="detail-label">Equipments:</span>
+                                <span class="detail-label">Equipments: {{equipmentPanelIndex}}</span> 
                                 <v-flex>
-                                    <v-expansion-panel popout v-model="equipmentPanelIndex">
-                                        <v-expansion-panel-content v-for="(equipment, index) in equipments" :key="'equipment' + equipment.Id" v-on:click.native="selectedEquipmentPanelIndex = index">
+                                    <v-expansion-panel expand="" v-model="equipmentPanelIndex">
+                                        <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
                                             <div slot="header">
                                                 <div style="display: grid; grid-template-columns: 25% auto;">
                                                     <div style="display: flex">
@@ -182,7 +182,7 @@
                                             <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
                                                 <v-card-text style="font-size: .9rem">
                                                     <div>
-                                                        Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a>
+                                                        Serial #: {{ item.SerialNumber }}
                                                         <span v-if="(authUser.Role == 'Staff' || authUser.Role == 'Maintainer')
                                                                     && selectedOrder.WorkOrderStatus == 'In Progress' && !item.DetailReturn" >
                                                              | 
@@ -213,7 +213,7 @@
                                                             }">Close</a>
                                                         </span>
                                                         <span v-if="item.DetailReturn"> - Closed at <strong>{{ getDateWithTime(item.DetailReturn.DateTime) }}</strong> with status <strong>{{ item.DetailReturn.ReturnedStatusName == 'Available' ? 'OK' : item.DetailReturn.ReturnedStatusName }}</strong></span>
-                                                    </div>                                                        
+                                                    </div>
                                                     <div v-if="selectedOrder.WorkOrderStatus != 'Cancelled' 
                                                                 && selectedOrder.WorkOrderStatus != 'Closed'
                                                                 && !item.DetailReturn">
@@ -670,6 +670,7 @@ import EquipmentDetailPopup from "@/components/Equipment/EquipmentDetailPopup";
 import Vodal from "vodal";
 import { gmapApi } from "vue2-google-maps";
 import { BasicSelect } from "vue-search-select";
+import io from 'socket.io-client';
 
 export default {
   components: {
@@ -679,6 +680,11 @@ export default {
     EquipmentDetailPopup,
     StepProgress,
     BasicSelect
+  },
+  sockets: {
+        NEW_WORK_ORDER_CREATED: function() {
+            this.getWorkOrders();
+        }
   },
   created() {
     this.getWorkOrders();
@@ -716,6 +722,7 @@ export default {
   },
   data() {
     return {
+        socket: io(`http://localhost:3000`),
         errorUpdatePosition: '',
         tempValues: null, // to hold the original orders when apply filters
         myWorkOrderViewMode: true,
@@ -724,7 +731,7 @@ export default {
         workOrders: [], // orders data to display in orderblocks <order-block></order-block>
         selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
         equipments: [], // to hold equipments in the selected work order
-        equipmentPanelIndex: -1,
+        equipmentPanelIndex: [true, ],
         selectedEquipmentPanelIndex: -1,
         editMode: false, // edit work order detail
         equipmentItem: null, // when select an item in the list of equipment of selected order
@@ -870,7 +877,7 @@ export default {
 
     },
     setSelectedOrder(order) {
-        this.equipmentPanelIndex = -1;
+        // this.equipmentPanelIndex = -1;
         if (this.selectedOrder == order) {
             this.selectedOrder = null;
         } else {
@@ -1141,7 +1148,7 @@ export default {
                     this.showUpdateItemPosition = false;
 
                     await this.getEquipmentsOfWorkOrder(this.selectedOrder);
-                    this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
+                    // this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
                 }
             }
         });

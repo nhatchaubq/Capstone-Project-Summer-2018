@@ -6,7 +6,7 @@
             </div>
             <div class="form-title-end">
                 <!-- <button id="btn-cancel" class="button" style="" v-on:click="cancel">Cancel</button> -->
-                <button class="button" style="margin-right: .5rem" v-on:click="cancel()">Cancel</button>
+                <button class="button" style="margin-right: .5rem;" v-on:click="cancel()">Cancel</button>
                 <!-- <button id="btn-add" class="button is-primary">Create Work Order</button> -->
                 <button class="button is-primary" v-on:click="createWorkOrder()">Create Work Order <i v-show="sending" class="fa fa-circle-o-notch fa-spin"></i></button>
             </div>

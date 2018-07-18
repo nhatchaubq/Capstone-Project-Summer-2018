@@ -80,6 +80,10 @@ const REPORT_RETURNED_WORKORDER_API_PATH =
   REPORT_API_PATH + "/getClosedWorkorder";
 //api report -end
 
+// api notification - start
+const NOTIFICATION_API_PATH = SERVER_DEFAULT + '/notification';
+// api notification - end
+
 export default {
   SERVER_DEFAULT,
 
@@ -126,5 +130,7 @@ export default {
 
   REPORT_WORKORDER_API_PATH,
   REPORT_LATE_WORKORDER_API_PATH,
-  REPORT_RETURNED_WORKORDER_API_PATH
+  REPORT_RETURNED_WORKORDER_API_PATH,
+
+  NOTIFICATION_API_PATH
 };
