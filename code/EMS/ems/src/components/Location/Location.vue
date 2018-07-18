@@ -73,10 +73,8 @@
               </GmapMap>
               </div>
             </div>
-            <div v-if="currentMode == modes.EQUIPMENT" style="padding-top: 1rem"> 
-              
-              <div >
-                
+            <div v-if="currentMode == modes.EQUIPMENT && equipments" style="padding-top:5px">               
+              <div v-if="equipments.length > 0">                
                 <!-- {{equipment.Id}},{{equipment.Name}} , 
                 <img v-show="equipment.Image" :src="equipment.Image"  style="width: 3rem; height: 3rem;"> -->
                 <v-flex >
@@ -105,9 +103,14 @@
                         </v-expansion-panel>
                     </v-flex>
               </div>
+              <div v-else>
+                This location has no equipment.
+              </div>
             </div>
-            <div v-else-if="currentMode == modes.WORKORDER" style="padding-top:5px">              
-              <div v-bind:key='workorder.Id' v-for="workorder in workorders">           
+            
+            <div v-else-if="currentMode == modes.WORKORDER" style="padding-top:5px">
+              <div  v-if="workorders.length > 0">
+                <div v-bind:key='workorder.Id' v-for="workorder in workorders">                           
                 <div style="display: grid; grid-template-columns: 80% auto;border-bottom:0.15px solid;padding-top:1rem" >
                     <div style=" border-right: 0.25px solid">
                       <div style="font-size: 25px;font-weight: 500">
@@ -124,11 +127,16 @@
                     </div>
                 </div>
               </div>
+              </div>                            
+              <div v-else>
+                This location has no work order.
+              </div>
             </div>
-            <div v-else-if="currentMode == modes.TEAM">
-              <v-flex >
+            <div v-else-if="currentMode == modes.TEAM" style="padding-top:5px">
+              <div v-if="teams.length > 0">
+                <v-flex>
                         <v-expansion-panel popout>
-                            <v-expansion-panel-content :key='account.Id' v-for="account in team">
+                            <v-expansion-panel-content :key='account.Id' v-for="account in teams">
                                 <div slot="header" style="padding-top:0.2rem; width: 100% " >
                                   <div class="name-team">
                                     <div><i class="material-icons" >group</i></div>
@@ -172,8 +180,11 @@
                             </v-expansion-panel-content>
                       </v-expansion-panel>
                     </v-flex>                
-               
-                 </div>
+              </div>
+              <div v-else>
+                This location has no team.
+              </div>                             
+            </div>
                  <!-- <div v-else>
                    <i class="material-icons">perm_identity</i>
                  </div> -->                  
@@ -186,7 +197,7 @@
       </div>   
       <modal v-model="addPopUp" v-if="selectedWorkorder && status.length>0">        
         <div slot="header" class="title-wd"> 
-          Work Order Detail: {{selectedWorkorder.Name}}
+          Work Order: {{selectedWorkorder.Name}}
         </div>
         <div class="info-wd">
           <div class="" style="display:grid; grid-template-columns: 16% auto; font-size:20px">
@@ -217,7 +228,7 @@
             <div class="info-title">
              <i class="fa fa-calendar" style="color:gray;"></i>  Closed Date:
             </div>
-            <div class="info-content">
+            <div class="info-content" v-if="selectedWorkorder.ClosedDate">
                {{getFormatDate(selectedWorkorder.ClosedDate)}}
             </div>
           </div>                                        
@@ -259,7 +270,7 @@
                 </div>
             </div> -->
           </div>                     
-        <div slot="footer"><button class="button" v-on:click="addPopUp = false">OK</button></div>
+        <div slot="footer"><button class="button" v-on:click="addPopUp = false" style="background-color:var(--primary-color);color:white">OK</button></div>
       </modal>
   </div>
 </template>
@@ -291,38 +302,10 @@ export default {
       .get(Server.LOCATION_API_PATH)
       .then(response => {
         let data = response.data;
-        let minLongitude = data[0].Longitude;
-        let maxLongitude = data[0].Longitude;
-        let minLatitude = data[0].Latitude;
-        let maxLatitude = data[0].Latitude;
         data.forEach(location => {
           this.locations.push(location);
-          if (location.Longitude <= minLongitude) {
-            minLongitude = location.Longitude;
-          }
-          if (location.Longitude > maxLongitude) {
-            maxLongitude = location.Longitude;
-          }
-          if (location.Latitude <= minLatitude) {
-            minLatitude = location.Latitude;
-          }
-          if (location.Latitude > maxLatitude) {
-            maxLatitude = location.Latitude;
-          }
         });
-        this.medianLongitude = (minLongitude + maxLongitude) / 2;
-        this.medianLatitude = (minLatitude + maxLatitude) / 2;
-        // this.selectedLocation(this.locations[0]);
-        if (
-          this.$route.meta &&
-          this.$route.viewMode &&
-          this.$route.viewMode === "MapView"
-        ) {
-          let locationId = this.$route.params.locationId;
-          let location = data.filter(l => (l.Id = locationId))[0];
-          this.setSelectedLocation(location);
-          this.isListViewMode = false;
-        }
+        this.setSelectedLocation(data[0]);
       })
       .catch(error => {
         console.log(error);
@@ -336,7 +319,7 @@ export default {
       workorders: [],
       workorderDetails: [],
       selectedWorkorder: null,
-      team: [],
+      teams: [],
       selectedLocation: null,
       currentMode: 4,
       modes: {
@@ -414,14 +397,14 @@ export default {
       return moment(date).format("L");
     },
     getTeamFromLocation(location) {
-      this.team = [];
+      this.teams = [];
       let url = `${Server.TEAM_BY_LOCATION_ID_API_PATH}/${location.Id}`;
       this.axios
         .get(url)
         .then(response => {
           let data = response.data;
-          data.forEach(account => {
-            this.team.push(account);
+          data.forEach(team => {
+            this.teams.push(team);
           });
         })
         .catch(error => {
