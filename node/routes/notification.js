@@ -3,7 +3,7 @@ const TYPES = require("tedious").TYPES;
 
 module.exports = function(io) {
     router.get('/userid/:userId', (req, res) => {
-        req.sql("select top 5 noti.Id as [Id], noti.[Content] as [Content], noti.CreatedDate as [CreatedDate], accNoti.NotificationStatus as [Status] "
+        req.sql("select top 25 noti.Id as [Id], noti.[Content] as [Content], noti.CreatedDate as [CreatedDate], accNoti.NotificationStatus as [Status] "
         + " from [Notification] as noti join AccountNotification as accNoti on noti.Id = accNoti.NotificationId "
         + " where accNoti.AccountId = @userId "
         + " order by noti.CreatedDate desc "
@@ -58,7 +58,12 @@ module.exports = function(io) {
     });
 
     router.put('/status/:notiId', (req, res) => {
-        req.sql("update AccountNotification set NotificationStatus = 1 where AccountId = @userId and NotificationId = @notiId")
+        req.sql("declare @currentStatus bit; "
+                + " set @currentStatus = (select NotificationStatus from AccountNotification where AccountId = @userId and NotificationId = @notiId); "
+                + " if @currentStatus = 0 "
+                + "     update AccountNotification set NotificationStatus = 1 where AccountId = @userId and NotificationId = @notiId "
+                + " else "
+                + "     update AccountNotification set NotificationStatus = 0 where AccountId = @userId and NotificationId = @notiId ")
             .param('notiId', req.params.notiId, TYPES.Int)
             .param('userId', req.body.userId, TYPES.Int)
             .exec(res);

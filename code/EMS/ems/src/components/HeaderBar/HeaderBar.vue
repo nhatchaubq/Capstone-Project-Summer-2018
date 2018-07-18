@@ -1,5 +1,5 @@
 <template>
-    <div class="headerbar">
+    <div class="headerbar">        
         <div class="">
             <div class="headerbar-title">
                 {{ title }}
@@ -22,7 +22,7 @@
                     <div class="headerbar-button" style="margin-right: .3rem;" 
                         v-on:click="() => {
                             axios.post('http://localhost:3000/api/notification/accounts', {
-                                notificationContent: 'Hello from the other side!!! Test notification.',
+                                notificationContent: 'Hello from <strong>the other side</strong>!!! Test notification.',
                                 userRole: 'Equipment Staff',
                             })
                         }">
@@ -30,9 +30,8 @@
                     </div> <!-- start button -->
                 </div>
                 <!-- noti button -->
-                <div style="padding-right: .5rem; padding-top: .2rem">
-                    <v-menu style="padding: 0" v-model="showMenu" :close-on-content-click="false" offset-y :min-width="350">
-                        <v-badge style="margin-top: .2rem; margin-right: 1.2rem" slot="activator" color="red">
+                <div style="padding-right: .5rem; padding-top: .2rem; margin-right: 2.5rem">
+                        <v-badge style="margin-top: .2rem;" color="red" v-popover:notificationPanel>
                             <span slot="badge" v-if="notifications.filter(noti => !noti.Status).length > 0">
                                 {{ notifications.filter(noti => !noti.Status).length }}
                             </span>
@@ -46,7 +45,7 @@
                                 <i class="material-icons">notifications</i>
                             </div> <!-- noti button -->
                         </v-badge>
-                        <v-card style="padding: 0;">
+                        <popover name="notificationPanel" style="margin-left: .5rem; margin-top: .1rem; padding: 0; min-width: 350px; max-width: 350px; border: 1px solid #e0e0e0">
                             <div class="row" style="padding: 5px; margin: 0; font-size: .85rem; font-weight: 500; color: #616161;">
                                 <div class="col-6" style="margin: 0; padding: 0">Notifications</div>
                                 <div class="col-6" style="width: 100%; text-align: right; margin: 0; padding: 0">
@@ -72,24 +71,39 @@
                                 </div>
                             </div>
                             <div v-else>
-                                <div :key="'noti' + noti.Id" v-for="noti in notifications">
-                                    <v-divider></v-divider>
-                                    <div class="noti-tile" :class="{'unread': !noti.Status}" style="display: grid; grid-template-columns: 20% 80%;">
-                                        <div style="display: flex; justify-content: center; align-items: center;">
-                                            <div style="border-radius: 50%; background: #757575; width: 2.5rem; height: 2.5rem">
-                                                <div style="display: flex; justify-content: center; align-content: center; ">
-                                                    <div style="padding-top: 13%">
-                                                        <i style="font-size: 1.8rem; color: white" class="material-icons">assignment</i>
+                                <div style="max-height: 50vh; overflow-y: auto;">
+                                    <div :key="'noti' + noti.Id" v-for="noti in notifications">
+                                        <v-divider></v-divider>
+                                        <div class="noti-tile" :class="{'unread': !noti.Status}" style="display: grid; grid-template-columns: 20% 70% 10%;">
+                                            <div style="display: flex; justify-content: center; align-items: center;">
+                                                <div style="border-radius: 50%; background: #757575; width: 2.5rem; height: 2.5rem">
+                                                    <div style="display: flex; justify-content: center; align-content: center; ">
+                                                        <div style="padding-top: 13%">
+                                                            <i style="font-size: 1.8rem; color: white" class="material-icons">assignment</i>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div>
-                                            <div style="display: flex; padding: .5rem 1rem 0 0;">
-                                                <span style="font-size: .9rem;" v-html="noti.Content"></span>
+                                            <div>
+                                                <div style="display: flex; padding: .5rem 1rem 0 0;">
+                                                    <span style="font-size: .9rem;" v-html="noti.Content"></span>
+                                                </div>
+                                                <div style="display: flex; padding: 0 1rem 0 0; font-size: .8rem; color: #757575;">
+                                                    {{getStatusTimeString(noti)}}{{ noti.TimeString }}
+                                                </div>
                                             </div>
-                                            <div style="display: flex; padding: 0 1rem 0 0; font-size: .8rem; color: #757575;">
-                                                {{ getStatusTimeString(noti.CreatedDate) }}
+                                            <div style="display: flex; justify-content: center; align-items: center; font-size: .5rem">
+                                                <i  class="fa mark-as-read-dot"
+                                                    :class="{'fa-circle': !noti.Status, 'fa-circle-o': noti.Status}"
+                                                    v-on:click="() => {
+                                                        axios.put(`http://localhost:3000/api/notification/status/${noti.Id}`, {
+                                                            userId: authUser.Id
+                                                        }).then((res) => {
+                                                            if (res.status == 200) {
+                                                                noti.Status = !noti.Status;
+                                                            }
+                                                        })
+                                                    }"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -99,8 +113,7 @@
                                     <a><strong style="color: var(--primary-color) !important">View all notifications</strong></a>
                                 </div>
                             </div>
-                        </v-card>
-                    </v-menu>
+                        </popover>
                 </div>
                 <!-- avatar -->
                 <div style="padding-left: 1rem; padding-right: .6rem; padding-top: .2rem">
@@ -182,18 +195,31 @@ export default {
         showAlert(msg) {
             alert(msg);
         },
-        getStatusTimeString(value) {
-            const milis = moment().valueOf() - moment(value).valueOf();
-            const duration = moment.duration(milis);
-            const hours = duration.hours();
-            if (hours > 0 && hours <= 5) {
-                return `From ${hours} ${hours > 1 ? 'hours' : 'hour'} ago`
-            } else if (hours == 0) {
-                const minutes = duration.minutes();
-                return `From ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} ago`;
-            } else {
-                return `${moment(value).format('LLL')}`;
-            }            
+        getStatusTimeString(notiObj) {
+            setInterval(() => {
+                const milis = moment().valueOf() - moment(notiObj.CreatedDate).valueOf();
+                const duration = moment.duration(milis);
+                const hours = duration.hours();
+                if (hours > 0 && hours <= 5) {
+                    notiObj.TimeString = `About ${hours} ${hours > 1 ? 'hours' : 'hour'} ago`
+                } else if (hours == 0) {
+                    const minutes = duration.minutes();
+                    if (minutes > 0) {
+                        notiObj.TimeString = `About ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} ago`;
+                    } else if (minutes == 0) {
+                        notiObj.TimeString = `Just now`
+                    }
+                } else {
+                    const days = duration.days() + 1;
+                    if (days == 0) {
+                        notiObj.TimeString = `Today at ${moment(notiObj.CreatedDate).format('hh:mm a')}`;
+                    } else if (days == 1) {
+                        notiObj.TimeString = `Yesterday at ${moment(notiObj.CreatedDate).format('hh:mm a')}`;
+                    } else {
+                        notiObj.TimeString = `${moment(notiObj.CreatedDate).format('LLL')}`;
+                    }
+                }
+            }, 1000);
         }
     }
 }
@@ -330,10 +356,15 @@ export default {
         user-select: none;
         cursor: pointer;
         background: #f5f5f5;
+        z-index: 5;
     }
 
     .noti-tile:hover {
         background: #fafafa;
+    }
+
+    .noti-tile:hover .mark-as-read-dot {
+        opacity: 100;
     }
 
     .noti-tile:active {
@@ -352,6 +383,21 @@ export default {
 
     .noti-tile.unread:active {
         background: #ACEAF3;
+    }
+
+    .mark-as-read-dot {
+        opacity: 0;
+        color: #bdbdbd;
+        z-index: 99;
+        transition: all .17s ease-in-out;
+    }
+
+    .mark-as-read-dot:hover {
+        color: #e0e0e0;
+    }
+
+    .mark-as-read-dot:active {
+        color: #9e9e9e;
     }
 
 </style>

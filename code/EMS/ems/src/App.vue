@@ -55,7 +55,18 @@ export default {
       this.axios.get(url)
         .then((res) => {
           if (res.status == 200) {
-            this.$store.state.notifications = res.data;
+            let notifications = [];
+            res.data.forEach(value => {
+              let noti = {
+                Id: value.Id,
+                Content: value.Content,
+                CreatedDate: value.CreatedDate,
+                TimeString: null,
+                Status: value.Status,
+              }
+              notifications.push(noti);
+            });
+            this.$store.state.notifications = notifications;
           }
         }).catch((error) => {
           console.log(error);
@@ -225,14 +236,6 @@ a:active {
   transition: all 0.15s ease-in-out;
 }
 
-.button.btn-cancel {
-  border: 0;
-  color: white !important;
-  background-color: #FF8A65;
-  z-index: 99;
-  transition: all 0.15s ease-in-out;
-}
-
 button.btn-primary:hover {
   cursor: pointer;
   color: white !important;
@@ -257,12 +260,6 @@ button.btn-green:hover {
   background-color: #59bc5c;
 }
 
-button.btn-cancel:hover {
-  cursor: pointer;
-  color: white !important;
-  background-color: #FF8A65;
-}
-
 button.btn-primary:active {
   color: white !important;
   background-color: var(--darken-primary-color) !important;
@@ -284,12 +281,6 @@ button.btn-blue:active {
 button.btn-green:active {
   color: white !important;
   background-color: #3ea542 !important;
-  box-shadow: 1px 1px 1px var(--shadow) !important;
-}
-
-button.btn-cancel:active {
-  color: white !important;
-  background-color: #FF8A65 !important;
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 

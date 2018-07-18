@@ -11,7 +11,7 @@
                             <div>Priority:</div>
                             <div>
                                 <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: .5rem;">
-                                    <input type="checkbox" v-on:change="addFilter(priority, $event)">
+                                    <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="filterOptionsValues.priorities.includes(priority)">
                                     {{ priority.name }}
                                 </label>                              
                             </div>                        
@@ -20,7 +20,7 @@
                             <div>Status:</div>
                             <div>
                                 <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
-                                    <input type="checkbox" v-on:change="addFilter(status, $event)">
+                                    <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="filterOptionsValues.status.includes(status)">
                                     {{ status.name }}
                                 </label>
                             </div>
@@ -157,9 +157,9 @@
                                 <span class="detail-label">Team: </span><span>{{ selectedOrder.Team.Name }}</span>
                             </div>
                             <div class="detail-contents" style="width: 100%;">
-                                <span class="detail-label">Equipments: {{equipmentPanelIndex}}</span> 
+                                <span class="detail-label">Equipments:</span> 
                                 <v-flex>
-                                    <v-expansion-panel expand="" v-model="equipmentPanelIndex">
+                                    <v-expansion-panel popout v-model="equipmentPanelIndex">
                                         <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
                                             <div slot="header">
                                                 <div style="display: grid; grid-template-columns: 25% auto;">
@@ -182,7 +182,7 @@
                                             <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
                                                 <v-card-text style="font-size: .9rem">
                                                     <div>
-                                                        Serial #: {{ item.SerialNumber }}
+                                                        Serial #: <strong>{{ item.SerialNumber }}</strong>
                                                         <span v-if="(authUser.Role == 'Staff' || authUser.Role == 'Maintainer')
                                                                     && selectedOrder.WorkOrderStatus == 'In Progress' && !item.DetailReturn" >
                                                              | 
@@ -690,30 +690,34 @@ export default {
     this.getWorkOrders();
     this.getBlockFloorTile();
     this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
-      let data = response.data;
-      data.forEach(element => {
-        let status = {
-          id: element.Id,
-          name: element.Name,
-          type: this.optionTypes.STATUS
-        };
-        this.options.status.push(status);
-      });
+        let data = response.data;
+        data.forEach(element => {
+            let status = {
+                id: element.Id,
+                name: element.Name,
+                type: this.optionTypes.STATUS
+            };
+            this.options.status.push(status);
+            this.filterOptionsValues.status.push(status);
+        });
+        this.filterOrders();
     }).catch((error) => {
         if (error == 'Request failed with status code 500') {
             this.$router.push('/500');
         }
     });
     this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
-      let data = response.data;
-      data.forEach(element => {
-        let priority = {
-          id: element.Id,
-          name: element.Name,
-          type: this.optionTypes.PRIORITY
-        };
-        this.options.priorities.push(priority);
-      });
+        let data = response.data;
+        data.forEach(element => {
+            let priority = {
+                id: element.Id,
+                name: element.Name,
+                type: this.optionTypes.PRIORITY
+            };
+            this.options.priorities.push(priority);
+            this.filterOptionsValues.priorities.push(priority);
+        });
+        this.filterOrders();
     }).catch((error) => {
         if (error == 'Request failed with status code 500') {
             this.$router.push('/500');
@@ -1341,9 +1345,8 @@ export default {
 }
 
 .order-content {
-  margin-top: 1rem;
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 80% 20%;
 }
 
 .orders-view {
@@ -1353,8 +1356,8 @@ export default {
 
 .order-blocks {
   position: fixed;
-  height: 65.5%;
-  max-height: 65.5%;
+  min-height: 79%;
+  max-height: 79%;
   padding-right: 0.5rem;
   width: 38%;
   overflow-y: auto;
@@ -1364,8 +1367,8 @@ export default {
 .order-detail {
   position: fixed;
   left: 60%;
-  height: 62%;
-  max-height: 62%;
+  min-height: 75.5%;
+  max-height: 75.5%;
   overflow-y: auto;
   width: 38%;
   z-index: 2;
