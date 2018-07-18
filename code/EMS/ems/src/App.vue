@@ -21,6 +21,8 @@ import Login from "./components/Login/Login";
 import Sidebar from "./components/Sidebar/Sidebar.vue";
 import HeaderBar from "./components/HeaderBar/HeaderBar";
 
+import Server from '@/config/config';
+
 export default {
   name: "app",
   components: {
@@ -29,10 +31,36 @@ export default {
     Login
   },
   computed: {
-    isLoggedIn: sync("isLoggedIn")
+    isLoggedIn: sync("isLoggedIn"),
+    authUser() {
+      return JSON.parse(window.localStorage.getItem('user'));
+    }
+  },
+  created() {
+    this.getNotifications();
+  },
+  sockets: {
+    NEW_NOTIFICATION: function(data) {
+      if (data.message && data.message == 'New notification') {
+        this.getNotifications();
+      }
+    }
   },
   data() {
     return {};
+  },
+  methods: {
+    getNotifications() {
+      let url = `${Server.NOTIFICATION_API_PATH}/userid/${this.authUser.Id}`;
+      this.axios.get(url)
+        .then((res) => {
+          if (res.status == 200) {
+            this.$store.state.notifications = res.data;
+          }
+        }).catch((error) => {
+          console.log(error);
+        })
+    }
   }
 };
 </script>
@@ -47,6 +75,7 @@ export default {
   --dark-background: #263238;
   --success-color: #00c853;
   --danger-color: #ef5350;
+  --cancel-color: #FFAB91;
 
   --warning-color: #ffc107;
   --strong-warning-color: #ff7b07;
@@ -196,6 +225,14 @@ a:active {
   transition: all 0.15s ease-in-out;
 }
 
+.button.btn-cancel {
+  border: 0;
+  color: white !important;
+  background-color: #FF8A65;
+  z-index: 99;
+  transition: all 0.15s ease-in-out;
+}
+
 button.btn-primary:hover {
   cursor: pointer;
   color: white !important;
@@ -220,6 +257,12 @@ button.btn-green:hover {
   background-color: #59bc5c;
 }
 
+button.btn-cancel:hover {
+  cursor: pointer;
+  color: white !important;
+  background-color: #FF8A65;
+}
+
 button.btn-primary:active {
   color: white !important;
   background-color: var(--darken-primary-color) !important;
@@ -241,6 +284,12 @@ button.btn-blue:active {
 button.btn-green:active {
   color: white !important;
   background-color: #3ea542 !important;
+  box-shadow: 1px 1px 1px var(--shadow) !important;
+}
+
+button.btn-cancel:active {
+  color: white !important;
+  background-color: #FF8A65 !important;
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
