@@ -9,7 +9,9 @@ server.use(cors());
 var connection = {
   server: "localhost",
   userName: "sa",
-  password: "tien1005",
+
+  password: "123456",
+
   port: "1433",
   options: {
     // instanceName : "SQLEXPRESS",
@@ -21,7 +23,7 @@ var connection = {
 
 server.use(bodyParser.json());
 
-server.use(function (request, respones, next) {
+server.use(function(request, respones, next) {
   request.sql = tediousExpress(connection);
   // respones.header('Access-Control-Allow-Origin', '*');
   // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -66,7 +68,7 @@ server.use("/api/unit", require("./routes/unit"));
 // server.use('/api/account/delete/id', require('./routes/'));
 
 // catch 404 and forward to error handler
-server.use(function (req, res, next) {
+server.use(function(req, res, next) {
   var err = new Error("Not Found: " + req.method + ":" + req.originalUrl);
   err.status = 404;
   next(err);

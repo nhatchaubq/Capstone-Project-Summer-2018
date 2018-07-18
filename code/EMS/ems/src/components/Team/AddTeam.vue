@@ -18,7 +18,7 @@
                     <div class="form-field-title">
                     <strong>  Team's name (required)</strong> <span v-if="CreateTeamErrors.TeamNameMax != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMax }}</span></span> <span v-if="CreateTeamErrors.TeamNameMin != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMin }}</span></span>
                     </div>
-                    <div class="control has-icons-left has-icons-right" style="padding:8px">
+                    <div class="control has-icons-left has-icons-right col-6" style="padding:8px">
                         <input v-model.trim="team.name" class="input " type="text" placeholder="Text input" >
 
                             <span class="icon is-small is-left">
@@ -58,7 +58,7 @@
                  
               </div>
               <div class="select" style="margin-left:0.5rem; margin-bottom:1rem">
-                <select v-model="selectedAccount" style="width: 70rem">
+                <select v-model="selectedAccount" style="width: 35rem">
                   <option :disabled="selectedAccounts.length > 0"  value="null"></option>
                   <option v-bind:key='account.Id' v-for='account in accounts' :value="account">{{account.Fullname}}</option>
                 </select>

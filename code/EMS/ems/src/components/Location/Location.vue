@@ -73,10 +73,8 @@
               </GmapMap>
               </div>
             </div>
-            <div v-if="currentMode == modes.EQUIPMENT" style="padding-top: 1rem"> 
-              
-              <div >
-                
+            <div v-if="currentMode == modes.EQUIPMENT && equipments" style="padding-top:5px">               
+              <div v-if="equipments.length > 0">                
                 <!-- {{equipment.Id}},{{equipment.Name}} , 
                 <img v-show="equipment.Image" :src="equipment.Image"  style="width: 3rem; height: 3rem;"> -->
                 <v-flex >
@@ -98,24 +96,30 @@
                                 </div>
                                 <v-card v-for="eqtItem in equipment.EquipmentItems" :key="eqtItem.Id">
                                     <v-card-text style="font-size: .9rem">
-                                        Serial #: <a>{{ eqtItem.SerialNumber }}</a> | 
-                                        <a href="">View position</a>
+                                        Serial #: <a>{{ eqtItem.SerialNumber }}</a> | Current in: Block {{eqtItem.Block}} - Floor {{eqtItem.Floor}} - Tile {{eqtItem.Tile}}
                                     </v-card-text>
                                 </v-card>
                             </v-expansion-panel-content>
                         </v-expansion-panel>
                     </v-flex>
               </div>
+              <div v-else>
+                This location has no equipment.
+              </div>
             </div>
-            <div v-else-if="currentMode == modes.WORKORDER" style="padding-top:5px">              
-              <div v-bind:key='workorder.Id' v-for="workorder in workorders">           
+            
+            <div v-else-if="currentMode == modes.WORKORDER" style="padding-top:5px">
+              <div  v-if="workorders.length > 0">
+                <div v-bind:key='workorder.Id' v-for="workorder in workorders">                           
                 <div style="display: grid; grid-template-columns: 80% auto;border-bottom:0.15px solid;padding-top:1rem" >
                     <div style=" border-right: 0.25px solid">
-                      <div style="font-size: 25px;font-weight: 500;">{{workorder.Name}}</div>
-                      <div style="display: grid; grid-template-columns: 10% auto 35%;">
-                        <div style="color: white" :style="`background-color: ${workorder.TagHexColor}`"  class="tag"> {{workorder.Priority}}</div>
-                        <div style="padding-left:2rem">  <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">group</i> {{workorder.Team}} </div> 
+                      <div style="font-size: 25px;font-weight: 500">
+                        <div>{{workorder.Name}}</div>                        
+                      </div>
+                      <div style="display: grid; grid-template-columns:auto 35% 20%;">                        
+                        <div style="padding-left:1rem">  <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">group</i> {{workorder.Team}} </div> 
                         <div style="position: relative;top: 0.3rem;"> <i class="fa fa-calendar" style="color:gray;"></i> {{getFormatDate(workorder.CreateDate)}} </div>                                             
+                        <div style="color: white;margin-right:0.5rem" :style="{'background-color': workorder.Status == 'Closed'? 'var(--status-closed)' : 'var(--status-in-progress)'}"  class="tag"> {{workorder.Status}}</div>
                       </div>                      
                     </div>                    
                     <div style="text-align:center">
@@ -123,11 +127,16 @@
                     </div>
                 </div>
               </div>
+              </div>                            
+              <div v-else>
+                This location has no work order.
+              </div>
             </div>
-            <div v-else-if="currentMode == modes.TEAM">
-              <v-flex >
+            <div v-else-if="currentMode == modes.TEAM" style="padding-top:5px">
+              <div v-if="teams.length > 0">
+                <v-flex>
                         <v-expansion-panel popout>
-                            <v-expansion-panel-content :key='account.Id' v-for="account in team">
+                            <v-expansion-panel-content :key='account.Id' v-for="account in teams">
                                 <div slot="header" style="padding-top:0.2rem; width: 100% " >
                                   <div class="name-team">
                                     <div><i class="material-icons" >group</i></div>
@@ -141,28 +150,41 @@
                                         <div class="acc-img">
                                           <img v-show="account.AvatarImage" :src="account.AvatarImage" >
                                         </div>
-                                      <div >
-                                        <div>
-                                          <h2 id="info-title">Information</h2>
-                                        </div>
-                                        <div class="acc-info">
-                                          <div><i class="material-icons">credit_card</i> Name: {{account.Fullname}}  </div>
-                                          <div><i class="material-icons">settings_phone  </i> Phone: {{account.Phone}} </div>
-                                          <div><i class="material-icons">email</i> Email: {{account.Email}} </div>
-                                          <div><i class="material-icons">date_range</i> StartDate: {{account.StartDate}}</div>
-                                          <div id="team-detail">
-                                            <router-link :to="'/team/' + account.IdOfTeam" >Show Team Detail </router-link>
+                                        <div >
+                                          <div>
+                                            <h2 id="info-title">Team Leader</h2>
                                           </div>
-                                        </div>                        
+                                          <div class="acc-info">
+                                            <div><i class="material-icons">credit_card</i> Name: {{account.Fullname}}  </div>
+                                            <div><i class="material-icons">settings_phone  </i> Phone: {{account.Phone}} </div>
+                                            <div><i class="material-icons">email</i> Email: {{account.Email}} </div>
+                                            <div><i class="material-icons">date_range</i> StartDate: {{getFormatDate(account.StartDate)}}</div>
+                                            <!-- <div id="team-detail">
+                                              <router-link :to="'/team/' + account.IdOfTeam" >Show Team Detail </router-link>
+                                            </div> -->
+                                          </div>                                         
+                                        </div>
                                       </div>
+                                      <div style="display:grid; grid-template-columns:20% auto;padding-left:3rem; background-color:#F5F5F5">
+                                        <div style="font-weight:bold; font-size:18px">
+                                          Members:
+                                        </div>
+                                        <div style="font-size:15px;">
+                                          <div style="margin-bottom:0.2rem" :key="member.Id" v-for="member in account.Members">
+                                            -  {{member.Fullname}}<br>
+                                          </div>                                          
+                                        </div>
                                       </div>
                                     </v-card-text>
                                 </v-card>
                             </v-expansion-panel-content>
                       </v-expansion-panel>
                     </v-flex>                
-               
-                 </div>
+              </div>
+              <div v-else>
+                This location has no team.
+              </div>                             
+            </div>
                  <!-- <div v-else>
                    <i class="material-icons">perm_identity</i>
                  </div> -->                  
@@ -175,7 +197,7 @@
       </div>   
       <modal v-model="addPopUp" v-if="selectedWorkorder && status.length>0">        
         <div slot="header" class="title-wd"> 
-          Work Order Detail: {{selectedWorkorder.Name}}
+          Work Order: {{selectedWorkorder.Name}}
         </div>
         <div class="info-wd">
           <div class="" style="display:grid; grid-template-columns: 16% auto; font-size:20px">
@@ -206,15 +228,15 @@
             <div class="info-title">
              <i class="fa fa-calendar" style="color:gray;"></i>  Closed Date:
             </div>
-            <div class="info-content">
+            <div class="info-content" v-if="selectedWorkorder.ClosedDate">
                {{getFormatDate(selectedWorkorder.ClosedDate)}}
             </div>
           </div>                                        
         </div>
-        <div style="text-align:center; padding-bottom: 1.5rem">          
+        <!-- <div style="text-align:center; padding-bottom: 1.5rem">          
           <step-progress :workOrderStatus="{id: selectedWorkorder.StatusID, name: selectedWorkorder.Status}" 
                     :statusList="status.filter(s => s.name != 'Cancelled')"></step-progress>          
-        </div>   
+        </div>    -->
         <div >          
             <table style="width:100%"> 
               <thead >
@@ -248,7 +270,7 @@
                 </div>
             </div> -->
           </div>                     
-        <div slot="footer"><button class="button" v-on:click="addPopUp = false">OK</button></div>
+        <div slot="footer"><button class="button" v-on:click="addPopUp = false" style="background-color:var(--primary-color);color:white">OK</button></div>
       </modal>
   </div>
 </template>
@@ -260,14 +282,14 @@ import Vodal from "vodal";
 import "vodal/common.css";
 import "vodal/slide-up.css";
 import MapView from "./MapView";
-import StepProgress from "@/components/StepProgress/StepProgress.vue";
+// import StepProgress from "@/components/StepProgress/StepProgress.vue";
 import moment from "moment";
 
 export default {
   components: {
     MapView,
-    Vodal,
-    StepProgress
+    Vodal
+    // StepProgress
   },
   computed: {
     google: gmapApi,
@@ -280,38 +302,10 @@ export default {
       .get(Server.LOCATION_API_PATH)
       .then(response => {
         let data = response.data;
-        let minLongitude = data[0].Longitude;
-        let maxLongitude = data[0].Longitude;
-        let minLatitude = data[0].Latitude;
-        let maxLatitude = data[0].Latitude;
         data.forEach(location => {
           this.locations.push(location);
-          if (location.Longitude <= minLongitude) {
-            minLongitude = location.Longitude;
-          }
-          if (location.Longitude > maxLongitude) {
-            maxLongitude = location.Longitude;
-          }
-          if (location.Latitude <= minLatitude) {
-            minLatitude = location.Latitude;
-          }
-          if (location.Latitude > maxLatitude) {
-            maxLatitude = location.Latitude;
-          }
         });
-        this.medianLongitude = (minLongitude + maxLongitude) / 2;
-        this.medianLatitude = (minLatitude + maxLatitude) / 2;
-        // this.selectedLocation(this.locations[0]);
-        if (
-          this.$route.meta &&
-          this.$route.viewMode &&
-          this.$route.viewMode === "MapView"
-        ) {
-          let locationId = this.$route.params.locationId;
-          let location = data.filter(l => (l.Id = locationId))[0];
-          this.setSelectedLocation(location);
-          this.isListViewMode = false;
-        }
+        this.setSelectedLocation(data[0]);
       })
       .catch(error => {
         console.log(error);
@@ -325,7 +319,7 @@ export default {
       workorders: [],
       workorderDetails: [],
       selectedWorkorder: null,
-      team: [],
+      teams: [],
       selectedLocation: null,
       currentMode: 4,
       modes: {
@@ -352,7 +346,8 @@ export default {
         return "is-active-block";
       } else {
         return "";
-    }},
+      }
+    },
     setSelectedLocation(location) {
       // let url = `${Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH}/${location.Id}/getByLocationId`;
       // this.axios.get(url)
@@ -386,32 +381,30 @@ export default {
         })
         .catch(error => {
           console.log(error);
-
         });
-      },
+    },
     getWororderFromLocation(location) {
       this.workorders = [];
       let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
-      this.axios
-        .get(url)
-        .then(response => {
-          let data = response.data;
-          data.forEach(workorder => {
-            this.workorders.push(workorder);
-          })});
+      this.axios.get(url).then(response => {
+        let data = response.data;
+        data.forEach(workorder => {
+          this.workorders.push(workorder);
+        });
+      });
     },
-    getFormatDate(date){
+    getFormatDate(date) {
       return moment(date).format("L");
     },
     getTeamFromLocation(location) {
-      this.team = [];
+      this.teams = [];
       let url = `${Server.TEAM_BY_LOCATION_ID_API_PATH}/${location.Id}`;
       this.axios
         .get(url)
         .then(response => {
           let data = response.data;
-          data.forEach(account => {
-            this.team.push(account);
+          data.forEach(team => {
+            this.teams.push(team);
           });
         })
         .catch(error => {
@@ -435,20 +428,20 @@ export default {
           }
         });
     }
-  // chaubqn - start
-  // getLocationBlockFloorTile(locationId) {
-  //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
-  //   this.axios.get(url)
-  //     .then((res) => {
-  //       this.mapViewSelectedLocation = res.data;
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     })
-  // }
-  // chaubqn - end
-},
-}
+    // chaubqn - start
+    // getLocationBlockFloorTile(locationId) {
+    //   let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}/${locationId}`;
+    //   this.axios.get(url)
+    //     .then((res) => {
+    //       this.mapViewSelectedLocation = res.data;
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     })
+    // }
+    // chaubqn - end
+  }
+};
 </script>
 
 <style scoped>

@@ -4,7 +4,8 @@ var TYPES = require("tedious").TYPES;
 router.get("/", (request, response) => {
   request
     .sql(
-      "Select * From [Location] as l order by IsActive desc " + "for json path"
+      "Select * From [Location] as l order by IsActive desc,Name asc " +
+        "for json path"
     )
     .into(response);
 });
@@ -48,19 +49,21 @@ router.put("/update_location_floor_plan/:locationId", (req, res) => {
 // Get block floor tile of a location
 router.get("/floor_block_tile", (req, res) => {
   req
-    .sql("select lo.*, (select bl.*, (select fl.*, (select ti.* " +
-      "                                             from Tile as ti " +
-      "                                             where ti.FloorID = fl.Id " +
-      "                                             for json path) as [Tiles] " +
-      "                               from [Floor] as fl " +
-      "                               where fl.BlockID = bl.Id " +
-      "                               for json path) as [Floors] " +
-      "                 from [Block] as bl " +
-      "                 where bl.LocationID = lo.Id " +
-      "                 for json path) as [Blocks] " +
-      " from [Location] as lo " +
-      " where lo.IsActive = 1 " +
-      " for json path")
+    .sql(
+      "select lo.*, (select bl.*, (select fl.*, (select ti.* " +
+        "                                             from Tile as ti " +
+        "                                             where ti.FloorID = fl.Id " +
+        "                                             for json path) as [Tiles] " +
+        "                               from [Floor] as fl " +
+        "                               where fl.BlockID = bl.Id " +
+        "                               for json path) as [Floors] " +
+        "                 from [Block] as bl " +
+        "                 where bl.LocationID = lo.Id " +
+        "                 for json path) as [Blocks] " +
+        " from [Location] as lo " +
+        " where lo.IsActive = 1 " +
+        " for json path"
+    )
     .into(res);
 });
 
@@ -68,19 +71,21 @@ router.get("/floor_block_tile", (req, res) => {
 // Get block floor tile of a location
 router.get("/floor_block_tile/:locationId", (req, res) => {
   req
-    .sql("select lo.*, (select bl.*, (select fl.*, (select ti.* " +
-      "      from Tile as ti " +
-      "       where ti.FloorID = fl.Id " +
-      "       for json path) as [Tiles] " +
-      " from [Floor] as fl " +
-      " where fl.BlockID = bl.Id " +
-      " for json path) as [Floors] " +
-      " from [Block] as bl " +
-      " where bl.LocationID = @locationId " +
-      " for json path) as [Blocks] " +
-      " from [Location] as lo " +
-      " where lo.Id = @locationId and lo.IsActive = 1 " +
-      " for json path, without_array_wrapper")
+    .sql(
+      "select lo.*, (select bl.*, (select fl.*, (select ti.* " +
+        "      from Tile as ti " +
+        "       where ti.FloorID = fl.Id " +
+        "       for json path) as [Tiles] " +
+        " from [Floor] as fl " +
+        " where fl.BlockID = bl.Id " +
+        " for json path) as [Floors] " +
+        " from [Block] as bl " +
+        " where bl.LocationID = @locationId " +
+        " for json path) as [Blocks] " +
+        " from [Location] as lo " +
+        " where lo.Id = @locationId and lo.IsActive = 1 " +
+        " for json path, without_array_wrapper"
+    )
     .param("locationId", req.params.locationId, TYPES.Int)
     .into(res);
 });
