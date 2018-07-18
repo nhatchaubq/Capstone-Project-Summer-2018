@@ -13,8 +13,9 @@
   <div v-if="team" class="material-box" style="width: 50%">
 
       <div class="row" >
-        <div v-if="!editMode" class="col-9 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important">{{team.Name}}</div>
-        <input v-if="editMode" v-model.trim="team.Name" class="col-9 input1" style="font-size: 30px; color: var(--primary-color);height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important" >
+        <div v-if="!editMode" class="col-9 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important">{{team.Name}} </div>
+        <input v-if="editMode" v-model.trim="team.Name" class="col-9 input1" style="font-size: 30px; color: var(--primary-color);height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important" > 
+        <!-- <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> -->
         <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
       </div>
       <div class="row" style="margin: 0 0 0.5rem 0">
@@ -136,7 +137,7 @@
 
             <th><strong>Location Name </strong></th>
             <th><strong>Location Address</strong></th>
-            <th><strong>Position Name </strong></th>
+            <th><strong>Location status</strong></th>
             <th><strong>Block</strong></th>
             <th><strong>Floor</strong></th>
             <th><strong>Tile</strong></th>
@@ -150,7 +151,7 @@
             <tr :key="Loca.Id" v-for="Loca in team.Location" class="txtText" >
               <td style="width:20rem">{{Loca.Name ? Loca.Name : "N/A" }}</td>
               <td style="width:15rem">{{Loca.Address ? Loca.Address : "N/A"}} </td>
-              <td style="width:15rem">{{Loca.PositionName ? Loca.PositionName : "N/A"}} </td>
+              <td style="width:15rem">{{Loca.IsActive ? Loca.IsActive : "N/A"}} </td>
               <td style="width:15rem">{{Loca.Block ? Loca.Block : "N/A"}} </td>
               <td style="width:15rem">{{Loca.Floor ? Loca.Floor : "N/A"}} </td>
               <td style="width:15rem">{{Loca.Tile ? Loca.Tile : "N/A"}} </td>

@@ -14,7 +14,8 @@ router.get("/", (request, response) => {
       "JOIN Account as acc ON ta.AccountID =acc.Id   " +
       "where TeamID = team.Id and tr.Id =(SELECT Id from [TeamRoles] where TeamRole = N'Leader') for json path, without_array_wrapper)) as [Team.TeamLeader]  " +
       "FROM [Team] as team  " +
-      "ORDER BY Team.CreatedDate DESC for json path"
+      "ORDER BY Team.Name ASC " +
+      " for json path"
     )
 
     .into(response);
