@@ -19,6 +19,7 @@
   
           <th><strong>Role</strong></th>
   
+          <th><strong>Status</strong></th>
           <!-- <th><strong>Department</strong></th> -->
   
         </tr>
@@ -48,8 +49,12 @@
           <td>{{account.Phone ? account.Phone : "N/A"}}</td>
   
           <td>{{account.Role.Name}}</td>
-  
-          <!-- <td>{{account.Department.Name }}</td> -->
+
+          <strong>
+            <td :style="{color: account.IsActive? 'var(--primary-color)' : '#607D8B'}">{{account.IsActive? "Active" : "Inactive"}}</td>
+          </strong> 
+
+
   
         </tr>
   

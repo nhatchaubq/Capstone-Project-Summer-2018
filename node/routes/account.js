@@ -10,7 +10,8 @@ router.get("/", function (request, response) {
       "acc.Fullname as 'Account.Fullname', acc.Phone as 'Account.Phone', acc.IsActive as 'Account.IsActive', acc.StartDate as 'Account.StartDate', " +
       "acc.EndDate as 'Account.EndDate', acc.AvatarImage as 'Account.AvatarImage', acc.RoleID as 'Account.RoleId', r.Name as 'Account.Role.Name' " +
       "FROM [Account] as acc JOIN [Role] as r ON acc.RoleID = r.Id " +
-      "ORDER BY acc.StartDate DESC for json path"
+      "ORDER BY acc.IsActive DESC,acc.Username ASC " +
+      "for json path"
 
     )
     .into(response);
