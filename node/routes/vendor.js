@@ -20,28 +20,20 @@ router.get("/", (request, response) => {
 
 router.get("/:id", (request, response) => {
   request
-    .sql("	select v.*, " +
-      "json_query((SELECT * FROM [Equipment] WHERE Equipment.VendorID = @id for json path))as [Equipments], " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Máy xây dựng') for json path))as [EMayXayDung], " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Máy cơ khí') for json path))as [EMayCoKhi], " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Máy hàn') for json path))as [EMayHan],   " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Máy nén khí') for json path))as [EMayNenKhi],   " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Máy bơm') for json path))as [EMayBom],   " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Máy FAX') for json path))as [EMayFax],   " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Crane') for json path))as [ECrane],   " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Excavator') for json path))as [EExcavator],   " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Forklift') for json path))as [EForklift],   " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Dụng cụ đo') for json path))as [EDungCuDo],   " +
-      "json_query((SELECT e.* FROM [Equipment] as e JOIN [EquipmentCategory] as ec ON ec.Id =e.CategoryID  WHERE e.VendorID = @id and ec.Id = (SELECT ec.Id FROM [EquipmentCategory] as ec WHERE ec.Name = N'Dụng cụ điện') for json path))as [EDungCuDien],  	 " +
-      "json_query((select count(*) as [Quantity]   " +
-      "from Equipment as e    " +
-      "where e.VendorID = v.Id for json path, without_array_wrapper)) as [Equipment], " +
-      "json_query((select count(*) as [Quantity]   " +
-      "from Equipment as e    " +
-      "Join EquipmentItem as ei ON ei.EquipmentID =e.Id " +
-      "where e.VendorID = v.Id for json path, without_array_wrapper)) as [EquipmentItems]     " +
-      "FROM [Vendor] as v  " +
-      "WHERE v.Id = @id " +
+    .sql(
+      "select v.*,  " +
+      "json_query((SELECT e.*,ec.Name as 'ecName' FROM [Equipment] as e " +
+      "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
+      "WHERE e.VendorID = @id for json path))as [Equipments],   " +
+      "json_query((select count(*) as [Quantity]     " +
+      "from Equipment as e      " +
+      "where e.VendorID = v.Id for json path, without_array_wrapper)) as [Equipment],   " +
+      "json_query((select count(*) as [Quantity]     " +
+      "from Equipment as e      " +
+      "Join EquipmentItem as ei ON ei.EquipmentID =e.Id   " +
+      "where e.VendorID = v.Id for json path, without_array_wrapper)) as [EquipmentItems]       " +
+      "FROM [Vendor] as v    " +
+      "WHERE v.Id = @id   " +
       "for json path, without_array_wrapper "
 
     )
