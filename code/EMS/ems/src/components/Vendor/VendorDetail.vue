@@ -159,16 +159,16 @@
       </thead>  
       <tbody>
           <tr :key="Equipment.Id" v-for="Equipment in Vendor.Equipments" class="txtText" v-on:click="gotoDetail(Equipment.Id)" >
-            <td style="width:20rem">{{Equipment.Name ? Equipment.Name : "N/A" }}</td>
-            <td style="width:15rem">{{Equipment.MadeIn ? Equipment.MadeIn : "N/A"}} </td>
-            <td style="width:15rem">{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td>
+            <td style="width:50% !important">{{Equipment.Name ? Equipment.Name : "N/A" }}</td>
+            <td style="width:15% !important">{{Equipment.MadeIn ? Equipment.MadeIn : "N/A"}} </td>
+            <td style="width:20% !important">{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td>
 
           </tr>
       </tbody>
     </table>
-    <router-link to='/vendor1/add/'>
+    <!-- <router-link to='/vendor1/add/'>
       <button id="btn-add-vendor" class="button btn-primary material-shadow-animate">Add Vendor</button>
-    </router-link>
+    </router-link> -->
   </div>
 
 
