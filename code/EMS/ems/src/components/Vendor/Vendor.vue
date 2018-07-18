@@ -7,11 +7,11 @@
       <thead>
         <tr>
           <!-- <th><strong>ID</strong></th> -->
-          <th><strong>Business name</strong></th>
-          <th><strong>Equipment quantity</strong></th>
-          <th><strong>Business address</strong></th>
-          <th><strong>Website</strong></th>
-          <th><strong>Contact name</strong></th>
+          <th style="width:25% !important"><strong>Business name</strong></th>
+          <th style="width:10% !important"><strong>Item quantity</strong></th>
+          <th style="width:30% !important"><strong>Business address</strong></th>
+          <th style="width:20% !important"><strong>Website</strong></th>
+          <th style="width:15% !important"><strong>Contact name</strong></th>
 
           <!-- <th><strong>Department</strong></th> -->
         </tr>
