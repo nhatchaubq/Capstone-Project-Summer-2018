@@ -7,6 +7,7 @@
             </div>
             <div class="form-title-end">              
               <button  class="button" style="margin-right: .6rem"  v-on:click="$router.push('/location')">Cancel</button>
+              <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
               <button  class="button is-primary"  v-on:click="updateLocation()">Save Changes</button>              
             </div>
         </div>
@@ -29,28 +30,25 @@
                     <!-- <label v-if="location.WorkOrderQuantity >0" style="color: red">This location have working Work Oders.So you can't edit address!!! </label> -->
                 </div>
             </div>  
-            <div class="form-field" style="display:grid; grid-template-columns: 25% auto">
+            <div class="form-field" >
               <div>
                 <div class="form-field-title">
-                <strong> Status </strong>
+                <strong> Status </strong> <span v-if="location.Items" class="error-text"> (There are the equipments in this location. Can't change the activity status)</span>
                 </div>
                 <div class="form-field-input" style="padding-left:30px;padding-top:10px;">
                   <label class="radio" v-on:click="location.IsActive = true" style="margin-right:25px;">
-                    <input type="radio" name="status"  :checked="location.IsActive"> Active
+                    <input type="radio" name="status" style="padding-right:0.5rem"  :checked="location.IsActive">&nbsp&nbspActive
                   </label>
                   <label class="radio" v-on:click="() => {
                       if (!location.Items) {
                         location.IsActive = false
                       }
                     }">
-                    <input type="radio" name="status" :disabled="location.Items" :checked="!location.IsActive"> Inactive
+                    <input type="radio" name="status" style="padding-right:0.5rem" :disabled="location.Items" :checked="!location.IsActive">&nbsp&nbspInactive
                   </label>                                                  
                 </div>
               </div>
-              <div v-if="location.Items" style="color:red;font-size:20px">
-                <br>
-                NOTE: <label style="font-size:18px; color: black"> There are the equipments in this location. Can't change the activity status!!!</label>
-              </div>
+              
                 
                 
               </div>
@@ -94,12 +92,18 @@
         </div> -->
 
     </div>
+
 </template>
 
 <script>
 import Vue from "vue";
 import Server from "@/config/config.js";
+import Simplert from "vue2-simplert";
+import Utils from "@/utils.js";
 export default {
+  components: {
+    Simplert
+  },
   data() {
     return {
       location: null,
@@ -154,7 +158,7 @@ export default {
           console.log(error);
         });
     },
-    updateLocation() {
+    async updateLocation() {
       if (this.location.Name.trim() == "") {
         this.NoName = "Please enter new name!";
       } else if (this.location.Name.trim().length < 6) {
@@ -162,7 +166,6 @@ export default {
       } else if (this.location.Name.trim().length > 100) {
         this.NoName = "Use 100 characters or fewer for location's name";
       } else {
-        
         this.axios
           .put(Server.LOCATION_EDIT_API_PATH, {
             newLocation: {
@@ -181,7 +184,7 @@ export default {
                     "/" +
                     this.location.Id
                 )
-                .then(res => {
+                .then(async res => {
                   if (
                     this.location.TeamWithWorkOrdering != null &&
                     this.location.TeamWithWorkOrdering.length > 0
@@ -207,7 +210,13 @@ export default {
                       });
                     });
                   }
-                  alert("Successfully!!!");
+                  let obj = {
+                    title: "Update Location",
+                    message: "Successfully!!!",
+                    type: "success"
+                  };
+                  this.$refs.simplert.openSimplert(obj);
+                  await Utils.sleep(1500);
                   this.$router.push("/location");
                 })
                 .catch(error => {
@@ -253,7 +262,12 @@ export default {
         //   team => (!this.selectedTeams.includes(team))
         // );
       } else {
-        alert("This team have working Order. So you can't delete this team!!!");
+        let obj = {
+          title: "Delete A Team",
+          message: "This team have the working order. Can't delete them.",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
       }
     }
   },
