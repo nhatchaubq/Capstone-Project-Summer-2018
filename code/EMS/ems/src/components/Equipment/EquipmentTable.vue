@@ -16,11 +16,11 @@
                 <tr v-bind:key="equipment.Id" v-for="(equipment, index) in equipments" v-on:click="gotoDetail(equipment.Id)">
                     <td>{{ index + 1 }}</td>   
                     <td>{{equipment.Name}}</td>
-                    <td>{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
+                    <td style="width=40px">{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
                     <td>{{equipment.Vendor.Name}}</td>
                     <td>{{equipment.MadeIn}}</td>
                     <!-- <td>{{equipment.Price ? equipment.Price : 'n/a'}}</td> -->
-                    <td>{{equipment.Description ? equipment.Description : 'N/A' }}</td>
+                    <td style="width=70px">{{equipment.Description ? equipment.Description : 'N/A' }}</td>
                     <td>{{equipment.Category.Name}}</td>
                 </tr>
             </tbody>

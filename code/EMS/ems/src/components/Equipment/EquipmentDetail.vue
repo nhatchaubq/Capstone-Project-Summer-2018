@@ -2,7 +2,7 @@
 <div>
   <div style="padding: 0rem 2rem 0rem 1rem">
     <router-link to='/equipment'>
-        <a><span class="fa fa-chevron-left"></span> Back </a>
+        <a><span class="fa fa-chevron-left"></span> Back to Equipments </a>
     </router-link>
   </div>
     <div>
@@ -155,7 +155,6 @@
             <div class="" style="padding-top:0.5rem;">
             <div class="form-field-title">
               <span><strong>  Quantity (required) </strong></span>
-              
             </div>
             <div class="field is-horizontal">
                 <input type="number" min="1" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" >
@@ -241,8 +240,10 @@
               <div class="field" style=" display: grid; grid-template-columns: 10% 75% 10%">
                 <i class="material-icons" style="font-size: 2rem;">clear_all</i>
                 <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong>
-                <div class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button></div>  
-                <div class="" v-else><button class="btn-edit" style="color: white; border-bottom: 1px solid black;background-color: #26a69a; border-radius: 5px" disabled="disabled">Edit</button></div>  
+                <div class="" v-if="currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation)">
+                  <div class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button></div>  
+                </div>
+                <!-- <div class="" v-else><button class="btn-edit" style="color: white; border-bottom: 1px solid black;background-color: #26a69a; border-radius: 5px" disabled="disabled">Edit</button></div>   -->
               </div>
           </div>
           <div style="font-size: 0.9rem; font:roboto">  
@@ -258,7 +259,7 @@
               <div class="content-infor">
                 <div v-if="currentViewMode ==  viewModes.Details">
                   <div  class="">
-                    <span v-if="editItemMode"  style="color:red; font-size:14px">* is required, please input these fields</span>
+                    <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode: * is required, please input these fields</span>
                   <div class="rowpu" style="height: 36px" >
                     <div class="" style="margin-top:0.5rem" >
                         Serial Number:  
@@ -319,41 +320,54 @@
                 </div>
                 <div v-if="currentViewMode ==  viewModes.Status">
                   <div>
-                    <div class="rowstt" style="height: 36px; padding-bottom = 0.5rem" >
+                    <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode * is required, please input these fields</span>
+                    <div class="rowpu" style="display: grid; grid-template-columns: 20% 80%;" >
                       <div class="" style="margin-top:0.5rem;" >
                         Status:  
                       </div>
-                      <div class="select">
-                        <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem"  v-model="selectedItem.Item.StatusID">
+                      <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert>
+                      <!-- <div class="" v-if="!editItemMode" ><input v-model="selectedItem.Item.Status" class="input col-7 " type="text" disabled="disabled"></div> -->
+                      <div class="" v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.2rem">
+                        <select  class=""   v-model="selectedItem.Item.StatusID" disabled="disabled">
+                          <option :key="'equipmentItemStatus' + status.Id" v-for="status in statusOptions"
+                            :selected="selectedItem.Item.StatusID == status.Id "                    
+                            v-bind:value="status.Id">{{status.Name}}</option>
+                        </select>
+                      </div>
+                      <div class="select" v-else>
+                        <select  class="" style="border: 1px #9e9e9e solid; width: 100%"  v-model="selectedItem.Item.StatusID">
                           <option :key="'equipmentItemStatus' + status.Id" v-for="status in statusOptions"
                             :selected="selectedItem.Item.StatusID == status.Id "                    
                             v-bind:value="status.Id">{{status.Name}}</option>
                         </select>
                       </div> 
-                      <div>
-                      <div class="" v-if="!editItemMode"> <button class="" style="background-color: #bdbdbd8f; color: white;font-size: 18px;border-radius: 8px;height: 36px;width: 130px;" disabled="disabled">Change Status</button></div>
-                      <div class="" v-else> <button class="btn-changeStt" v-on:click="changeItemStatus">Change Status</button></div>
+                    </div>
+                    <div v-if="editItemMode" class="rowpu" style="display: grid; grid-template-columns: 20% 80%;" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Note:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
                       </div>
+                      <textarea v-model="changeItemSttDescription" cols="7" rows="3" style="border-style:solid; border-color:#b0bec5;" placeholder="Why do you change into this status?"> </textarea>
                     </div>
-                    <div class="rowpu" style="display: grid; grid-template-columns: 18% 82%;" >
-                    <div class="" style="margin-top:0.5rem" >
-                        Description:  
+                    <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
+                      <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
+                      <button class="btn-UpdateItem" v-on:click="changeItemStatus">Update Status</button>
                     </div>
-                      <textarea v-model="changeItemSttDescription" cols="7" rows="4" style="border-style:solid; border-color:#b0bec5;"> </textarea>
-                  </div>
-                    <div class="wrap-table" style="max-height: 300px; overflow-y: auto">
+                    <div class="wrap-table" style="max-height: 310px; overflow-y: auto; padding-top:0,5rem">
+                      <div><h4 style="font-style: italic">Table: Equipment status history</h4></div>
                     <table class="mytable">
                         <thead>
-                          <tr>                            
+                          <tr>
+                            <th><strong>Order#</strong></th>                            
                             <th><strong>From</strong></th>
                             <th><strong>To</strong></th>
-                            <th><strong>User</strong></th>
+                            <th><strong>By_User</strong></th>
                             <th><strong>Date</strong></th>
-                            <th><strong>Description</strong></th>
+                            <th><strong>Note</strong></th>
                           </tr>
                         </thead>  
                           <tbody>
-                            <tr v-for="history in statusHistories" style="font-size=16">
+                            <tr v-for="(history, index) in statusHistories" style="font-size=16">
+                              <td style="font-size=14;">{{index + 1}}</td>
                               <td style="font-size=14;">{{history.OldStatus.Name}}</td>    
                               <td style="font-size=14;">{{history.NewStatus.Name}}</td>  
                               <td style="font-size=14;">{{history.Fullname}}</td>  
@@ -366,122 +380,250 @@
                   </div>
                 </div>
                 <div v-if="currentViewMode ==  viewModes.Position">
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
-                        Location:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                  <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode * is required, please input these fields</span>
+                  <div class = "" v-if="itemLocationID == lostLocation">
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Location: 
+                      </div>
+                      <div class="">
+                        <div class="" ><input v-model="itemLocationID" class="input col-7 " type="text" disabled="disabled"></div>
+                      </div>
                     </div>
-                    <div class="">
-                      <div class="" v-if="itemLocationID == lostLocation"><input v-if="!editItemMode" v-model="itemLocationID" class="input col-7 " type="text" disabled="disabled"></div>
-                      <div class="" v-else>
-                        <input v-if="!editItemMode" v-model="selectedItem.Item.Location" class="input col-7 " type="text" disabled="disabled">
-                        <div v-else class="select" style="width: 100%">
-                        <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%"  v-model="selectedItem.Item.LocationID">
-                          <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
-                            v-bind:value="location.Id">{{location.Name}}</option>
-                        </select>
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Address:  
+                      </div>
+                      <div class="">
+                        <div class="" ><input v-model="itemLocationID" class="input col-7 " type="text" disabled="disabled"></div>
+                      </div>
+                    </div>
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Block: 
+                      </div>
+                      <div class="">
+                        <div class=""><input v-model="itemBlockID" class="input col-7 " type="text" disabled="disabled"></div>
+                      </div>
+                    </div>
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Floor:  
+                      </div>
+                      <div class="">
+                        <div class="" ><input v-model="itemFloorID" class="input col-7 " type="text" disabled="disabled"></div>
+                      </div>
+                    </div>
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Tile:  
+                      </div>
+                      <div class="">
+                        <div class=""><input v-model="itemTileID" class="input col-7 " type="text" disabled="disabled"></div>
+                      </div>
+                    </div>
+                  
+                  </div>
+                  <div class="" v-else>
+                      <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                        <div class="" style="margin-top:0.25rem;height: 100%" >
+                            Location:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                        </div>
+                        <div class="">
+                          <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
+                            <select  class=""  v-model="selectedItem.Item.LocationID" disabled="disabled">
+                              <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
+                                v-bind:value="location.Id">{{location.Name}}</option>
+                            </select>
+                          </div>
+                        <div v-else class="select" style="width: 100%;height:100%">
+                          <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.LocationID">
+                            <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
+                              v-bind:value="location.Id">{{location.Name}}</option>
+                          </select>
                         </div> 
+                        </div>
+                      </div>
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.25rem" >
+                          Address:  
+                      </div>
+                      <div class="">
+                        <div  style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem" disable="disable">
+                            <select  class=""  v-model="selectedItem.Item.LocationID" disabled="disabled">
+                              <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
+                                v-bind:value="location.Id">{{location.Address}}</option>
+                            </select>
+                          </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
-                        Address:  
-                    </div>
-                    <div class="">
-                      <div class="" v-if="itemLocationID == lostLocation"><input v-model="itemLocationID" class="input col-7 " type="text" disabled="disabled"></div>
-                      <div class="" v-else>
-                        <input  v-model="selectedItem.Item.Address" class="input col-7 " type="text" disabled="disabled">
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.25rem" >
+                          Block:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
                       </div>
-                    </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
-                        Block:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                    </div>
-                    <div class="">
-                      <div class="" v-if="itemBlockID == lostBlock"><input v-if="!editItemMode" v-model="itemBlockID" class="input col-7 " type="text" disabled="disabled"></div>
-                      <div class="" v-else>
-                        <input v-if="!editItemMode" v-model="selectedItem.Item.Block" class="input col-7 " type="text" disabled="disabled">
-                        <div v-else class="select" style="width: 100%">
-                            <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%"  v-model="selectedItem.Item.BlockID">
-                              <option :key="'equipmentItemBlock' + block.Id" v-for="block in blockOptions"
-                                                  
+                      <div class="">
+                        <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
+                          <select  class=""  v-model="selectedItem.Item.BlockID" disabled="disabled">
+                              <option :key="'equipmentItemBlock' + block.Id" v-for="block in blockOptions"            
+                                v-bind:value="block.Id">{{block.Name}}</option>
+                            </select>
+                        </div>
+                        <div v-else class="select" style="width: 100%;height:100%">
+                            <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.BlockID">
+                              <option :key="'equipmentItemBlock' + block.Id" v-for="block in blockOptions"            
                                 v-bind:value="block.Id">{{block.Name}}</option>
                             </select>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
-                        Floor:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                    </div>
-                    <div class="">
-                      <div class="" v-if="itemFloorID == lostFloor"><input v-if="!editItemMode" v-model="itemFloorID" class="input col-7 " type="text" disabled="disabled"></div>
-                      <div class="" v-else>
-                        <input v-if="!editItemMode" v-model="selectedItem.Item.FLoor" class="input col-7 " type="text" disabled="disabled">
-                        <div v-else class="select" style="width: 100%">
-                            <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%"  v-model="selectedItem.Item.FloorID">
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.25rem" >
+                          Floor:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                      </div>
+                      <div class="">
+                        <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
+                          <select  class=""   v-model="selectedItem.Item.FloorID" disabled="disabled">
                               <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"   
-                                  
+                                :value="floor.Id">{{floor.Name}}
+                              </option>
+                            </select>
+                        </div>
+                        <div v-else class="select" style="width: 100%;height:100%">
+                            <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.FloorID">
+                              <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"   
                                 :value="floor.Id">{{floor.Name}}
                               </option>
                             </select>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
-                        Tile:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                    </div>
-                    <div class="">
-                      <div class="" v-if="itemTileID == lostTile"><input v-if="!editItemMode" v-model="itemTileID" class="input col-7 " type="text" disabled="disabled"></div>
-                      <div class="" v-else>
-                        <input v-if="!editItemMode" v-model="selectedItem.Item.Tile" value="selectedItem.Item.Tile ? selectedItem.Item.Tile : 'undefined'" class="input col-7 " type="text" disabled="disabled">
-                        <div v-else class="select" style="width: 100%">
-                            <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%"  v-model="selectedItem.Item.TileID">
-                              <option :key="'equipmentItemTile' + tile.Id" v-for="tile in tileOptions"
-                                                  
-                                v-bind:value="tile.Id">{{tile.Name}}</option>
-                            </select>
-                        </div>
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.25rem" >
+                          Tile:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
                       </div>
+                        <div class="">
+                          <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
+                              <select  class=""   v-model="selectedItem.Item.TileID" disabled="disabled">
+                                <option :key="'equipmentItemTile' + tile.Id" v-for="tile in tileOptions" 
+                                  v-bind:value="tile.Id">{{tile.Name}}</option>
+                              </select>
+                          </div>
+                          <div v-else class="select" style="width: 100%;height:100%">
+                              <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.TileID">
+                                <option :key="'equipmentItemTile' + tile.Id" v-for="tile in tileOptions"                 
+                                  v-bind:value="tile.Id">{{tile.Name}}</option>
+                              </select>
+                          </div>
+                        </div>
                     </div>
-                  </div>
-                  <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
-                    <button class="btn-CancelItem" v-on:click="cancelUpdatePosition">Cancel</button>
-                    <button  class="btn-UpdateItem" v-on:click="updatePositionItem">Update Item</button>
+                    <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
+                      <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
+                      <button  class="btn-UpdateItem" v-on:click="updatePositionItem">Update Item</button>
+                    </div>
                   </div>
                 </div>
                 <div v-if="currentViewMode ==  viewModes.WorkOrder">
-                  <div class="wrap-table" style="max-height: 300px; overflow-y: auto">
-                    <table class="mytable">
+                  <div class="wrap-table"  style="max-height: 300px; overflow-y: auto">
+                    <div class="" v-if="allworkorder != null">
+                      <div><h4 style="font-style: italic">Table: Equipment work order history</h4></div>
+                      <table class="mytable">
                         <thead>
-                          <tr>                            
-                            <th><strong>Name</strong></th>
-                            <th><strong>RequestUser</strong></th>
-                            <th><strong>Status</strong></th>
-                          </tr>
-                        </thead>  
-                          <tbody>
-                            <tr v-for="workorder in allworkorder" style="font-size=16">
-                              <td style="font-size=14;">{{workorder.Name}}</td>    
-                              <td style="font-size=14;">{{workorder.RequestUser}}</td>  
-                              <td style="font-size=14;">{{workorder.Status}}</td>     
+                            <tr>
+                              <th><strong>Order #</strong></th>                            
+                              <th><strong>Name</strong></th>
+                              <th><strong>RequestUser</strong></th>
+                              <th><strong>Status</strong></th>
                             </tr>
-                          </tbody>
-                      </table>
-                    </div>  
+                          </thead>  
+                            <tbody>
+                              <tr v-for="(workorder, index) in allworkorder" style="font-size=16">
+                                <td style="font-size=14;">{{index + 1}}</td>    
+                                <td style="font-size=14;">{{workorder.Name}}</td>    
+                                <td style="font-size=14;">{{workorder.RequestUser}}</td>  
+                                <td style="font-size=14;">{{workorder.Status}}</td>     
+                              </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="" v-else >
+                      <h3>This item has not been in any work order</h3>
+                    </div> 
+                  </div>  
                 </div>
                 <div v-else-if="currentViewMode ==  viewModes.RunTime">
-                  <p>This is Runtime tab - Coming soon</p>
+                  <div class="">
+                    <div class="rowpu" style="height: 36px" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Import-Date:  
+                      </div>
+                      <div class="">  
+                        <input  v-model="selectedItem.Item.ImportDate" class="input col-7 " type="text" disabled="disabled"> 
+                      </div>
+                    </div>
+                    <div class="rowpu" style="height: 36px" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Run-times:  
+                      </div>
+                      <div>  
+                        <input  v-model="selectedItem.Item.RuntimeDays" class="input col-7 " type="text" disabled="disabled"> 
+                      </div>
+                    </div>
+                    <div class="rowpu" style="height: 36px" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Last working-Date:  
+                      </div>
+                      <div>  
+                        <input  v-model="downtime" class="input col-7 " type="text" disabled="disabled"> 
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>  
           </div>
         </div>  
         <div slot="footer">
           </div>
+      </modal>
+      <modal v-model="changePositonLost">
+        <div slot="header">
+          <h2>Select position for item</h2>
+        </div>
+         <div style="font-size: 0.9rem">
+            <div class="" style="padding-top:0.5rem;">
+             <div class="form-field-title">
+               <span><strong>  Location (required) </strong></span>
+               <span v-if="CreateItemErrors.NoLocation != ''">. <span class="error-text">{{ CreateItemErrors.NoLocation }}</span></span>
+              </div>
+              <div>
+                <model-select style="width: 100% !important" :options="locationModalSelect" v-model="form.selectedLocation" placeholder="Select a location  "></model-select>  
+              </div>
+              <div class="form-field-title">
+                <span><strong>  Block (required) </strong></span>
+                <span v-if="CreateItemErrors.NoBlock != ''">. <span class="error-text">{{ CreateItemErrors.NoBlock }}</span></span>
+              </div>
+              <div>
+                <model-select style="width: 100% !important" :options="blockModalSelect" v-model="form.selectedBlock" placeholder="Select a block  "></model-select>               
+              </div>
+              <div class="form-field-title">
+                <span><strong>  Floor (required) </strong></span>
+                <span v-if="CreateItemErrors.NoFloor != ''">. <span class="error-text">{{ CreateItemErrors.NoFloor }}</span></span>
+              </div>
+              <div>
+                <model-select style="width: 100% !important" :options="floorModalSelect" v-model="form.selectedFloor" placeholder="Select a floor  "></model-select>             
+              </div>
+              <div class="form-field-title">
+                <span><strong>  Tile (required) </strong></span>
+                <span v-if="CreateItemErrors.NoTile != ''">. <span class="error-text">{{ CreateItemErrors.NoTile }}</span></span>
+              </div>
+              <div>
+                <model-select style="width: 100% !important" :options="tileModalSelect" v-model="form.selectedTile" placeholder="Select a tile  "></model-select>  
+              </div>
+            </div>
+          </div> 
+        <div slot="footer" style="display: relative; align-items: right; justify-content: right;">
+          <button class="btn-CancelItem" v-on:click="cancelPositionEQTLost">Cancel</button>
+          <button  class="btn-UpdateItem" v-on:click="updatePositionEQTLost">Update Item</button>
+        </div>
       </modal>
       </div>
   </div>
@@ -497,10 +639,12 @@ import EquipmentDetailPopup from "./EquipmentDetailPopup";
 import Vodal from "vodal";
 import moment from "moment";
 import Utils from "@/utils.js";
+import Simplert from "vue2-simplert";
 export default {
   // name: "ConditionalModal",
 
   components: {
+    Simplert,
     ModelSelect,
     Vodal,
     EquipmentDetailPopup
@@ -657,15 +801,16 @@ export default {
         NoTile: "Please choose tile for item(s)",
         NoBarcode: "Please create serial number for item(s)"
       },
-      lostTile: "undefined",
-      lostFloor: "undefined",
-      lostBlock: "undefined",
-      lostLocation: "undefined",
-      lostAddress: "undefined",
+      lostTile: "Undefined",
+      lostFloor: "Undefined",
+      lostBlock: "Undefined",
+      lostLocation: "Undefined",
+      lostAddress: "Undefined",
       showingBarcode: false,
       changeItemSttDescription: "",
       show: false,
       addPopUp: false,
+      changePositonLost: false,
       addItemMode: false,
       detailPopUp: false,
       selectedItem: null,
@@ -674,6 +819,8 @@ export default {
       EquimentByID: null,
       equipmentId: "",
       quality: 0,
+      updateNumber: 0,
+      downtime: 0,
       Items: [],
       files: "",
       imageUrl: "",
@@ -788,20 +935,37 @@ export default {
       this.files = [];
     },
     cancelUpdateItem() {
-      this.editItemMode = !this.editItemMode;
+      this.editItemMode = false;
       this.selectedItem.Item.Price = this.itemPrice;
       this.selectedItem.Item.Description = this.itemDescription;
       this.selectedItem.Item.WarrantyDuration = this.itemWarranty;
       this.selectedItem.Item.NextMaintainDate = this.itemNextMaintainDate;
-    },
-    cancelUpdatePosition() {
-      this.editItemMode = !this.editItemMode;
       this.selectedItem.Item.LocationID = this.itemLocationID;
       this.selectedItem.Item.BlockID = this.itemBlockID;
       this.selectedItem.Item.FloorID = this.itemFloorID;
       this.selectedItem.Item.TileID = this.itemTileID;
+      this.selectedItem.Item.StatusID = this.oldstt;
+      this.changeItemSttDescription = "";
+    },
+    cancelUpdatePosition() {
+      this.editItemMode = false;
+      this.selectedItem.Item.LocationID = this.itemLocationID;
+      this.selectedItem.Item.BlockID = this.itemBlockID;
+      this.selectedItem.Item.FloorID = this.itemFloorID;
+      this.selectedItem.Item.TileID = this.itemTileID;
+      this.cancelUpdateItem();
+      this.cancelChangeStatus();
       // alert(this.itemTileID);
       // alert(this.selectedItem.Item.TileID);
+    },
+    cancelChangeStatus() {
+      this.editItemMode = false;
+      this.changeItemSttDescription = "";
+      this.cancelUpdatePosition();
+      this.cancelUpdateItem();
+    },
+    cancelPositionEQTLost(){
+      this.changePositonLost = false;
     },
     setViewMode(mode) {
       this.currentViewMode = mode;
@@ -911,10 +1075,10 @@ export default {
       this.axios
         .get("http://localhost:3000/api/equipmentItem/sttItem/" + itemId)
         .then(response => {
-          let data = response.data; 
-            this.currentsttId = data.Id;
-            this.currentsttName = data.Name;
-          if(this.currentsttName.toUpperCase() != "LOST"){
+          let data = response.data;
+          this.currentsttId = data.Id;
+          this.currentsttName = data.Name;
+          if (this.currentsttName.toUpperCase() != "LOST") {
             this.axios
               .get("http://localhost:3000/api/equipmentItem/Item/" + itemId)
               .then(response => {
@@ -934,8 +1098,11 @@ export default {
                 this.oldstt = this.selectedItem.Item.StatusID;
                 this.statusHistories = [];
                 this.allworkorder = [];
+                this.downtime = 0;
                 this.axios
-                  .get("http://localhost:3000/api/equipmentItemHistory/" + itemId)
+                  .get(
+                    "http://localhost:3000/api/equipmentItemHistory/" + itemId
+                  )
                   .then(response => {
                     let data = response.data;
                     data.forEach(statusHistory => {
@@ -947,7 +1114,8 @@ export default {
                   });
                 this.axios
                   .get(
-                    "http://localhost:3000/api/equipmentItem/allworkorder/" + itemId
+                    "http://localhost:3000/api/equipmentItem/allworkorder/" +
+                      itemId
                   )
                   .then(response => {
                     let data = response.data;
@@ -958,13 +1126,29 @@ export default {
                   .catch(error => {
                     alert(error);
                   });
+                  this.axios
+                    .get(
+                      "http://localhost:3000/api/equipmentItem/closedate/" +
+                        itemId
+                    )
+                    .then(response => {
+                      let data = response.data;
+                      data.forEach(closedate => {
+                        this.downtime = closedate.ClosedDate;
+                      });
+                    })
+                    .catch(error => {
+                      alert(error);
+                    });
               })
               .catch(error => {
                 console.log(error);
               });
-          }else{
-           this.axios
-              .get("http://localhost:3000/api/equipmentItem/Itemloststt/" + itemId)
+          } else {
+            this.axios
+              .get(
+                "http://localhost:3000/api/equipmentItem/Itemloststt/" + itemId
+              )
               .then(response => {
                 if (this.editMode == true) {
                   this.editMode = false;
@@ -983,7 +1167,9 @@ export default {
                 this.statusHistories = [];
                 this.allworkorder = [];
                 this.axios
-                  .get("http://localhost:3000/api/equipmentItemHistory/" + itemId)
+                  .get(
+                    "http://localhost:3000/api/equipmentItemHistory/" + itemId
+                  )
                   .then(response => {
                     let data = response.data;
                     data.forEach(statusHistory => {
@@ -995,7 +1181,8 @@ export default {
                   });
                 this.axios
                   .get(
-                    "http://localhost:3000/api/equipmentItem/allworkorder/" + itemId
+                    "http://localhost:3000/api/equipmentItem/allworkorder/" +
+                      itemId
                   )
                   .then(response => {
                     let data = response.data;
@@ -1015,8 +1202,6 @@ export default {
         .catch(error => {
           alert(error);
         });
-        
-        
     },
     addItem() {
       if (this.editMode == true) {
@@ -1078,81 +1263,176 @@ export default {
           });
       }
     },
-    updatePositionItem() {
-      if(this.selectedItem.Item.TileID == null){
-        alert('Please choose position for this item')
-      }else{
-        this.axios
-        .put(
-          "http://localhost:3000/api/equipmentItem/position/tile/" +
-            this.selectedItem.Item.Id,
-          {
-            tileId: this.selectedItem.Item.TileID
-          }
-        )
-        .then(function(respone) {
-          alert("Update successfully");
-          location.reload();
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-      }
-    },
-    changeItemStatus() {
-      let authUser = JSON.parse(window.localStorage.getItem("user"));
-      // alert(this.changeItemSttDescription);
-      // alert(this.selectedItem.Item.StatusID);
-      if (this.oldstt == this.selectedItem.Item.StatusID) {
-        alert("Cannot updatde, please choose new status");
+    async updatePositionItem() {
+      if (this.selectedItem.Item.TileID === "") {
+        alert("Please choose position for this item");
       } else {
-        this.axios
-          .put(
-            "http://localhost:3000/api/equipmentItem/status/" +
+        var result = false;
+        try {
+          let res = await this.axios.put(
+            "http://localhost:3000/api/equipmentItem/position/tile/" +
               this.selectedItem.Item.Id,
             {
-              userId: authUser.Id,
-              newStatusId: this.selectedItem.Item.StatusID,
-              description: this.changeItemSttDescription
+              tileId: this.selectedItem.Item.TileID
             }
-          )
-          .then(function(respone) {
-            alert("Update successfully");
-            location.reload();
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
-      }
-      if (this.selectedItem.Item.StatusID == 7) {
-        alert(this.selectedItem.Item.Id);
-        this.axios
-          .put(
-            "http://localhost:3000/api/equipmentItem/tileId/" +
-              this.selectedItem.Item.Id
-          )
-          .then(function(respone) {
-            location.reload();
-          })
-          .catch(function(error) {
-            consonle.log(error);
-          });
+          );
+          if (res.status == 200) {
+            result = true;
+          }
+        } catch (error) {
+          console.log(error);
+          result = false;
+        }
+        await Utils.sleep(100);
+        if (result) {
+          alert("Update successfully");
+          this.updateNumber = this.updateNumber + 1;
+          this.editItemMode = !this.editItemMode;
+          this.itemLocationID = this.selectedItem.Item.LocationID;
+          this.itemBlockID = this.selectedItem.Item.BlockID;
+          this.itemFloorID = this.selectedItem.Item.FloorID;
+          this.itemTileID = this.selectedItem.Item.TileID;
+        } else {
+          alert("Update failed");
+        }
       }
     },
-    updateItem() {
+    async updatePositionEQTLost(){
+      let authUser = JSON.parse(window.localStorage.getItem("user"));
+      if (this.form.selectedTile.value === "") {
+        alert('Please choose position for this item to update')
+      } else {
+        alert(this.selectedItem.Item.Id);
+        alert(this.form.selectedTile.value);
+        var result = false;
+        try {
+          let res = await this.axios.put(
+            "http://localhost:3000/api/equipmentItem/position/tile/" +
+              this.selectedItem.Item.Id,
+            {
+              tileId: this.form.selectedTile.value
+            }
+          );
+          if (res.status == 200) {
+            result = true;
+          }
+        } catch (error) {
+          console.log(error);
+          result = false;
+        }
+        await Utils.sleep(100);
+        if (result) {
+          var updateSttBool = false;
+          try {
+            let res = await this.axios.put(
+              "http://localhost:3000/api/equipmentItem/status/" +
+                this.selectedItem.Item.Id,
+              {
+                userId: authUser.Id,
+                newStatusId: this.selectedItem.Item.StatusID,
+                description: this.changeItemSttDescription
+              }
+            );
+            if (res.status == 200) {
+              updateSttBool = true;
+            }
+          } catch (error) {
+            console.log(error);
+            updateSttBool = false;
+          }
+          await Utils.sleep(50);
+          if (updateSttBool) {
+            alert("Update status successfully");
+            this.changePositonLost = false;
+            this.updateNumber = this.updateNumber + 1;
+            this.editItemMode = !this.editItemMode;
+          } else {
+            alert("Update failed");
+          }
+        } else {
+          alert("Update failed");
+        }
+      }
+    },
+    async changeItemStatus() {
+      let authUser = JSON.parse(window.localStorage.getItem("user"));
+      if (
+        this.changeItemSttDescription.trim().length > 250 ||
+        this.changeItemSttDescription.trim().length < 5
+      ) {
+        let obj = {
+          message: "Please enter note from 5 to 250 characters",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      } else if (this.oldstt == this.selectedItem.Item.StatusID) {
+        let obj = {
+          message: "Please choose new status to update",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      } else {
+        if (this.currentsttName.toUpperCase() == "LOST") {
+          alert("lost");
+          this.changePositonLost = true;
+        } else {
+          alert("k lost");
+          var result = false;
+          try {
+            let res = await this.axios.put(
+              "http://localhost:3000/api/equipmentItem/status/" +
+                this.selectedItem.Item.Id,
+              {
+                userId: authUser.Id,
+                newStatusId: this.selectedItem.Item.StatusID,
+                description: this.changeItemSttDescription
+              }
+            );
+            if (res.status == 200) {
+              result = true;
+            }
+          } catch (error) {
+            console.log(error);
+            result = false;
+          }
+          await Utils.sleep(50);
+          if (result) {
+            alert("Update status successfully");
+            this.updateNumber = this.updateNumber + 1;
+            this.editItemMode = !this.editItemMode;
+            // this.currentsttName = this.selectedItem.Item.Status;
+            // this.currentsttId = this.this.selectedItem.Item.StatusID;
+          } else {
+            alert("Update failed");
+          }
+        }
+      }
+
+      // }
+      // if (this.selectedItem.Item.StatusID == 7) {
+      //   alert(this.selectedItem.Item.Id);
+      //   this.axios
+      //     .put(
+      //       "http://localhost:3000/api/equipmentItem/tileId/" +
+      //         this.selectedItem.Item.Id
+      //     )
+      //     .then(function(respone) {
+      //       location.reload();
+      //     })
+      //     .catch(function(error) {
+      //       consonle.log(error);
+      //     });
+      // }
+    },
+    async updateItem() {
       // if (this.selectedStatus.value == "") {
       //   alert("Please choose Status for this Item");
       // } else {
       // alert(this.selectedItem.Item.Id);
-
-      let importdate = moment(this.selectedItem.Item.ImportDate).format("L");
-      let currentdate = moment(Date.now()).format("L");
-      let lastmaitaindate = moment(
-        this.selectedItem.Item.LastMaintainDate
-      ).format("L");
+      let currentdate = moment().valueOf();
       let nextmaintaindate = moment(
         this.selectedItem.Item.NextMaintainDate
-      ).format("L");
+      ).valueOf();
       if (
         this.selectedItem.Item.Price === "" ||
         this.selectedItem.Item.Price < 50000
@@ -1163,11 +1443,12 @@ export default {
         this.selectedItem.Item.WarrantyDuration < 1
       ) {
         alert("Warranty durration must be bigger than 0");
-      } else if (currentdate > nextmaintaindate) {
+      } else if (nextmaintaindate < currentdate) {
         alert("Next maintain date must be BIGGER than current date");
       } else {
-        this.axios
-          .put(
+        var result = false;
+        try {
+          let res = await this.axios.put(
             "http://localhost:3000/api/equipmentItem/" +
               this.selectedItem.Item.Id,
             {
@@ -1180,19 +1461,88 @@ export default {
               nextmaintaindate: this.selectedItem.Item.NextMaintainDate,
               description: this.selectedItem.Item.Description
             }
-          )
-          .then(function(respone) {
-            alert("Update successfully");
-            location.reload();
-            this.editItemMode = !this.editItemMode;
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+          );
+          if (res.status == 200) {
+            result = true;
+          }
+        } catch (error) {
+          console.log(error);
+          result = false;
+        }
+        await Utils.sleep(100);
+
+        if (result) {
+          alert("Update successfully");
+          this.updateNumber = this.updateNumber + 1;
+          this.editItemMode = !this.editItemMode;
+          this.itemPrice = this.selectedItem.Item.Price;
+          this.itemDescription = this.selectedItem.Item.Description;
+          this.itemWarranty = this.selectedItem.Item.WarrantyDuration;
+          this.itemNextMaintainDate = this.selectedItem.Item.NextMaintainDate;
+        } else {
+          alert("UPdate failed");
+        }
+        // this.axios
+        //   .put(
+        //     "http://localhost:3000/api/equipmentItem/" +
+        //       this.selectedItem.Item.Id,
+        //     {
+        //       // id: this.selectedItem.Item.Id,
+        //       warrantyDuration: this.selectedItem.Item.WarrantyDuration,
+        //       runtimeDays: this.selectedItem.Item.RuntimeDays,
+        //       price: this.selectedItem.Item.Price,
+        //       importdate: this.selectedItem.Item.ImportDate,
+        //       lastmaintaindate: this.selectedItem.Item.LastMaintainDate,
+        //       nextmaintaindate: this.selectedItem.Item.NextMaintainDate,
+        //       description: this.selectedItem.Item.Description
+        //     }
+        //   )
+        //   .then(function(respone) {
+        //     alert("Update successfully");
+        //     this.updateNumber = this.updateNumber + 1;
+        //     this.setSelectedItem(itemId);
+        //   })
+        //   .catch(function(error) {
+        //     console.log(error);
+        //   });
       }
     }
   },
   watch: {
+    changePositonLost: function(){
+      if (this.changePositonLost == false){
+        this.form.selectedLocation.value = "";
+        this.form.selectedLocation.text = "";
+        this.locationModalSelect = [];
+        this.form.selectedBlock.value = "";
+        this.form.selectedBlock.text = "";
+        this.blockModalSelect = [];
+        this.form.selectedFloor.value = "";
+        this.form.selectedFloor.text = "";
+        this.floorModalSelect = [];
+        this.form.selectedTile.value = "";
+        this.form.selectedTile.text = "";
+        this.tileModalSelect = [];
+      }
+      if (this.changePositonLost == true) {
+        this.axios
+          .get("http://localhost:3000/api/location")
+          .then(response => {
+            let data = response.data;
+            data.forEach(location => {
+              let option = {
+                text: location.Name,
+                value: location.Id
+              };
+              this.locationModalSelect.push(option);
+              // alert(this.locationModalSelect[0].value);
+            });
+          })
+          .catch(error => {
+            alert(error);
+          });
+      }
+    },
     addPopUp: function() {
       if (this.addPopUp == false) {
         this.addItemMode = !this.addItemMode;
@@ -1224,23 +1574,23 @@ export default {
         this.CreateItemErrors.NoTile = "";
         this.CreateItemErrors.NoBarcode = "";
       }
-      if(this.addPopUp == true){
+      if (this.addPopUp == true) {
         this.axios
-      .get("http://localhost:3000/api/location")
-      .then(response => {
-        let data = response.data;
-        data.forEach(location => {
-          let option = {
-            text: location.Name,
-            value: location.Id
-          };
-          this.locationModalSelect.push(option);
-          // alert(this.locationModalSelect[0].value);
-        });
-      })
-      .catch(error => {
-        alert(error);
-      });
+          .get("http://localhost:3000/api/location")
+          .then(response => {
+            let data = response.data;
+            data.forEach(location => {
+              let option = {
+                text: location.Name,
+                value: location.Id
+              };
+              this.locationModalSelect.push(option);
+              // alert(this.locationModalSelect[0].value);
+            });
+          })
+          .catch(error => {
+            alert(error);
+          });
       }
     },
     detailPopUp: function() {
@@ -1248,9 +1598,10 @@ export default {
         this.selectedItem.Item.Price = this.selectedItem.Item.Price;
         this.selectedItem.Item.NextMaintainDate = this.selectedItem.Item.NextMaintainDate;
         this.selectedItem.Item.Description = this.selectedItem.Item.Description;
-        if(this.itemLocationID === this.lostLocation){
-
-        }else{
+        this.selectedItem.Item.StatusID = this.oldstt;
+        this.changeItemSttDescription = "";
+        if (this.itemLocationID == this.lostLocation) {
+        } else {
           this.selectedItem.Item.LocationID = this.itemLocationID;
           this.selectedItem.Item.BlockID = this.itemBlockID;
           this.selectedItem.Item.FloorID = this.itemFloorID;
@@ -1260,10 +1611,18 @@ export default {
         if (this.editItemMode == true) {
           this.editItemMode = false;
         }
+
+        if (this.updateNumber > 0) {
+          location.reload();
+        }
       }
     },
     quantity: function() {
-      if (this.quantity != "" && this.quantity <50 && this.CreateItemErrors.NoQuantity != "") {
+      if (
+        this.quantity != "" &&
+        this.quantity < 50 &&
+        this.CreateItemErrors.NoQuantity != ""
+      ) {
         this.CreateItemErrors.NoQuantity = "";
       }
     },
@@ -1296,12 +1655,8 @@ export default {
       if (this.editItemMode) {
         this.selectedItem.Item.BlockID = null;
       }
-      if(this.selectedItem.Item.LocationID === this.lostLocation){
-        // alert(this.selectedItem.Item.LocationID)
-        // alert(this.lostLocation)
-      }else{
-        // alert(this.selectedItem.Item.LocationID);
-        // alert(this.lostLocation);
+      if (this.itemLocationID == this.lostLocation) {
+      } else {
         this.axios
           .get(
             `http://localhost:3000/api/block/location/${
@@ -1319,9 +1674,9 @@ export default {
                 this.blockOptions.push(block);
               });
             }
-          });   
+          });
       }
-      
+
       // }
       if (
         this.form.selectedLocation.value != "" &&
@@ -1332,22 +1687,21 @@ export default {
     },
     "selectedItem.Item.BlockID": function() {
       // if (this.selectedBlock.value != "") {
-     
-      if (this.editItemMode && this.selectedItem.Item.BlockID == null ) {
+
+      if (this.editItemMode && this.selectedItem.Item.BlockID == null) {
         this.selectedItem.Item.FloorID = null;
         this.selectedItem.Item.TileID = null;
-        
       }
-      if (this.editItemMode && this.selectedItem.Item.BlockID != null ) {
-          // this.selectedItem.Item.FloorID = null;
+      if (this.editItemMode && this.selectedItem.Item.BlockID != null) {
+        // this.selectedItem.Item.FloorID = null;
         // this.selectedItem.Item.TileID = null;
-          this.floorOptions = [];
-          this.tileOptions = [];
-          this.selectedItem.Item.FloorID = null;
-          this.selectedItem.Item.TileID = null;
+        this.floorOptions = [];
+        this.tileOptions = [];
+        this.selectedItem.Item.FloorID = null;
+        this.selectedItem.Item.TileID = null;
       }
-      if(this.selectedItem.Item.BlockID != null){
-          this.axios
+      if (this.selectedItem.Item.BlockID != null) {
+        this.axios
           .get(
             `http://localhost:3000/api/floor/block/${
               this.selectedItem.Item.BlockID
@@ -1366,7 +1720,7 @@ export default {
             }
           });
       }
-      
+
       if (
         this.form.selectedBlock.value != "" &&
         this.CreateItemErrors.NoBlock != ""
@@ -1377,17 +1731,17 @@ export default {
     "selectedItem.Item.FloorID": function() {
       // alert(this.selectedFloor.value);
       // if (this.selectedFloor.value != "") {
-      // alert(this.tileOptions.length);  
-      // this.selectedItem.Item.Tile = "";  
+      // alert(this.tileOptions.length);
+      // this.selectedItem.Item.Tile = "";
       if (this.editItemMode && this.selectedItem.Item.FloorID == null) {
-        this.selectedItem.Item.TileID = null; 
+        this.selectedItem.Item.TileID = null;
         // this.tileOptions = [];
       }
       if (this.editItemMode && this.selectedItem.Item.FloorID != null) {
         this.tileOptions = [];
-        this.selectedItem.Item.TileID = null; 
+        this.selectedItem.Item.TileID = null;
       }
-      if(this.selectedItem.Item.FloorID != null){
+      if (this.selectedItem.Item.FloorID != null) {
         this.axios
           .get(
             `http://localhost:3000/api/tile/floor/${
@@ -1408,7 +1762,7 @@ export default {
           });
         // }
       }
-        
+
       if (
         this.selectedFloor.value != "" &&
         this.CreateItemErrors.NoFloor != ""
@@ -1606,15 +1960,15 @@ export default {
 }
 .btn-Cancel:hover {
   cursor: pointer;
-  background-color:  #9e9e9e;
+  background-color: #9e9e9e;
   /* margin-left: 150px; */
 }
 .btn-Cancel:hover {
   cursor: pointer;
-  background-color:  #9e9e9e;
+  background-color: #9e9e9e;
 }
 .btn-CancelItem {
-  background-color: #9e9e9e ;
+  background-color: #9e9e9e;
   color: white;
   font-size: 18px;
   border-radius: 8px;
@@ -1646,7 +2000,7 @@ export default {
 
 .rowpu {
   margin-left: 0.5rem;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
   margin-right: 1rem;
   display: grid;
   grid-template-columns: 42% 58%;
@@ -1669,7 +2023,7 @@ th {
   background-color: #cfd8dc;
   height: 30px;
   line-height: 30px;
-  padding: 0rem 0rem 0.75rem 0.3rem !important;
+  padding: 0rem 0rem 0.75rem 0.35rem !important;
 }
 
 td {
@@ -1677,7 +2031,7 @@ td {
   vertical-align: middle !important;
   height: 25px;
   line-height: 25px;
-  padding: 0rem 0rem 0.5rem 0.3rem !important;
+  padding: 0rem 0rem 0.5rem 0.35rem !important;
   /* text-align: justify; */
 }
 
