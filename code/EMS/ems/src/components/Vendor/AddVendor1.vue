@@ -1,6 +1,6 @@
 <template>
 <div class="form"> 
-    <form @submit.prevent="createVendor()">
+    <!-- <form @submit.prevent="createVendor()"> -->
       <div class="form-title">
         <div class="form-title-start ">
           <div>
@@ -146,7 +146,7 @@
             <!-- </form> -->
     <!-- <div>&nbsp</div> -->
       </div>
-    </form>
+    <!-- </form> -->
     </div>
 </template>
 
