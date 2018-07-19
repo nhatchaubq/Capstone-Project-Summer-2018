@@ -6,15 +6,21 @@
         <span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams
       </router-link>
     </div>
-    <div class="col-8">
+    <!-- <div class="col-8">
       <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
-    </div>
+    </div> -->
   </div>
-  <div v-if="team" class="material-box" style="width: 50%">
+  <div class="row">
+
+
+  <div v-if="team" class="material-box col-12" >
 
       <div class="row" >
-        <div v-if="!editMode" class="col-9 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important">{{team.Name}} </div>
-        <input v-if="editMode" v-model.trim="team.Name" class="col-9 input1" style="font-size: 30px; color: var(--primary-color);height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important" > 
+        <div v-if="!editMode" class="col-7 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important">{{team.Name}} </div>
+        <input v-if="editMode" v-model.trim="team.Name" class="col-7 input1" style="font-size: 30px; color: var(--primary-color);height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0.5rem 0.75rem !important" > 
+        <div class="col-2">
+          <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
+        </div>
         <!-- <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> -->
         <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
       </div>
@@ -28,13 +34,86 @@
       <div>
         <h2>Create date: {{getDate(team.CreatedDate)}} </h2>
 
-        <strong >Leader</strong>
+    <strong v-if="editMode">Add new members: </strong>
+    <div class="field is-horizontal">
+      <multi-select  v-if="editMode" style="width: 44rem !important; height:36px; margin-right: 1rem"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
+        <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 4px" v-on:click="addNew()">add new</button> 
+    </div>
         
-        <div >
-          <!-- <div class="row">
-            <model-select v-if="editMode" class="col-9" style="margin-right:1rem; "  :options="toLeaderOptions" v-model="selectedToLeader"  placeholder="Select a leader"></model-select>  
-              <button v-if="editMode" class="button btn-primary " style="margin-top: 1rem; padding :-1rem" v-on:click="console.error(this.account.id)">add new</button>     
-          </div> -->
+
+        <strong >Member of this team</strong>
+            <div class="">
+      <div v-if="!team.Location">
+        There is no team member yet.
+      </div>
+      <div v-else>
+      <table class="mytable">
+        <thead>
+          <tr>
+            <th style="width:3% !important"><strong># </strong></th>
+            <th style="width:27% !important"><strong>Username</strong></th>
+            <th style="width: 30% !important"><strong>Full Name</strong></th>
+            <th style="width: 5% !important"><strong>Status</strong></th>
+            <th style="width: 5% !important"><strong>Role</strong></th>
+            <th style="width: 20% !important" v-if="editMode"><strong>Action</strong></th>
+          </tr>
+        </thead>  
+        <tbody>
+            <tr>
+              <td>1</td>
+              <td>{{team.LeaderAccount.Username}}</td>
+              <td>{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
+              <td style="color:#26a69a"><span style="font-size: 25px; ">♛</span> Leader</td>
+              <strong><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
+              <td v-if="editMode">&nbsp</td>
+            </tr>
+            <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  >
+              <td >{{index + 2}}</td>
+              <td >{{member.Username}}</td>
+              <td >{{member.Fullname ? member.Fullname :'N/A' }} </td>
+              <td ><span style="font-size: 25px">♟</span>Member </td>
+               <strong><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
+              <td v-if="editMode" style="padding-top: 0rem important">
+                <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
+                  <button v-if="editMode" class="material-icons"  style="color: var(--danger); margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">close</button>
+
+              </td>
+            </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <strong >Location of this team</strong>
+    <div v-if="!team.Location">
+        There is no location yet.
+      </div>
+      <div v-else>
+      <table class="mytable">
+        <thead>
+          <tr>
+            <th style="width:3% !important"><strong># </strong></th>
+            <th style="width:30% !important"><strong>Location Name </strong></th>
+            <th style="width: 57% !important"><strong>Location Address</strong></th>
+            <th style="width: 10% !important"><strong>Status</strong></th>
+          </tr>
+        </thead>  
+        <tbody>
+            <tr :key="Loca.Id" v-for="(Loca, index) in team.Location" class="txtText" >
+              <td >{{index + 1}}</td>
+              <td >{{Loca.Name ? Loca.Name : "N/A" }}</td>
+              <td >{{Loca.Address ? Loca.Address : "N/A"}} </td>
+              <td > <strong :style="{color: Loca.IsActive ? 'var(--primary-color)' : '#607D8B'}">{{Loca.IsActive ? "Active" : "Inactive"}}</strong></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+
+  </div>
+        
+        <!-- <div >
           <div v-if="team.LeaderAccount">
             <div  class="row " style="height:43.42px">
               <div class="col-8">
@@ -46,8 +125,8 @@
               </div>
             </div>
           </div>
-        </div>  
-        <div v-if="team.MemberAccounts">
+        </div>   -->
+        <!-- <div v-if="team.MemberAccounts">
             <strong>Members</strong>
             <div :key="member.Id" v-for="member in team.MemberAccounts">
               <div class="row" style="height:40px; ">
@@ -60,25 +139,21 @@
                         <span>({{member.Username}})</span>
                   </div>
                   <div class="col-3" >
-                    <!-- <button v-if="editMode" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="changeToLeader(member.Id)">Set to leader</button> -->
+                  
                     <button v-if="editMode" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
                   </div>
                   <div class="col-1">
                     <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px; margin-top: 4px" v-on:click="confirmKick(member.Id, member.Username)">close</button>
-                    <!-- <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px; margin-top: 4px" v-on:click="kick(member.Id)">close</button> -->
+              
                   </div>
                 </div >
               </div>
             </div>
-        </div>
+        </div> -->
+
       </div>
 
-    <strong v-if="editMode">Add new members: </strong>
-    <div class="field is-horizontal">
-      <multi-select  v-if="editMode" style="width: 100% !important; height:36px; margin-right: 1rem"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
-        <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 4px" v-on:click="addNew()">add new</button> 
 
-    </div>
     <!-- <button v-on:click="gotoDetail">1</button> -->
     <vodal :show="show" animation="rotate" @hide="show = false">
     <div class="col-12" style="margin-top: 0.5rem; padding-left: 2rem; border-bottom-style: double; ">Are you sure you want to change new leader??</div>
@@ -120,48 +195,52 @@
     </div>
   </vodal>
   <!-- confirm kick popup-end -->
+ 
 
   </div>
+
+
+
+  </div>
+
+
   <!-- test -->
 
-  <div class="grid-wrapper1 col-12">
-    <div class="material-box">
-
+  <!-- <div class="grid-wrapper1 col-12">
+    <div class="">
       <div v-if="!team.Location">
-        There is no vendor detail yet.
+        There is no team member yet.
       </div>
       <div v-else>
       <table class="mytable">
         <thead>
           <tr>
-
-            <th><strong>Location Name </strong></th>
-            <th><strong>Location Address</strong></th>
-            <th><strong>Location status</strong></th>
-            <th><strong>Block</strong></th>
-            <th><strong>Floor</strong></th>
-            <th><strong>Tile</strong></th>
-
-
-
-
+            <th style="width:3% !important"><strong># </strong></th>
+            <th style="width:20% !important"><strong>Username</strong></th>
+            <th style="width: 67% !important"><strong>Full Name</strong></th>
+            <th style="width: 10% !important"><strong>Role</strong></th>
           </tr>
         </thead>  
         <tbody>
-            <tr :key="Loca.Id" v-for="Loca in team.Location" class="txtText" >
-              <td style="width:20rem">{{Loca.Name ? Loca.Name : "N/A" }}</td>
-              <td style="width:15rem">{{Loca.Address ? Loca.Address : "N/A"}} </td>
-              <td style="width:15rem">{{Loca.IsActive ? Loca.IsActive : "N/A"}} </td>
-              <td style="width:15rem">{{Loca.Block ? Loca.Block : "N/A"}} </td>
-              <td style="width:15rem">{{Loca.Floor ? Loca.Floor : "N/A"}} </td>
-              <td style="width:15rem">{{Loca.Tile ? Loca.Tile : "N/A"}} </td>
-
+            <tr>
+              <td>1</td>
+              <td>{{team.LeaderAccount.Username}}</td>
+              <td>{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
+              <td><span style="font-size: 25px; color:#26a69a">♛</span> Leader</td>
+            </tr>
+            <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  >
+              <td >{{index + 2}}</td>
+              <td >{{member.Username}}</td>
+              <td >{{member.Fullname ? member.Fullname :'N/A' }} </td>
+              <td ><span style="font-size: 25px">♟</span>Member </td>
             </tr>
         </tbody>
       </table>
+        <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">crown</i> 
     </div>
+
   </div>
-</div>
+</div> -->
 <!-- test-end -->
 </div>
          
@@ -438,11 +517,15 @@ export default {
   border-style: solid;
   border-width: 1px;
   border-color: silver;
+  border-radius: 5px;
 }
 .input2 {
   border-style: solid;
   border-width: 1px;
-  border-color: silver;
+  border-color: white;
+}
+.input1:hover {
+  border-color: black;
 }
 #btn-cancel {
   background-color: white;
@@ -462,7 +545,8 @@ td {
   vertical-align: middle;
   height: 40px;
   line-height: 25px;
-  padding: 0.5rem;
+  /* padding: 0.5rem; */
+  padding: 0 0 0 0.5rem !important;
 }
 td:hover {
   cursor: pointer;
