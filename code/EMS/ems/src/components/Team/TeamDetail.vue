@@ -59,23 +59,24 @@
           </tr>
         </thead>  
         <tbody>
-            <tr>
-              <td>1</td>
-              <td>{{team.LeaderAccount.Username}}</td>
-              <td>{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
-              <td style="color:#26a69a"><span style="font-size: 25px; ">♛</span> Leader</td>
-              <strong><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
+            <tr >
+              <td v-on:click="toDetail(team.LeaderAccount.Id)">1</td>
+              <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Username}}</td>
+              <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
+              <td v-on:click="toDetail(team.LeaderAccount.Id)" style="color:#26a69a"><span style="font-size: 25px; ">♛</span> Leader</td>
+              <strong v-on:click="toDetail(team.LeaderAccount.Id)"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
               <td v-if="editMode">&nbsp</td>
             </tr>
             <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  >
-              <td >{{index + 2}}</td>
-              <td >{{member.Username}}</td>
-              <td >{{member.Fullname ? member.Fullname :'N/A' }} </td>
-              <td ><span style="font-size: 25px">♟</span>Member </td>
-               <strong><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
+              <td v-on:click="toDetail(member.Id)">{{index + 2}}</td>
+              <td v-on:click="toDetail(member.Id)">{{member.Username}}</td>
+              <td v-on:click="toDetail(member.Id)">{{member.Fullname ? member.Fullname :'N/A' }} </td>
+              <td v-on:click="toDetail(member.Id)"><span style="font-size: 25px">♟</span>Member </td>
+               <strong v-on:click="toDetail(member.Id)"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
               <td v-if="editMode" style="padding-top: 0rem important">
                 <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
-                  <button v-if="editMode" class="material-icons"  style="color: var(--danger); margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">close</button>
+                  <!-- <button v-if="editMode" class="material-icons"  style="color: var(--danger); margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">close</button> -->
+                  <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">kick</button>
 
               </td>
             </tr>
@@ -84,12 +85,12 @@
 
     </div>
 
-    <strong >Location of this team</strong>
-    <div v-if="!team.Location">
+    <strong  >Location of this team</strong>
+    <div   v-if="!team.Location">
         There is no location yet.
       </div>
       <div v-else>
-      <table class="mytable">
+      <table   class="mytable">
         <thead>
           <tr>
             <th style="width:3% !important"><strong># </strong></th>
@@ -186,7 +187,7 @@
       <div class="col-7">{{SelectedMemberName}}</div>
     </div>
     <div class="row !important" style="margin-top:2rem">
-      <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 5rem" v-on:click="kick(SelectedMemberId)">Change</button>
+      <button class="button material-shadow-animate "  style="background-color:var(--danger); color:white; margin-left: 5rem " v-on:click="kick(SelectedMemberId)">Kick</button>
 
         <button class="button btn-edit material-shadow-animate "  style="background-color:silver; margin-left: 3rem; border: none" v-on:click="cancelConfirm" >Cancel</button>
 
@@ -433,6 +434,9 @@ export default {
       this.showConfirm = true;
       this.SelectedMemberId = memberID;
       this.SelectedMemberName = memberName;
+    },
+    toDetail(accountId) {
+      this.$router.push(`/account/${accountId}`);
     },
     getDate(date) {
       return moment(date).format("L");
