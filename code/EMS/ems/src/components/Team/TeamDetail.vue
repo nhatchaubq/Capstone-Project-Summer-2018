@@ -24,13 +24,12 @@
         <!-- <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> -->
         <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
       </div>
-      <div class="row" style="margin: 0 0 0.5rem 0">
-        <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save change</button>
+      <!-- <div class="row" style="margin: 0 0 0.5rem 0">
+        <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save changes</button>
         <button v-if="editMode" id=" btn-cancel" class="button btn-confirm-edit material-shadow-animate" style="margin:0 0 1rem 1rem" v-on:click="() => {
           this.$router.go(this.$router.currentRoute)
-          //location.reload()
       }">Cancel</button>
-      </div>
+      </div> -->
       <div>
         <h2>Create date: {{getDate(team.CreatedDate)}} </h2>
 
@@ -47,7 +46,7 @@
         There is no team member yet.
       </div>
       <div v-else>
-      <table class="mytable">
+      <table class="mytable" style="margin-bottom:1rem">
         <thead>
           <tr>
             <th style="width:3% !important"><strong># </strong></th>
@@ -83,32 +82,47 @@
         </tbody>
       </table>
 
+      <div class="row" style="margin: 0 0 0.5rem 0">
+        <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save changes</button>
+        <button v-if="editMode" id=" btn-cancel" class="button btn-confirm-edit material-shadow-animate" style="margin:0 0 1rem 1rem" v-on:click="() => {
+          this.$router.go(this.$router.currentRoute)
+          //location.reload()
+      }">Cancel</button>
+      </div>
     </div>
 
-    <strong  >Location of this team</strong>
-    <div   v-if="!team.Location">
-        There is no location yet.
-      </div>
-      <div v-else>
-      <table   class="mytable">
-        <thead>
-          <tr>
-            <th style="width:3% !important"><strong># </strong></th>
-            <th style="width:30% !important"><strong>Location Name </strong></th>
-            <th style="width: 57% !important"><strong>Location Address</strong></th>
-            <th style="width: 10% !important"><strong>Status</strong></th>
-          </tr>
-        </thead>  
-        <tbody>
-            <tr :key="Loca.Id" v-for="(Loca, index) in team.Location" class="txtText" >
-              <td >{{index + 1}}</td>
-              <td >{{Loca.Name ? Loca.Name : "N/A" }}</td>
-              <td >{{Loca.Address ? Loca.Address : "N/A"}} </td>
-              <td > <strong :style="{color: Loca.IsActive ? 'var(--primary-color)' : '#607D8B'}">{{Loca.IsActive ? "Active" : "Inactive"}}</strong></td>
+    <strong v-if="!editMode">Location of this team</strong>
+
+    <div v-if="!editMode">
+      <div v-if="!team.Location ">
+          There is no location yet.
+        </div>
+        <div v-else>
+        <table   class="mytable" style="margin-bottom:1rem">
+          <thead>
+            <tr>
+              <th style="width:3% !important"><strong># </strong></th>
+              <th style="width:30% !important"><strong>Location Name </strong></th>
+              <th style="width: 57% !important"><strong>Location Address</strong></th>
+              <th style="width: 10% !important"><strong>Status</strong></th>
             </tr>
-        </tbody>
-      </table>
+          </thead>  
+          <tbody>
+              <tr :key="Loca.Id" v-for="(Loca, index) in team.Location" class="txtText" >
+                <td >{{index + 1}}</td>
+                <td >{{Loca.Name ? Loca.Name : "N/A" }}</td>
+                <td >{{Loca.Address ? Loca.Address : "N/A"}} </td>
+                <td > <strong :style="{color: Loca.IsActive ? 'var(--primary-color)' : '#607D8B'}">{{Loca.IsActive ? "Active" : "Inactive"}}</strong></td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
+    <strong>
+      Equipment item
+    </strong>
+
 
 
 
