@@ -23,7 +23,7 @@ var connection = {
 
 server.use(bodyParser.json());
 
-server.use(function(request, respones, next) {
+server.use(function (request, respones, next) {
   request.sql = tediousExpress(connection);
   // respones.header('Access-Control-Allow-Origin', '*');
   // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -56,6 +56,8 @@ server.use("/api/team_location", require("./routes/team_location"));
 server.use("/api/team_account", require("./routes/team_account"));
 server.use("/api/team/id", require("./routes/teamDetails"));
 server.use("/api/dashboard", require("./routes/dashBoard"));
+server.use("/api/allaccwithout", require("./routes/AllAccWithoutMaintainerAndAdmin"));
+
 
 server.use("/api/report", require("./routes/report"));
 server.use("/api/block", require("./routes/block"));
@@ -68,7 +70,7 @@ server.use("/api/unit", require("./routes/unit"));
 // server.use('/api/account/delete/id', require('./routes/'));
 
 // catch 404 and forward to error handler
-server.use(function(req, res, next) {
+server.use(function (req, res, next) {
   var err = new Error("Not Found: " + req.method + ":" + req.originalUrl);
   err.status = 404;
   next(err);
