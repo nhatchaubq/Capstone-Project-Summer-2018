@@ -4,9 +4,9 @@
           <div class="form-title-start">
             Add New Location
           </div>
-          <div class="form-title-end">              
-                
+          <div class="form-title-end">                              
                 <button id="" class="button" style="margin-right: .6rem"  v-on:click="$router.push('/location')">Cancel</button>
+                <simplert :useRadius="true" :icon="true" ref="simplert"></simplert>
                 <button id="" class="button is-primary"  v-on:click="createLocation()">Create New Location</button>
           </div>  
         </div>
@@ -83,8 +83,13 @@
 <script>
 import Server from "@/config/config.js";
 import { gmapApi } from "vue2-google-maps";
+import Simplert from "vue2-simplert";
+import Utils from "@/utils.js";
 
 export default {
+  components: {
+    Simplert
+  },
   computed: {
     google: gmapApi
   },
@@ -167,7 +172,7 @@ export default {
               isActive: 1
             }
           })
-          .then(res => {
+          .then(async res => {
             // alert(this.selectedTeams.length);
             if (this.selectedTeams.length > 0) {
               if (res.data.NewLocationId) {
@@ -179,7 +184,13 @@ export default {
                 });
               }
             }
-            alert("Successfully!!!");
+            let obj = {
+              title: "Create Location",
+              message: "Successfully!!!",
+              type: "success"
+            };
+            this.$refs.simplert.openSimplert(obj);
+            await Utils.sleep(1500);
             this.$router.push("/location");
           })
           .catch(error => {
