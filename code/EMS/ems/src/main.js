@@ -13,6 +13,8 @@ import "./styles/style.scss";
 import * as VueGoogleMaps from "vue2-google-maps";
 import iView from "iview";
 import "iview/dist/styles/iview.css";
+import VueSocketio from 'vue-socket.io';
+Vue.use(VueSocketio, 'http://localhost:3000');
 
 Vue.use(VueGoogleMaps, {
   load: {
