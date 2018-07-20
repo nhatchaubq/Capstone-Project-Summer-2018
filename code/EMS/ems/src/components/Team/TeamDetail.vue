@@ -18,8 +18,8 @@
       <div class="row" >
         <div v-if="!editMode" class="col-7 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important">{{team.Name}} </div>
         <input v-if="editMode" v-model.trim="team.Name" class="col-7 input1" style="font-size: 30px; color: var(--primary-color);height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0.5rem 0.75rem !important" > 
-        <div class="col-2">
-          <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
+        <div class="col-4" style="display: flex; justify-content: flex-end;">
+          <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
         </div>
         <!-- <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> -->
         <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
@@ -42,10 +42,11 @@
 
         <strong >Member of this team</strong>
             <div class="">
-      <div v-if="!team.Location">
+      <div v-if="!team.LeaderAccount && !team.MemberAccounts">
         There is no team member yet.
       </div>
       <div v-else>
+
       <table class="mytable" style="margin-bottom:1rem">
         <thead>
           <tr>
@@ -93,8 +94,8 @@
 
     <strong v-if="!editMode">Location of this team</strong>
 
-    <div v-if="!editMode">
-      <div v-if="!team.Location ">
+    <div v-if="!team.Location"  >
+      <div v-if="!editMode">
           There is no location yet.
         </div>
         <div v-else>
@@ -122,7 +123,24 @@
     <strong>
       Equipment item
     </strong>
-
+        <table   class="mytable" style="margin-bottom:1rem">
+          <thead>
+            <tr>
+              <th style="width:3% !important"><strong># </strong></th>
+              <th style="width:30% !important"><strong>Location Name </strong></th>
+              <th style="width: 57% !important"><strong>Location Address</strong></th>
+              <th style="width: 10% !important"><strong>Status</strong></th>
+            </tr>
+          </thead>  
+          <tbody>
+              <tr :key="Loca.Id" v-for="(Loca, index) in team.Location" class="txtText" >
+                <td >{{index + 1}}</td>
+                <td >{{Loca.Name ? Loca.Name : "N/A" }}</td>
+                <td >{{Loca.Address ? Loca.Address : "N/A"}} </td>
+                <td > <strong :style="{color: Loca.IsActive ? 'var(--primary-color)' : '#607D8B'}">{{Loca.IsActive ? "Active" : "Inactive"}}</strong></td>
+              </tr>
+          </tbody>
+        </table>
 
 
 
