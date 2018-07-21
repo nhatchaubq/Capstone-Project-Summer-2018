@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="padding-bottom: 4%">
         <vue-full-calendar class="material-box material-shadow" :events="calendarEvents" locale="en"></vue-full-calendar>
     </div>
 </template>

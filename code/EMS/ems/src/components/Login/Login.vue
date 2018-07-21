@@ -1,41 +1,44 @@
 <template>
-  <div class="login-container">      
+  <div class="login-container" style="height: 100% !important; margin: 0; padding: 0">      
       <div class="columns">
         <div class="column"></div>
         <div class="column is-3">            
-            <div class="login-form material-box material-shadow">
-                <h2 class="title is-2">Login</h2>
-                <span v-show="showNotification" class="error-text">
-                    {{ message }}
-                </span>
-                <form @submit.prevent="login">
-                    <div class="field">
-                        <label class="label">Username</label>
-                        <div class="control">
-                            <input class="input" type="text" v-model="form.username" placeholder="JohnSmith" required/>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">Password</label>
-                        <div class="control">
-                            <input class="input" type="password" v-model="form.password" placeholder="password" required/>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="checkbox">
-                            <input type="checkbox"/>
-                            Remember my login.
-                        </label>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <button class="button is-primary">
-                                Login
-                                <i v-show="sending" class="fa fa-circle-o-notch fa-spin" style="margin-left: 5px;"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>            
+            <div class="login-form" style="background: #263238 !important;">
+                <div><img :src="require('@/assets/ems-logo.png')"/></div>                
+                <!-- <h2 style="font-size: 1.5rem; color: white; margin: 1rem 0">Login</h2> -->
+                <div style="margin-top: 2rem">
+                  <span v-show="showNotification" class="error-text">
+                      {{ message }}
+                  </span>
+                  <form @submit.prevent="login">
+                      <div class="field">
+                          <label style="color: white">Username</label>
+                          <div class="control">
+                              <input class="input" type="text" v-model="form.username" placeholder="JohnSmith" required/>
+                          </div>
+                      </div>
+                      <div class="field">
+                          <label style="color: white">Password</label>
+                          <div class="control">
+                              <input class="input" type="password" v-model="form.password" placeholder="Password" required/>
+                          </div>
+                      </div>
+                      <div class="" style="margin: 1rem 0">
+                          <label class="checkbox" style="color: white">
+                              <input type="checkbox"/>
+                              Remember my login.
+                          </label>
+                      </div>
+                      <div class="field">
+                          <div class="control">
+                              <Button class="button is-primary" long style="font-size: 1rem;">
+                                  Login
+                                  <i v-show="sending" class="fa fa-circle-o-notch fa-spin" style="margin-left: 5px;"></i>
+                              </Button>
+                          </div>
+                      </div>
+                  </form>
+                </div>
             </div>            
         </div>
         <div class="column"></div>
@@ -110,15 +113,20 @@ export default {
 </script>
 
 <style scoped>
+html {
+  background: #616161 !important;
+  height: 100% !important;
+}
+
 .login-container {
   /* height: 100% !important; */
 }
 
 .login-form {
-  margin-top: -3%rem;
-  padding: 2rem 2rem;
-  position: relative;
-  /* top: 50%; */
-  transform: perspective(1px) translateY(50%);
+  margin-top: 40%;
+  padding: 2rem;
+  border-radius: 5px;
+  border: 1px solid #424242;
+  box-shadow: 4px 4px 8px #212121 !important;
 }
 </style>

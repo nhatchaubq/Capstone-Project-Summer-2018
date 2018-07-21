@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="has-background-white-ter">
+  <div id="app">
     <login v-if="!isLoggedIn"></login>
     <div v-else>
       <v-app>
@@ -41,8 +41,11 @@ export default {
   },
   sockets: {
     NEW_NOTIFICATION: function(data) {
-      if (data.message && data.message == 'New notification') {
-        this.getNotifications();
+      if (data.needToUpdateNotification) {
+        if ((data.needToUpdateNotification.roles && data.needToUpdateNotification.roles.includes(this.authUser.Role))
+            || (data.needToUpdateNotification.userIds && data.needToUpdateNotification.userIds.includes(this.authUser.Id))) {
+              this.getNotifications();
+            }
       }
     }
   },
@@ -51,11 +54,22 @@ export default {
   },
   methods: {
     getNotifications() {
-      let url = `${Server.NOTIFICATION_API_PATH}/userid/${this.authUser.Id}`;
+      let url = `${Server.NOTIFICATION_API_PATH}/top50/${this.authUser.Id}`;
       this.axios.get(url)
         .then((res) => {
           if (res.status == 200) {
-            this.$store.state.notifications = res.data;
+            let notifications = [];
+            res.data.forEach(value => {
+              let noti = {
+                Id: value.Id,
+                Content: value.Content,
+                CreatedDate: value.CreatedDate,
+                TimeString: null,
+                Status: value.Status,
+              }
+              notifications.push(noti);
+            });
+            this.$store.state.notifications = notifications;
           }
         }).catch((error) => {
           console.log(error);
@@ -107,7 +121,7 @@ body {
   width: 100%;
   height: 100%;
   font-size: 1rem !important;
-  /* background-color: var(--light-background) !important;   */
+  background-color: #616161 !important;  
 }
 
 a {
@@ -225,14 +239,6 @@ a:active {
   transition: all 0.15s ease-in-out;
 }
 
-.button.btn-cancel {
-  border: 0;
-  color: white !important;
-  background-color: #FF8A65;
-  z-index: 99;
-  transition: all 0.15s ease-in-out;
-}
-
 button.btn-primary:hover {
   cursor: pointer;
   color: white !important;
@@ -257,12 +263,6 @@ button.btn-green:hover {
   background-color: #59bc5c;
 }
 
-button.btn-cancel:hover {
-  cursor: pointer;
-  color: white !important;
-  background-color: #FF8A65;
-}
-
 button.btn-primary:active {
   color: white !important;
   background-color: var(--darken-primary-color) !important;
@@ -284,12 +284,6 @@ button.btn-blue:active {
 button.btn-green:active {
   color: white !important;
   background-color: #3ea542 !important;
-  box-shadow: 1px 1px 1px var(--shadow) !important;
-}
-
-button.btn-cancel:active {
-  color: white !important;
-  background-color: #FF8A65 !important;
   box-shadow: 1px 1px 1px var(--shadow) !important;
 }
 
