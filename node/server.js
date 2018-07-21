@@ -30,11 +30,7 @@ var connection = {
 
 app.use(bodyParser.json());
 
-<<<<<<< HEAD
-server.use(function (request, respones, next) {
-=======
 app.use(function (request, respones, next) {
->>>>>>> d9eeb6d73ce16e04428b482ed3a8957cce081f4a
   request.sql = tediousExpress(connection);
   // respones.header('Access-Control-Allow-Origin', '*');
   // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -67,23 +63,13 @@ app.use(
   "/api/AllAccExceptThatTeam",
   require("./routes/AllAccExceptThatTeam")
 );
-<<<<<<< HEAD
-server.use("/api/team", require("./routes/team"));
-server.use("/api/equipmentItem", require("./routes/equipmentItem"));
-server.use("/api/team_location", require("./routes/team_location"));
-server.use("/api/team_account", require("./routes/team_account"));
-server.use("/api/team/id", require("./routes/teamDetails"));
-server.use("/api/dashboard", require("./routes/dashBoard"));
-server.use("/api/allaccwithout", require("./routes/AllAccWithoutMaintainerAndAdmin"));
-
-=======
 app.use("/api/team", require("./routes/team"));
 app.use("/api/equipmentItem", require("./routes/equipmentItem"));
 app.use("/api/team_location", require("./routes/team_location"));
 app.use("/api/team_account", require("./routes/team_account"));
 app.use("/api/team/id", require("./routes/teamDetails"));
 app.use("/api/dashboard", require("./routes/dashBoard"));
->>>>>>> d9eeb6d73ce16e04428b482ed3a8957cce081f4a
+app.use("/api/allaccwithout", require("./routes/AllAccWithoutMaintainerAndAdmin"));
 
 app.use("/api/report", require("./routes/report"));
 app.use("/api/block", require("./routes/block"));
@@ -98,19 +84,8 @@ app.use("/api/notification", require("./routes/notification")(io));
 // app.use('/api/account/delete/id', require('./routes/'));
 
 // catch 404 and forward to error handler
-<<<<<<< HEAD
-server.use(function (req, res, next) {
-=======
 app.use(function (req, res, next) {
->>>>>>> d9eeb6d73ce16e04428b482ed3a8957cce081f4a
   var err = new Error("Not Found: " + req.method + ":" + req.originalUrl);
   err.status = 404;
   next(err);
 });
-<<<<<<< HEAD
-
-server.listen(3000, () => {
-  console.log("listening on port 3000");
-});
-=======
->>>>>>> d9eeb6d73ce16e04428b482ed3a8957cce081f4a
