@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="has-background-white-ter">
+  <div id="app">
     <login v-if="!isLoggedIn"></login>
     <div v-else>
       <v-app>
@@ -41,8 +41,11 @@ export default {
   },
   sockets: {
     NEW_NOTIFICATION: function(data) {
-      if (data.message && data.message == 'New notification') {
-        this.getNotifications();
+      if (data.needToUpdateNotification) {
+        if ((data.needToUpdateNotification.roles && data.needToUpdateNotification.roles.includes(this.authUser.Role))
+            || (data.needToUpdateNotification.userIds && data.needToUpdateNotification.userIds.includes(this.authUser.Id))) {
+              this.getNotifications();
+            }
       }
     }
   },
@@ -51,7 +54,7 @@ export default {
   },
   methods: {
     getNotifications() {
-      let url = `${Server.NOTIFICATION_API_PATH}/userid/${this.authUser.Id}`;
+      let url = `${Server.NOTIFICATION_API_PATH}/top50/${this.authUser.Id}`;
       this.axios.get(url)
         .then((res) => {
           if (res.status == 200) {
@@ -118,7 +121,7 @@ body {
   width: 100%;
   height: 100%;
   font-size: 1rem !important;
-  /* background-color: var(--light-background) !important;   */
+  background-color: #616161 !important;  
 }
 
 a {

@@ -3,7 +3,10 @@ const TYPES = require("tedious").TYPES;
 
 router.get("/:locationId/:teamId", (req, res) => {
   req
-    .sql("exec [dbo].GetTeamLocationId @locationId, @teamId")
+    .sql("select Id "
+    + "   from TeamLocation as tl "
+    + "   where tl.LocationID = @locationId and tl.TeamID = @teamId "
+    + "   for json path, without_array_wrapper")
     .param("locationId", req.params.locationId, TYPES.Int)
     .param("teamId", req.params.teamId, TYPES.Int)
     .into(res);

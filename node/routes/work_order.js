@@ -342,6 +342,10 @@ module.exports = function(io) {
         .param("userId", req.body.userId, TYPES.Int)
         .param("newWorkOrderStatusName", req.body.newStatusName, TYPES.NVarChar)
         .param("description", req.body.description, TYPES.NVarChar)
+        .done((fn) => {
+            io.sockets.emit('ORDER_STATUS_CHANGED', {});
+            res.end();
+        })
         .exec(res);
     });
     

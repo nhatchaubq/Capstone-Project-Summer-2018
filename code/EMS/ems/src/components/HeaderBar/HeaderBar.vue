@@ -74,7 +74,13 @@
                                 <div style="max-height: 50vh; overflow-y: auto;">
                                     <div :key="'noti' + noti.Id" v-for="noti in notifications">
                                         <v-divider></v-divider>
-                                        <div class="noti-tile" :class="{'unread': !noti.Status}" style="display: grid; grid-template-columns: 20% 70% 10%;">
+                                        <div class="noti-tile" :class="{'unread': !noti.Status}" style="display: grid; grid-template-columns: 20% 70% 10%; padding-bottom: .5rem"
+                                            v-on:click="() => {
+                                                if (noti.Metadata) {
+                                                    let metadata = JSON.parse(noti.Metadata);
+                                                    $router.push(`/${metadata.page}/${metadata.elementId}`);
+                                                }
+                                            }">
                                             <div style="display: flex; justify-content: center; align-items: center;">
                                                 <div style="border-radius: 50%; background: #757575; width: 2.5rem; height: 2.5rem">
                                                     <div style="display: flex; justify-content: center; align-content: center; ">
