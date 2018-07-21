@@ -15,6 +15,8 @@
           <thead>
             <tr>
                 <!-- <th><strong>ID</strong></th> -->
+
+                <th><strong>#</strong></th>
                 <th><strong>Team name</strong></th>
                 <th><strong>Leader </strong></th>
                 <th><strong>Members </strong></th>
@@ -27,8 +29,9 @@
             </tr>
         </thead>  
         <tbody>
-            <tr v-bind:key="team.Id" v-for="team in teams" v-on:click="gotoDetail(team.Id)">
+            <tr v-bind:key="team.Id" v-for="(team, index) in teams" v-on:click="gotoDetail(team.Id)">
               <!-- <td>{{team.Id}}</td>     -->
+              <td>{{ index + 1 }}</td>   
               <td>{{team.Name}}</td>
               <!-- <router-link :to="`/account/${team.TeamLeader.Id}`">   -->
                 <td>{{ team.TeamLeader ? team.TeamLeader.Username : 'n/a'}}</td>

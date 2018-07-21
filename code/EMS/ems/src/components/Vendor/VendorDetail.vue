@@ -148,9 +148,10 @@
       <thead>
         <tr>
           <!-- <th><strong>ID</strong></th> -->
-          <th><strong>Equipment name </strong></th>
-          <th><strong>Made in</strong></th>
-          <th><strong>Equipment category</strong></th>
+          <th style="width:3% !important"><strong>#</strong></th>
+          <th style="width:47% !important"><strong>Equipment name </strong></th>
+          <th style="width:15% !important"><strong>Made in</strong></th>
+          <th style="width:20% !important"><strong>Equipment category</strong></th>
 
 
 
@@ -158,10 +159,11 @@
         </tr>
       </thead>  
       <tbody>
-          <tr :key="Equipment.Id" v-for="Equipment in Vendor.Equipments" class="txtText" v-on:click="gotoDetail(Equipment.Id)" >
-            <td style="width:50% !important">{{Equipment.Name ? Equipment.Name : "N/A" }}</td>
-            <td style="width:15% !important">{{Equipment.MadeIn ? Equipment.MadeIn : "N/A"}} </td>
-            <td style="width:20% !important">{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td>
+          <tr :key="Equipment.Id" v-for="(Equipment, index) in Vendor.Equipments" class="txtText" v-on:click="gotoDetail(Equipment.Id)" >
+            <td >{{index + 1}}</td>
+            <td >{{Equipment.Name ? Equipment.Name : "N/A" }}</td>
+            <td >{{Equipment.MadeIn ? Equipment.MadeIn : "N/A"}} </td>
+            <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td>
 
           </tr>
       </tbody>

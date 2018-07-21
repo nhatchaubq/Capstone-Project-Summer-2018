@@ -6,7 +6,7 @@ router.get("/:id", (request, response) => {
     .sql(
       "	 SELECT t.id as 'team.Id', t.Name as 'team.Name', t.CreatedDate as 'team.CreatedDate',  " +
       "json_query((SELECT a.*,ta.TeamRoleID FROM [TeamAccount] as ta JOIN [Account] as a ON ta.AccountID = a.Id WHERE ta.TeamID=@Id and ta.TeamRoleID =1 for json path, without_array_wrapper)) as 'team.LeaderAccount',   " +
-      "(SELECT a.*,ta.TeamRoleID FROM [TeamAccount] as ta JOIN [Account] as a ON ta.AccountID = a.Id WHERE ta.TeamID=@Id and ta.TeamRoleID =2 for json path) as 'team.MemberAccounts', " +
+      "(SELECT a.*,ta.TeamRoleID FROM [TeamAccount] as ta JOIN [Account] as a ON ta.AccountID = a.Id WHERE ta.TeamID=@Id and ta.TeamRoleID =2 ORDER BY a.IsActive DESC, a.Username  ASC for json path) as 'team.MemberAccounts', " +
       // "json_query((SELECT l.Name,l.Address,p.PositionName,p.Block,p.Floor,p.Tile for json path, without_array_wrapper))  as 'team.Location'" +
       // "json_query((SELECT DISTINCT l.Name,l.Address,p.PositionName,p.Block,p.Floor,p.Tile FROM [Team] as t JOIN [TeamLocation] as tl ON tl.TeamID = t.Id JOIN [Location] as l ON tl.LocationID = l.Id JOIN [Position] as p ON p.LocationID =l.Id for json path))  as 'team.Location' " +
       "json_query((select l.* from [TeamLocation] as tl JOIN [Location] as l ON tl.LocationID =l.Id WHERE tl.TeamID =t.Id   for json path))  as 'team.Location' " +
