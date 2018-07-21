@@ -570,10 +570,18 @@
                     </div>
                     <div class="rowpu" style="height: 36px" >
                       <div class="" style="margin-top:0.5rem" >
-                          Last working-Date:  
+                          Downtime:  
                       </div>
                       <div>  
                         <input  v-model="downtime" class="input col-7 " type="text" disabled="disabled"> 
+                      </div>
+                    </div>
+                     <div class="rowpu" style="height: 36px" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Percent:  
+                      </div>
+                      <div>  
+                        <input  v-model="percentRuntime" class="input col-7 " type="text" disabled="disabled"> 
                       </div>
                     </div>
                   </div>
@@ -678,6 +686,8 @@ export default {
         let data = response.data;
         data.forEach(element => {
           this.Items.push(element);
+          this.totalRuntime = element.RuntimeDays + this.totalRuntime;
+          
         });
       })
       .catch(error => {
@@ -821,6 +831,9 @@ export default {
       quality: 0,
       updateNumber: 0,
       downtime: 0,
+      totalRuntime: 0,
+      percentRuntime: 0,
+      lastWorkedDate: "",
       Items: [],
       files: "",
       imageUrl: "",
@@ -1072,6 +1085,7 @@ export default {
       }
     },
     setSelectedItem(itemId) {
+     
       this.axios
         .get("http://localhost:3000/api/equipmentItem/sttItem/" + itemId)
         .then(response => {
@@ -1098,7 +1112,11 @@ export default {
                 this.oldstt = this.selectedItem.Item.StatusID;
                 this.statusHistories = [];
                 this.allworkorder = [];
+                this.lastWorkedDate = "";
                 this.downtime = 0;
+                // this.totalRuntime = 0;
+                this.percentRuntime = 0
+                this.percentRuntime = (this.selectedItem.Item.RuntimeDays / this.totalRuntime * 100).toFixed(3);; 
                 this.axios
                   .get(
                     "http://localhost:3000/api/equipmentItemHistory/" + itemId
@@ -1134,7 +1152,13 @@ export default {
                     .then(response => {
                       let data = response.data;
                       data.forEach(closedate => {
-                        this.downtime = closedate.ClosedDate;
+                        this.lastWorkedDate = closedate.ClosedDate;
+                        this.lastWorkedDate = moment(this.lastWorkedDate).valueOf();
+                        // this.downtime =  moment().valueOf() - this.lastWorkedDate;
+                        // var today = moment().format("DD/MM/YYYY");
+                        // alert(today.valueOf());
+                        let timeDiff = Math.abs(moment().valueOf() - this.lastWorkedDate);
+                        this.downtime = Math.floor(timeDiff / (1000 * 3600 * 24));
                       });
                     })
                     .catch(error => {

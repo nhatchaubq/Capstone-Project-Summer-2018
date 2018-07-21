@@ -19,15 +19,88 @@
                 </div>
                 <!-- start button -->
                 <div style="padding-top: .2rem">
-                    <div class="headerbar-button">
+                    <div class="headerbar-button" style="margin-right: .3rem;" 
+                        v-on:click="() => {
+                            axios.post('http://localhost:3000/api/notification/accounts', {
+                                notificationContent: 'Hello from the other side!!! Test notification.',
+                                userRole: 'Equipment Staff',
+                            })
+                        }">
                         <i class="material-icons">star</i>
                     </div> <!-- start button -->
                 </div>
                 <!-- noti button -->
-                <div style="padding-right: 1rem; padding-top: .2rem">
-                    <div class="headerbar-button">
-                        <i class="material-icons">notifications</i>
-                    </div> <!-- noti button -->
+                <div style="padding-right: .5rem; padding-top: .2rem">
+                    <v-menu style="padding: 0" v-model="showMenu" :close-on-content-click="false" offset-y :min-width="350">
+                        <v-badge style="margin-top: .2rem; margin-right: 1.2rem" slot="activator" color="red">
+                            <span slot="badge" v-if="notifications.filter(noti => !noti.Status).length > 0">
+                                {{ notifications.filter(noti => !noti.Status).length }}
+                            </span>
+                            <!-- <v-icon
+                                large
+                                color="grey"
+                            >
+                                mail
+                            </v-icon> -->
+                            <div class="headerbar-button" style="margin-right: -1.1rem; margin-top: -.4rem; padding-right: 0" v-on:click="() => {}">
+                                <i class="material-icons">notifications</i>
+                            </div> <!-- noti button -->
+                        </v-badge>
+                        <v-card style="padding: 0;">
+                            <div class="row" style="padding: 5px; margin: 0; font-size: .85rem; font-weight: 500; color: #616161;">
+                                <div class="col-6" style="margin: 0; padding: 0">Notifications</div>
+                                <div class="col-6" style="width: 100%; text-align: right; margin: 0; padding: 0">
+                                    <a v-on:click="() => {
+                                        notifications.forEach(noti => {
+                                            if (!noti.Status) {
+                                                axios.put(`http://localhost:3000/api/notification/status/${noti.Id}`, {
+                                                    userId: authUser.Id
+                                                }).then((res) => {
+                                                    if (res.status == 200) {
+                                                        noti.Status = true;
+                                                    }
+                                                })
+                                            }
+                                        });
+                                    }">Mark all as read</a>
+                                </div>                                
+                            </div>
+                            <div v-if="notifications.length == 0">
+                                <v-divider></v-divider>
+                                <div style="display: flex; padding: 5px; font-size: .85rem; color: #757575;">
+                                    There is no notification to display.
+                                </div>
+                            </div>
+                            <div v-else>
+                                <div :key="'noti' + noti.Id" v-for="noti in notifications">
+                                    <v-divider></v-divider>
+                                    <div class="noti-tile" :class="{'unread': !noti.Status}" style="display: grid; grid-template-columns: 20% 80%;">
+                                        <div style="display: flex; justify-content: center; align-items: center;">
+                                            <div style="border-radius: 50%; background: #757575; width: 2.5rem; height: 2.5rem">
+                                                <div style="display: flex; justify-content: center; align-content: center; ">
+                                                    <div style="padding-top: 13%">
+                                                        <i style="font-size: 1.8rem; color: white" class="material-icons">assignment</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="display: flex; padding: .5rem 1rem 0 0;">
+                                                <span style="font-size: .9rem;" v-html="noti.Content"></span>
+                                            </div>
+                                            <div style="display: flex; padding: 0 1rem 0 0; font-size: .8rem; color: #757575;">
+                                                {{ getStatusTimeString(noti.CreatedDate) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <v-divider></v-divider>
+                                <div style="display: flex; padding: 5px; font-size: .85rem; color: #757575; align-items: center; justify-content: center;">
+                                    <a><strong style="color: var(--primary-color) !important">View all notifications</strong></a>
+                                </div>
+                            </div>
+                        </v-card>
+                    </v-menu>
                 </div>
                 <!-- avatar -->
                 <div style="padding-left: 1rem; padding-right: .6rem; padding-top: .2rem">
@@ -61,12 +134,13 @@
 import { sync, } from 'vuex-pathify';
 import menu from '@/models/menu.js';
 import Server from '@/config/config.js';
+import moment from 'moment';
 
 export default {
     name: 'header-bar',
     data() {
         return {
-            
+            showMenu: false,
         }
     },
     computed: {
@@ -75,7 +149,8 @@ export default {
         showSearchBar: sync('showSearchBar'),
         authUser() {
             return JSON.parse(window.localStorage.getItem("user"));
-        }
+        },
+        notifications: sync('notifications'),
     },
     methods: {
         search() {
@@ -104,6 +179,22 @@ export default {
             window.localStorage.removeItem("user");
             this.$router.push("/");
         },
+        showAlert(msg) {
+            alert(msg);
+        },
+        getStatusTimeString(value) {
+            const milis = moment().valueOf() - moment(value).valueOf();
+            const duration = moment.duration(milis);
+            const hours = duration.hours();
+            if (hours > 0 && hours <= 5) {
+                return `From ${hours} ${hours > 1 ? 'hours' : 'hour'} ago`
+            } else if (hours == 0) {
+                const minutes = duration.minutes();
+                return `From ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} ago`;
+            } else {
+                return `${moment(value).format('LLL')}`;
+            }            
+        }
     }
 }
 </script>
@@ -195,7 +286,6 @@ export default {
         border-radius: 50%;
         box-shadow: 0px 0px 0px #e0e0e0;
         transition: all .25s ease-in;
-        margin-right: 10px;
     }
 
     .headerbar-button i {
@@ -235,4 +325,33 @@ export default {
         width: 100%;
         height: 100%;
     }
+
+    .noti-tile {
+        user-select: none;
+        cursor: pointer;
+        background: #f5f5f5;
+    }
+
+    .noti-tile:hover {
+        background: #fafafa;
+    }
+
+    .noti-tile:active {
+        background: #e0e0e0;
+    }
+
+    .noti-tile.unread {
+        user-select: none;
+        cursor: pointer;
+        background: #E0F7FA;
+    }
+
+    .noti-tile.unread:hover {
+        background: #E9FBFD;
+    }
+
+    .noti-tile.unread:active {
+        background: #ACEAF3;
+    }
+
 </style>

@@ -11,6 +11,7 @@ const state = {
   isLoggedIn: !!localStorage.getItem("user"),
   title: "",
   showSearchBar: true,
+  notifications: [],
   searchValue: '',
   workOrderPage: {
     orders: [],
