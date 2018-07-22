@@ -648,10 +648,12 @@ export default {
         });
     },
     cancel() {
-      this.show = false;
+      // this.show = false;
+      this.ChangeLeadPopUp =false;
     },
     cancelConfirm() {
-      this.showConfirm = false;
+      // this.showConfirm = false;
+      this.kickPopUp = false
     },
     gotoDetail(memberID, memberName) {
       // this.show = true;
