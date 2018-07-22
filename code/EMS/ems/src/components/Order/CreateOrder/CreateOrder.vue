@@ -23,7 +23,7 @@
                               || authUser.RoleID == 5 && category.Name == 'Working'">
                     {{ category.Name }}
                 </label> -->
-                <RadioGroup v-model="workOrderCategory" type="button" style="user-select: none">
+                <RadioGroup v-model.trim="workOrderCategory" type="button" style="user-select: none">
                   <Radio :disabled="authUser.Role != 'Staff'" label="Working"></Radio>
                   <Radio :disabled="authUser.Role != 'Maintainer'" label="Maintain"></Radio>
                 </RadioGroup>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="form-field-input">
                     <input :style="CreateWorkOrderErrors.InvalidTitleLength != '' ?
-                                   'border: 1px solid var(--danger-color)' : ''" v-model="workOrderTitle" 
+                                   'border: 1px solid var(--danger-color)' : ''" v-model.trim="workOrderTitle" 
                                    type="text" class="input" required placeholder="Công trình dự án Vinhomes">
                 </div>
             </div>
@@ -53,7 +53,7 @@
                 </div>
                 <div class="form-field-input">
                     <model-select :style="CreateWorkOrderErrors.NoLocation != '' ?
-                                   'border: 1px solid var(--danger-color)' : ''" :options="locationOptions" v-model="selectedLocation" placeholder="Select a location" style="width: 40%"></model-select>
+                                   'border: 1px solid var(--danger-color)' : ''" :options="locationOptions" v-model.trim="selectedLocation" placeholder="Select a location" style="width: 40%"></model-select>
                 </div>
             </div> <!-- select location -->
             <!-- select team from selected location -->
@@ -66,7 +66,7 @@
                     <div class="form-field-input">
                         <model-select :style="CreateWorkOrderErrors.NoTeam != '' ?
                                    'border: 1px solid var(--danger-color)' : ''" 
-                                   :options="teamOptions" v-model="selectedTeam" 
+                                   :options="teamOptions" v-model.trim="selectedTeam" 
                                    placeholder="Select a team" style="width: 40%"></model-select>
                     </div>
                 </div>
@@ -75,6 +75,18 @@
                     You are not a team leader of any teams in <strong style="font-style: italic">{{ selectedLocation.text }}</strong>
                 </div>
             </div> <!-- select team from selected location -->
+            <div class="form-field">
+              <div style="display: grid; grid-template-columns: 20% 20% 60%">
+                <div class="form-field-title">
+                    Choose a location for this work order (required)
+                    <span v-if="CreateWorkOrderErrors.NoLocation != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoLocation }}</span></span>
+                </div>
+                <div class="form-field-input">
+                    <model-select :style="CreateWorkOrderErrors.NoLocation != '' ?
+                                   'border: 1px solid var(--danger-color)' : ''" :options="locationOptions" v-model.trim="selectedLocation" placeholder="Select a location" style="width: 40%"></model-select>
+                </div>
+              </div>
+            </div>
             <!-- select equipments - start -->
             <div class="form-field" style="padding-bottom: 0 !important">
               <div class="form-field-title">
@@ -121,7 +133,7 @@
                             :style="selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != '' ?
                                     'border: 1px solid var(--danger-color)' : ''"
                             type="number" min="0" :max="selectedEquipment.totalQuantity" 
-                            v-model="selectedEquipment.quantity" 
+                            v-model.trim="selectedEquipment.quantity" 
                             v-on:change="() => {
                               if (selectedEquipment.quantity === '') {
                                   selectedEquipment.quantity = 0;
@@ -210,7 +222,7 @@
                                   || (selectedEquipment.addEquipmentWarnings.UnableToSelectItem != '') ?
                                 'border: 1px solid var(--danger-color)' : (selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 
                                 'border: 1px solid var(--warning-color)' : ''" 
-                            class="input" v-model="selectedEquipment.fromDate"
+                            class="input" v-model.trim="selectedEquipment.fromDate"
                             v-on:change="() => {
                       if (selectedEquipment.fromDate === '') {
                         selectedEquipment.fromDate = this.getToday();
@@ -258,7 +270,7 @@
                                   || (selectedEquipment.addEquipmentWarnings.UnableToSelectItem != '') ?
                                 'border: 1px solid var(--danger-color)' : (selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 
                                 'border: 1px solid var(--warning-color)' : ''" 
-                            class="input" v-model="selectedEquipment.toDate" 
+                            class="input" v-model.trim="selectedEquipment.toDate" 
                             v-on:change="() => {
                       if (selectedEquipment.toDate === '') {
                         selectedEquipment.toDate = this.getToday();
@@ -517,25 +529,25 @@
                     <model-select :style="(AddEquipmentWarnings.MustSelectEquipment != '' 
                                           || AddEquipmentWarnings.AvailableQuantityIsZero != '') ?
                                             'border: 1px solid var(--strong-warning-color)' : ''" 
-                                            :options="toDisplayEquipmentOptions" placeholder="Select an equipment" v-model="selectedEquipment"></model-select>
+                                            :options="toDisplayEquipmentOptions" placeholder="Select an equipment" v-model.trim="selectedEquipment"></model-select>
                   </div>
                 </div>  
                 <div class="form-field-input">
                     <input :style="AddEquipmentWarnings.SelectedEquipmentQuantityIsZero != '' ? 'border: 1px solid var(--warning-color)' : ''"
-                        type="number" :disabled="selectedEquipment.totalQuantity == 0" min="0" :max="selectedEquipment.totalQuantity" class="input" v-model="selectedEquipmentQuantity">
+                        type="number" :disabled="selectedEquipment.totalQuantity == 0" min="0" :max="selectedEquipment.totalQuantity" class="input" v-model.trim="selectedEquipmentQuantity">
                 </div>
                 <div>
                   <input :style="(AddEquipmentWarnings.FromDateIsLargerThanToDate != '') 
                                   || (AddEquipmentWarnings.FromDateIsFromThePast != '') 
                                   || (AddEquipmentWarnings.UnableToSelectItem != '') ? 'border: 1px solid var(--strong-warning-color)' :
                                       (AddEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 'border: 1px solid var(--warning-color)'
-                                      : ''" class="input" type="date" v-model="selectedEquipmentFromDate">
+                                      : ''" class="input" type="date" v-model.trim="selectedEquipmentFromDate">
                 </div>
                 <div>
                   <input :style="(AddEquipmentWarnings.FromDateIsLargerThanToDate != '') 
                                   || (AddEquipmentWarnings.UnableToSelectItem != '')? 'border: 1px solid var(--strong-warning-color)' :
                                       (AddEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 'border: 1px solid var(--warning-color)'
-                                      : ''" class="input" type="date" v-model="selectedEquipmentToDate">
+                                      : ''" class="input" type="date" v-model.trim="selectedEquipmentToDate">
                 </div>
                 <div>
                   <!-- <a v-on:click="addEquipment()" style="position: relative; top: .5rem;" class="btn-plus"><i class="fa fa-plus"></i></a> -->
@@ -674,7 +686,7 @@
                     Describe this work order (optional)
                 </div>
                 <div class="form-field-input">
-                    <textarea class="input" rows="5" v-model="workOrderDescription"></textarea>
+                    <textarea class="input" rows="5" v-model.trim="workOrderDescription"></textarea>
                 </div>
             </div> <!-- describe work order -->
         </div>
@@ -687,10 +699,11 @@ import Utils from "@/utils.js";
 import moment from "moment";
 import { ModelSelect } from "vue-search-select";
 import Simplert from "vue2-simplert";
+import DatePicker from 'vue2-datepicker';
 
 export default {
   components: {
-    ModelSelect, Simplert
+    ModelSelect, Simplert, DatePicker
   },
   data() {
     return {
@@ -957,13 +970,25 @@ export default {
                       context.sending = false;
                       if (check) {
                         const notificationContent = `<strong>${context.authUser.Username}</strong> created a work order <strong>${context.workOrderTitle}</strong>`;
+                        let metaData = {
+                          page: 'work_order',
+                          elementId: newWorkOrderId,
+                        };
                         context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
                                 notificationContent: notificationContent,
                                 userRole: 'Equipment Staff',
+                                metaData: metaData,
+                                needToUpdateNotification: {
+                                  roles: ['Equipment Staff'],
+                                },
                             })
                         context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
                                 notificationContent: notificationContent,
                                 userRole: 'Manager',
+                                metaData: metaData,
+                                needToUpdateNotification: {
+                                  roles: ['Manager'],
+                                },
                             })
                         let obj = {
                           message: "Work Order created successfully",

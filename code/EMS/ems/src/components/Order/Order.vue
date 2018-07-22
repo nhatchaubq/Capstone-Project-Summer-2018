@@ -64,9 +64,9 @@
                             'height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '62%' : '68.5%',}">
               <div class="detail">
                   <div class="detail-header" style="display: grid" :style="((selectedOrder.WorkOrderStatus == 'Requested' || selectedOrder.WorkOrderStatus == 'Rejected') && authUser.Id == selectedOrder.RequestUserID) ? 
-                                                            'grid-template-columns: 15% 65% 20%;' : 'grid-template-columns: 10% 90%'">
-                    <div>
-                        <span :style="`background-color: ${selectedOrder.PriorityColor}`" class="tag" style="position: relative; top: -.3rem; color: white">
+                                                            'grid-template-columns: 16% 63% 21%;' : 'grid-template-columns: 16% 84%'">
+                    <div style="padding-top: .5rem; padding-right: .5rem">
+                        <span :style="`background-color: ${selectedOrder.PriorityColor}`" class="tag" style="color: white; width: 100%">
                             {{ selectedOrder.Priority }}
                         </span>
                     </div>                        
@@ -84,7 +84,7 @@
                                 newStatusName = 'Cancelled';
                             }">Cancel</a> <!-- cancel work order -->
                         <span v-if="selectedOrder.WorkOrderStatus == 'Rejected'">
-                            <span> | </span>
+                            <span>&nbsp;|&nbsp;</span>
                             <!-- cancel work order -->
                             <a v-on:click="$router.push(`/work_order/edit/${selectedOrder.Id}`)">Edit</a> <!-- cancel work order -->
                         </span>
@@ -265,10 +265,10 @@
                       <div v-else>
                             <div class="detail-contents" v-if="selectedOrder.WorkOrderRecord">
                                 <div style="font-size: .95rem;" :key="'orderRecord' + orderRecord.Id" v-for="(orderRecord, index) in selectedOrder.WorkOrderRecord">
-                                    <span class="tag" :class="getStatusColorClass(orderRecord.NewStatus.Name)">{{ orderRecord.NewStatus.Name }}</span> 
+                                    <span class="tag" style="width: 5rem;" :class="getStatusColorClass(orderRecord.NewStatus.Name)">{{ orderRecord.NewStatus.Name }}</span> 
                                         by <span class="tag">{{ orderRecord.ModifiedUser.Id == authUser.Id ? 'You' :  `${orderRecord.ModifiedUser.Role} ${orderRecord.ModifiedUser.Username}` }}</span> on {{ getDate(orderRecord.ModifiedByDateTime) }}
-                                        <div style="margin-left: 2rem; padding: 1rem 1rem;" :style="((index != (selectedOrder.WorkOrderRecord.length - 1)) || (index == (selectedOrder.WorkOrderRecord.length - 1) && orderRecord.Description)) ? 
-                                                                                                    `border-left: 2px solid ${getStatusColor(orderRecord.NewStatus.Name)}` : ''">
+                                        <div style="margin-left: 2.5rem; padding: 1rem 1rem;" :style="((index != (selectedOrder.WorkOrderRecord.length - 1)) || (index == (selectedOrder.WorkOrderRecord.length - 1) && orderRecord.Description)) ? 
+                                                                                                    `border-left: 2px solid ${getStatusColor(orderRecord.OldStatus.Name)}` : ''">
                                             <span v-if="orderRecord.Description" class="quote">&ldquo;{{ orderRecord.Description }}&rdquo;</span>
                                         </div> 
                                 </div>
@@ -690,9 +690,11 @@ export default {
             this.getWorkOrders();
             this.filterOrders();
         },
-        ORDER_STATUS_CHANGED: () => {
-            this.getWorkOrders();
-            this.filterOrders();
+        ORDER_STATUS_CHANGED: function(data) {
+            if (data.noNeedToRefreshWorkOrderUserId && this.authUser.Id != data.noNeedToRefreshWorkOrderUserId) {
+                this.getWorkOrders();
+                this.filterOrders();
+            }
         }
   },
   created() {
@@ -812,7 +814,7 @@ export default {
         this.axios.get(Server.WORKORDER_API_PATH).then(response => {
             if (response.data.WorkOrders) {
                 let data = response.data.WorkOrders;
-                this.$store.state.workOrderPage.orders = data;
+                // this.$store.state.workOrderPage.orders = data;
                 this.workOrders = data;
                 if (this.authUser.Role === 'Staff' || this.authUser.Role === 'Maintainer') {
                     this.myWorkOrders = data.filter(order => order.RequestUserID == this.authUser.Id);
@@ -824,12 +826,13 @@ export default {
                 }
                 if (this.selectedOrder) {
                     this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
-                } else if (this.$route.params && this.$route.params.orderId) {
+                }
+                if (this.$route.params && this.$route.params.orderId) {
                     this.selectedOrder = data.filter(order => order.Id == this.$route.params.orderId)[0];
                     if (this.selectedOrder) {
                         this.getEquipmentsOfWorkOrder(this.selectedOrder);
                     }
-                }
+                } 
             }
         }).catch(error => {
             if (error == 'Request failed with status code 500') {
@@ -898,10 +901,11 @@ export default {
             this.selectedOrder = null;
         } else {
             // this.viewDetailMode = true;
-            this.selectedOrder = order;
+            this.$router.push(`/work_order/${order.Id}`)
+            // this.selectedOrder = order;
             // get equipments in the selected work order - start
-            this.getEquipmentsOfWorkOrder(order);
-            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.Location.Id)[0];
+            // this.getEquipmentsOfWorkOrder(order);
+            // this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.Location.Id)[0];
             // get equipments in the selected work order - end
         }
     },
@@ -1062,12 +1066,13 @@ export default {
       let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
       this.axios
         .put(url, {
-          userId: this.authUser.Id,
-          newStatusName: newOrderStatusName,
-          description:
-            this.changeStatusDescription != ""
-              ? this.changeStatusDescription
-              : null
+            userId: this.authUser.Id,
+            newStatusName: newOrderStatusName,
+            description:
+                this.changeStatusDescription != ""
+                ? this.changeStatusDescription
+                : null,
+            noNeedToRefreshWorkOrderUserId: this.authUser.Id
         })
         .then(res => {
           if (res.status == 200) {
@@ -1083,7 +1088,7 @@ export default {
                     newItemStatusName = "Available";
                 }
                 this.selectedOrder.WorkOrderDetails.forEach(async orderDetail => {
-                    let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/${orderDetail.EquipmentItem.Id}`;
+                    let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/chau/${orderDetail.EquipmentItem.Id}`;
                     await this.axios.put(equipmentStatusApi, {
                         userId: this.authUser.Id,
                         newStatusName: newItemStatusName,
@@ -1118,16 +1123,16 @@ export default {
                         metaData: JSON.stringify(metaData),
                         needToUpdateNotification: {
                             roles: ['Manager'],
-                        }
+                        },
                     });
                 } else if (newOrderStatusName == 'Cancelled') {
                     this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                        notificationContent: `${this.authUser.Role} ${this.authUser.Username} has cancelled work order ${this.selectedOrder.Name}`,
+                        notificationContent: `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has cancelled work order <strong>${this.selectedOrder.Name}</strong>`,
                         userRole: 'Equipment Staff',
                         metaData: JSON.stringify(metaData),
                         needToUpdateNotification: {
                             roles: ['Equipment Staff'],
-                        }
+                        },
                     });
                     this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
                         notificationContent: `${this.authUser.Role} ${this.authUser.Username} has cancelled work order ${this.selectedOrder.Name}`,
@@ -1338,6 +1343,16 @@ export default {
             this.updateBlock = null;
             this.updateFloor = null;
             this.updateTile = null;
+        }
+    },
+    '$route.params.orderId': function() {
+        if (this.$route.params.orderId) {
+            let toSelectOrder = this.toDisplayWorkOrders.filter(order => order.Id == this.$route.params.orderId)[0];
+            if (toSelectOrder) {
+                this.selectedOrder = toSelectOrder;
+                this.getEquipmentsOfWorkOrder(toSelectOrder);
+                this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == toSelectOrder.Location.Id)[0];
+            }
         }
     }
   }
