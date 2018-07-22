@@ -75,10 +75,17 @@
                                     <div :key="'noti' + noti.Id" v-for="noti in notifications">
                                         <v-divider></v-divider>
                                         <div class="noti-tile" :class="{'unread': !noti.Status}" style="display: grid; grid-template-columns: 20% 70% 10%; padding-bottom: .5rem"
-                                            v-on:click="() => {
+                                            v-on:click.stop="() => {
                                                 if (noti.Metadata) {
                                                     let metadata = JSON.parse(noti.Metadata);
                                                     $router.push(`/${metadata.page}/${metadata.elementId}`);
+                                                    axios.put(`http://localhost:3000/api/notification/status/${noti.Id}`, {
+                                                            userId: authUser.Id
+                                                        }).then((res) => {
+                                                            if (res.status == 200) {
+                                                               noti.Status = true;
+                                                            }
+                                                        })
                                                 }
                                             }">
                                             <div style="display: flex; justify-content: center; align-items: center;">
@@ -99,9 +106,9 @@
                                                 </div>
                                             </div>
                                             <div style="display: flex; justify-content: center; align-items: center; font-size: .5rem">
-                                                <i  class="fa mark-as-read-dot"
+                                                <i  class="fa mark-as-read-dot" style="z-index: 99"
                                                     :class="{'fa-circle': !noti.Status, 'fa-circle-o': noti.Status}"
-                                                    v-on:click="() => {
+                                                    v-on:click.stop="() => {
                                                         axios.put(`http://localhost:3000/api/notification/status/${noti.Id}`, {
                                                             userId: authUser.Id
                                                         }).then((res) => {

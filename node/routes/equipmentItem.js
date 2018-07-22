@@ -225,6 +225,24 @@ router.put("/tileId/:id", (req, res) => {
         .exec(res);
 });
 
+router.put("/status/chau/:id", (req, res) => {
+    req
+        .sql(
+            "declare @currentItemStatusId int; " +
+            "declare @newStatusId int; " +
+            "set @currentItemStatusId = (select StatusId from EquipmentItem where Id = @itemId); " +
+            "set @newStatusId = (select Id from EquipmentStatus where [Name] = @newStatusName); " +
+            "update EquipmentItem set StatusId = @newStatusId where Id = @itemId; " +
+            "insert into EquipmentItemHistory(EquipmentItemID, ByUserID, OldStatusID, NewStatusID, [Date], [Description]) " +
+            "   values(@itemId, @userId, @currentItemStatusId, @newStatusId, getdate(), @description)"
+        )
+        .param("itemId", req.params.id, TYPES.Int)
+        .param("userId", req.body.userId, TYPES.Int)
+        .param("newStatusName", req.body.newStatusName, TYPES.NVarChar)
+        .param("description", req.body.description, TYPES.NVarChar)
+        .exec(res);
+});
+
 router.put("/status/:id", (req, res) => {
     req
         .sql(

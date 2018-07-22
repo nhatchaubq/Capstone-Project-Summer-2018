@@ -38,48 +38,48 @@ module.exports = function(io) {
               + "                                     where tl.Id = wo.TeamLocationID "
               + "                                     for json path, without_array_wrapper)) as [Team], "
               + "                             json_query((select e.Id as [Id], json_query((select top 1 wod.ExpectingStartDate, wod.ExpectingDueDate "
-              + "                                                                          from WorkOrderDetail as wod join WorkOrder as wo  on wod.WorkOrderID = wo.Id "
+              + "                                                                          from WorkOrderDetail as wod join WorkOrder as wo2 on wod.WorkOrderID = wo2.Id "
               + "                                                                                 join EquipmentItem as ei on wod.EquipmentItemID = ei.Id "
               + "                                                                                 join Equipment as e2 on ei.EquipmentID = e.Id "
-              + "                                                                          where wo.Id = @orderId and e2.Id = e.Id "
+              + "                                                                          where wo2.Id = @orderId and e2.Id = e.Id "
               + "                                                                          for json path, without_array_wrapper)) as [OrderDetail], "
               + "                                                                     json_query((select ei.Id as [Id] "
               + "                                                                                 from EquipmentItem as ei join WorkOrderDetail as wod on ei.Id = wod.EquipmentItemID "
               + "                                                                                 where wod.WorkOrderID = @orderId and ei.EquipmentID = e.Id "
               + "                                                                                 for json path)) as [EquipmentItems], "
               + "                                                                         json_query((select ei.*, es.[Name] as [Status], " 
-              + "                                                                                                 json_query((select wo.*, acc.[Username] as [RequestUsername], wos.[Name] as [Status], pri.[Name] as [Priority], pri.TagHexColor as [PriorityTagColor], "
+              + "                                                                                                 json_query((select wo3.*, acc.[Username] as [RequestUsername], wos.[Name] as [Status], pri.[Name] as [Priority], pri.TagHexColor as [PriorityTagColor], "
               + "                                                                                                                     json_query((select wod.* "
               + "                                                                                                                                 from WorkOrderDetail as wod "
-              + "                                                                                                                                 where wod.EquipmentItemID = ei.Id and wod.WorkOrderID = wo.Id "
+              + "                                                                                                                                 where wod.EquipmentItemID = ei.Id and wod.WorkOrderID = wo3.Id "
               + "                                                                                                                                 for json path, without_array_wrapper)) as [Detail] "
-              + "                                                                                                             from WorkOrder as wo join Account as acc on wo.RequestUserID = acc.Id  "
-              + "                                                                                                                     join WorkOrderStatus as wos on wo.StatusID = wos.Id "
-              + "                                                                                                                     join [Priority] as pri on wo.PriorityID = pri.Id, (select Id  "
+              + "                                                                                                             from WorkOrder as wo3 join Account as acc on wo3.RequestUserID = acc.Id  "
+              + "                                                                                                                     join WorkOrderStatus as wos on wo3.StatusID = wos.Id "
+              + "                                                                                                                     join [Priority] as pri on wo3.PriorityID = pri.Id, (select Id  "
               + "                                                                                                                                                                        from WorkOrderStatus "
-              + "                                                                                                                                                                        where [Name] != N'Cancelled' and [Name] != N'Closed' and [Name] != N'Rejected') as [status],  "
+              + "                                                                                                                                                                        where [Name] != N'Cancelled' and [Name] != N'Closed') as [status],  "
               + "                                                                                                                                                                                 (select wod.* "
               + "                                                                                                                                                                                  from WorkOrderDetail as wod "
               + "                                                                                                                                                                                  where wod.EquipmentItemID = ei.Id) as [workorderdetail] "
-              + "                                                                                                             where wo.StatusId = [status].Id and wo.Id = [workorderdetail].WorkOrderID "
-              + "                                                                                                             order by wo.StatusID desc, wo.PriorityID desc "
+              + "                                                                                                             where wo3.StatusId = [status].Id and wo3.Id = [workorderdetail].WorkOrderID "
+              + "                                                                                                             order by wo3.StatusID desc, wo3.PriorityID desc "
               + "                                                                                                             for json path)) as [WorkOrders] "
               + "                                                                                     from EquipmentItem as ei "
-              + "                                                                                             join Equipment as e4 on ei.EquipmentID = e4.Id "
+            //   + "                                                                                             join Equipment as e4 on ei.EquipmentID = e4.Id "
               + "                                                                                             join EquipmentStatus as es on ei.StatusId = es.Id "
               + "                                                                                     where ei.EquipmentID = e.Id "
-              + "                                                                                     order by (select count(wo.Id) "
-              + "                                                                                               from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
+              + "                                                                                     order by (select count(wo4.Id) "
+              + "                                                                                               from WorkOrder as wo4 join WorkOrderDetail as wod on wo4.Id = wod.WorkOrderID "
               + "                                                                                               where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id "
               + "                                                                                                                                                     from WorkOrderStatus "
-              + "                                                                                                                                                     where [Name] != N'Cancelled' and [Name] != N'Closed' and [Name] != N'Rejected')) asc, ei.RuntimeDays asc, ei.LastMaintainDate desc, ei.NextMaintainDate desc "
+              + "                                                                                                                                                     where [Name] != N'Cancelled' and [Name] != N'Closed')) asc, ei.RuntimeDays asc, ei.LastMaintainDate desc, ei.NextMaintainDate desc "
               + "                                                                                                                                                     for json path)) as [Table] "
               + "                                         from Equipment as e "
               + "                                         where e.Id in (select distinct e.Id "
               + "                                                        from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID "
               + "                                                        where ei.id in (select wod.EquipmentItemID "
-              + "                                                                        from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
-              + "                                                                        where wo.Id = @orderId)) "
+              + "                                                                        from WorkOrder as wo5 join WorkOrderDetail as wod on wo5.Id = wod.WorkOrderID "
+              + "                                                                        where wo5.Id = @orderId)) "
               + "                                         for json path)) as [Equipments] "
               + " from WorkOrder as wo "
               + " where Id = @orderId "
@@ -197,11 +197,11 @@ module.exports = function(io) {
                 "                                                                                            (select wod.* " +
                 "                                                                                            from WorkOrderDetail as wod " +
                 "                                                                                            where wod.EquipmentItemID = ei.Id) as [workorderdetail] " +
-                "            where wo.StatusId = [status].Id and wo.Id = [workorderdetail].WorkOrderID " +
+                "            where wo.StatusID = [status].Id and wo.Id = [workorderdetail].WorkOrderID " +
                 "            order by wo.StatusID desc, wo.PriorityID desc " +
                 "            for json path)) as [WorkOrders] " +
                 " from EquipmentItem as ei " +
-                "        join Equipment as e on ei.EquipmentID = e.Id " +
+                // "        join Equipment as e on ei.EquipmentID = e.Id " +
                 "        join EquipmentStatus as es on ei.StatusId = es.Id " +
                 " where ei.EquipmentID = @equipmentId and ei.StatusID in (select Id from EquipmentStatus where [Name] != N'Damaged' and [Name] != N'Lost' and [Name] != N'Archived') " +
                 " order by (select count(wo.Id) " +
@@ -343,7 +343,7 @@ module.exports = function(io) {
         .param("newWorkOrderStatusName", req.body.newStatusName, TYPES.NVarChar)
         .param("description", req.body.description, TYPES.NVarChar)
         .done((fn) => {
-            io.sockets.emit('ORDER_STATUS_CHANGED', {});
+            io.sockets.emit('ORDER_STATUS_CHANGED', {noNeedToRefreshWorkOrderUserId: req.body.noNeedToRefreshWorkOrderUserId});
             res.end();
         })
         .exec(res);
