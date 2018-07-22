@@ -11,7 +11,7 @@
 
   
           <th style="width:3% !important"><strong >#</strong></th>
-          <th style="width:20% !important"><strong>User name</strong></th>
+          <th style="width:15% !important"><strong>User name</strong></th>
   
           <th style="width:25% !important"><strong>Full name </strong></th>
   
@@ -19,7 +19,7 @@
   
           <th style="width:15% !important"><strong>Phone</strong></th>
   
-          <th style="width:10% !important"><strong>Role</strong></th>
+          <th style="width:15% !important"><strong>Role</strong></th>
   
           <th style="width:7% !important"><strong>Status</strong></th>
           <!-- <th><strong>Department</strong></th> -->

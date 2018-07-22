@@ -153,7 +153,7 @@ module.exports = function(io) {
                     + " from Equipment as e join [Unit] as u on e.UnitID = u.Id "
                     + " where e.Id in (select distinct e.Id "
                     + "                 from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID "
-                    + "                 where ei.id in (select wod.EquipmentItemID "
+                    + "                 wher ei.id in (select wod.EquipmentItemID "
                     + "                                 from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
                     + "                                 where wo.Id = @workOrderId)) "
                     + " for json path")
@@ -365,6 +365,7 @@ module.exports = function(io) {
             .param('workOrderId', req.params.workOrderId, TYPES.Int)
             .exec(res);
     })
+
 
     return router;      
 }

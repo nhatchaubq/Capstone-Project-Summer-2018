@@ -69,6 +69,7 @@ app.use("/api/team_location", require("./routes/team_location"));
 app.use("/api/team_account", require("./routes/team_account"));
 app.use("/api/team/id", require("./routes/teamDetails"));
 app.use("/api/dashboard", require("./routes/dashBoard"));
+app.use("/api/allaccwithout", require("./routes/AllAccWithoutMaintainerAndAdmin"));
 
 app.use("/api/report", require("./routes/report"));
 app.use("/api/block", require("./routes/block"));
