@@ -6,77 +6,282 @@
         <span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams
       </router-link>
     </div>
-    <div class="col-8">
+    <!-- <div class="col-8">
       <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate " v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
-    </div>
+    </div> -->
   </div>
-  <div v-if="team" class="material-box" style="width: 50%">
+  <div class="row">
+
+
+  <div v-if="team" class="material-box col-12" >
 
       <div class="row" >
-        <div v-if="!editMode" class="col-9 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important">{{team.Name}}</div>
-        <input v-if="editMode" v-model.trim="team.Name" class="col-9 input1" style="font-size: 30px; color: var(--primary-color);height:46.42px; width: 443.54px; padding: 0 0 0 0.25rem !important; margin: 0 1rem 0 0.75rem !important" >
+        <div v-if="!editMode" class="col-7 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 1rem !important">{{team.Name}} </div>
+        <input v-if="editMode" v-model.trim="team.Name" class="col-7 input1" style="font-size: 30px; color: var(--primary-color);height:46.42px; width: 443.54px; padding: 0 0 0 0.75rem !important; margin: 0 1rem 0.5rem 0.75rem !important" > 
+        <div class="col-5 input2" style="display: flex; justify-content: flex-end; margin-top:0.5rem">
+          <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
+        </div>
+        <!-- <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> -->
         <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
       </div>
-      <div class="row" style="margin: 0 0 0.5rem 0">
-        <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save change</button>
+      <!-- <div class="row" style="margin: 0 0 0.5rem 0">
+        <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save changes</button>
+        <button v-if="editMode" id=" btn-cancel" class="button btn-confirm-edit material-shadow-animate" style="margin:0 0 1rem 1rem" v-on:click="() => {
+          this.$router.go(this.$router.currentRoute)
+      }">Cancel</button>
+      </div> -->
+
+        <h2>Create date: {{getDate(team.CreatedDate)}} </h2>
+
+    <strong v-if="editMode">Add new members: </strong>
+    <div class="field is-horizontal">
+      <multi-select  v-if="editMode" style="width: 44rem !important; height:36px; margin-right: 1rem"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
+        <!-- <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 4px" v-on:click="addNew()">add new</button>  -->
+    </div>
+        
+
+        <div class="row">
+            <div class="col-6">  <strong >Member of this team</strong> </div>
+            <div class="col-6"> <strong v-if="!editMode">Location of this team</strong></div>
+
+        </div>
+
+
+
+
+  <div class="row" > 
+    <div class="col-6">   
+      <div v-if="!editMode">
+        <div v-if="!team.LeaderAccount ">
+          There is no team leader yet.
+        </div>
+        <div v-if="!team.MemberAccounts">
+          There is no team member yet
+        </div>
+
+        <div v-else>
+
+              <table class="mytable" style="margin-bottom:1rem">
+                <thead>
+                  <tr>
+                    <th style="width:3% !important"><strong># </strong></th>
+                    <th style="width:15% !important"><strong>Username</strong></th>
+                    <!-- <th style="width: 30% !important"><strong>Full Name</strong></th> -->
+                    <th style="width: 5% !important"><strong>Status</strong></th>
+                    <th style="width: 5% !important"><strong>Role</strong></th>
+                    <th style="width: 20% !important" v-if="editMode"><strong>Action</strong></th>
+                  </tr>
+                </thead>  
+                <tbody>
+                    <tr v-if="team.LeaderAccount" >
+                      <td v-on:click="toDetail(team.LeaderAccount.Id)">1</td>
+                      <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Username}}</td>
+                      <!-- <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td> -->
+                      <td v-on:click="toDetail(team.LeaderAccount.Id)" style="color:#26a69a"><span style="font-size: 25px; ">♛</span> Leader</td>
+                      <strong v-on:click="toDetail(team.LeaderAccount.Id)"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
+                      <td v-if="editMode">&nbsp</td>
+                    </tr>
+                    <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
+                      <td v-on:click="toDetail(member.Id)">{{index + 2}}</td>
+                      <td v-on:click="toDetail(member.Id)">{{member.Username}}</td>
+                      <!-- <td v-on:click="toDetail(member.Id)">{{member.Fullname ? member.Fullname :'N/A' }} </td> -->
+                      <td v-on:click="toDetail(member.Id)"><span style="font-size: 25px">♟</span>Member </td>
+                      <strong v-on:click="toDetail(member.Id)"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
+                      <td v-if="editMode" style="padding-top: 0rem important">
+                        <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
+                          <!-- <button v-if="editMode" class="material-icons"  style="color: var(--danger); margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">close</button> -->
+                          <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">Remove</button>
+
+                      </td>
+                    </tr>
+                </tbody>
+              </table>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6">
+      <div v-if="!editMode">
+        <div v-if="!team.Location"  >
+          There is no location yet.
+        </div>
+        <div v-else>
+          <table class="mytable" style="margin-bottom:1rem">
+            <thead>
+              <tr>
+                <th style="width:3% !important"><strong># </strong></th>
+                <th style="width:30% !important"><strong>Location Name </strong></th>
+                <th style="width: 57% !important"><strong>Location Address</strong></th>
+                <th style="width: 10% !important"><strong>Status</strong></th>
+              </tr>
+            </thead>  
+            <tbody>
+                <tr :key="Loca.Id" v-for="(Loca, index) in team.Location" class="txtText" >
+                  <td >{{index + 1}}</td>
+                  <td >{{Loca.Name ? Loca.Name : "N/A" }}</td>
+                  <td >{{Loca.Address ? Loca.Address : "N/A"}} </td>
+                  <td > <strong :style="{color: Loca.IsActive ? 'var(--primary-color)' : '#607D8B'}">{{Loca.IsActive ? "Active" : "Inactive"}}</strong></td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div v-if="editMode">
+      <div v-if="!team.LeaderAccount ">
+        There is no team leader yet.
+      </div>
+      <div v-if="!team.MemberAccounts">
+        There is no team member yet
+      </div>
+      <div v-else>
+        
+            <table class="mytable" style="margin-bottom:1rem">
+              <thead>
+                <tr>
+                  <th style="width:3% !important"><strong># </strong></th>
+                  <th style="width:15% !important"><strong>Username</strong></th>
+                  <th style="width: 15% !important"><strong>Full Name</strong></th>
+                  <th style="width: 5% !important"><strong>Status</strong></th>
+                  <th style="width: 5% !important"><strong>Role</strong></th>
+                  <th style="width: 20% !important" v-if="editMode"><strong>Action</strong></th>
+                </tr>
+              </thead>  
+              <tbody>
+                  <tr v-if="team.LeaderAccount" >
+                    <td v-on:click="toDetail(team.LeaderAccount.Id)">1</td>
+                    <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Username}}</td>
+                    <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
+                    <td v-on:click="toDetail(team.LeaderAccount.Id)" style="color:#26a69a"><span style="font-size: 25px; ">♛</span> Leader</td>
+                    <strong v-on:click="toDetail(team.LeaderAccount.Id)"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
+                    <td v-if="editMode">&nbsp</td>
+                  </tr>
+                  <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
+                    <td v-on:click="toDetail(member.Id)">{{index + 2}}</td>
+                    <td v-on:click="toDetail(member.Id)">{{member.Username}}</td>
+                    <td v-on:click="toDetail(member.Id)">{{member.Fullname ? member.Fullname :'N/A' }} </td>
+                    <td v-on:click="toDetail(member.Id)"><span style="font-size: 25px">♟</span>Member </td>
+                    <strong v-on:click="toDetail(member.Id)"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
+                    <td v-if="editMode" style="padding-top: 0rem important">
+                      <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
+                        <!-- <button v-if="editMode" class="material-icons"  style="color: var(--danger); margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">close</button> -->
+                        <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">remove</button>
+
+                    </td>
+                  </tr>
+              </tbody>
+            </table>
+
+      </div>
+    </div>  
+  </div>
+
+
+
+
+
+       <div class="row" style="margin: 0 0 0.5rem 0">
+        <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save changes</button>
         <button v-if="editMode" id=" btn-cancel" class="button btn-confirm-edit material-shadow-animate" style="margin:0 0 1rem 1rem" v-on:click="() => {
           this.$router.go(this.$router.currentRoute)
           //location.reload()
       }">Cancel</button>
       </div>
-      <div>
-        <h2>Create date: {{getDate(team.CreatedDate)}} </h2>
 
-        <strong >Leader</strong>
-        
-        <div >
-          <!-- <div class="row">
-            <model-select v-if="editMode" class="col-9" style="margin-right:1rem; "  :options="toLeaderOptions" v-model="selectedToLeader"  placeholder="Select a leader"></model-select>  
-              <button v-if="editMode" class="button btn-primary " style="margin-top: 1rem; padding :-1rem" v-on:click="console.error(this.account.id)">add new</button>     
-          </div> -->
-          <div v-if="team.LeaderAccount">
-            <div  class="row " style="height:43.42px">
-              <div class="col-8">
-                <span>-</span>
-              <router-link :to="`/account/${team.LeaderAccount.Id}`">
-                {{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A' }}
-              </router-link>
-                <span>({{team.LeaderAccount.Username}})</span>
-              </div>
-            </div>
-          </div>
-        </div>  
-        <div v-if="team.MemberAccounts">
-            <strong>Members</strong>
-            <div :key="member.Id" v-for="member in team.MemberAccounts">
-              <div class="row" style="height:40px; ">
-                <div class="col-12 row">
-                  <div class="col-8">
-                      <span>-</span>
-                      <router-link :to="`/account/${member.Id}`">
-                        {{member.Fullname ? member.Fullname :'N/A' }}
-                      </router-link>
-                        <span>({{member.Username}})</span>
-                  </div>
-                  <div class="col-3" >
-                    <!-- <button v-if="editMode" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="changeToLeader(member.Id)">Set to leader</button> -->
-                    <button v-if="editMode" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
-                  </div>
-                  <div class="col-1">
-                    <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px; margin-top: 4px" v-on:click="confirmKick(member.Id, member.Username)">close</button>
-                    <!-- <button v-if="editMode" class="material-icons"  style="color: var(--danger); text-align: center; padding-bottom: 3px; margin-top: 4px" v-on:click="kick(member.Id)">close</button> -->
-                  </div>
-                </div >
-              </div>
-            </div>
-        </div>
+
+     <!-- equipmentItem-start -->
+         <!-- <div class="col-12">
+    <div v-if="!editMode">
+      <div v-if="!EquiItems ">
+          Error
       </div>
-    <strong v-if="editMode">Add new members: </strong>
-    <div class="field is-horizontal">
-      <multi-select  v-if="editMode" style="width: 100% !important; height:36px; margin-right: 1rem"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 
-        <button v-if="editMode" class="button btn-primary material-shadow-animate pull-right" style="margin-top: 4px" v-on:click="addNew()">add new</button> 
+      <div v-else>
+        <table class="mytable" style="margin-bottom:1rem">
+            <thead>
+              <tr>
 
-    </div>
+                <th style="width:30% !important"><strong>Work order(Status) </strong></th>
+                <th style="width:30% !important"><strong>Equipments </strong></th>
+                <th style="width:30% !important"><strong>Items </strong></th>
+                <th style="width:30% !important"><strong>Returned </strong></th>
+
+
+              </tr>
+            </thead>  
+            <tbody style="font-size:14px" :class="{'row-even': index % 2 != 0}" v-bind:key="WO.WorkOrderId" v-for="(WO, index1) in EquiItems" >
+                <tr>
+
+                  <td :rowspan="WO.totalItem + 1">{{WO.workOrder.WorkOrderName}}({{WO.workOrder.WorkOrderStatusName}})-{{WO.workOrder.Equipment.length+1}}</td>
+
+                </tr>
+                <tbody style="font-size:14px" :class="{'row-even': index % 2 != 0}" v-bind:key="'eq' + eq.Id" v-for="(eq, index2) in WO.workOrder.Equipment" >
+                  <tr>  
+
+                      <td :rowspan="eq.EquipmentItems.length + 1">{{eq.Name}}-{{eq.EquipmentItems.length +1}} </td>
+
+                  </tr>
+                  <tr :key="'eqi' + eqi.Id" v-for="(eqi, index3) in eq.EquipmentItems">
+                    <td>#{{eqi.SerialNumber}}</td>
+                  </tr>
+                
+                </tbody>
+
+
+            </tbody>
+          </table>
+
+      </div>
+    </div>  
+  </div> -->
+     <!-- equipmentItem-end -->
+    <strong>
+      Equipment item
+    </strong>
+     <!-- equipmentItem-start -->
+  <div class="col-12">
+    <div v-if="!editMode">
+      <div v-if="!items1 ">
+          There is no item yet.
+      </div>
+      <div v-else>
+        <table  class="mytable" style="margin-bottom:1rem">
+            <thead>
+              <tr >
+                <th style="width:5% !important"><strong># </strong></th>
+                <th style="width:30% !important"><strong>Equipments </strong></th>
+                <th style="width:30% !important"><strong>Serial Number Of Item </strong></th>
+                <th style="width:30% !important"><strong>Work order </strong></th>
+              </tr>
+            </thead>  
+            <tbody >
+              <tr  :key="item.Id" v-for="(item, index) in items1">
+                <td>
+                  {{index +1}}
+                </td>
+                <td>
+                  {{item.Name}}
+                </td>
+                <td>
+                  {{item.SerialNumber}}
+                </td>
+                <td>
+                  {{item.WordOrderName}}
+                </td>
+              </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>  
+  </div>
+     <!-- equipmentItem-end -->
+
+
+
+
     <!-- <button v-on:click="gotoDetail">1</button> -->
     <vodal :show="show" animation="rotate" @hide="show = false">
     <div class="col-12" style="margin-top: 0.5rem; padding-left: 2rem; border-bottom-style: double; ">Are you sure you want to change new leader??</div>
@@ -91,7 +296,7 @@
     <div class="row !important" style="margin-top:2rem">
       <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 5rem" v-on:click="changeToLeader(SelectedMemberId)">Change</button>
 
-        <button class="button btn-edit material-shadow-animate "  style="background-color:silver; margin-left: 3rem; border: none" v-on:click="cancel" >Cancel</button>
+        <button class="button btn-edit material-shadow-animate "  style="background-color:white; color: black; margin-left: 3rem; border: none" v-on:click="cancel" >Cancel</button>
 
       
 
@@ -109,17 +314,62 @@
       <div class="col-7">{{SelectedMemberName}}</div>
     </div>
     <div class="row !important" style="margin-top:2rem">
-      <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 5rem" v-on:click="kick(SelectedMemberId)">Change</button>
+      <button class="button material-shadow-animate "  style="background-color:var(--danger); color:white; margin-left: 5rem " v-on:click="kick(SelectedMemberId)">Remove</button>
 
-        <button class="button btn-edit material-shadow-animate "  style="background-color:silver; margin-left: 3rem; border: none" v-on:click="cancelConfirm" >Cancel</button>
+        <button class="button btn-edit material-shadow-animate "  style="background-color:white; color:black; margin-left: 3rem; border: none" v-on:click="cancelConfirm" >Cancel</button>
 
       
 
     </div>
   </vodal>
   <!-- confirm kick popup-end -->
+ 
 
   </div>
+
+
+
+  </div>
+
+
+  <!-- test -->
+
+  <!-- <div class="grid-wrapper1 col-12">
+    <div class="">
+      <div v-if="!team.Location">
+        There is no team member yet.
+      </div>
+      <div v-else>
+      <table class="mytable">
+        <thead>
+          <tr>
+            <th style="width:3% !important"><strong># </strong></th>
+            <th style="width:20% !important"><strong>Username</strong></th>
+            <th style="width: 67% !important"><strong>Full Name</strong></th>
+            <th style="width: 10% !important"><strong>Role</strong></th>
+          </tr>
+        </thead>  
+        <tbody>
+            <tr>
+              <td>1</td>
+              <td>{{team.LeaderAccount.Username}}</td>
+              <td>{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
+              <td><span style="font-size: 25px; color:#26a69a">♛</span> Leader</td>
+            </tr>
+            <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  >
+              <td >{{index + 2}}</td>
+              <td >{{member.Username}}</td>
+              <td >{{member.Fullname ? member.Fullname :'N/A' }} </td>
+              <td ><span style="font-size: 25px">♟</span>Member </td>
+            </tr>
+        </tbody>
+      </table>
+        <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">crown</i> 
+    </div>
+
+  </div>
+</div> -->
+<!-- test-end -->
 </div>
          
 
@@ -132,11 +382,11 @@ import "vodal/common.css";
 import "vodal/slide-up.css";
 import Vodal from "vodal";
 import moment from "moment";
-// import VueBase64FileUpload from "vue-base64-file-upload";
+import VueBase64FileUpload from "vue-base64-file-upload";
 import { BasicSelect, MultiSelect, ModelSelect } from "vue-search-select";
 export default {
   components: {
-    // VueBase64FileUpload,
+    VueBase64FileUpload,
     MultiSelect,
     BasicSelect,
     ModelSelect,
@@ -152,7 +402,6 @@ export default {
       let data = response.data.team;
       this.team = data;
     });
-
     let outsideTeamApiUrl = `http://localhost:3000/api/AllAccExceptThatTeam/${
       this.$route.params.id
     }`;
@@ -166,10 +415,40 @@ export default {
         this.memberOptions.push(option);
       });
     });
+
+    let urlEquipmentItem = `http://localhost:3000/api/team/id/${
+      this.$route.params.id
+    }/equipmentitem`;
+        this.axios.get(urlEquipmentItem).then(res => {
+          let data = res.data;
+          data.forEach(element => {
+            let EquiItem = element;
+            var totalItem = 0;
+            EquiItem.Equipment.forEach(eq => {
+              totalItem += eq.EquipmentItems.length;
+            })
+            let workOrder = {
+              totalItem: totalItem,
+              workOrder: EquiItem,
+            }
+            this.EquiItems.push(workOrder);
+          });
+        });
+    let itemUrl = `http://localhost:3000/api/team/id/${
+      this.$route.params.id
+    }/item`;
+
+        this.axios.get(itemUrl).then(response => {
+          let data = response.data;
+          this.items1 = data;
+        });
+
   },
 
   data() {
     return {
+      EquiItems: [],
+      items1:[],
       sending: false,
       ErrorStrings: {
         NameMax: " Use from 6 to 50 characters for your team name",
@@ -219,27 +498,51 @@ export default {
       if (this.team.Name.length > 50) {
         this.CreateTeamErrors.NameMax = this.ErrorStrings.NameMax;
       }
-      if (this.validateTeam())
+      if (this.validateTeam()) {
+        var checkName = true;
+        var checkAccounts = true;
         this.axios
           .put(`http://localhost:3000/api/team/${this.$route.params.id}`, {
             team: this.team
           })
           .then(res => {
-            // this.$router.push("/account");
             if (res.status == 200) {
-              // this.editMode = false;
-              alert("Change successful");
-              // this.getTeamDetail(this.$route.params.id);
-  location.reload();
-
-              
+              checkName = true;
             }
+          })
+          .catch(error => {
+            checkName = false;
+            console.log(error);
           });
+        this.selectedMemberList.forEach(element => {
+          this.axios
+            .post(
+              `http://localhost:3000/api/AllAccExceptThatTeam/${
+                this.$route.params.id
+              }`,
+              {
+                accountID: element.value
+              }
+            )
+            .then(res => {
+              // this.$router.push("/account");
+              if (res.status == 200) {
+                // this.editMode = false;
+                checkAccounts = true;
+              }
+            });
+        });
+        if (checkName && checkAccounts) {
+          alert("Change successful");
+          // this.getTeamDetail(this.$route.params.id);
+          location.reload();
+        }
+      }
     },
     validateTeam() {
       return (
         this.CreateTeamErrors.NameMax === "" &&
-        this.CreateTeamErrors.NameMin === "" 
+        this.CreateTeamErrors.NameMin === ""
       );
     },
 
@@ -313,6 +616,9 @@ export default {
       this.showConfirm = true;
       this.SelectedMemberId = memberID;
       this.SelectedMemberName = memberName;
+    },
+    toDetail(accountId) {
+      this.$router.push(`/account/${accountId}`);
     },
     getDate(date) {
       return moment(date).format("L");
@@ -397,15 +703,84 @@ export default {
   border-style: solid;
   border-width: 1px;
   border-color: silver;
+  border-radius: 5px;
 }
 .input2 {
   border-style: solid;
   border-width: 1px;
-  border-color: silver;
+  border-color: white;
+}
+.input1:hover {
+  border-color: black;
 }
 #btn-cancel {
   background-color: white;
   color: black;
   margin-right: 0.6rem;
+}
+
+th {
+  text-align: left;
+  background-color: #cfd8dc;
+  height: 30px;
+  line-height: 30px;
+  padding: 0.5rem !important;
+}
+
+td {
+  vertical-align: middle;
+  height: 40px;
+  line-height: 25px;
+  /* padding: 0.5rem; */
+  padding: 0 0 0 0.5rem !important;
+}
+td:hover {
+  cursor: pointer;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+  color: #263238;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+  color: #263238;
+}
+
+#th1:curve {
+  text-align: justify;
+
+  background-color: #b0bec5;
+}
+
+tr:hover {
+  background-color: #eceff1;
+}
+
+.txtText {
+  text-align: left;
+
+  /*margin: 0.3rem;*/
+
+  padding: 0.5rem;
+
+  background-color: #cfd8dc;
+}
+
+table {
+  /* border: 1px solid black; */
+
+  width: 100%;
+
+  font-size: 15px;
+
+  /* text-align: right; */
+}
+.grid-wrapper1 {
+  /* display: grid; */
+  /* grid-template-columns: 50% 50%; */
+  grid-column-gap: 1rem;
+  grid-row-gap: 2rem;
 }
 </style>

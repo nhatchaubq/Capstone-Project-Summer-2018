@@ -1,12 +1,13 @@
 <template>
     <div class="form">
+        <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
         <div class="form-title">
             <div class="form-title-start">
                 Add New Work Order
             </div>
             <div class="form-title-end">
                 <!-- <button id="btn-cancel" class="button" style="" v-on:click="cancel">Cancel</button> -->
-                <button class="button" style="margin-right: .5rem" v-on:click="cancel()">Cancel</button>
+                <button class="button" style="margin-right: .5rem;" v-on:click="cancel()">Cancel</button>
                 <!-- <button id="btn-add" class="button is-primary">Create Work Order</button> -->
                 <button class="button is-primary" v-on:click="createWorkOrder()">Create Work Order <i v-show="sending" class="fa fa-circle-o-notch fa-spin"></i></button>
             </div>
@@ -682,13 +683,14 @@
 
 <script>
 import Server from "@/config/config.js";
-
+import Utils from "@/utils.js";
 import moment from "moment";
 import { ModelSelect } from "vue-search-select";
+import Simplert from "vue2-simplert";
 
 export default {
   components: {
-    ModelSelect
+    ModelSelect, Simplert
   },
   data() {
     return {
@@ -927,7 +929,7 @@ export default {
                     categoryName: context.workOrderCategory,
                     teamLocationId: result
                   })
-                  .then(function(res) {
+                  .then(async function(res) {
                     if (res.data.NewWorkOrderId) {
                       let newWorkOrderId = res.data.NewWorkOrderId;
                       var check = true;
@@ -954,6 +956,23 @@ export default {
                       })
                       context.sending = false;
                       if (check) {
+                        const notificationContent = `<strong>${context.authUser.Username}</strong> created a work order <strong>${context.workOrderTitle}</strong>`;
+                        context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                                notificationContent: notificationContent,
+                                userRole: 'Equipment Staff',
+                            })
+                        context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                                notificationContent: notificationContent,
+                                userRole: 'Manager',
+                            })
+                        let obj = {
+                          message: "Work Order created successfully",
+                          type: "success",
+                          hideAllButton: true,
+                          showXclose: false,
+                        };
+                        context.$refs.simplert.openSimplert(obj);
+                        await Utils.sleep(1200);
                         context.$router.push(`/work_order/${newWorkOrderId}`);
                       } else {
                         alert('Error');
@@ -1427,7 +1446,7 @@ input[type="number"], input[type="date"] {
   display: grid;
   grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
-  padding: 1rem 2rem;
+  padding: .5rem 2rem;
   box-shadow: 0px 3px 5px var(--shadow);
   z-index: 5;
 }

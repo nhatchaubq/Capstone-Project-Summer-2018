@@ -29,12 +29,12 @@
 
 <div class="material-box">
 <div class="row" style="margin: 0 !important">
-  <h2 class="col-9" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong> </h2>
+  <h2 class="col-9" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
   <div class="col-3" v-if ="!editMode">
     <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode">Edit</button>
   </div>
 </div>
-<form @submit.prevent="editAccount()">
+<!-- <form @submit.prevent="editAccount()"> -->
   <div  class="row " style="height: 36px" >
       <div class="col-12" style="margin-top:0.5rem" >
       <strong>Full name</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span>    <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
@@ -96,15 +96,15 @@
   <input v-else v-model.trim="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
 <div class="row" v-if="editMode">
   <!-- <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Save change</button> -->
-  <button class="button btn-confirm-edit btn-primary material-shadow-animate" >Save change</button>
-</div>
-
-</form>
-
+  <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()" >Save change</button>
     <button v-if="editMode" class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
          getAccountDetail($route.params.id);
          editMode = false;
       }">Cancel</button>
+</div>
+
+<!-- </form> -->
+
 
 <!-- <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
 <div v-bind:key="team.id" v-for="team in account.Teams" >

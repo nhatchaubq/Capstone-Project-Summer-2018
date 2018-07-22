@@ -13,14 +13,17 @@ import "./styles/style.scss";
 import * as VueGoogleMaps from "vue2-google-maps";
 import iView from "iview";
 import "iview/dist/styles/iview.css";
+import VueSocketio from 'vue-socket.io';
+import VPopover from 'vue-js-popover';
 
+Vue.use(VPopover, { tooltip: true })
+Vue.use(VueSocketio, 'http://localhost:3000');
 Vue.use(VueGoogleMaps, {
   load: {
     key: "AIzaSyDNEXkpy7Eb76G8TciF6DzydzD4y4tZg4c",
     libraries: "places"
   }
 });
-
 Vue.use(VueAxios, axios);
 Vue.use(Vuetify);
 Vue.use(iView);

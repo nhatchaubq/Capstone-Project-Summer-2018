@@ -3,54 +3,73 @@
     <router-link to="/vendor">
       <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Vendors</a>
     </router-link>
-      <div class="row" style="margin: 0 !important; margin-bottom: 0.5rem">
-        <h2 class="col-11" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{Vendor.BusinessName}}</strong> </h2>
-      <button  v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate col-1" v-on:click="editMode = !editMode">Edit</button>
-      </div>
-  <form @submit.prevent="editVendor()">
+  <!-- <form @submit.prevent="editVendor()"> -->
 
   <div class="grid-wrapper1 col-12" style="margin-bottom:1rem">
     <div class="material-box" >
+      <div class="row" style="margin: 0 !important; height:36px ">
+        <h2 class="col-11" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{Vendor.BusinessName}}  <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> </strong> </h2>
+      <button  v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate col-1" v-on:click="editMode = !editMode">Edit</button>
+      </div>
 
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem" >
-            Business address  <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
+            <strong>
+              Business address 
+            </strong>
+            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
           <input v-else v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem" >
-            Website <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span>
+            <strong>
+                Website 
+
+            </strong>
+            <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled"> 
           <input v-else v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem;" >
-            Contact name <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span>
+            <strong>
+              Contact name 
+
+            </strong>
+            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
           <input v-else v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem"  >
-            Contact email <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
+            <strong>
+              Contact email 
+
+            </strong>
+            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="Text input" disabled="disabled">
           <input v-else v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="Text input" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem" >
-            Description <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
+            <strong>
+              Description 
+
+            </strong>
+            <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
           </div> 
         </div> 
           <input v-if="!editMode" v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
           <input v-else v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" >
         <div class="row" v-if="editMode">
-          <button class="button btn-confirm-edit btn-primary material-shadow-animate" >Save change</button>
+          <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editVendor()">Save change</button>
           <button class="button btn-cancel material-shadow-animate" v-on:click="() => {
-         created($route.params.id);
+         reload($route.params.id);
          editMode = false;
       }">Cancel</button>
         </div>
@@ -98,8 +117,9 @@
   <div class="grid-wrapper1 col-12">
     <div class="material-box">
       <!-- <div class="grid-wrapper1"> -->
+        <!--
         <strong>Vendor's equipment (This vendor have {{Vendor.Equipment.Quantity}} equipment(s) and {{Vendor.EquipmentItems.Quantity}} equipment item(s) ) </strong> 
-        <!-- <div v-if="Vendor.Equipments" >
+        <div v-if="Vendor.Equipments" >
           <div >
 
             <div :key="Equipment.Id" v-for="Equipment in Vendor.Equipments">
@@ -109,14 +129,52 @@
                 
                 <router-link :to="`/equipment/${Equipment.Id}`">
                 <div class="col-12">
-                  <span>-</span> {{Equipment.Name}}
+                  <span>-</span> {{Equipment.Name}} <span>-</span> {{Equipment.MadeIn? Equipment.MadeIn : "N/A"}}
                 </div>
                 </router-link>
 
-              </div>
             </div>
           </div>
-        </div> -->
+        </div>
+      </div>
+      -->
+
+  <div v-if="!Vendor.Equipments">
+    This vendor has no equipment in system.
+  </div>
+  <div v-else>
+    <strong>Vendor's equipment (This vendor have {{Vendor.Equipment.Quantity}} equipment(s) and {{Vendor.EquipmentItems.Quantity}} equipment item(s) ) </strong> 
+    <table class="mytable">
+      <thead>
+        <tr>
+          <!-- <th><strong>ID</strong></th> -->
+          <th style="width:3% !important"><strong>#</strong></th>
+          <th style="width:47% !important"><strong>Equipment name </strong></th>
+          <th style="width:15% !important"><strong>Made in</strong></th>
+          <th style="width:20% !important"><strong>Equipment category</strong></th>
+
+
+
+          <!-- <th><strong>Department</strong></th> -->
+        </tr>
+      </thead>  
+      <tbody>
+          <tr :key="Equipment.Id" v-for="(Equipment, index) in Vendor.Equipments" class="txtText" v-on:click="gotoDetail(Equipment.Id)" >
+            <td >{{index + 1}}</td>
+            <td >{{Equipment.Name ? Equipment.Name : "N/A" }}</td>
+            <td >{{Equipment.MadeIn ? Equipment.MadeIn : "N/A"}} </td>
+            <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td>
+
+          </tr>
+      </tbody>
+    </table>
+    <!-- <router-link to='/vendor1/add/'>
+      <button id="btn-add-vendor" class="button btn-primary material-shadow-animate">Add Vendor</button>
+    </router-link> -->
+  </div>
+
+
+<!--
 
          <div v-if="Vendor.EMayXayDung" >
           <div>
@@ -125,7 +183,7 @@
 
             <div :key="Equipment.Id" v-for="Equipment in Vendor.EMayXayDung">
               <div class="row" style="height:40px; ">
-                <!-- <div class="col-12 row"> -->
+
 
                 
                 <router-link :to="`/equipment/${Equipment.Id}`">
@@ -134,7 +192,7 @@
                 </div>
                 </router-link>
 
-                <!-- </div > -->
+
               </div>
             </div>
         </div>
@@ -290,14 +348,14 @@
         </div>
 
 
-
+-->
         
       <!-- </div> -->
     </div>
   </div>
 
     <!-- test end -->
- </form>
+ <!-- </form> -->
 </div>
   
 </template>
@@ -350,23 +408,38 @@ export default {
       // if (this.Vendor.BusinessName === "") {
       //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
       // }
-      if (!this.Vendor.BusinessAddress || (this.Vendor.BusinessAddress && this.Vendor.BusinessAddress == "")) {
+      if (
+        !this.Vendor.BusinessAddress ||
+        (this.Vendor.BusinessAddress && this.Vendor.BusinessAddress == "")
+      ) {
         this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
       }
-      if (!this.Vendor.BusinessAddress 
-          || (this.Vendor.BusinessAddress 
-              && (this.Vendor.BusinessAddress.length < 6 || this.Vendor.BusinessAddress.length > 200))) {
+      if (
+        !this.Vendor.BusinessAddress ||
+        (this.Vendor.BusinessAddress &&
+          (this.Vendor.BusinessAddress.length < 6 ||
+            this.Vendor.BusinessAddress.length > 200))
+      ) {
         this.CreateVendorErrors.BusinessAddressMin = this.ErrorStrings.BusinessAddressMin;
       }
-      if (!this.Vendor.ContactName || (this.Vendor.ContactName && this.Vendor.ContactName == "")) {
+      if (
+        !this.Vendor.ContactName ||
+        (this.Vendor.ContactName && this.Vendor.ContactName == "")
+      ) {
         this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
       }
-      if (!this.Vendor.ContactName 
-          || (this.Vendor.ContactName 
-              && (this.Vendor.ContactName.length < 6 || this.Vendor.ContactName.length > 50))) {
+      if (
+        !this.Vendor.ContactName ||
+        (this.Vendor.ContactName &&
+          (this.Vendor.ContactName.length < 6 ||
+            this.Vendor.ContactName.length > 50))
+      ) {
         this.CreateVendorErrors.ContactNameMin = this.ErrorStrings.ContactNameMin;
       }
-      if (!this.Vendor.ContactEmail || (this.Vendor.ContactEmail && this.Vendor.ContactEmail == "")) {
+      if (
+        !this.Vendor.ContactEmail ||
+        (this.Vendor.ContactEmail && this.Vendor.ContactEmail == "")
+      ) {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
       if (this.Vendor.Website && this.Vendor.Website.length > 200) {
@@ -381,8 +454,17 @@ export default {
             Vendor: this.Vendor
           })
           .then(res => {
-            this.$router.push("/vendor");
+            this.$router.push(`/vendor/${this.$route.params.id}`);
+            alert("Save changes sucessfully");
+            this.editMode = false;
           });
+    },
+    reload(vendorId) {
+      let URL = `http://localhost:3000/api/vendor/${vendorId}`;
+      this.axios.get(URL).then(response => {
+        let data = response.data;
+        this.Vendor = data;
+      });
     },
     getAccountAvatar(equip) {
       return equip.AvatarImage
@@ -402,6 +484,9 @@ export default {
         this.CreateVendorErrors.DesMax === "" &&
         this.CreateVendorErrors.NoEmail === ""
       );
+    },
+    gotoDetail(EquipmentId) {
+      this.$router.push(`/equipment/${EquipmentId}`);
     }
   },
   watch: {
@@ -541,8 +626,9 @@ export default {
 } */
 .btn-confirm-edit {
   background-color: var(--primary-color);
-  margin-left: 7rem;
+  margin-left: 1rem;
   margin-top: 1rem;
+  margin-bottom: 1rem;
   /* padding: 13px; */
   color: white;
   /* border-radius: 5px;
@@ -556,11 +642,11 @@ export default {
 }
 
 .btn-cancel {
-  background-color: var(--shadow);
+  background-color: white;
   margin-left: 1rem;
   margin-top: 1rem;
   /* padding: 13px; */
-  color: white;
+  color: black;
   /* border-radius: 5px;
   z-index: 10;
   font-size: 1.3rem; */
@@ -568,6 +654,79 @@ export default {
 
 .btn-cancel:hover {
   cursor: pointer;
-  background-color: #aca4a4;
+  /* background-color: #aca4a4; */
+}
+th {
+  text-align: left;
+  background-color: #cfd8dc;
+  height: 30px;
+  line-height: 30px;
+  padding: 0.5rem !important;
+}
+
+td {
+  vertical-align: middle;
+  height: 40px;
+  line-height: 25px;
+  padding: 0.5rem;
+}
+td:hover {
+  cursor: pointer;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+  color: #263238;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+  color: #263238;
+}
+
+#th1:curve {
+  text-align: justify;
+
+  background-color: #b0bec5;
+}
+
+tr:hover {
+  background-color: #eceff1;
+}
+
+.txtText {
+  text-align: left;
+
+  /*margin: 0.3rem;*/
+
+  padding: 0.5rem;
+
+  background-color: #cfd8dc;
+}
+
+table {
+  /* border: 1px solid black; */
+
+  width: 100%;
+
+  font-size: 15px;
+
+  /* text-align: right; */
+}
+#btn-add-vendor {
+  position: fixed;
+  right: 3rem;
+  bottom: 2rem;
+  /* background-color: var(--primary-color);
+  padding: 13px;
+  color: white;
+  border-radius: 5px; */
+  z-index: 1;
+}
+
+#btn-add-vendor:hover {
+  cursor: pointer;
+  /* background-color: #009688;
+  color: white; */
 }
 </style>

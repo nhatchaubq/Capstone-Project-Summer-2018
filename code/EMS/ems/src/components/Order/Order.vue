@@ -11,7 +11,7 @@
                             <div>Priority:</div>
                             <div>
                                 <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: .5rem;">
-                                    <input type="checkbox" v-on:change="addFilter(priority, $event)">
+                                    <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="filterOptionsValues.priorities.includes(priority)">
                                     {{ priority.name }}
                                 </label>                              
                             </div>                        
@@ -20,13 +20,13 @@
                             <div>Status:</div>
                             <div>
                                 <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
-                                    <input type="checkbox" v-on:change="addFilter(status, $event)">
+                                    <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="filterOptionsValues.status.includes(status)">
                                     {{ status.name }}
                                 </label>
                             </div>
                       </div>
                   </div>
-                  <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer'" style="width: 100%">
+                  <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer'" style="width: 60%; user-select: none">
                       <div class="row" style="margin: 0 !important; margin-bottom: 1rem">
                           <div class="view-mode col-4" 
                                 :class="{'view-mode-active': myWorkOrderViewMode}"
@@ -63,30 +63,31 @@
                     :style="{'max-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '62%' : '68.5%',
                             'height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '62%' : '68.5%',}">
               <div class="detail">
-                  <div class="detail-header" :style="(selectedOrder.StatusID < 3 && authUser.Id == selectedOrder.RequestUserID) ? 
-                                                            'display: grid; grid-template-columns: auto 25%;' : ''">
+                  <div class="detail-header" style="display: grid" :style="((selectedOrder.WorkOrderStatus == 'Requested' || selectedOrder.WorkOrderStatus == 'Rejected') && authUser.Id == selectedOrder.RequestUserID) ? 
+                                                            'grid-template-columns: 15% 65% 20%;' : 'grid-template-columns: 10% 90%'">
                     <div>
                         <span :style="`background-color: ${selectedOrder.PriorityColor}`" class="tag" style="position: relative; top: -.3rem; color: white">
-                        {{ selectedOrder.Priority }}
+                            {{ selectedOrder.Priority }}
                         </span>
+                    </div>                        
+                    <div>
                         <span class="detail-title">
                             {{ selectedOrder.Name }}
                         </span>
                     </div>
                     <!-- edit/cancel work order -->
-                    <div style="margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="selectedOrder.WorkOrderStatus == 'Requested' && authUser.Id == selectedOrder.RequestUserID">
-                        <div class="" style="">
-                            <!-- cancel work order -->
-                            <a v-on:click="() => {
+                    <div style="margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="authUser.Id == selectedOrder.RequestUserID">
+                        <!-- cancel work order -->
+                        <a  v-if="selectedOrder.WorkOrderStatus == 'Requested' || selectedOrder.WorkOrderStatus == 'Rejected'"
+                            v-on:click="() => {
                                 showChangeStatusDialog = true;
                                 newStatusName = 'Cancelled';
                             }">Cancel</a> <!-- cancel work order -->
-                            <span v-if="selectedOrder.WorkOrderStatus == 'Rejected'">
-                                <span> | </span>
-                                <!-- cancel work order -->
-                                <a v-on:click="$router.push(`/work_order/edit/${selectedOrder.Id}`)">Edit</a> <!-- cancel work order -->
-                            </span>
-                        </div> 
+                        <span v-if="selectedOrder.WorkOrderStatus == 'Rejected'">
+                            <span> | </span>
+                            <!-- cancel work order -->
+                            <a v-on:click="$router.push(`/work_order/edit/${selectedOrder.Id}`)">Edit</a> <!-- cancel work order -->
+                        </span>
                     </div> <!-- edit/cancel work order -->
                   </div>
                   <div style="">                        
@@ -94,32 +95,32 @@
                             <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :statusList="options.status.filter(status => status.name != 'Cancelled')"></step-progress>
                         </div>          
                           <!-- manager approve / reject -->
-                        <div v-if="authUser.Role == 'Manager' && selectedOrder.WorkOrderStatus == 'Checked'" class="" style="margin-top: 1.5rem; margin-bottom: .5rem; display: flex; justify-content: flex-end; align-content: center">
+                        <div v-if="authUser.Role == 'Manager' && selectedOrder.WorkOrderStatus == 'Checked'" class="" style="margin-top: 1.5rem; margin-bottom: .5rem; display: flex; justify-content: center; align-content: center">
                             <div>
-                                <button class="button btn-primary material-shadow-animate" style="margin-right: .5rem" v-on:click="() => {
+                                <button class="button btn-primary material-shadow-animate" style="margin-right: .5rem; width: 5rem" v-on:click="() => {
                                     showApproveRejectDialog = true;
                                     approveWorkOrder = true;
                                 }">Approve</button>
-                                <button class="button btn-danger material-shadow-animate" v-on:click="() => {
+                                <button class="button btn-danger material-shadow-animate" style="width: 5rem;" v-on:click="() => {
                                     showApproveRejectDialog = true;
                                     approveWorkOrder = false;    
                                 }">Reject</button>
                             </div>
                         </div> <!-- manager approve / reject -->   
                         <div class="detail-contents">
-                            <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Requested'">
+                            <div style="width: 100%; text-align: right" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Requested'">
                                 <button class="button btn-primary material-shadow-animate" v-on:click="() => {
                                     newStatusName = 'Checked';
                                     showChangeStatusDialog = true;
                                 }">Change status to Checked</button>
                             </div>
-                            <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Approved'">
+                            <div style="width: 100%; text-align: right" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Approved'">
                                 <button class="button btn-primary material-shadow-animate" v-on:click="() => {
                                     newStatusName = 'In Progress';
                                     showChangeStatusDialog = true;
                                 }">Change status to In Progress</button>
                             </div>
-                            <div style="width: 100%; text-align: right;" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'In Progress'">
+                            <div style="width: 100%; text-align: right" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'In Progress'">
                                 <button class="button btn-primary material-shadow-animate" v-on:click="() => {
                                     toCloseEquipments = []; 
                                     equipments.forEach(equipment => {
@@ -147,20 +148,26 @@
                             </div>
                       </div>
                       <!-- order detail view mode -->
-                      <div style="display: grid; grid-template-columns: 50% 50%; margin: 2rem 0;">
+                      <div style="display: grid; grid-template-columns: 50% 50%; margin: 2rem 4rem;">
                           <div class="view-mode" :class="{'view-mode-active': viewDetailMode}" v-on:click="viewDetailMode = true">Detail</div>
                           <div class="view-mode" :class="{'view-mode-active': !viewDetailMode}" v-on:click="viewDetailMode = false">History</div>                                    
                       </div><!-- order detail view mode -->
                       <!-- detail view mode -->
                       <div v-if="viewDetailMode">
                             <div class="detail-contents" style="width: 100%;">                                    
-                                <span class="detail-label">Team: </span><span>{{ selectedOrder.Team.Name }}</span>
+                                <span class="detail-label">Created on: </span><span>{{ getDateWithTime(selectedOrder.CreateDate) }}</span>
+                            </div>
+                            <div class="detail-contents" style="width: 100%;">                                    
+                                <span class="detail-label">Requested by: </span><span> <router-link :to="`/account/${selectedOrder.RequestUserID}`">{{ selectedOrder.RequestUserID == authUser.Id ? 'You' : selectedOrder.RequestUsername }}</router-link>. </span><span class="detail-label">Team: </span><span> <router-link :to="`/team/${selectedOrder.Team.Id}`">{{ selectedOrder.Team.Name }}</router-link></span>
+                            </div>
+                            <div class="detail-contents" style="width: 100%;">                                    
+                                
                             </div>
                             <div class="detail-contents" style="width: 100%;">
-                                <span class="detail-label">Equipments:</span>
+                                <span class="detail-label">Equipments:</span> 
                                 <v-flex>
                                     <v-expansion-panel popout v-model="equipmentPanelIndex">
-                                        <v-expansion-panel-content v-for="(equipment, index) in equipments" :key="'equipment' + equipment.Id" v-on:click.native="selectedEquipmentPanelIndex = index">
+                                        <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
                                             <div slot="header">
                                                 <div style="display: grid; grid-template-columns: 25% auto;">
                                                     <div style="display: flex">
@@ -182,7 +189,7 @@
                                             <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
                                                 <v-card-text style="font-size: .9rem">
                                                     <div>
-                                                        Serial #: <a v-on:click="showDetailPopup(item.Id)">{{ item.SerialNumber }}</a>
+                                                        Serial #: <strong>{{ item.SerialNumber }}</strong>
                                                         <span v-if="(authUser.Role == 'Staff' || authUser.Role == 'Maintainer')
                                                                     && selectedOrder.WorkOrderStatus == 'In Progress' && !item.DetailReturn" >
                                                              | 
@@ -213,7 +220,7 @@
                                                             }">Close</a>
                                                         </span>
                                                         <span v-if="item.DetailReturn"> - Closed at <strong>{{ getDateWithTime(item.DetailReturn.DateTime) }}</strong> with status <strong>{{ item.DetailReturn.ReturnedStatusName == 'Available' ? 'OK' : item.DetailReturn.ReturnedStatusName }}</strong></span>
-                                                    </div>                                                        
+                                                    </div>
                                                     <div v-if="selectedOrder.WorkOrderStatus != 'Cancelled' 
                                                                 && selectedOrder.WorkOrderStatus != 'Closed'
                                                                 && !item.DetailReturn">
@@ -291,7 +298,7 @@
                 Confirm
             </div>
             <div v-if="selectedOrder" style="font-size: 1rem">
-                <span>Are you sure to {{ approveWorkOrder ? 'approve' : 'reject' }} this order <strong>#{{ selectedOrder.Id }} - {{ selectedOrder.Name }}</strong>?</span>
+                <span>Are you sure to <span style="font-weight: bold;" :style="{color: approveWorkOrder ? 'var(--primary-color)' : 'var(--danger-color)'}">{{ approveWorkOrder ? 'approve' : 'reject' }}</span> this order <strong>#{{ selectedOrder.Id }} - {{ selectedOrder.Name }}</strong>?</span>
                 <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
                     <span v-if="approveWorkOrder">Description (optional)</span>
                     <span v-else>Why do you reject this order (required)</span>
@@ -304,11 +311,8 @@
             </div>
             <div slot="footer">
                 <button class="button" @click="showApproveRejectDialog = false">No</button>
-                <button :class="{'btn-primary': approveWorkOrder, 'btn-danger': !approveWorkOrder}" 
-                        class="button" 
-                        @click="approveRejectWorkOrder(selectedOrder.Id)">
-                    {{ approveWorkOrder ? 'Approve' : 'Reject' }}
-                </button>
+                <button class="button btn-primary" style="width: 5rem"
+                        @click="approveRejectWorkOrder(selectedOrder.Id)">Yes</button>
             </div>
       </modal> <!-- approve / reject dialog -->
 
@@ -670,6 +674,7 @@ import EquipmentDetailPopup from "@/components/Equipment/EquipmentDetailPopup";
 import Vodal from "vodal";
 import { gmapApi } from "vue2-google-maps";
 import { BasicSelect } from "vue-search-select";
+import io from 'socket.io-client';
 
 export default {
   components: {
@@ -680,34 +685,50 @@ export default {
     StepProgress,
     BasicSelect
   },
+  sockets: {
+        NEW_WORK_ORDER_CREATED: function() {
+            this.getWorkOrders();
+            this.filterOrders();
+        },
+        ORDER_STATUS_CHANGED: () => {
+            this.getWorkOrders();
+            this.filterOrders();
+        }
+  },
   created() {
     this.getWorkOrders();
     this.getBlockFloorTile();
     this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
-      let data = response.data;
-      data.forEach(element => {
-        let status = {
-          id: element.Id,
-          name: element.Name,
-          type: this.optionTypes.STATUS
-        };
-        this.options.status.push(status);
-      });
+        let data = response.data;
+        data.forEach(element => {
+            let status = {
+                id: element.Id,
+                name: element.Name,
+                type: this.optionTypes.STATUS
+            };
+            this.options.status.push(status);
+            if (status.name != 'Cancelled' && status.name != 'Closed') {
+                this.filterOptionsValues.status.push(status);
+            }
+        });
+        this.filterOrders();
     }).catch((error) => {
         if (error == 'Request failed with status code 500') {
             this.$router.push('/500');
         }
     });
     this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
-      let data = response.data;
-      data.forEach(element => {
-        let priority = {
-          id: element.Id,
-          name: element.Name,
-          type: this.optionTypes.PRIORITY
-        };
-        this.options.priorities.push(priority);
-      });
+        let data = response.data;
+        data.forEach(element => {
+            let priority = {
+                id: element.Id,
+                name: element.Name,
+                type: this.optionTypes.PRIORITY
+            };
+            this.options.priorities.push(priority);
+            this.filterOptionsValues.priorities.push(priority);
+        });
+        this.filterOrders();
     }).catch((error) => {
         if (error == 'Request failed with status code 500') {
             this.$router.push('/500');
@@ -716,6 +737,7 @@ export default {
   },
   data() {
     return {
+        socket: io(`http://localhost:3000`),
         errorUpdatePosition: '',
         tempValues: null, // to hold the original orders when apply filters
         myWorkOrderViewMode: true,
@@ -724,7 +746,7 @@ export default {
         workOrders: [], // orders data to display in orderblocks <order-block></order-block>
         selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
         equipments: [], // to hold equipments in the selected work order
-        equipmentPanelIndex: -1,
+        equipmentPanelIndex: [true, ],
         selectedEquipmentPanelIndex: -1,
         editMode: false, // edit work order detail
         equipmentItem: null, // when select an item in the list of equipment of selected order
@@ -802,10 +824,11 @@ export default {
                 }
                 if (this.selectedOrder) {
                     this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
-                }
-                if (this.$route.params && this.$route.params.orderId) {
+                } else if (this.$route.params && this.$route.params.orderId) {
                     this.selectedOrder = data.filter(order => order.Id == this.$route.params.orderId)[0];
-                    this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                    if (this.selectedOrder) {
+                        this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                    }
                 }
             }
         }).catch(error => {
@@ -870,7 +893,7 @@ export default {
 
     },
     setSelectedOrder(order) {
-        this.equipmentPanelIndex = -1;
+        // this.equipmentPanelIndex = -1;
         if (this.selectedOrder == order) {
             this.selectedOrder = null;
         } else {
@@ -1048,30 +1071,86 @@ export default {
         })
         .then(res => {
           if (res.status == 200) {
-            if (
-              newOrderStatusName == "Approved" ||
+            if (newOrderStatusName == "Approved" ||
               newOrderStatusName == "In Progress" ||
-              newOrderStatusName == "Closed"
-            ) {
-              let newItemStatusName = "";
-              if (newOrderStatusName == "Approved") {
-                newItemStatusName = "Working Approved";
-              } else if (newOrderStatusName == "In Progress") {
-                newItemStatusName = "Working";
-              } else if (newOrderStatusName == "Closed") {
-                newItemStatusName = "Available";
-              }
-              this.selectedOrder.WorkOrderDetails.forEach(async orderDetail => {
-                let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/${
-                  orderDetail.EquipmentItem.Id
-                }`;
-                await this.axios.put(equipmentStatusApi, {
-                  userId: this.authUser.Id,
-                  newStatusName: newItemStatusName,
-                  description: null
-                });
+              newOrderStatusName == "Closed") {
+                let newItemStatusName = "";
+                if (newOrderStatusName == "Approved") {
+                    newItemStatusName = "Working Approved";
+                } else if (newOrderStatusName == "In Progress") {
+                    newItemStatusName = "Working";
+                } else if (newOrderStatusName == "Closed") {
+                    newItemStatusName = "Available";
+                }
+                this.selectedOrder.WorkOrderDetails.forEach(async orderDetail => {
+                    let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/${orderDetail.EquipmentItem.Id}`;
+                    await this.axios.put(equipmentStatusApi, {
+                        userId: this.authUser.Id,
+                        newStatusName: newItemStatusName,
+                        description: null
+                    });
               });
             }
+            // make new notification
+            var teamLeaderNotiContent = '';
+            var managerNotiContent = '';
+            let metaData = {
+                page: 'work_order',
+                elementId: this.selectedOrder.Id,
+            };
+            // prepare notification content - start
+            if (newOrderStatusName == "Checked" 
+                || newOrderStatusName == 'Approved' 
+                || newOrderStatusName == 'Rejected') {
+                teamLeaderNotiContent = `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> your work order <strong>${this.selectedOrder.Name}</strong>`;
+                if ((newOrderStatusName == "Checked" || newOrderStatusName == 'Rejected') && this.authUser.Role == 'Equipment Staff') {
+                    managerNotiContent = `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> work order <strong>${this.selectedOrder.Name}</strong>`;
+                }
+            } else if (newOrderStatusName == 'In Progress') {
+                teamLeaderNotiContent = `Your work order <strong>${this.selectedOrder.Name}</strong> has changed status to <strong>In Progress</strong>. Please remember to change new position for equipments.`;
+            } // prepare notification content - start
+            if (newOrderStatusName != 'Closed') {
+                // notification for managers and equipment staff - start
+                if ((newOrderStatusName == 'Checked' || newOrderStatusName == 'Rejected') && this.authUser.Role == 'Equipment Staff') {
+                    this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                        notificationContent: managerNotiContent,
+                        userRole: 'Manager',
+                        metaData: JSON.stringify(metaData),
+                        needToUpdateNotification: {
+                            roles: ['Manager'],
+                        }
+                    });
+                } else if (newOrderStatusName == 'Cancelled') {
+                    this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                        notificationContent: `${this.authUser.Role} ${this.authUser.Username} has cancelled work order ${this.selectedOrder.Name}`,
+                        userRole: 'Equipment Staff',
+                        metaData: JSON.stringify(metaData),
+                        needToUpdateNotification: {
+                            roles: ['Equipment Staff'],
+                        }
+                    });
+                    this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                        notificationContent: `${this.authUser.Role} ${this.authUser.Username} has cancelled work order ${this.selectedOrder.Name}`,
+                        userRole: 'Manager',
+                        metaData: JSON.stringify(metaData),
+                        needToUpdateNotification: {
+                            roles: ['Manager'],
+                        }
+                    });
+                } // notification for managers and equipment staff - end
+                // notification for teamleader and maintainer - start
+                if (newOrderStatusName != 'Cancelled') {
+                    this.axios.post(`${Server.NOTIFICATION_API_PATH}/userid/${this.selectedOrder.RequestUserID}`, {
+                        notificationContent: teamLeaderNotiContent,
+                        metaData: JSON.stringify(metaData),
+                        needToUpdateNotification: {
+                            userIds: [this.selectedOrder.RequestUserID],
+                        }
+                    });
+                }
+                // notification for teamleader and maintainer - end
+            }
+            this.changeStatusDescription = '';            
             this.showCancelDialog = false;
             this.showApproveRejectDialog = false;
             this.showChangeStatusDialog = false;
@@ -1141,7 +1220,7 @@ export default {
                     this.showUpdateItemPosition = false;
 
                     await this.getEquipmentsOfWorkOrder(this.selectedOrder);
-                    this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
+                    // this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
                 }
             }
         });
@@ -1184,7 +1263,7 @@ export default {
             });
             if (check) {
                 this.getWorkOrders();
-                this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                this.getEquipmentsOfWorkOrder(this.selectedOrder);                
                 this.showCloseWorkOrderDetailDialog = false;
             } else {
                 alert('Error occured!')
@@ -1334,9 +1413,8 @@ export default {
 }
 
 .order-content {
-  margin-top: 1rem;
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 80% 20%;
 }
 
 .orders-view {
@@ -1346,8 +1424,8 @@ export default {
 
 .order-blocks {
   position: fixed;
-  height: 65.5%;
-  max-height: 65.5%;
+  min-height: 79%;
+  max-height: 79%;
   padding-right: 0.5rem;
   width: 38%;
   overflow-y: auto;
@@ -1357,8 +1435,8 @@ export default {
 .order-detail {
   position: fixed;
   left: 60%;
-  height: 62%;
-  max-height: 62%;
+  min-height: 75.5%;
+  max-height: 75.5%;
   overflow-y: auto;
   width: 38%;
   z-index: 2;

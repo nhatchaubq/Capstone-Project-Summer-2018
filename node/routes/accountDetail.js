@@ -9,7 +9,9 @@ router.get('/:id', (request, response) => {
             "            from TeamAccount  " +
             "            where TeamID = t.Id and AccountID = @accId) for json path, without_array_wrapper)) as [TeamRole] " +
             "from Team as t " +
-            "where Id in (select TeamId from TeamAccount where AccountID = @accId) for json path) as [Teams] " +
+            "where Id in (select TeamId from TeamAccount where AccountID = @accId) " +
+            "ORDER BY t.Name ASC " +
+            "for json path) as [Teams] " +
             "from Account as acc where acc.Id = @accId " +
             "for json path, without_array_wrapper "
         )

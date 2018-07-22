@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="has-background-white-ter">
+  <div id="app">
     <login v-if="!isLoggedIn"></login>
     <div v-else>
       <v-app>
@@ -21,6 +21,8 @@ import Login from "./components/Login/Login";
 import Sidebar from "./components/Sidebar/Sidebar.vue";
 import HeaderBar from "./components/HeaderBar/HeaderBar";
 
+import Server from '@/config/config';
+
 export default {
   name: "app",
   components: {
@@ -29,10 +31,50 @@ export default {
     Login
   },
   computed: {
-    isLoggedIn: sync("isLoggedIn")
+    isLoggedIn: sync("isLoggedIn"),
+    authUser() {
+      return JSON.parse(window.localStorage.getItem('user'));
+    }
+  },
+  created() {
+    this.getNotifications();
+  },
+  sockets: {
+    NEW_NOTIFICATION: function(data) {
+      if (data.needToUpdateNotification) {
+        if ((data.needToUpdateNotification.roles && data.needToUpdateNotification.roles.includes(this.authUser.Role))
+            || (data.needToUpdateNotification.userIds && data.needToUpdateNotification.userIds.includes(this.authUser.Id))) {
+              this.getNotifications();
+            }
+      }
+    }
   },
   data() {
     return {};
+  },
+  methods: {
+    getNotifications() {
+      let url = `${Server.NOTIFICATION_API_PATH}/top50/${this.authUser.Id}`;
+      this.axios.get(url)
+        .then((res) => {
+          if (res.status == 200) {
+            let notifications = [];
+            res.data.forEach(value => {
+              let noti = {
+                Id: value.Id,
+                Content: value.Content,
+                CreatedDate: value.CreatedDate,
+                TimeString: null,
+                Status: value.Status,
+              }
+              notifications.push(noti);
+            });
+            this.$store.state.notifications = notifications;
+          }
+        }).catch((error) => {
+          console.log(error);
+        })
+    }
   }
 };
 </script>
@@ -47,6 +89,7 @@ export default {
   --dark-background: #263238;
   --success-color: #00c853;
   --danger-color: #ef5350;
+  --cancel-color: #FFAB91;
 
   --warning-color: #ffc107;
   --strong-warning-color: #ff7b07;
@@ -78,7 +121,7 @@ body {
   width: 100%;
   height: 100%;
   font-size: 1rem !important;
-  /* background-color: var(--light-background) !important;   */
+  background-color: #616161 !important;  
 }
 
 a {

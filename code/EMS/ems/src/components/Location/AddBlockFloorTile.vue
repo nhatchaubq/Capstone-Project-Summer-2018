@@ -484,10 +484,9 @@
 // import Vue from 'vue';
 import Server from "@/config/config";
 
-// import fileBase64 from 'vue-file-base64';
+import fileBase64 from 'vue-file-base64';
 
 import Utils from "@/utils.js";
-import fileBase64 from "vue-file-base64";
 import moment from "moment";
 
 export default {

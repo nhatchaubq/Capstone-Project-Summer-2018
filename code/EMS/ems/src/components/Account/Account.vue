@@ -13,7 +13,7 @@
       </div> -->
     
     <div >
-      <div class="field is-grouped view-mode" style="margin-bottom:0rem !important">
+      <div class="field is-grouped view-mode" style="margin-bottom: 1rem !important">
         <!-- <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button> -->
         <router-link to='/account/'>  
@@ -24,12 +24,12 @@
         </router-link>
       </div>
     </div>
-    <div class="btncotrol" style="margin-bottom: 1rem">
+    <!-- <div class="btncotrol" style="margin-bottom: 1rem">
       <div class="field is-grouped view-mode1">
         <button class="btn-view-mode1"  :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode1" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
       </div>
-    </div>
+    </div> -->
         <div v-if="!accounts">
       There is no account yet.
     </div>
