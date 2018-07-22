@@ -119,7 +119,7 @@
                       <div style="display: grid; grid-template-columns:auto 35% 20%;">                        
                         <div style="padding-left:1rem">  <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">group</i> {{workorder.Team}} </div> 
                         <div style="position: relative;top: 0.3rem;"> <i class="fa fa-calendar" style="color:gray;"></i> {{getFormatDate(workorder.CreateDate)}} </div>                                             
-                        <div style="color: white;margin-right:0.5rem" :style="{'background-color': workorder.Status == 'Closed'? 'var(--status-closed)' : 'var(--status-in-progress)'}"  class="tag"> {{workorder.Status}}</div>
+                        <div style="color: white;margin-right:0.5rem" :style="{'background-color':  makeStatusBackground(workorder.Status)}"  class="tag"> {{workorder.Status}}</div>
                       </div>                      
                     </div>                    
                     <div style="text-align:center">
@@ -252,7 +252,11 @@
                 </tr>
                 <tr :key="item.Id" v-for="item in workorderDetail.EquipmentItems">                  
                   <td >{{item.SerialNumber}}</td>
-                  <td :style="{color: item.ClosedDate? 'blue' : 'var(--success-color)'}">{{item.ClosedDate? "Returned" : "Working" }}</td>
+                  <td v-if="selectedWorkorder.Status == 'In Progress' || selectedWorkorder.Status == 'Closed'" :style="{color: item.ClosedDate? 'var(--status-closed)' : 'var(--status-in-progress)'}">{{item.ClosedDate? "Returned" : "Working" }}</td>
+                  <td v-if="selectedWorkorder.Status == 'Requested'" style="color: var(--status-requested)" >Requested</td>
+                  <td v-if="selectedWorkorder.Status == 'Checked'" style="color: var(--status-checked)" >Checked</td>
+                  <td v-if="selectedWorkorder.Status == 'Approved'" style="color: var(--status-approved)" >Approved</td>
+                  
                 </tr>
               </tbody>
             </table>            
@@ -337,6 +341,25 @@ export default {
   },
 
   methods: {
+    makeStatusBackground(status) {
+      switch (status) {
+        case "Requested": {
+          return "var(--status-requested)";
+        }
+        case "Checked": {
+          return "var(--status-checked)";
+        }
+        case "Approved": {
+          return "var(--status-approved)";
+        }
+        case "In Progress": {
+          return "var(--status-in-progress)";
+        }
+        case "Closed": {
+          return "var(--status-closed)";
+        }
+      }
+    },
     showWorkorderDetail(tmpWorkorder) {
       this.addPopUp = true;
       this.selectedWorkorder = tmpWorkorder;
