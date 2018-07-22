@@ -66,6 +66,7 @@ export default {
                 CreatedDate: value.CreatedDate,
                 TimeString: null,
                 Status: value.Status,
+                Metadata: value.Metadata
               }
               notifications.push(noti);
             });

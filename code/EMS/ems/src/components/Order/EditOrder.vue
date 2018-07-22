@@ -1,5 +1,6 @@
 <template>
     <div class="form" v-if="editWorkOrder">
+        <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
         <div class="form-title">
             <div class="form-title-start">
                 Edit Work Order {{ editWorkOrder.Name }}
@@ -22,7 +23,7 @@
                               || authUser.RoleID == 5 && category.Name == 'Working'">
                     {{ category.Name }}
                 </label> -->
-                <RadioGroup v-model="workOrderCategory" type="button" style="user-select: none">
+                <RadioGroup v-model.trim="workOrderCategory" type="button" style="user-select: none">
                   <Radio :disabled="authUser.Role != 'Staff'" label="Working"></Radio>
                   <Radio :disabled="authUser.Role != 'Maintainer'" label="Maintain"></Radio>
                 </RadioGroup>
@@ -42,7 +43,7 @@
                 </div>
                 <div class="form-field-input">
                     <model-select :style="CreateWorkOrderErrors.NoLocation != '' ?
-                                   'border: 1px solid var(--danger-color)' : ''" :options="locationOptions" v-model="selectedLocation" placeholder="Select a location" style="width: 40%"></model-select>
+                                   'border: 1px solid var(--danger-color)' : ''" :options="locationOptions" v-model.trim="selectedLocation" placeholder="Select a location" style="width: 40%"></model-select>
                 </div>
             </div> <!-- select location -->
             <!-- select team from selected location -->
@@ -55,7 +56,7 @@
                     <div class="form-field-input">
                         <model-select :style="CreateWorkOrderErrors.NoTeam != '' ?
                                    'border: 1px solid var(--danger-color)' : ''" 
-                                   :options="teamOptions" v-model="selectedTeam" 
+                                   :options="teamOptions" v-model.trim="selectedTeam" 
                                    placeholder="Select a team" style="width: 40%"></model-select>
                     </div>
                 </div>
@@ -110,7 +111,7 @@
                             :style="selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != '' ?
                                     'border: 1px solid var(--danger-color)' : ''"
                             type="number" min="0" :max="selectedEquipment.totalQuantity" 
-                            v-model="selectedEquipment.quantity" 
+                            v-model.trim="selectedEquipment.quantity" 
                             v-on:change="() => {
                               if (selectedEquipment.quantity === '') {
                                   selectedEquipment.quantity = 0;
@@ -199,7 +200,7 @@
                                   || (selectedEquipment.addEquipmentWarnings.UnableToSelectItem != '') ?
                                 'border: 1px solid var(--danger-color)' : (selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 
                                 'border: 1px solid var(--warning-color)' : ''" 
-                            class="input" v-model="selectedEquipment.fromDate"
+                            class="input" v-model.trim="selectedEquipment.fromDate"
                             v-on:change="() => {
                       if (selectedEquipment.fromDate === '') {
                         selectedEquipment.fromDate = this.getToday();
@@ -247,7 +248,7 @@
                                   || (selectedEquipment.addEquipmentWarnings.UnableToSelectItem != '') ?
                                 'border: 1px solid var(--danger-color)' : (selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 
                                 'border: 1px solid var(--warning-color)' : ''" 
-                            class="input" v-model="selectedEquipment.toDate" 
+                            class="input" v-model.trim="selectedEquipment.toDate" 
                             v-on:change="() => {
                       if (selectedEquipment.toDate === '') {
                         selectedEquipment.toDate = this.getToday();
@@ -505,25 +506,25 @@
                   <div style="width: 100%">
                     <model-select :style="(AddEquipmentWarnings.MustSelectEquipment != '' 
                                           || AddEquipmentWarnings.AvailableQuantityIsZero != '') ?
-                                            'border: 1px solid var(--strong-warning-color)' : ''" :options="toDisplayEquipmentOptions" placeholder="Select an equipment" v-model="selectedEquipment"></model-select>
+                                            'border: 1px solid var(--strong-warning-color)' : ''" :options="toDisplayEquipmentOptions" placeholder="Select an equipment" v-model.trim="selectedEquipment"></model-select>
                   </div>
                 </div>  
                 <div class="form-field-input">
                     <input :style="AddEquipmentWarnings.SelectedEquipmentQuantityIsZero != '' ? 'border: 1px solid var(--warning-color)' : ''"
-                        type="number" :disabled="selectedEquipment.totalQuantity == 0" min="0" :max="selectedEquipment.totalQuantity" class="input" v-model="selectedEquipmentQuantity">
+                        type="number" :disabled="selectedEquipment.totalQuantity == 0" min="0" :max="selectedEquipment.totalQuantity" class="input" v-model.trim="selectedEquipmentQuantity">
                 </div>
                 <div>
                   <input :style="(AddEquipmentWarnings.FromDateIsLargerThanToDate != '') 
                                   || (AddEquipmentWarnings.FromDateIsFromThePast != '') 
                                   || (AddEquipmentWarnings.UnableToSelectItem != '') ? 'border: 1px solid var(--strong-warning-color)' :
                                       (AddEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 'border: 1px solid var(--warning-color)'
-                                      : ''" class="input" type="date" v-model="selectedEquipmentFromDate">
+                                      : ''" class="input" type="date" v-model.trim="selectedEquipmentFromDate">
                 </div>
                 <div>
                   <input :style="(AddEquipmentWarnings.FromDateIsLargerThanToDate != '') 
                                   || (AddEquipmentWarnings.UnableToSelectItem != '')? 'border: 1px solid var(--strong-warning-color)' :
                                       (AddEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 'border: 1px solid var(--warning-color)'
-                                      : ''" class="input" type="date" v-model="selectedEquipmentToDate">
+                                      : ''" class="input" type="date" v-model.trim="selectedEquipmentToDate">
                 </div>
                 <div>
                   <button v-on:click="addEquipment(false, selectedEquipment, selectedEquipmentQuantity, selectedEquipmentFromDate, selectedEquipmentToDate, selectedEquipmentItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, AddEquipmentWarnings)" 
@@ -662,7 +663,7 @@
                     Describe this work order (optional)
                 </div>
                 <div class="form-field-input">
-                    <textarea class="input" rows="5" v-model="workOrderDescription"></textarea>
+                    <textarea class="input" rows="5" v-model.trim="editWorkOrder.Description"></textarea>
                 </div>
             </div> <!-- describe work order -->
         </div>
@@ -671,13 +672,14 @@
 
 <script>
 import Server from "@/config/config.js";
-
+import Utils from "@/utils.js";
 import moment from "moment";
 import { ModelSelect } from "vue-search-select";
+import Simplert from "vue2-simplert";
 
 export default {
     components: {
-        ModelSelect
+        ModelSelect, Simplert
     },
     data() {
         return {
@@ -712,8 +714,6 @@ export default {
                 NoLocation: '',
                 NoTeam: '',
             },
-            workOrderTitle: "",
-            workOrderDescription: "",
             workOrderPriority: 1,
             selectedEquipmentQuantity: 0,
             selectedEquipmentFromDate: "",
@@ -960,7 +960,7 @@ export default {
                         if (res.status == 200) {
                             let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${this.selectedLocation.value}/${this.selectedTeam.value}`;
                             this.axios.get(teamLocationApi)
-                                .then(function(res) {
+                                .then(async function(res) {
                                     if (res.data.Id) {
                                         let result = res.data.Id;
                                         // update team location
@@ -972,7 +972,7 @@ export default {
                                             .put(url, {
                                                 userId: context.authUser.Id,
                                                 newStatusName: 'Requested',
-                                                description: context.workOrderDescription.trim(),
+                                                description: context.editWorkOrder.Description.trim(),
                                             });
 
                                         // add updated work order details
@@ -1000,6 +1000,35 @@ export default {
                                         })
                                         context.sending = false;
                                         if (check) {
+                                            const notificationContent = `<strong>${context.authUser.Username}</strong> re-requested work order <strong>${context.editWorkOrder.Name}</strong>`;
+                                            let metaData = {
+                                                page: 'work_order',
+                                                elementId: context.editWorkOrder.Id,
+                                            };
+                                            context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                                                    notificationContent: notificationContent,
+                                                    userRole: 'Equipment Staff',
+                                                    metaData: metaData,
+                                                    needToUpdateNotification: {
+                                                        roles: ['Equipment Staff'],
+                                                    },
+                                                })
+                                            context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                                                    notificationContent: notificationContent,
+                                                    userRole: 'Manager',
+                                                    metaData: metaData,
+                                                    needToUpdateNotification: {
+                                                        roles: ['Manager'],
+                                                    },
+                                                })
+                                            let obj = {
+                                                message: "Work Order updated successfully",
+                                                type: "success",
+                                                hideAllButton: true,
+                                                showXclose: false,
+                                            };
+                                            context.$refs.simplert.openSimplert(obj);
+                                            await Utils.sleep(1200);
                                             context.$router.push(`/work_order/${context.editWorkOrder.Id}`);
                                         } else {
                                             alert('Error');
@@ -1430,7 +1459,9 @@ input[type="number"] {
   display: grid;
   grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
-  padding: 1rem 2rem;
+  padding: .5rem 2rem;
+  box-shadow: 0px 3px 5px var(--shadow);
+  z-index: 5;
 }
 
 .form-title-start {
