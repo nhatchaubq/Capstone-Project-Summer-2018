@@ -14,15 +14,23 @@
 
 
   <div v-if="team" class="material-box col-12" >
+        <div class="row" style="margin: 0 1rem 0 0rem">
+          <div class="col-11">
+            <strong style="font-size: 20px; ">Team Name</strong> <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
 
-      <div class="row" >
-        <div v-if="!editMode" class="col-7 input2" style="font-size: 30px; color: var(--primary-color); height:46.42px; width: 443.54px; padding: 0 0 0 1rem !important">{{team.Name}} </div>
-        <input v-if="editMode" v-model.trim="team.Name" class="col-7 input1" style="font-size: 30px; color: var(--primary-color);height:46.42px; width: 443.54px; padding: 0 0 0 0.75rem !important; margin: 0 1rem 0.5rem 0.75rem !important" > 
-        <div class="col-5 input2" style="display: flex; justify-content: flex-end; margin-top:0.5rem">
-          <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
+          </div>
+          <div class="col-1" style="display: flex; justify-content: flex-end; padding:0rem" >
+            <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
+          </div>
         </div>
+      <div class="row" >
+        <div v-if="!editMode" class="col-7 input" style="font-size: 20px; color: var(--primary-color);  padding: 0 0 0 1rem !important; font-weight: bold; margin-left: 1rem; margin-bottom:0.5rem" disabled="true">{{team.Name}} </div>
+        <input v-if="editMode" v-model.trim="team.Name" class="col-7 input" style="font-size: 20px; color: var(--primary-color);font-weight: bold; padding: 0 0 0 1rem !important; margin-left: 1rem; margin-bottom:0.5rem" > 
+        <!-- <div class="col-5 input2" style="display: flex; max-width:480px !important; justify-content: flex-end; margin-top:0.5rem; padding-left: 0rem !important">
+          <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
+        </div> -->
         <!-- <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> -->
-        <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
+        
       </div>
       <!-- <div class="row" style="margin: 0 0 0.5rem 0">
         <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save changes</button>
@@ -31,7 +39,7 @@
       }">Cancel</button>
       </div> -->
 
-        <h2>Create date: {{getDate(team.CreatedDate)}} </h2>
+        <h2> <strong>Create date: </strong>  {{getDate(team.CreatedDate)}} </h2>
 
     <strong v-if="editMode">Add new members: </strong>
     <div class="field is-horizontal">
@@ -90,7 +98,7 @@
                       <td v-if="editMode" style="padding-top: 0rem important">
                         <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
                           <!-- <button v-if="editMode" class="material-icons"  style="color: var(--danger); margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">close</button> -->
-                          <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">Remove</button>
+                          <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important; border-style: none" v-on:click="confirmKick(member.Id, member.Username)">Remove</button>
 
                       </td>
                     </tr>
@@ -110,18 +118,18 @@
           <table class="mytable" style="margin-bottom:1rem">
             <thead>
               <tr>
-                <th style="width:3% !important"><strong># </strong></th>
-                <th style="width:30% !important"><strong>Location Name </strong></th>
-                <th style="width: 57% !important"><strong>Location Address</strong></th>
-                <th style="width: 10% !important"><strong>Status</strong></th>
+                <th style="width:3% !important; cursor: context-menu !important"><strong># </strong></th>
+                <th style="width:30% !important; cursor: context-menu !important"><strong>Location Name </strong></th>
+                <th style="width: 57% !important; cursor: context-menu !important"><strong>Location Address</strong></th>
+                <th style="width: 10% !important; cursor: context-menu !important"><strong>Status</strong></th>
               </tr>
             </thead>  
             <tbody>
                 <tr :key="Loca.Id" v-for="(Loca, index) in team.Location" class="txtText" >
-                  <td >{{index + 1}}</td>
-                  <td >{{Loca.Name ? Loca.Name : "N/A" }}</td>
-                  <td >{{Loca.Address ? Loca.Address : "N/A"}} </td>
-                  <td > <strong :style="{color: Loca.IsActive ? 'var(--primary-color)' : '#607D8B'}">{{Loca.IsActive ? "Active" : "Inactive"}}</strong></td>
+                  <td style="cursor: context-menu !important">{{index + 1}}</td>
+                  <td style="cursor: context-menu !important">{{Loca.Name ? Loca.Name : "N/A" }}</td>
+                  <td style="cursor: context-menu !important">{{Loca.Address ? Loca.Address : "N/A"}} </td>
+                  <td style="cursor: context-menu !important"> <strong :style="{color: Loca.IsActive ? 'var(--primary-color)' : '#607D8B'}">{{Loca.IsActive ? "Active" : "Inactive"}}</strong></td>
                 </tr>
             </tbody>
           </table>
@@ -143,33 +151,33 @@
             <table class="mytable" style="margin-bottom:1rem">
               <thead>
                 <tr>
-                  <th style="width:3% !important"><strong># </strong></th>
-                  <th style="width:15% !important"><strong>Username</strong></th>
-                  <th style="width: 15% !important"><strong>Full Name</strong></th>
-                  <th style="width: 5% !important"><strong>Status</strong></th>
-                  <th style="width: 5% !important"><strong>Role</strong></th>
-                  <th style="width: 20% !important" v-if="editMode"><strong>Action</strong></th>
+                  <th style="width:3% !important; cursor: context-menu !important"><strong># </strong></th>
+                  <th style="width:15% !important; cursor: context-menu !important"><strong>Username</strong></th>
+                  <th style="width: 15% !important; cursor: context-menu !important"><strong>Full Name</strong></th>
+                  <th style="width: 5% !important; cursor: context-menu !important"><strong>Status</strong></th>
+                  <th style="width: 5% !important; cursor: context-menu !important"><strong>Role</strong></th>
+                  <th style="width: 20% !important; cursor: context-menu !important" v-if="editMode"><strong>Action</strong></th>
                 </tr>
               </thead>  
               <tbody>
                   <tr v-if="team.LeaderAccount" >
-                    <td v-on:click="toDetail(team.LeaderAccount.Id)">1</td>
-                    <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Username}}</td>
-                    <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
-                    <td v-on:click="toDetail(team.LeaderAccount.Id)" style="color:#26a69a"><span style="font-size: 25px; ">♛</span> Leader</td>
-                    <strong v-on:click="toDetail(team.LeaderAccount.Id)"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
+                    <td style="cursor: context-menu !important">1</td>
+                    <td style="cursor: context-menu !important">{{team.LeaderAccount.Username}}</td>
+                    <td style="cursor: context-menu !important">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
+                    <td  style="color:#26a69a; cursor: context-menu !important"><span style="font-size: 25px; ">♛</span> Leader</td>
+                    <strong style="cursor: context-menu !important"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
                     <td v-if="editMode">&nbsp</td>
                   </tr>
                   <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
-                    <td v-on:click="toDetail(member.Id)">{{index + 2}}</td>
-                    <td v-on:click="toDetail(member.Id)">{{member.Username}}</td>
-                    <td v-on:click="toDetail(member.Id)">{{member.Fullname ? member.Fullname :'N/A' }} </td>
-                    <td v-on:click="toDetail(member.Id)"><span style="font-size: 25px">♟</span>Member </td>
-                    <strong v-on:click="toDetail(member.Id)"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
+                    <td style="cursor: context-menu !important">{{index + 2}}</td>
+                    <td style="cursor: context-menu !important">{{member.Username}}</td>
+                    <td style="cursor: context-menu !important">{{member.Fullname ? member.Fullname :'N/A' }} </td>
+                    <td  style="cursor: context-menu !important"><span style="font-size: 25px">♟</span>Member </td>
+                    <strong style="cursor: context-menu !important"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
                     <td v-if="editMode" style="padding-top: 0rem important">
                       <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
                         <!-- <button v-if="editMode" class="material-icons"  style="color: var(--danger); margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">close</button> -->
-                        <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">remove</button>
+                        <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important; border-style: none" v-on:click="confirmKick(member.Id, member.Username)">Remove</button>
 
                     </td>
                   </tr>
@@ -185,7 +193,7 @@
 
 
        <div class="row" style="margin: 0 0 0.5rem 0">
-        <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save changes</button>
+        <button v-if="editMode" class="button btn-confirm-edit  material-shadow-animate" style="margin: 0 0 1rem 1rem; background-color: var(--primary-color); color: white; border-style: none " v-on:click="editTeam()">Save changes</button>
         <button v-if="editMode" id=" btn-cancel" class="button btn-confirm-edit material-shadow-animate" style="margin:0 0 1rem 1rem" v-on:click="() => {
           this.$router.go(this.$router.currentRoute)
           //location.reload()
@@ -238,37 +246,37 @@
     </div>  
   </div> -->
      <!-- equipmentItem-end -->
-    <strong>
-      Equipment item
-    </strong>
      <!-- equipmentItem-start -->
   <div class="col-12">
     <div v-if="!editMode">
-      <div v-if="!items1 ">
+    <strong>
+      Equipment item
+    </strong>
+      <div v-if="items1 && items1.length == 0">
           There is no item yet.
       </div>
       <div v-else>
         <table  class="mytable" style="margin-bottom:1rem">
             <thead>
               <tr >
-                <th style="width:5% !important"><strong># </strong></th>
-                <th style="width:30% !important"><strong>Equipments </strong></th>
-                <th style="width:30% !important"><strong>Serial Number Of Item </strong></th>
-                <th style="width:30% !important"><strong>Work order </strong></th>
+                <th style="width:5% !important;cursor: context-menu !important "><strong># </strong></th>
+                <th style="width:30% !important; cursor: context-menu !important"><strong>Equipments </strong></th>
+                <th style="width:30% !important; cursor: context-menu !important"><strong>Serial Number Of Item </strong></th>
+                <th style="width:30% !important; cursor: context-menu !important"><strong>Work order </strong></th>
               </tr>
             </thead>  
             <tbody >
               <tr  :key="item.Id" v-for="(item, index) in items1">
-                <td>
+                <td style="cursor: context-menu !important">
                   {{index +1}}
-                </td>
-                <td>
+                </td> 
+                <td style="cursor: context-menu !important">
                   {{item.Name}}
-                </td>
-                <td>
+                </td >
+                <td style="cursor: context-menu !important">
                   {{item.SerialNumber}}
                 </td>
-                <td>
+                <td style="cursor: context-menu !important">
                   {{item.WordOrderName}}
                 </td>
               </tr>
@@ -296,34 +304,71 @@
     <div class="row !important" style="margin-top:2rem">
       <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 5rem" v-on:click="changeToLeader(SelectedMemberId)">Change</button>
 
-        <button class="button btn-edit material-shadow-animate "  style="background-color:white; color: black; margin-left: 3rem; border: none" v-on:click="cancel" >Cancel</button>
+        <button class="button btn-edit material-shadow-animate "  style="background-color:white; color: black; margin-left: 3rem; border-color: silver" v-on:click="cancel" >Cancel</button>
 
       
 
     </div>
   </vodal>
-  <!-- confirm kick popup- start -->
-      <vodal :show="showConfirm" animation="rotate" @hide="showConfirm = false">
-    <div class="col-12" style="margin-top: 0.5rem; padding-left: 2rem; border-bottom-style: double; ">Are you sure you want to kick this member??</div>
-    <div class="row">
-      <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Id: </div>
-      <div class="col-7">{{SelectedMemberId}}</div>
-    </div>
-    <div class="row">
-      <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Name: </div>
-      <div class="col-7">{{SelectedMemberName}}</div>
-    </div>
-    <div class="row !important" style="margin-top:2rem">
-      <button class="button material-shadow-animate "  style="background-color:var(--danger); color:white; margin-left: 5rem " v-on:click="kick(SelectedMemberId)">Remove</button>
+  <!-- modal-start change lead -->
+      <!-- change status dialog -->
+      <modal v-model="ChangeLeadPopUp" style="font-family: Roboto">
+          <div slot="header" style="font-weight: bold">
+                Confirm 
+            </div>
+            <div style="font-size: 1rem">
+                <div >
+                   
+                    <span ><strong> Are you sure you want to kick this member?? </strong></span>
+                    <div style="font-size: .95rem; font-weight: 500; margin-top: 0.5rem;">
+                      <div class="row">
+                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Id: </div>
+                        <div class="col-7">{{SelectedMemberId}}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Name: </div>
+                        <div class="col-7">{{SelectedMemberName}}</div>
+                      </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div slot="footer">
+        <button class="button btn-edit material-shadow-animate "  style="background-color:white; color: black; margin-left: 3rem; border-color: silver" v-on:click="cancel" >Cancel</button>
+                   <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 1rem" v-on:click="changeToLeader(SelectedMemberId)">Change</button>
+            </div>
+      </modal> <!-- change status dialog -->
+ <!-- modal-end -->
 
-        <button class="button btn-edit material-shadow-animate "  style="background-color:white; color:black; margin-left: 3rem; border: none" v-on:click="cancelConfirm" >Cancel</button>
-
-      
-
-    </div>
-  </vodal>
-  <!-- confirm kick popup-end -->
- 
+  <!-- modal-start -->
+      <!-- change status dialog -->
+      <modal v-model="kickPopUp" style="font-family: Roboto">
+          <div slot="header" style="font-weight: bold">
+                Confirm
+            </div>
+            <div style="font-size: 1rem">
+                <div >
+                   
+                    <span ><strong> Are you sure you want to kick this member?? </strong></span>
+                    <div style="font-size: .95rem; font-weight: 500; margin-top: 0.5rem;">
+                      <div class="row">
+                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Id: </div>
+                        <div class="col-7">{{SelectedMemberId}}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Name: </div>
+                        <div class="col-7">{{SelectedMemberName}}</div>
+                      </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div slot="footer">
+              <button class="button btn-edit material-shadow-animate "  style="background-color:white; color:black; margin-left: 4rem;  border-color: silver" v-on:click="cancelConfirm" >Cancel</button>
+              <button class="button material-shadow-animate "  style="background-color:var(--danger); color:white; margin-left: 1rem; border-style: none " v-on:click="kick(SelectedMemberId)">Remove</button>
+            </div>
+      </modal> <!-- change status dialog -->
+ <!-- modal-end -->
 
   </div>
 
@@ -419,36 +464,37 @@ export default {
     let urlEquipmentItem = `http://localhost:3000/api/team/id/${
       this.$route.params.id
     }/equipmentitem`;
-        this.axios.get(urlEquipmentItem).then(res => {
-          let data = res.data;
-          data.forEach(element => {
-            let EquiItem = element;
-            var totalItem = 0;
-            EquiItem.Equipment.forEach(eq => {
-              totalItem += eq.EquipmentItems.length;
-            })
-            let workOrder = {
-              totalItem: totalItem,
-              workOrder: EquiItem,
-            }
-            this.EquiItems.push(workOrder);
-          });
+    this.axios.get(urlEquipmentItem).then(res => {
+      let data = res.data;
+      data.forEach(element => {
+        let EquiItem = element;
+        var totalItem = 0;
+        EquiItem.Equipment.forEach(eq => {
+          totalItem += eq.EquipmentItems.length;
         });
+        let workOrder = {
+          totalItem: totalItem,
+          workOrder: EquiItem
+        };
+        this.EquiItems.push(workOrder);
+      });
+    });
     let itemUrl = `http://localhost:3000/api/team/id/${
       this.$route.params.id
     }/item`;
 
-        this.axios.get(itemUrl).then(response => {
-          let data = response.data;
-          this.items1 = data;
-        });
-
+    this.axios.get(itemUrl).then(response => {
+      let data = response.data;
+      this.items1 = data;
+    });
   },
 
   data() {
     return {
+      kickPopUp: false,
+      ChangeLeadPopUp: false,
       EquiItems: [],
-      items1:[],
+      items1: [],
       sending: false,
       ErrorStrings: {
         NameMax: " Use from 6 to 50 characters for your team name",
@@ -608,14 +654,16 @@ export default {
       this.showConfirm = false;
     },
     gotoDetail(memberID, memberName) {
-      this.show = true;
+      // this.show = true;
       this.SelectedMemberId = memberID;
       this.SelectedMemberName = memberName;
+      this.ChangeLeadPopUp =true;
     },
     confirmKick(memberID, memberName) {
-      this.showConfirm = true;
+      // this.showConfirm = true;
       this.SelectedMemberId = memberID;
       this.SelectedMemberName = memberName;
+      this.kickPopUp =true;
     },
     toDetail(accountId) {
       this.$router.push(`/account/${accountId}`);
@@ -734,6 +782,14 @@ td {
   /* padding: 0.5rem; */
   padding: 0 0 0 0.5rem !important;
 }
+td1 {
+  vertical-align: middle;
+  height: 40px;
+  line-height: 25px;
+  /* padding: 0.5rem; */
+  padding: 0 0 0 0.5rem !important;
+}
+
 td:hover {
   cursor: pointer;
 }
