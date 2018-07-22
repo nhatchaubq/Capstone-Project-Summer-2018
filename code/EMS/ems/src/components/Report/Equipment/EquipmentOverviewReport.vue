@@ -7,30 +7,20 @@
                         Equipment Category
                     </div>                    
                     <div class="select">
-                    <select style="width:100%" v-model="tmpCategory">    
-                                                                          
+                    <select style="width:100%" v-model="tmpCategory">                                                                              
                         <option :value='null'>All</option>
-                        <option :key="category.Id" v-for="category in categories" :value="category" >{{category.Name}} </option>                                                                           
+                        <option :key="category.Id" v-for="category in categories" :value="category" >{{category.Name}} </option>  
                     </select>
                     </div>
                 </div>
                 <div>
                     <div class="txtText">
-                        Period
+                        Vendor
                     </div>                    
                     <div class="select">
-                    <select style="width:100%">
-                        <option disabled :value=null>Showing</option>                                
-                        <option>All time</option>
-                        <option>This year</option>
-                        <option>This month</option>
-                        <option>This week</option>
-                        <option>Today</option>
-                        <option>Yesterday</option>
-                        <option>Last week</option>
-                        <option>Last month</option>
-                        <option>Last year</option>                               
-                                
+                    <select style="width:100%" v-model="tmpVendor">
+                        <option :value='null'>All</option>                                
+                        <option :key="vendor.Id" v-for="vendor in vendors" :value="vendor" >{{vendor.BusinessName}} </option>                                
                     </select>
                     </div>
                 </div>
@@ -77,66 +67,7 @@
                             </tr>                                                        
                         </tbody>
                     </table>
-                </div>
-                
-                <!-- <div v-else>
-                    <table class="mytable">
-                        <thead>
-                            <tr>                            
-                                <th><strong>Stock Item</strong></th>
-                                <th><strong>Equipment</strong></th>
-                                <th><strong>Import Date</strong></th>
-                                <th><strong>Used</strong></th>
-                                <th><strong>Downtime Duration</strong></th>
-                                <th><strong>Description</strong></th>                                
-                            </tr>
-                        </thead>  
-                        <tbody>
-                            <tr>
-                                <td>CM9562</td>                            
-                                <td>Concrete mixer</td>    
-                                <td>20/02/2018</td>  
-                                <td>10</td>  
-                                <td>56 days</td>  
-                                <td>N/A</td>                                 
-                            </tr>
-                            <tr>
-                                <td>CM9856</td>                            
-                                <td>Concrete mixer</td>    
-                                <td>20/02/2018</td>  
-                                <td>10</td>  
-                                <td>12 days</td>  
-                                <td>N/A</td>                                 
-                            </tr>
-                            <tr>
-                                <td>CM1124</td>                            
-                                <td>Concrete mixer</td>    
-                                <td>20/02/2018</td>  
-                                <td>60</td>  
-                                <td>996 days</td>  
-                                <td>N/A</td>                                 
-                            </tr>
-
-                            <tr>
-                                <td>BH1140</td>                            
-                                <td>Builder's hoist</td>    
-                                <td>20/02/2018</td>  
-                                <td>14</td>  
-                                <td>52 days</td>  
-                                <td>N/A</td>                                 
-                            </tr>
-                            <tr>
-                                <td>EV1652</td>                            
-                                <td>Excavator</td>    
-                                <td>20/02/2018</td>  
-                                <td>52</td>  
-                                <td>562 days</td>  
-                                <td>N/A</td>                                 
-                            </tr>
-                            
-                        </tbody>
-                    </table>
-                </div> -->
+                </div>                                
             </div>
         </div>
         <vodal :show="showEquipmentItemPopup" @hide="showEquipmentItemPopup = false" animation="slideUp" :height='600' :width='700'>
@@ -180,7 +111,8 @@
                            <div :key="eqti.Id" v-for="eqti in equipmentItems">{{eqti.Status}}</div> 
                     </div>
                     <div >
-                           <div :key="eqti.Id" v-for="eqti in equipmentItems">{{eqti.ImportDate}}</div> 
+                           <!-- <div :key="eqti.Id" v-for="eqti in equipmentItems">{{getFormatDate(eqti.ImportDate)}}</div>  -->
+                           <div :key="eqti.Id" v-for="eqti in equipmentItems">{{(getWeek(eqti.ImportDate))}}</div>
                     </div>
                 </div>                    
                                        
@@ -195,6 +127,7 @@ import Server from "@/config/config.js";
 import "vodal/common.css";
 import "vodal/slide-up.css";
 import Vodal from "vodal";
+import moment from "moment";
 export default {
   components: {
     Vodal
@@ -204,8 +137,10 @@ export default {
       equipments: [],
       equipmentItems: [],
       categories: [],
+      vendors: [],
       tmpEquipments: [],
       tmpCategory: null,
+      tmpVendor: null,
 
       showEquipmentItemPopup: false
     };
@@ -216,14 +151,52 @@ export default {
         this.equipmentItems = Items;
         this.showEquipmentItemPopup = true;
       }
+    },
+    getFormatDate(date) {
+      return moment(date).format("L");
+    },
+    getDate(date) {
+      return moment(date).date();
+    },
+    getMonth(date) {
+      return moment(date).month() + 1;
+    },
+    getYear(date) {
+      return moment(date).year();
+    },
+    getWeek(date) {
+      return moment(date).week();
     }
   },
   watch: {
     tmpCategory: function() {
       Vue.nextTick(() => {
-        if (this.tmpCategory) {
+        if (this.tmpCategory == null) {
+          this.tmpEquipments = this.equipments;
+        } else {
           this.tmpEquipments = this.equipments.filter(
             equipment => equipment.CategoryID == this.tmpCategory.Id
+          );
+        }
+        if (this.tmpVendor) {
+          this.tmpEquipments = this.tmpEquipments.filter(
+            equipment => equipment.VendorID == this.tmpVendor.Id
+          );
+        }
+      });
+    },
+    tmpVendor: function() {
+      Vue.nextTick(() => {
+        if (this.tmpCategory == null) {
+          this.tmpEquipments = this.equipments;
+        } else {
+          this.tmpEquipments = this.equipments.filter(
+            equipment => equipment.CategoryID == this.tmpCategory.Id
+          );
+        }
+        if (this.tmpVendor) {
+          this.tmpEquipments = this.tmpEquipments.filter(
+            equipment => equipment.VendorID == this.tmpVendor.Id
           );
         }
       });
@@ -248,6 +221,17 @@ export default {
         let data = res.data;
         data.forEach(category => {
           this.categories.push(category);
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    this.axios
+      .get("http://localhost:3000/api/report/getVendor")
+      .then(res => {
+        let data = res.data;
+        data.forEach(vendor => {
+          this.vendors.push(vendor);
         });
       })
       .catch(error => {

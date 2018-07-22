@@ -31,10 +31,10 @@
                       </div>
                       <div class="field">
                           <div class="control">
-                              <Button class="button is-primary" long style="font-size: 1rem;">
+                              <button class="button is-primary" long style="font-size: 1rem; width: 100%">
                                   Login
                                   <i v-show="sending" class="fa fa-circle-o-notch fa-spin" style="margin-left: 5px;"></i>
-                              </Button>
+                              </button>
                           </div>
                       </div>
                   </form>

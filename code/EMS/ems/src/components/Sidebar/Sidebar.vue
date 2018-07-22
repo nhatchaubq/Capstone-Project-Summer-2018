@@ -105,7 +105,7 @@ export default {
         return "is-active";
       }
       return "";
-    },
+    }
     // getUserAvatar() {
     //   const authUser = JSON.parse(window.localStorage.getItem("user"));
     //   if (authUser && authUser.AvatarImage) {

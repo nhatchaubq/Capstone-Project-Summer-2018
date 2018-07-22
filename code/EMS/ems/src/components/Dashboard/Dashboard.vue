@@ -17,7 +17,7 @@
                   <div class="row">
                     <div class="col-6" style="padding:0 0 0 0.5rem !important">
                       <!-- <strong>Available Equipment Percent</strong> -->
-                      <strong>Available Equipment Percent {{tmpCategory}}</strong>
+                      <strong>Available Equipment Percent</strong>
                     </div>
                     <div class="col-6">
                       <div class="select">
@@ -117,61 +117,7 @@
                         </div>
                   
                         </div>
-                </div>
-                <!-- test -->
-                <!-- <div class="statusworkorder columns">
-                    <div class="status column">
-                        <div class="headerstatus columns">
-                            <div style="width:40%" class="column">
-                            <strong>Requested</strong>
-                            </div>
-
-                        </div>
-                        <div class="contentstatus" >
-                            <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
-                            <p style="font-size:15px;" >Work Orders</p>
-                        </div>
-                    </div>
-                    <div class="status column">
-                        <div class="headerstatus columns">
-                            <div style="width:40%" class="column">
-                            <strong>Checked</strong>
-                            </div>
-
-                        </div>
-                        <div class="contentstatus">
-                            <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
-                            <p style="font-size:15px;">Work Orders</p>
-                        </div>
-                    </div>
-                                    <div class="status column">
-                        <div class="headerstatus columns">
-                            <div style="width:40%" class="column">
-                            <strong>Approve</strong>
-                            </div>
-
-                        </div>
-                        <div class="contentstatus">
-                            <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
-                            <p style="font-size:15px;">Work Orders</p>
-                        </div>
-                    </div>
-                                    <div class="status column" style="margin-right:0rem !important">
-                        <div class="headerstatus columns" >
-                            <div style="width:40%" class="column">
-                            <strong>In Progress</strong>
-                            </div>
-
-                        </div>
-                        <div class="contentstatus" >
-                            <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
-                            <p style="font-size:15px; ">Work Orders</p>
-                        </div>
-                    </div>
-
-                    
-                </div> -->
-                <!-- /test -->
+                </div>                
                 <div class=" row"  >
                   <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Working</strong></div>
                   <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Maintain</strong></div>

@@ -10,7 +10,7 @@
                 </li>
                 <li>
                     <router-link to="/report/equipment/equipment_status">                    
-                        Equipment Status Reports
+                        Damage-Lost-Archive Equipment Reports
                     </router-link>
                 </li>
                 <li>

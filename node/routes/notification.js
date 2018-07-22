@@ -3,7 +3,7 @@ const TYPES = require("tedious").TYPES;
 
 module.exports = function(io) {
     router.get('/all/:userId', (req, res) => {
-        req.sql("select noti.Id as [Id], noti.[Content] as [Content], noti.CreatedDate as [CreatedDate], accNoti.NotificationStatus as [Status] "
+        req.sql("select noti.Id as [Id], noti.[Content] as [Content], noti.CreatedDate as [CreatedDate], accNoti.NotificationStatus as [Status], noti.Metadata as [Metadata] "
         + " from [Notification] as noti join AccountNotification as accNoti on noti.Id = accNoti.NotificationId "
         + " where accNoti.AccountId = @userId "
         + " order by noti.CreatedDate desc "
@@ -13,7 +13,7 @@ module.exports = function(io) {
     });
 
     router.get('/top50/:userId', (req, res) => {
-        req.sql("select top 50 noti.Id as [Id], noti.[Content] as [Content], noti.CreatedDate as [CreatedDate], accNoti.NotificationStatus as [Status] "
+        req.sql("select top 50 noti.Id as [Id], noti.[Content] as [Content], noti.CreatedDate as [CreatedDate], accNoti.NotificationStatus as [Status], noti.Metadata as [Metadata] "
         + " from [Notification] as noti join AccountNotification as accNoti on noti.Id = accNoti.NotificationId "
         + " where accNoti.AccountId = @userId "
         + " order by noti.CreatedDate desc "
