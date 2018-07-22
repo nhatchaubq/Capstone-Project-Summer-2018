@@ -60,12 +60,15 @@
   <div class="row" > 
     <div class="col-6">   
       <div v-if="!editMode">
-        <div v-if="!team.LeaderAccount ">
+        <div v-if="!team.LeaderAccount && !team.MemberAccounts">
+          There is no team member yet.
+        </div>
+        <!-- <div v-if="!team.LeaderAccount ">
           There is no team leader yet.
         </div>
         <div v-if="!team.MemberAccounts">
           There is no team member yet
-        </div>
+        </div> -->
 
         <div v-else>
 
@@ -649,23 +652,23 @@ export default {
     },
     cancel() {
       // this.show = false;
-      this.ChangeLeadPopUp =false;
+      this.ChangeLeadPopUp = false;
     },
     cancelConfirm() {
       // this.showConfirm = false;
-      this.kickPopUp = false
+      this.kickPopUp = false;
     },
     gotoDetail(memberID, memberName) {
       // this.show = true;
       this.SelectedMemberId = memberID;
       this.SelectedMemberName = memberName;
-      this.ChangeLeadPopUp =true;
+      this.ChangeLeadPopUp = true;
     },
     confirmKick(memberID, memberName) {
       // this.showConfirm = true;
       this.SelectedMemberId = memberID;
       this.SelectedMemberName = memberName;
-      this.kickPopUp =true;
+      this.kickPopUp = true;
     },
     toDetail(accountId) {
       this.$router.push(`/account/${accountId}`);
