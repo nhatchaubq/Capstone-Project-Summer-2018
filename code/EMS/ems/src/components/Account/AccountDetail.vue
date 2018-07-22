@@ -14,17 +14,52 @@
 
 <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; ">
  <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
-<div v-bind:key="team.id" v-for="team in account.Teams" >
-  <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'"> 
-                        <router-link :to="`/team/${team.Id}`">
+
+
+<!-- test -->
+<div v-if="!editMode">
+  <div v-if="!account.Teams">
+    This account has no team.
+  </div>
+  <div v-else>
+    
+    <table class="mytable">
+      <thead>
+        <tr>
+          <!-- <th><strong>ID</strong></th> -->
+          <th style="width:3% !important"><strong>#</strong></th>
+          <th style="width:47% !important"><strong>Team name </strong></th>
+          <th style="width:15% !important"><strong>Team role </strong></th>
+        </tr>
+      </thead>  
+      <tbody>
+          <tr v-bind:key="team.id" v-for="(team, index) in account.Teams"  >
+            <td >{{index + 1}}</td>
+            <td >{{team.Name? team.Name: "N/A" }}</td>
+            <td v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
+            <td v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">♟Member</span> </strong> </td> 
+            <!-- <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td> -->
+
+          </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+<!-- test-end -->
+
+
+
+<!-- <div v-bind:key="team.id" v-for="team in account.Teams" >
+  <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'">      
                         {{team.Name}}
-                    </router-link>
       ({{team.TeamRole.TeamRole}} ) </div>
   <div style="margin-left:1.5rem" v-else>                        
                       <router-link :to="`/team/${team.Id}`">
                         {{team.Name}}
                     </router-link> ( {{team.TeamRole.TeamRole}} ) </div>
-</div>
+
+</div> -->
   </div>
 
 <div class="material-box">
@@ -400,5 +435,61 @@ export default {
 .btn-cancel:hover {
   cursor: pointer;
   background-color: #aca4a4;
+}
+th {
+  text-align: left;
+  background-color: #cfd8dc;
+  height: 30px;
+  line-height: 30px;
+  padding: 0.5rem !important;
+}
+
+td {
+  vertical-align: middle;
+  height: 40px;
+  line-height: 25px;
+  padding: 0.5rem;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+  color: #263238;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+  color: #263238;
+}
+
+#th1:curve {
+  text-align: justify;
+
+  background-color: #b0bec5;
+}
+
+tr:hover {
+  background-color: #eceff1;
+}
+td:hover {
+  cursor: pointer;
+}
+.txtText {
+  text-align: left;
+
+  /*margin: 0.3rem;*/
+
+  padding: 0.5rem;
+
+  background-color: #cfd8dc;
+}
+
+table {
+  /* border: 1px solid black; */
+
+  width: 100%;
+
+  font-size: 15px;
+
+  /* text-align: right; */
 }
 </style>
