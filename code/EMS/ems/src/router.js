@@ -30,8 +30,8 @@ import EditLocation from "./components/Location/EditLocation.vue";
 import TestComponent from "./components/TestSite/Test.vue";
 import LocationMapViewComponent from "./components/Location/MapView.vue";
 import AddBlockFloorTileComponent from "./components/Location/AddBlockFloorTile.vue";
-import Component500 from './components/Error/500.vue';
-import EditWorkOrder from './components/Order/EditOrder.vue';
+import Component500 from "./components/Error/500.vue";
+import EditWorkOrder from "./components/Order/EditOrder.vue";
 // chaubqn - end
 
 // hau - start
@@ -52,9 +52,8 @@ Vue.use(Router);
 import DienComponent from "./components/chartTest/test1.vue";
 //Dien -test- end
 
-
 //Dien addEquipmentCategory-start
-import AddEquipmentCategoryComponent from "./components/Equipment/AddEquipmentCategory.vue"
+import AddEquipmentCategoryComponent from "./components/Equipment/AddEquipmentCategory.vue";
 //Dien addEquipmentCategory-end
 
 Vue.use(Router);
@@ -64,7 +63,8 @@ import menu from "./models/menu";
 
 let router = new Router({
   mode: "history",
-  routes: [{
+  routes: [
+    {
       path: "/",
       component: DashboardComponent,
       beforeEnter: (to, from, next) => {
@@ -111,7 +111,7 @@ let router = new Router({
       }
     },
     {
-      name: 'work_order',
+      name: "work_order",
       path: "/work_order",
       component: OrderComponent,
       beforeEnter: (to, from, next) => {
@@ -156,7 +156,8 @@ let router = new Router({
         showSearchBar: false
       }
     },
-    { name: "report",
+    {
+      name: "report",
       path: "/report",
       component: ReportComponent,
       beforeEnter: (to, from, next) => {
@@ -263,7 +264,7 @@ let router = new Router({
       path: "/vendor/:id",
       component: VendorDetailComponent,
       beforeEnter: (to, from, next) => {
-        store.set("title", menu.Vendors);
+        store.set("title", menu.VendorDetails);
         next();
       },
       meta: {
@@ -300,7 +301,8 @@ let router = new Router({
         showSearchBar: true
       }
     },
-    { name: "edit_location",
+    {
+      name: "edit_location",
       path: "/location/edit-location/:id",
       component: EditLocation,
       beforeEnter: (to, from, next) => {
@@ -353,7 +355,7 @@ let router = new Router({
       component: Component500,
 
       beforeEnter: (to, from, next) => {
-        store.set("title", '');
+        store.set("title", "");
         next();
       },
       meta: {
@@ -361,7 +363,7 @@ let router = new Router({
       }
     },
     {
-      name: 'edit_order',
+      name: "edit_order",
       path: "/work_order/edit/:orderId",
       component: EditWorkOrder,
 

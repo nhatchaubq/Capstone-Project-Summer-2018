@@ -6,15 +6,18 @@ router.get("/", (request, response) => {
   request
     .sql(
       "SELECT  team.Id as 'Team.Id', team.Name as 'Team.Name', team.CreatedDate as 'Team.CreatedDate', json_query((select count(*) as [Quantity]  " +
-        "from TeamAccount   " +
-        "where TeamID = team.Id for json path, without_array_wrapper)) as [Team.Members],   " +
-        "json_query((select acc.*  " +
-        "from TeamAccount as ta  " +
-        "JOIN TeamRoles as tr ON tr.Id= ta.TeamRoleID  " +
-        "JOIN Account as acc ON ta.AccountID =acc.Id   " +
-        "where TeamID = team.Id and tr.Id =(SELECT Id from [TeamRoles] where TeamRole = N'Leader') for json path, without_array_wrapper)) as [Team.TeamLeader]  " +
-        "FROM [Team] as team  " +
-        "ORDER BY Team.CreatedDate DESC for json path"
+
+      "from TeamAccount   " +
+      "where TeamID = team.Id for json path, without_array_wrapper)) as [Team.Members],   " +
+      "json_query((select acc.*  " +
+      "from TeamAccount as ta  " +
+      "JOIN TeamRoles as tr ON tr.Id= ta.TeamRoleID  " +
+      "JOIN Account as acc ON ta.AccountID =acc.Id   " +
+      "where TeamID = team.Id and tr.Id =(SELECT Id from [TeamRoles] where TeamRole = N'Leader') for json path, without_array_wrapper)) as [Team.TeamLeader]  " +
+      "FROM [Team] as team  " +
+      "ORDER BY Team.Name ASC " +
+      " for json path"
+
     )
 
     .into(response);

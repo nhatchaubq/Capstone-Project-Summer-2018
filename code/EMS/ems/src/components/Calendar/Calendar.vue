@@ -1,4 +1,5 @@
 <template>
+
     <div>
         <!-- <vue-full-calendar class="material-box material-shadow" :events="calendarEvents" locale="en"></vue-full-calendar> -->
         <croud-gantt :events="events"

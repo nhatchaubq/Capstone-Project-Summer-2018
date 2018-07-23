@@ -7,8 +7,8 @@
 
   <div class="grid-wrapper1 col-12" style="margin-bottom:1rem">
     <div class="material-box" >
-      <div class="row" style="margin: 0 !important; margin-bottom: 0.5rem">
-        <h2 class="col-11" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{Vendor.BusinessName}}</strong> </h2>
+      <div class="row" style="margin: 0 !important; height:36px ">
+        <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a" >{{Vendor.BusinessName}}  <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> </strong> </h2>
       <button  v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate col-1" v-on:click="editMode = !editMode">Edit</button>
       </div>
 
@@ -64,7 +64,7 @@
             <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
           </div> 
         </div> 
-          <input v-if="!editMode" v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
+          <input v-if="!editMode" v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" style="margin-bottom:1rem" disabled="disabled">
           <input v-else v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" >
         <div class="row" v-if="editMode">
           <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editVendor()">Save change</button>
@@ -114,6 +114,7 @@
 
     </div> -->
         <!-- test- start -->
+  <div v-if="!editMode">
   <div class="grid-wrapper1 col-12">
     <div class="material-box">
       <!-- <div class="grid-wrapper1"> -->
@@ -139,36 +140,40 @@
       </div>
       -->
 
-  <div v-if="!Vendor.Equipments">
-    There is no vendor detail yet.
-  </div>
-  <div v-else>
-    <strong>Vendor's equipment (This vendor have {{Vendor.Equipment.Quantity}} equipment(s) and {{Vendor.EquipmentItems.Quantity}} equipment item(s) ) </strong> 
-    <table class="mytable">
-      <thead>
-        <tr>
-          <!-- <th><strong>ID</strong></th> -->
-          <th><strong>Equipment name </strong></th>
-          <th><strong>Made in</strong></th>
-          <th><strong>Equipment category</strong></th>
+
+    <div v-if="!Vendor.Equipments">
+      This vendor has no equipment in system.
+    </div>
+    <div v-else>
+      <strong>Vendor's equipment (This vendor have {{Vendor.Equipment.Quantity}} equipment(s) and {{Vendor.EquipmentItems.Quantity}} equipment item(s) ) </strong> 
+      <table class="mytable">
+        <thead>
+          <tr>
+            <!-- <th><strong>ID</strong></th> -->
+            <th style="width:3% !important"><strong>#</strong></th>
+            <th style="width:47% !important"><strong>Equipment name </strong></th>
+            <th style="width:15% !important"><strong>Made in</strong></th>
+            <th style="width:20% !important"><strong>Equipment category</strong></th>
 
 
 
-          <!-- <th><strong>Department</strong></th> -->
-        </tr>
-      </thead>  
-      <tbody>
-          <tr :key="Equipment.Id" v-for="Equipment in Vendor.Equipments" class="txtText" v-on:click="gotoDetail(Equipment.Id)" >
-            <td style="width:20rem">{{Equipment.Name ? Equipment.Name : "N/A" }}</td>
-            <td style="width:15rem">{{Equipment.MadeIn ? Equipment.MadeIn : "N/A"}} </td>
-            <td style="width:15rem">{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td>
-
+            <!-- <th><strong>Department</strong></th> -->
           </tr>
-      </tbody>
-    </table>
-    <router-link to='/vendor1/add/'>
-      <button id="btn-add-vendor" class="button btn-primary material-shadow-animate">Add Vendor</button>
-    </router-link>
+        </thead>  
+        <tbody>
+            <tr :key="Equipment.Id" v-for="(Equipment, index) in Vendor.Equipments" class="txtText" v-on:click="gotoDetail(Equipment.Id)" >
+              <td >{{index + 1}}</td>
+              <td >{{Equipment.Name ? Equipment.Name : "N/A" }}</td>
+              <td >{{Equipment.MadeIn ? Equipment.MadeIn : "N/A"}} </td>
+              <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td>
+
+            </tr>
+        </tbody>
+      </table>
+      <!-- <router-link to='/vendor1/add/'>
+        <button id="btn-add-vendor" class="button btn-primary material-shadow-animate">Add Vendor</button>
+      </router-link> -->
+    </div>
   </div>
 
 
@@ -453,7 +458,7 @@ export default {
           })
           .then(res => {
             this.$router.push(`/vendor/${this.$route.params.id}`);
-            alert("Save change sucessful");
+            alert("Save changes sucessfully");
             this.editMode = false;
           });
     },

@@ -9,6 +9,7 @@ router.get("/", (request, response) => {
     "Join EquipmentItem as ei ON ei.EquipmentID =e.Id " +
     "where e.VendorID = v.Id for json path, without_array_wrapper)) as [Vendor.Quantityitems]     " +
     "FROM [Vendor] as v " +
+    "ORDER BY v.BusinessName ASC " +
     "for json path ").into(response);
 });
 // router.get("/", (request, response) => {
@@ -24,14 +25,17 @@ router.get("/:id", (request, response) => {
       "select v.*,  " +
       "json_query((SELECT e.*,ec.Name as 'ecName' FROM [Equipment] as e " +
       "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
-      "WHERE e.VendorID = @id for json path))as [Equipments],   " +
+      "WHERE e.VendorID = @id " +
+      "ORDER BY e.Name ASC " +
+      "for json path))as [Equipments],   " +
       "json_query((select count(*) as [Quantity]     " +
       "from Equipment as e      " +
       "where e.VendorID = v.Id for json path, without_array_wrapper)) as [Equipment],   " +
       "json_query((select count(*) as [Quantity]     " +
       "from Equipment as e      " +
       "Join EquipmentItem as ei ON ei.EquipmentID =e.Id   " +
-      "where e.VendorID = v.Id for json path, without_array_wrapper)) as [EquipmentItems]       " +
+      "where e.VendorID = v.Id " +
+      "for json path, without_array_wrapper)) as [EquipmentItems]       " +
       "FROM [Vendor] as v    " +
       "WHERE v.Id = @id   " +
       "for json path, without_array_wrapper "

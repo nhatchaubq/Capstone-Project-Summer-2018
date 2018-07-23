@@ -13,23 +13,23 @@
       </div> -->
     
     <div >
-      <div class="field is-grouped view-mode" style="margin-bottom:0rem !important">
+      <div class="field is-grouped view-mode" style="margin-bottom: 1rem !important">
         <!-- <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button> -->
         <router-link to='/account/'>  
-          <button class="btn-view-mode" disabled="disabled">Account view</button>
+          <button class="btn-view-mode-left" style="margin-right:0rem" disabled="disabled">Account view</button>
         </router-link>
         <router-link to='/team/'>  
-          <button class="btn-view-mode" >Team view</button>
+          <button class="btn-view-mode-right" >Team view</button>
         </router-link>
       </div>
     </div>
-    <div class="btncotrol" style="margin-bottom: 1rem">
+    <!-- <div class="btncotrol" style="margin-bottom: 1rem">
       <div class="field is-grouped view-mode1">
         <button class="btn-view-mode1"  :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode1" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
       </div>
-    </div>
+    </div> -->
         <div v-if="!accounts">
       There is no account yet.
     </div>
@@ -242,6 +242,45 @@ export default {
   border-bottom: 3px #26a69a solid;
   cursor: pointer;
   color: var(--primary-color);
+}
+
+.btn-view-mode-left:disabled{
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+}
+.btn-view-mode-right:hover {
+  background-color: #26a69a;
+  color: white;
+  cursor: context-menu;
+}
+.btn-view-mode-left {
+  background-color: white;
+  padding: 0.4rem 0.6rem;
+  /* height: 2rem; */
+  font-size: 15px;
+  /* line-height: 2rem; */
+  color: var(--primary-color);
+  border-radius: 5px 0px 0px 5px ;
+  border: 1px solid #26a69a;
+  z-index: 1;
+  /* padding-right: 20px;
+      padding-left: 20px; */
+  margin-right: 5px;
+}
+.btn-view-mode-right {
+  background-color: white;
+  padding: 0.4rem 0.6rem;
+  /* height: 2rem; */
+  font-size: 15px;
+  /* line-height: 2rem; */
+  color: var(--primary-color);
+  border-radius: 0px 5px 5px 0px  ;
+  border: 1px solid #26a69a;
+  z-index: 1;
+  /* padding-right: 20px;
+      padding-left: 20px; */
+  margin-right: 5px;
 }
 /* /test */
 </style>

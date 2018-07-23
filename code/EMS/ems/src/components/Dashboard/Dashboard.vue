@@ -17,7 +17,7 @@
                   <div class="row">
                     <div class="col-6" style="padding:0 0 0 0.5rem !important">
                       <!-- <strong>Available Equipment Percent</strong> -->
-                      <strong>Available Equipment Percent {{tmpCategory}}</strong>
+                      <strong>Available Equipment Percent</strong>
                     </div>
                     <div class="col-6">
                       <div class="select">
@@ -117,61 +117,7 @@
                         </div>
                   
                         </div>
-                </div>
-                <!-- test -->
-                <!-- <div class="statusworkorder columns">
-                    <div class="status column">
-                        <div class="headerstatus columns">
-                            <div style="width:40%" class="column">
-                            <strong>Requested</strong>
-                            </div>
-
-                        </div>
-                        <div class="contentstatus" >
-                            <p style="color: var(--status-request); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
-                            <p style="font-size:15px;" >Work Orders</p>
-                        </div>
-                    </div>
-                    <div class="status column">
-                        <div class="headerstatus columns">
-                            <div style="width:40%" class="column">
-                            <strong>Checked</strong>
-                            </div>
-
-                        </div>
-                        <div class="contentstatus">
-                            <p style="color: var(--status-checked); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
-                            <p style="font-size:15px;">Work Orders</p>
-                        </div>
-                    </div>
-                                    <div class="status column">
-                        <div class="headerstatus columns">
-                            <div style="width:40%" class="column">
-                            <strong>Approve</strong>
-                            </div>
-
-                        </div>
-                        <div class="contentstatus">
-                            <p style="color: var(--status-approved); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
-                            <p style="font-size:15px;">Work Orders</p>
-                        </div>
-                    </div>
-                                    <div class="status column" style="margin-right:0rem !important">
-                        <div class="headerstatus columns" >
-                            <div style="width:40%" class="column">
-                            <strong>In Progress</strong>
-                            </div>
-
-                        </div>
-                        <div class="contentstatus" >
-                            <p style="color: var(--status-delivered); font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
-                            <p style="font-size:15px; ">Work Orders</p>
-                        </div>
-                    </div>
-
-                    
-                </div> -->
-                <!-- /test -->
+                </div>                
                 <div class=" row"  >
                   <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Working</strong></div>
                   <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Maintain</strong></div>
@@ -388,6 +334,38 @@ export default {
     OrderBlock,
     DoughnutChart
   },
+  data() {
+    return {
+      Dashboard: null,
+      pieChartData: {
+        labels: [],
+        values: []
+      },
+      doughnutChartData: {
+        TodayLabels: [],
+        TodayData: []
+      },
+      lineChartData: {
+        workingLabel: "",
+        maintainLabel: "",
+        monthLabels: [],
+        monthData: {
+          working: [],
+          maintain: []
+        }
+      },
+
+      //cate start
+
+      categories: [],
+      tmpCategory: null,
+      //cate end
+      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
+      workOrdersMaintainTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
+      workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
+      workOrdersWokingTomorrow: [] // orders data to display in orderblocks <order-block></order-block>
+    };
+  },
   created() {
     let URL = Server.DASHBOARD_API_PATH;
     this.axios.get(URL).then(res => {
@@ -396,26 +374,28 @@ export default {
         let data = res.data;
         this.Dashboard = data.Dashboard;
         this.pieChartData.labels.push(data.PieChartData.Availble.Name);
-        this.pieChartData.labels.push(data.PieChartData.WokingRequesting.Name);
-        this.pieChartData.labels.push(
-          data.PieChartData.MaintainanceRequesting.Name
-        );
+        this.pieChartData.labels.push(data.PieChartData.WokingApproved.Name);
         this.pieChartData.labels.push(data.PieChartData.Working.Name);
         this.pieChartData.labels.push(data.PieChartData.Damaged.Name);
+        this.pieChartData.labels.push(
+          data.PieChartData.MaintainanceApproved.Name
+        );
         this.pieChartData.labels.push(data.PieChartData.Maintaining.Name);
         this.pieChartData.labels.push(data.PieChartData.Lost.Name);
+        this.pieChartData.labels.push(data.PieChartData.Archived.Name);
 
         this.pieChartData.values.push(data.PieChartData.Availble.Quantity);
         this.pieChartData.values.push(
-          data.PieChartData.WokingRequesting.Quantity
-        );
-        this.pieChartData.values.push(
-          data.PieChartData.MaintainanceRequesting.Quantity
+          data.PieChartData.WorkingApproved.Quantity
         );
         this.pieChartData.values.push(data.PieChartData.Working.Quantity);
         this.pieChartData.values.push(data.PieChartData.Damaged.Quantity);
+        this.pieChartData.values.push(
+          data.PieChartData.MaintainanceApproved.Quantity
+        );
         this.pieChartData.values.push(data.PieChartData.Maintaining.Quantity);
         this.pieChartData.values.push(data.PieChartData.Lost.Quantity);
+        this.pieChartData.values.push(data.PieChartData.Archived.Quantity);
 
         // line chart data - start
         this.lineChartData.workingLabel = data.LineChart.WorkingName;
@@ -545,38 +525,7 @@ export default {
         console.log(error);
       });
   },
-  data() {
-    return {
-      Dashboard: null,
-      pieChartData: {
-        labels: [],
-        values: []
-      },
-      doughnutChartData: {
-        TodayLabels: [],
-        TodayData: []
-      },
-      lineChartData: {
-        workingLabel: "",
-        maintainLabel: "",
-        monthLabels: [],
-        monthData: {
-          working: [],
-          maintain: []
-        }
-      },
 
-      //cate start
-
-      categories: [],
-      tmpCategory: null,
-      //cate end
-      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
-      workOrdersMaintainTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
-      workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
-      workOrdersWokingTomorrow: [] // orders data to display in orderblocks <order-block></order-block>
-    };
-  },
   methods: {
     getDate(date) {
       return moment(date).format("L");
