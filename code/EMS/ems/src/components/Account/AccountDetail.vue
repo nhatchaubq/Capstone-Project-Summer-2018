@@ -13,11 +13,11 @@
   <div>
 
 <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; ">
- <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
 
 
 <!-- test -->
 <div v-if="!editMode">
+ <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
   <div v-if="!account.Teams">
     This account has no team.
   </div>
@@ -33,7 +33,7 @@
         </tr>
       </thead>  
       <tbody>
-          <tr v-bind:key="team.id" v-for="(team, index) in account.Teams"  >
+          <tr v-bind:key="team.id" v-for="(team, index) in account.Teams" v-on:click="gotoDetail(team.Id)" >
             <td >{{index + 1}}</td>
             <td >{{team.Name? team.Name: "N/A" }}</td>
             <td v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
@@ -131,7 +131,7 @@
   <input v-else v-model.trim="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
 <div class="row" v-if="editMode">
   <!-- <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Save change</button> -->
-  <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()" >Save change</button>
+  <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()" >Save changes</button>
     <button v-if="editMode" class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
          getAccountDetail($route.params.id);
          editMode = false;
@@ -312,6 +312,9 @@ export default {
     },
     getDate(date) {
       return moment(date).format("L");
+    },
+    gotoDetail(teamId) {
+      this.$router.push(`/team/${teamId}`);
     }
   },
   watch: {
@@ -473,6 +476,7 @@ tr:hover {
 td:hover {
   cursor: pointer;
 }
+
 .txtText {
   text-align: left;
 
