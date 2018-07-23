@@ -95,9 +95,6 @@ router.get("/", (request, response) => {
       "(select [Name] from EquipmentStatus where Id = (select es.Id from [EquipmentStatus] as es where es.Name = N'Working Approved')) as 'Doughnut.Unavailable.Name'" + // "json_query((select * from WorkOrder as wo where convert(date, wo.ExpectingCloseDate) = convert(date, getdate()) and wo.CategoryID=2 for json path)) as 'todayWokingOrder'," + // "json_query((select * from WorkOrder as wo where convert(date, wo.ExpectingCloseDate) = dateadd(day, 1, convert(date, getdate())) and wo.CategoryID=1 for json path)) as 'tomorrowMaintainOrder'," + // "json_query((select * from WorkOrder as wo where convert(date, wo.ExpectingCloseDate) = convert(date, getdate()) and wo.CategoryID=1 for json path)) as 'todayMaintainOrder'," + //work order start(old) // get name of month end(new) //line chart(line's name ) end
         // "json_query((select * from WorkOrder as wo where convert(date, wo.ExpectingCloseDate) = dateadd(day, 1, convert(date, getdate())) and wo.CategoryID=2 for json path)) as 'tomorrowWokingOrder'" +
         //work order end(old)
-
-        //work order start(new)
-        /*
       "json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor]," +
       "                l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address], " +
       "                t.Id as [Team.Id], t.[Name] as [Team.Name]" +
@@ -160,6 +157,7 @@ router.get("/workorderdb", (request, response) => {
   request
     .sql(
       "SELECT" +
+
         "(json_query((select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor],  json_query((select count(wod.Id) as [Quantity] from WorkOrderDetail as wod join WorkOrder as wo1 on wod.WorkOrderId = wo1.Id where wo.Id = wo1.Id for json path, without_array_wrapper)) as [Detail], " +
         "   l.Id as [Location.Id], l.[Name] as [Location.Name], l.[Address] as [Location.Address],  " +
         "t.Id as [Team.Id], t.[Name] as [Team.Name] " +
