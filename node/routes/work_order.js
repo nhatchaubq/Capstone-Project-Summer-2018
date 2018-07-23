@@ -58,7 +58,13 @@ module.exports = function(io) {
               + "                                                                                                                                                                                  where wod.EquipmentItemID = ei.Id) as [workorderdetail] "
               + "                                                                                                             where wo3.StatusId = [status].Id and wo3.Id = [workorderdetail].WorkOrderID "
               + "                                                                                                             order by wo3.StatusID desc, wo3.PriorityID desc "
-              + "                                                                                                             for json path)) as [WorkOrders] "
+              + "                                                                                                             for json path)) as [WorkOrders], "
+              + "                                                                                                                       json_query((select lo.* "
+              + "                                                                                                                                   from [Tile] as ti join [Floor] as fl on ti.FloorID = fl.Id "
+              + "                                                                                                                                               join [Block] as bl on bl.Id = fl.BlockID "
+              + "                                                                                                                                               join [Location] as lo on bl.LocationID = lo.Id "
+              + "                                                                                                                                   where ti.Id = ei.TileID "
+              + "                                                                                                                                   for json path, without_array_wrapper)) as [Location] "
               + "                                                                                     from EquipmentItem as ei "
             //   + "                                                                                             join Equipment as e4 on ei.EquipmentID = e4.Id "
               + "                                                                                             join EquipmentStatus as es on ei.StatusId = es.Id "
@@ -130,31 +136,34 @@ module.exports = function(io) {
       
       // ChauBQN
       // get equipments and equipment items to display on work order
-    router.get('/:id/equipments', (request, response) => {
-        request.sql("select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei2.*, json_query((select lo.[Name] as [Location.Name], lo.[Address] as [Location.Address], " +
-        "                                                                                                                                           bl.[Name] as [BlockName], fl.[Name] as [FloorName], ti.[Name] as [TileName] " +
-        "                                                                                                                                   from [Location] as lo join [Block] as bl on lo.Id = bl.LocationID " +
-        "                                                                                                                                               join [Floor] as fl on bl.Id = fl.BlockID " +
-        "                                                                                                                                               join Tile as ti on fl.Id = ti.FloorID " +
-        "                                                                                                                                   where ti.Id = ei2.TileID for json path, without_array_wrapper)) as [BlockFloorTile], " +
-        "                                                                                                                                           json_query((select wodr.*, es.[Name] as [ReturnedStatusName] " +
-        "                                                                                                                                                       from WorkOrderDetailReturn as wodr " +
-        "                                                                                                                                                               join EquipmentStatus as es on wodr.ReturnedStatusId = es.Id " +
-        "                                                                                                                                                       where wodr.WorkOrderDetailId = wod2.Id " +
-        "                                                                                                                                                       for json path, without_array_wrapper)) as [DetailReturn] "
-                    + "                                                     from WorkOrder as wo2 join WorkOrderDetail as wod2 on wo2.Id = wod2.WorkOrderID "
-                    + "                                                                         join EquipmentItem as ei2 on wod2.EquipmentItemID = ei2.Id "
-                    + "                                                     where wo2.Id = @workOrderId and ei2.EquipmentID = e.Id for json path) as [EquipmentItems] "
-                    + " from Equipment as e join [Unit] as u on e.UnitID = u.Id "
-                    + " where e.Id in (select distinct e.Id "
-                    + "                 from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID "
-                    + "                 where ei.id in (select wod.EquipmentItemID "
-                    + "                                 from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
-                    + "                                 where wo.Id = @workOrderId)) "
-                    + " for json path")
-            .param('workOrderId', request.params.id, TYPES.Int)
-            .into(response);
-    });
+      router.get("/:id/equipments", (request, response) => {
+        request
+          .sql(
+            "select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei2.*, json_query((select lo.[Name] as [Location.Name], lo.[Address] as [Location.Address], " +
+              "                                                                                                                                           bl.[Name] as [BlockName], fl.[Name] as [FloorName], ti.[Name] as [TileName] " +
+              "                                                                                                                                   from [Location] as lo join [Block] as bl on lo.Id = bl.LocationID " +
+              "                                                                                                                                               join [Floor] as fl on bl.Id = fl.BlockID " +
+              "                                                                                                                                               join Tile as ti on fl.Id = ti.FloorID " +
+              "                                                                                                                                   where ti.Id = ei2.TileID for json path, without_array_wrapper)) as [BlockFloorTile], " +
+              "                                                                                                                                           json_query((select wodr.*, es.[Name] as [ReturnedStatusName] " +
+              "                                                                                                                                                       from WorkOrderDetailReturn as wodr " +
+              "                                                                                                                                                               join EquipmentStatus as es on wodr.ReturnedStatusId = es.Id " +
+              "                                                                                                                                                       where wodr.WorkOrderDetailId = wod2.Id " +
+              "                                                                                                                                                       for json path, without_array_wrapper)) as [DetailReturn] " +
+              "                                                     from WorkOrder as wo2 join WorkOrderDetail as wod2 on wo2.Id = wod2.WorkOrderID " +
+              "                                                                         join EquipmentItem as ei2 on wod2.EquipmentItemID = ei2.Id " +
+              "                                                     where wo2.Id = @workOrderId and ei2.EquipmentID = e.Id for json path) as [EquipmentItems] " +
+              " from Equipment as e join [Unit] as u on e.UnitID = u.Id " +
+              " where e.Id in (select distinct e.Id " +
+              "                 from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID " +
+              "                 where ei.id in (select wod.EquipmentItemID " +
+              "                                 from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID " +
+              "                                 where wo.Id = @workOrderId)) " +
+              " for json path"
+          )
+          .param("workOrderId", request.params.id, TYPES.Int)
+          .into(response);
+      });
       
   router.get("/status", (request, response) => {
     request.sql("select * from WorkOrderStatus for json path").into(response);
