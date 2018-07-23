@@ -1,24 +1,29 @@
 <template>
     <div class="material-box material-shadow-animate order-block">
         <div class="order-block-title">{{ order.Name }}</div>
-        <div class="order-status-icon">
+        <div class="order-status-icon" style="display: grid; grid-template-row: auto auto; text-align: center">
             <!-- <i class="material-icons">lock_open</i> -->
-            <i class="fa" :class="makeStatusIcon(order)"></i>            
-        </div>
-        <div class="order-block-info">
-            <div style="color: white" :style="`background-color: ${order.PriorityColor}`" class="tag">{{ order.Priority }}</div>
-            <div>#{{ order.Id }}</div>
-            <div>
-                <i class="fa fa-user"></i>
-                {{ authUser.Id == order.RequestUserID ? 'You' : order.RequestUsername }}
+            <div style="margin-top: -.5rem; margin-bottom: 1rem">
+                <i class="fa" :class="makeStatusIcon(order)"></i>
             </div>
-            <div>
-                <i class="fa fa-calendar"></i>
-                {{ getFormatDate(order.CreateDate) }}
+            
+            <div class="order-status" style="font-weight: 500;" :class="statusColor(order)">
+                {{ order.WorkOrderStatus }}            
             </div>
         </div>
-        <div class="order-status" :class="statusColor(order)">
-            {{ order.WorkOrderStatus }}            
+        <div class="order-block-info" style="">
+            <div class="row" style="margin-left: 0; margin-right: 0">
+                <div style="color: white" :style="`background-color: ${order.PriorityColor}`" class="tag">{{ order.Priority }}</div>
+                <div>#{{ order.Id }}</div>
+                <div>
+                    <i class="fa fa-user"></i>
+                    {{ authUser.Id == order.RequestUserID ? 'You' : order.RequestUsername }} ({{ order.Team.Name }})
+                </div>
+                <div>
+                    <i class="fa fa-calendar-plus-o"></i>
+                    {{ getFormatDate(order.CreateDate) }}
+                </div>
+            </div>
         </div>
         <div class="order-block-location">
             <i class="material-icons">location_on</i>
@@ -97,6 +102,9 @@ export default {
         getFormatDate(date) {
             return moment(date).format('L');
         },
+        getFormatDateTime(date) {
+            return moment(date).format('LLL');
+        },
     }
 }
 </script>
@@ -105,7 +113,6 @@ export default {
     .order-block {
         display: grid;
         grid-template-columns: 80% 20%;
-        grid-template-rows: 1 1 1;        
     }
 
     .order-block:hover {
@@ -123,23 +130,12 @@ export default {
     .order-status {
         /* line-height: 2.5rem; */
         font-size: .9rem;
-        display: flex;
-        justify-content: center;
-        align-content: flex-end;
         user-select: none;
     }
 
     .order-status-icon {
         font-size: 1.5rem;
-        display: flex;
-        justify-content: center;
-        align-content: flex-start;
         user-select: none;
-    }
-
-    .order-status-icon i {
-        position: relative;
-        top: .6rem;
     }
 
     /* .order-status i {
@@ -152,7 +148,7 @@ export default {
         grid-row: 2;
         font-size: 14px;
         width: 100%;
-        display: flex;
+        /* display: flex; */
         /* align-content: center; */
         color: #616161;
         margin-bottom: 10px;        
@@ -163,8 +159,8 @@ export default {
     }
 
     .order-block-info div {
-        padding: .1rem .4rem;
-        margin-right: 10px;
+        padding: .1rem 0.1rem;
+        /* margin-right: 10px; */
     }
 
     .order-block-location {
@@ -179,7 +175,7 @@ export default {
     .order-block-location i {
         font-size: 1rem;
         position: relative;
-        top: .1rem;
+        top: .15rem;
     }
 
     .requested {
