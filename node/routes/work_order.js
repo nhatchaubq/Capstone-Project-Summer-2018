@@ -2,9 +2,9 @@ const router = require("express").Router();
 const TYPES = require("tedious").TYPES;
 
 module.exports = function(io) {
-    router.get("/workorderbylocationId/:id", (request, response) => {
+      router.get("/workorderbylocationId/:id", (request, response) => {
         request
-          .sql(      
+          .sql(
             " select distinct wo.*,t.Name as 'Team' ,ws.Name as 'Status',wc.Name as 'Category',(select distinct e.Id,e.Name,e.Image,wd.WorkOrderID,wd.ClosedDate,(select wd.*,ei.SerialNumber,ei.EquipmentID " +
               " from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id								 " +
               " 	where wd.WorkOrderID = wo.Id and ei.EquipmentID = e.Id for json path) as 'EquipmentItems' " +
@@ -19,7 +19,7 @@ module.exports = function(io) {
               " where tl.LocationID = @locationId and(ws.Name = 'In Progress' or ws.Name = 'Closed') " +
               " order by ws.Name desc " +
               "  for json path "
-      
+
             // "exec [GetWorkOrderByLocationId] @locationId"
           )
           .param("locationId", request.params.id, TYPES.Int)
@@ -156,15 +156,15 @@ module.exports = function(io) {
             .into(response);
     });
       
-    router.get("/status", (request, response) => {
+  router.get("/status", (request, response) => {
     request.sql("select * from WorkOrderStatus for json path").into(response);
-    });
-    
-    router.get("/priorities", (request, response) => {
+  });
+
+  router.get("/priorities", (request, response) => {
     request.sql("select * from Priority for json path").into(response);
-    });
-    
-    router.get("/search/:value", (req, res) => {
+  });
+
+  router.get("/search/:value", (req, res) => {
     req
         .sql("exec [dbo].SearchWorkOrder @searchValue")
         .param("searchValue", req.params.value, TYPES.NVarChar)
@@ -315,31 +315,31 @@ module.exports = function(io) {
     // ChauBQN
     // update status of work order
     router.put("/status/:orderId", (req, res) => {
-    req
+      req
         .sql(
-        "declare @currentDate datetime; " +
-            " declare @oldWorkOrderStatusId int; " +
-            " declare @newWorkOrderStatusId int; " +
-            " set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); " +
-            " set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = @newWorkOrderStatusName); " +
-            " set @currentDate = getdate(); " +
-            " update [WorkOrder] set StatusID = @newWorkOrderStatusId where Id = @workOrderId; " +
-            " if @newWorkOrderStatusName = N'In Progress' " +
-            " begin " +
-            "   update WorkOrder set StartDate = @currentDate where Id = @workOrderId; " +
-            " end " +
-            " insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) " +
-            "   values(@workOrderId, @userId, @currentDate, @oldWorkOrderStatusId, @newWorkOrderStatusId, @description);"
-        )
-        .param("workOrderId", req.params.orderId, TYPES.Int)
-        .param("userId", req.body.userId, TYPES.Int)
-        .param("newWorkOrderStatusName", req.body.newStatusName, TYPES.NVarChar)
-        .param("description", req.body.description, TYPES.NVarChar)
-        .done((fn) => {
-            io.sockets.emit('ORDER_STATUS_CHANGED', {noNeedToRefreshWorkOrderUserId: req.body.noNeedToRefreshWorkOrderUserId});
-            res.end();
-        })
-        .exec(res);
+          "declare @currentDate datetime; " +
+              " declare @oldWorkOrderStatusId int; " +
+              " declare @newWorkOrderStatusId int; " +
+              " set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); " +
+              " set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = @newWorkOrderStatusName); " +
+              " set @currentDate = getdate(); " +
+              " update [WorkOrder] set StatusID = @newWorkOrderStatusId where Id = @workOrderId; " +
+              " if @newWorkOrderStatusName = N'In Progress' " +
+              " begin " +
+              "   update WorkOrder set StartDate = @currentDate where Id = @workOrderId; " +
+              " end " +
+              " insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) " +
+              "   values(@workOrderId, @userId, @currentDate, @oldWorkOrderStatusId, @newWorkOrderStatusId, @description);"
+          )
+          .param("workOrderId", req.params.orderId, TYPES.Int)
+          .param("userId", req.body.userId, TYPES.Int)
+          .param("newWorkOrderStatusName", req.body.newStatusName, TYPES.NVarChar)
+          .param("description", req.body.description, TYPES.NVarChar)
+          .done((fn) => {
+              io.sockets.emit('ORDER_STATUS_CHANGED', {noNeedToRefreshWorkOrderUserId: req.body.noNeedToRefreshWorkOrderUserId});
+              res.end();
+          })
+          .exec(res);
     });
     
     // ChauBQN
@@ -365,6 +365,5 @@ module.exports = function(io) {
             .exec(res);
     })
 
-
-    return router;      
-}
+  return router;
+};

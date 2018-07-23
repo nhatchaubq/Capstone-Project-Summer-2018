@@ -334,6 +334,38 @@ export default {
     OrderBlock,
     DoughnutChart
   },
+  data() {
+    return {
+      Dashboard: null,
+      pieChartData: {
+        labels: [],
+        values: []
+      },
+      doughnutChartData: {
+        TodayLabels: [],
+        TodayData: []
+      },
+      lineChartData: {
+        workingLabel: "",
+        maintainLabel: "",
+        monthLabels: [],
+        monthData: {
+          working: [],
+          maintain: []
+        }
+      },
+
+      //cate start
+
+      categories: [],
+      tmpCategory: null,
+      //cate end
+      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
+      workOrdersMaintainTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
+      workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
+      workOrdersWokingTomorrow: [] // orders data to display in orderblocks <order-block></order-block>
+    };
+  },
   created() {
     let URL = Server.DASHBOARD_API_PATH;
     this.axios.get(URL).then(res => {
@@ -342,26 +374,28 @@ export default {
         let data = res.data;
         this.Dashboard = data.Dashboard;
         this.pieChartData.labels.push(data.PieChartData.Availble.Name);
-        this.pieChartData.labels.push(data.PieChartData.WokingRequesting.Name);
-        this.pieChartData.labels.push(
-          data.PieChartData.MaintainanceRequesting.Name
-        );
+        this.pieChartData.labels.push(data.PieChartData.WokingApproved.Name);
         this.pieChartData.labels.push(data.PieChartData.Working.Name);
         this.pieChartData.labels.push(data.PieChartData.Damaged.Name);
+        this.pieChartData.labels.push(
+          data.PieChartData.MaintainanceApproved.Name
+        );
         this.pieChartData.labels.push(data.PieChartData.Maintaining.Name);
         this.pieChartData.labels.push(data.PieChartData.Lost.Name);
+        this.pieChartData.labels.push(data.PieChartData.Archived.Name);
 
         this.pieChartData.values.push(data.PieChartData.Availble.Quantity);
         this.pieChartData.values.push(
-          data.PieChartData.WokingRequesting.Quantity
-        );
-        this.pieChartData.values.push(
-          data.PieChartData.MaintainanceRequesting.Quantity
+          data.PieChartData.WorkingApproved.Quantity
         );
         this.pieChartData.values.push(data.PieChartData.Working.Quantity);
         this.pieChartData.values.push(data.PieChartData.Damaged.Quantity);
+        this.pieChartData.values.push(
+          data.PieChartData.MaintainanceApproved.Quantity
+        );
         this.pieChartData.values.push(data.PieChartData.Maintaining.Quantity);
         this.pieChartData.values.push(data.PieChartData.Lost.Quantity);
+        this.pieChartData.values.push(data.PieChartData.Archived.Quantity);
 
         // line chart data - start
         this.lineChartData.workingLabel = data.LineChart.WorkingName;
@@ -491,38 +525,7 @@ export default {
         console.log(error);
       });
   },
-  data() {
-    return {
-      Dashboard: null,
-      pieChartData: {
-        labels: [],
-        values: []
-      },
-      doughnutChartData: {
-        TodayLabels: [],
-        TodayData: []
-      },
-      lineChartData: {
-        workingLabel: "",
-        maintainLabel: "",
-        monthLabels: [],
-        monthData: {
-          working: [],
-          maintain: []
-        }
-      },
 
-      //cate start
-
-      categories: [],
-      tmpCategory: null,
-      //cate end
-      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
-      workOrdersMaintainTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
-      workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
-      workOrdersWokingTomorrow: [] // orders data to display in orderblocks <order-block></order-block>
-    };
-  },
   methods: {
     getDate(date) {
       return moment(date).format("L");
