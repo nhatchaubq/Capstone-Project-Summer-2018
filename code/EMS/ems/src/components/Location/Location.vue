@@ -213,13 +213,14 @@
               <i class="fa fa-calendar" style="color:gray;"></i> Start Date: 
             </div>
             <div class="info-content">
-              {{getFormatDate(selectedWorkorder.CreateDate)}}
+              {{getFormatDate(selectedWorkorder.StartDate)}}
             </div>
             <div class="info-title">
                <i class="fa fa-calendar" style="color:gray;"></i> Due Date: 
             </div>
             <div class="info-content">
-               {{getFormatDate(selectedWorkorder.DueDate)}}
+               {{getFormatDate(selectedWorkorder.ExpectingStartDate)}} - 
+               {{getFormatDate(selectedWorkorder.ExpectingCloseDate)}}
             </div>
           </div>
           
