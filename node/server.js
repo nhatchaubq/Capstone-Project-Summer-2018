@@ -1,4 +1,4 @@
-var app = require('express')();
+var app = require("express")();
 const bodyParser = require("body-parser");
 const tediousExpress = require("express4-tedious");
 const cors = require("cors");
@@ -17,7 +17,7 @@ var connection = {
   server: "localhost",
   userName: "sa",
 
-  password: "cCS94@bcnq836894",
+  password: "123456",
 
   port: "1433",
   options: {
@@ -30,7 +30,7 @@ var connection = {
 
 app.use(bodyParser.json());
 
-app.use(function (request, respones, next) {
+app.use(function(request, respones, next) {
   request.sql = tediousExpress(connection);
   // respones.header('Access-Control-Allow-Origin', '*');
   // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -41,7 +41,7 @@ var server = app.listen(3000, () => {
   console.log("listening on port 3000");
 });
 
-var io = require('socket.io')(server);
+var io = require("socket.io")(server);
 
 // server.use(bodyParser.text());
 app.use(bodyParser.json());
@@ -50,26 +50,23 @@ app.use("/api/account", require("./routes/account"));
 app.use("/api/account/id", require("./routes/accountDetail"));
 app.use("/api/equipment", require("./routes/equipment"));
 app.use("/api/EquipmentCategory", require("./routes/EquipmentCategory"));
-app.use(
-  "/api/equipmentItemHistory",
-  require("./routes/equipmentItemHistory")
-);
+app.use("/api/equipmentItemHistory", require("./routes/equipmentItemHistory"));
 app.use("/api/Vendor", require("./routes/vendor"));
 app.use("/api/work_order", require("./routes/work_order")(io));
 app.use("/api/location", require("./routes/location"));
 app.use("/api/EquipmentStatus", require("./routes/EquipmentStatus"));
 app.use("/api/role", require("./routes/accountRole"));
-app.use(
-  "/api/AllAccExceptThatTeam",
-  require("./routes/AllAccExceptThatTeam")
-);
+app.use("/api/AllAccExceptThatTeam", require("./routes/AllAccExceptThatTeam"));
 app.use("/api/team", require("./routes/team"));
 app.use("/api/equipmentItem", require("./routes/equipmentItem"));
 app.use("/api/team_location", require("./routes/team_location"));
 app.use("/api/team_account", require("./routes/team_account"));
 app.use("/api/team/id", require("./routes/teamDetails"));
 app.use("/api/dashboard", require("./routes/dashBoard"));
-app.use("/api/allaccwithout", require("./routes/AllAccWithoutMaintainerAndAdmin"));
+app.use(
+  "/api/allaccwithout",
+  require("./routes/AllAccWithoutMaintainerAndAdmin")
+);
 
 app.use("/api/report", require("./routes/report"));
 app.use("/api/block", require("./routes/block"));
@@ -84,7 +81,7 @@ app.use("/api/notification", require("./routes/notification")(io));
 // app.use('/api/account/delete/id', require('./routes/'));
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   var err = new Error("Not Found: " + req.method + ":" + req.originalUrl);
   err.status = 404;
   next(err);
