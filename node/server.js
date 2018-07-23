@@ -73,7 +73,7 @@ app.use("/api/block", require("./routes/block"));
 app.use("/api/floor", require("./routes/floor"));
 app.use("/api/tile", require("./routes/tile"));
 app.use("/api/unit", require("./routes/unit"));
-server.use("/api/maintenanceDuration", require("./routes/maintenanceDuration"));
+app.use("/api/maintenanceDuration", require("./routes/maintenanceDuration"));
 app.use("/api/notification", require("./routes/notification")(io));
 
 // app.use('/api/account/edit/id', require('./routes/account'));
