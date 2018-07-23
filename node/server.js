@@ -62,7 +62,7 @@ server.use("/api/block", require("./routes/block"));
 server.use("/api/floor", require("./routes/floor"));
 server.use("/api/tile", require("./routes/tile"));
 server.use("/api/unit", require("./routes/unit"));
-
+server.use("/api/maintenanceDuration", require("./routes/maintenanceDuration"));
 // server.use('/api/account/edit/id', require('./routes/account'));
 // server.use('/api/account', require('./routes/account'));
 // server.use('/api/account/delete/id', require('./routes/'));
