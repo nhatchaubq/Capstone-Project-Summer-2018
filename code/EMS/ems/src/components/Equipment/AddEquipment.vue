@@ -51,7 +51,7 @@
                   <input type="text" class="input" placeholder="EquipmentName" v-model="form.EquipmentName" >
                 </div>
             </div>
-            <div class="field" style="margin-left: 3rem; margin-top: 0.9rem; margin-right: 2rem; display: grid; grid-template-columns: 33% 33% 33%">
+            <div class="field" style="margin-left: 3rem; margin-top: 0.9rem; margin-right: 2rem; display: grid; grid-template-columns: 50% 50%">
                 <div class="">
                     <div class="form-field-title" >
                        <span><strong> Category (required) </strong></span>
@@ -92,6 +92,30 @@
                     </div>
                     </div>
                 </div>
+                </div>                  
+            </div>   
+
+            <div class="field" style="margin-left: 3rem; margin-top: 0.9rem; margin-right: 2rem; display: grid; grid-template-columns: 50% 50%">
+                <div class="">
+                    <div class="form-field-title" >
+                       <span><strong> Maintenance Duration(Months) (required) </strong></span>
+                      <span v-if="CreateEquipmentErrors.NoMaintenanceDuration != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoMaintenanceDuration }}</span></span>
+                    </div>
+                    <div class="field is-horizontal" style="">
+                        <model-select style="width: 100% !important" :options="maintenanceDurationOptions" v-model="form.MaintenanceDuration" placeholder="Select maintenance duration"></model-select>  
+                        <button class="btn-new" style="margin: 0rem 0.3rem" v-on:click= "showingAddMaintenanceDuration = true"><i class="fa fa-plus"></i></button>
+                    </div>
+                    <div class="" v-show = "showingAddMaintenanceDuration" style="margin-right:2rem">
+                        <div class="form-field-title">
+                        <span><strong> Duration (required) </strong></span> 
+                        </div>
+                        <div class="field is-horizontal" >
+                            <input type="number" class="input" placeholder="Duration (month)" v-model="newDuration">
+                            <button class="button is-rounded is-primary" style="margin-left: .6rem" v-on:click="createNewMaintenanceDuration">Add</button>
+                            <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddMaintenanceDuration = false">Cancel</button>
+                        </div>
+                    </div>
+                </div>
                  <div class="" style="">
                     <div class="form-field-title" >
                        <span><strong> Unit (required) </strong></span>
@@ -112,7 +136,8 @@
                         </div>
                     </div>
                 </div>                  
-            </div>    
+            </div>  
+
             <div class="form-field">
                 <div class="form-field-title">
                   <span><strong>  Made In </strong></span>
@@ -280,6 +305,21 @@ export default {
         alert(error);
       });
     this.axios
+      .get("http://localhost:3000/api/maintenanceDuration")
+      .then(response => {
+        let data = response.data;
+        data.forEach(maintenanceDuration => {
+          let option = {
+            text: maintenanceDuration.Months,
+            value: maintenanceDuration.Id
+          };
+          this.maintenanceDurationOptions.push(option);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
+    this.axios
       .get("http://localhost:3000/api/equipment")
       .then(response => {
         let data = response.data;
@@ -304,6 +344,7 @@ export default {
         NoCategory: "",
         NoVendor: "",
         NoUnit: "", 
+        NoMaintenanceDuration: "",
       },
       ErrorStrings:{
         NoImage: 'You must choose an image',
@@ -311,13 +352,15 @@ export default {
         NameLength: "The length of name must be more than 5 characters",
         NoCategory: 'Please choose a category',
         NoVendor: 'Please choose a vendor',
-        NoUnit: 'Please choose a unit'
+        NoUnit: 'Please choose a unit',
+        NoMaintenanceDuration: 'Please choose maintenance duration'
       },
       form: {
         EquipmentName: "",
         Category: "",
         Vendor: "",
         Unit: "",
+        MaintenanceDuration: "",
         MadeIn: "",
         Description: "",
         Price: 500000,
@@ -355,18 +398,25 @@ export default {
         text: "",
         value: ""
       },
+      selectedDuration: {
+        text: "",
+        value: ""
+      },
       byName:"",
       imageUrl: "",
       newCategory: "",
       newVendor: "",
       newUnit:"",
+      newDuration: "",
       showingAddCategory: false,
       showingAddVendor: false,
       showingAddUnit: false,
+      showingAddMaintenanceDuration: false,
       showingBarcode: false,
       unitOptions: [],
       categoryOptions: [],
       vendorOptions: [],
+      maintenanceDurationOptions: [],
       equipmentOptions: [],
       files: [],
       randomNumbers: [],
@@ -482,6 +532,25 @@ export default {
         });
       }
     },
+    createNewMaintenanceDuration(){
+      if (this.newDuration == "" || this.newDuration < 3){
+        alert('Maintenance duration must be bigger than 3 months');
+      }else{
+        this.axios
+        .post("http://localhost:3000/api/maintenanceDuration", {
+          month: this.newDuration
+        })
+        .then(function(respone) {
+          // console.log(respone);
+          location.reload();
+          alert("Add new Maintenance Duration successfully");
+          this.created();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      }
+    },
     async createNewEquipment() {
       // this.checkExistEquipment();
       // if (this.validateExistEquipment) {
@@ -505,6 +574,9 @@ export default {
       }
       if(this.form.Unit === ''){
         this.CreateEquipmentErrors.NoUnit = this.ErrorStrings.NoUnit;
+      }
+      if(this.form.Unit === ''){
+        this.CreateEquipmentErrors.NoMaintenanceDuration = this.ErrorStrings.NoMaintenanceDuration;
       }
       if(this.files[0] && this.files[0].name){
         this.CreateEquipmentErrors.NoImage = '';
@@ -534,7 +606,8 @@ export default {
           this.CreateEquipmentErrors.NoName === '' &&
           this.CreateEquipmentErrors.NoCategory === '' &&
           this.CreateEquipmentErrors.NoVendor === '' &&
-          this.CreateEquipmentErrors.NoUnit === ''
+          this.CreateEquipmentErrors.NoUnit === '' &&
+          this.CreateEquipmentErrors.NoMaintenanceDuration ===''
       ){
            context.axios
           .post("http://localhost:3000/api/equipment", {
@@ -544,7 +617,8 @@ export default {
             madein: context.form.MadeIn,
             description: context.form.Description,
             categoryID: context.form.Category,
-            unitID: context.form.Unit
+            unitID: context.form.Unit,
+            maintenanceDurationID : context.form.MaintenanceDuration
           })
           .then(function(respone) {
             // console.log(respone);
@@ -670,6 +744,11 @@ export default {
     'form.Unit': function() {
       if (this.form.Unit != '' && this.CreateEquipmentErrors.NoUnit != '') {
         this.CreateEquipmentErrors.NoUnit = '';
+      }
+    },
+    'form.MaintenanceDuration': function(){
+      if (this.form.MaintenanceDuration != '' && this.CreateEquipmentErrors.NoMaintenanceDuration != '') {
+        this.CreateEquipmentErrors.NoMaintenanceDuration = '';
       }
     },
     'files':function(){
