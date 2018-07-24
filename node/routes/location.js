@@ -5,18 +5,25 @@ router.get("/", (request, response) => {
   request
     .sql(
       "Select * From [Location] as l order by IsActive desc,Name asc " +
-        "for json path"
+      "for json path"
     )
     .into(response);
 });
-
+router.get("/warehouse", (request, response) => {
+  request
+    .sql(
+      "Select * From [Location] as loca where loca.Name like '%Kho%' " +
+      "for json path"
+    )
+    .into(response);
+});
 router.delete("/deleteTeamWithoutWO/:id", (req, res) => {
   req
     .sql(
       "delete from TeamLocation where LocationID = @locationId and TeamID not in( " +
-        "select distinct tl.TeamID " +
-        "from TeamLocation as tl join WorkOrder as wo on tl.Id = wo.TeamLocationID " +
-        "where tl.LocationID = @locationId)"
+      "select distinct tl.TeamID " +
+      "from TeamLocation as tl join WorkOrder as wo on tl.Id = wo.TeamLocationID " +
+      "where tl.LocationID = @locationId)"
     )
     .param("locationId", req.params.id, TYPES.Int)
     .exec(res);
@@ -26,7 +33,7 @@ router.put("/updateLocation", (req, res) => {
   req
     .sql(
       "Update [Location] set Name = @name,Address = @address,Description = @description,IsActive = @isActive " +
-        "where Id = @locationId"
+      "where Id = @locationId"
     )
 
     .param("locationId", req.body.newLocation.id, TYPES.Int)
@@ -51,18 +58,18 @@ router.get("/floor_block_tile", (req, res) => {
   req
     .sql(
       "select lo.*, (select bl.*, (select fl.*, (select ti.* " +
-        "                                             from Tile as ti " +
-        "                                             where ti.FloorID = fl.Id " +
-        "                                             for json path) as [Tiles] " +
-        "                               from [Floor] as fl " +
-        "                               where fl.BlockID = bl.Id " +
-        "                               for json path) as [Floors] " +
-        "                 from [Block] as bl " +
-        "                 where bl.LocationID = lo.Id " +
-        "                 for json path) as [Blocks] " +
-        " from [Location] as lo " +
-        " where lo.IsActive = 1 " +
-        " for json path"
+      "                                             from Tile as ti " +
+      "                                             where ti.FloorID = fl.Id " +
+      "                                             for json path) as [Tiles] " +
+      "                               from [Floor] as fl " +
+      "                               where fl.BlockID = bl.Id " +
+      "                               for json path) as [Floors] " +
+      "                 from [Block] as bl " +
+      "                 where bl.LocationID = lo.Id " +
+      "                 for json path) as [Blocks] " +
+      " from [Location] as lo " +
+      " where lo.IsActive = 1 " +
+      " for json path"
     )
     .into(res);
 });
@@ -73,18 +80,18 @@ router.get("/floor_block_tile/:locationId", (req, res) => {
   req
     .sql(
       "select lo.*, (select bl.*, (select fl.*, (select ti.* " +
-        "      from Tile as ti " +
-        "       where ti.FloorID = fl.Id " +
-        "       for json path) as [Tiles] " +
-        " from [Floor] as fl " +
-        " where fl.BlockID = bl.Id " +
-        " for json path) as [Floors] " +
-        " from [Block] as bl " +
-        " where bl.LocationID = @locationId " +
-        " for json path) as [Blocks] " +
-        " from [Location] as lo " +
-        " where lo.Id = @locationId and lo.IsActive = 1 " +
-        " for json path, without_array_wrapper"
+      "      from Tile as ti " +
+      "       where ti.FloorID = fl.Id " +
+      "       for json path) as [Tiles] " +
+      " from [Floor] as fl " +
+      " where fl.BlockID = bl.Id " +
+      " for json path) as [Floors] " +
+      " from [Block] as bl " +
+      " where bl.LocationID = @locationId " +
+      " for json path) as [Blocks] " +
+      " from [Location] as lo " +
+      " where lo.Id = @locationId and lo.IsActive = 1 " +
+      " for json path, without_array_wrapper"
     )
     .param("locationId", req.params.locationId, TYPES.Int)
     .into(res);
@@ -103,8 +110,8 @@ router.post("/create", (request, response) => {
   request
     .sql(
       "insert into [Location]([Name],[Address],[Description],Longitude,Latitude,IsActive) " +
-        "values(@name, @address, @description, @longtitude, @latitude,@isActive) " +
-        "select(select SCOPE_IDENTITY()) as [NewLocationId] for json path, without_array_wrapper"
+      "values(@name, @address, @description, @longtitude, @latitude,@isActive) " +
+      "select(select SCOPE_IDENTITY()) as [NewLocationId] for json path, without_array_wrapper"
     )
     .param("name", request.body.newLocation.name, TYPES.NVarChar)
     .param("address", request.body.newLocation.address, TYPES.NVarChar)
@@ -144,9 +151,9 @@ router.get("/:id/team/:userId", (req, res) => {
   req
     .sql(
       "select (json_query((select * from Team where Id = tl.TeamID for json path, without_array_wrapper))) as [Team] " +
-        " from TeamLocation as tl join Team as t on tl.TeamID = t.Id join TeamAccount as ta on t.Id = ta.TeamID " +
-        " where tl.LocationID = @locationId and ta.TeamRoleID = (select Id from TeamRoles where TeamRole = N'Leader') and ta.AccountID = @userId " +
-        " for json path"
+      " from TeamLocation as tl join Team as t on tl.TeamID = t.Id join TeamAccount as ta on t.Id = ta.TeamID " +
+      " where tl.LocationID = @locationId and ta.TeamRoleID = (select Id from TeamRoles where TeamRole = N'Leader') and ta.AccountID = @userId " +
+      " for json path"
     )
     .param("locationId", req.params.id, TYPES.Int)
     .param("userId", req.params.userId, TYPES.Int)
