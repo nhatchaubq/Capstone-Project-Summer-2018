@@ -10,8 +10,22 @@
       There is no equipment yet.
     </div>
     <div v-else>
-      <equipment-table :equipments="equipments" v-if="isTableMode"></equipment-table>
+      <equipment-table :equipments="toDisplayData" v-if="isTableMode"></equipment-table>
       <!-- <equipment-card :equipments="equipments" v-else></equipment-card> -->
+
+      <!-- test1 -->
+  <div v-if="equipments.length >9" class="pageNa">
+    <Page :current="1" :total="equipments.length" show-elevator 
+      @on-change="(newPageNumber) => {
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayData = equipments.slice(start, end);
+      }">
+    </Page>
+  </div>  
+<!-- test1-end -->
+
     </div>
 
     <router-link to='/equipment/create/'>
@@ -29,7 +43,7 @@ import EquipmentTable from "./EquipmentTable";
 
 export default {
   components: {
-    EquipmentTable,
+    EquipmentTable
     // EquipmentCard
   },
   created() {
@@ -42,6 +56,7 @@ export default {
         data.forEach(element => {
           let equipment = element.Equipment;
           this.equipments.push(equipment);
+          this.toDisplayData = this.equipments.slice(0, 10);
         });
       })
       .catch(error => {
@@ -54,6 +69,7 @@ export default {
   data() {
     return {
       equipments: [],
+      toDisplayData: [],
       selectedEquipment: null
     };
   },
@@ -81,7 +97,7 @@ export default {
 #btn-add-equipment {
   position: fixed;
   right: 3rem;
-  bottom: 2rem;
+  bottom: 0.5rem;
   /* background-color: var(--primary-color); */
   /* padding: 13px; */
   color: white;
@@ -131,5 +147,10 @@ export default {
   padding: 0.3rem 1rem;
   /* box-shadow: 3px 3px 5px #bdbdbd;
       margin: 2rem 5rem; */
+}
+.pageNa {
+  position: fixed;
+  left: 17rem;
+  bottom: 0.5rem;
 }
 </style>
