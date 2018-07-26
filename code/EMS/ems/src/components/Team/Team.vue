@@ -3,7 +3,7 @@
     There is no team yet.
   </div>
   <div v-else>
-    <div class="field is-grouped view-mode">
+    <div class="field is-grouped view-mode" style="margin-bottom:0.2rem">
       <router-link to='/account/'>  
         <button class="btn-view-mode-left" style="margin-right: 0rem !important" >Account view</button>
       </router-link>
@@ -11,6 +11,31 @@
         <button class="btn-view-mode-right" disabled="disabled">Team view</button>
       </router-link>
     </div>
+    <!-- <table class="mytable">
+          <thead>
+            <tr>
+                <th><strong>#</strong></th>
+                <th><strong>Team name</strong></th>
+                <th><strong>Leader </strong></th>
+                <th><strong>Members </strong></th>
+                <th><strong>Create date </strong></th>
+            </tr>
+        </thead>  
+        <tbody>
+            <tr v-bind:key="team.Id" v-for="(team, index) in teams" v-on:click="gotoDetail(team.Id)">
+              <td>{{ index + 1 }}</td>   
+              <td>{{team.Name}}</td>
+                <td>{{ team.TeamLeader ? team.TeamLeader.Username : 'n/a'}}</td>
+              <td>{{team.Members.Quantity}}</td>
+              <td>{{getDate(team.CreatedDate)}}</td>
+
+            </tr>
+        </tbody>
+    </table> -->
+
+
+<!-- test1 -->
+
     <table class="mytable">
           <thead>
             <tr>
@@ -29,9 +54,9 @@
             </tr>
         </thead>  
         <tbody>
-            <tr v-bind:key="team.Id" v-for="(team, index) in teams" v-on:click="gotoDetail(team.Id)">
+            <tr v-bind:key="team.Id" v-for="(team, index) in toDisplayData" v-on:click="gotoDetail(team.Id)">
               <!-- <td>{{team.Id}}</td>     -->
-              <td>{{ index + 1 }}</td>   
+              <td>{{ index + 1}}</td>   
               <td>{{team.Name}}</td>
               <!-- <router-link :to="`/account/${team.TeamLeader.Id}`">   -->
                 <td>{{ team.TeamLeader ? team.TeamLeader.Username : 'n/a'}}</td>
@@ -42,6 +67,21 @@
             </tr>
         </tbody>
     </table>
+  <div v-if="teams.length >9" class="pageNa">
+    <Page :current="1" :total="teams.length" show-elevator 
+      @on-change="(newPageNumber) => {
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayData = teams.slice(start, end);
+      }">
+    </Page>
+  </div>  
+<!-- test1-end -->
+
+
+
+
     <button v-on:click="$router.push('/team/add')" id="btn-add-account" class=" button btn-primary material-shadow-animate">Add Team</button>
 
 
@@ -63,12 +103,14 @@ export default {
       data.forEach(element => {
         let team = element.Team;
         this.teams.push(team);
+        this.toDisplayData = this.teams.slice(0, 10);
       });
     });
   },
   data() {
     return {
-      teams: []
+      teams: [],
+      toDisplayData: []
     };
   },
   methods: {
@@ -176,6 +218,7 @@ td:hover {
   background-color: var(--primary-color);
   color: white;
 }
+
 th {
   text-align: left;
   background-color: #cfd8dc;
@@ -183,14 +226,12 @@ th {
   line-height: 30px;
   padding: 0.5rem !important;
 }
+
 td {
   vertical-align: middle;
   height: 40px;
   line-height: 25px;
   padding: 0.5rem;
-}
-td:hover {
-  cursor: pointer;
 }
 
 tr:nth-child(odd) {
@@ -212,6 +253,9 @@ tr:nth-child(even) {
 tr:hover {
   background-color: #eceff1;
 }
+td:hover {
+  cursor: pointer;
+}
 
 .txtText {
   text-align: left;
@@ -231,5 +275,10 @@ table {
   font-size: 15px;
 
   /* text-align: right; */
+}
+.pageNa {
+  position: fixed;
+  left: 17rem;
+  bottom: 0.5rem;
 }
 </style>
