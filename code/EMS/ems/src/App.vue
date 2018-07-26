@@ -21,7 +21,18 @@ import Login from "./components/Login/Login";
 import Sidebar from "./components/Sidebar/Sidebar.vue";
 import HeaderBar from "./components/HeaderBar/HeaderBar";
 
-import Server from '@/config/config';
+import Server from "@/config/config";
+
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue/dist/bootstrap-vue.esm";
+
+// Import the styles directly. (Or you could add them via script tags.)
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+
+Vue.use(BootstrapVue);
+var VueTruncate = require("vue-truncate-filter");
+Vue.use(VueTruncate);
 
 export default {
   name: "app",
@@ -33,7 +44,7 @@ export default {
   computed: {
     isLoggedIn: sync("isLoggedIn"),
     authUser() {
-      return JSON.parse(window.localStorage.getItem('user'));
+      return JSON.parse(window.localStorage.getItem("user"));
     }
   },
   created() {
@@ -42,10 +53,14 @@ export default {
   sockets: {
     NEW_NOTIFICATION: function(data) {
       if (data.needToUpdateNotification) {
-        if ((data.needToUpdateNotification.roles && data.needToUpdateNotification.roles.includes(this.authUser.Role))
-            || (data.needToUpdateNotification.userIds && data.needToUpdateNotification.userIds.includes(this.authUser.Id))) {
-              this.getNotifications();
-            }
+        if (
+          (data.needToUpdateNotification.roles &&
+            data.needToUpdateNotification.roles.includes(this.authUser.Role)) ||
+          (data.needToUpdateNotification.userIds &&
+            data.needToUpdateNotification.userIds.includes(this.authUser.Id))
+        ) {
+          this.getNotifications();
+        }
       }
     }
   },
@@ -55,8 +70,9 @@ export default {
   methods: {
     getNotifications() {
       let url = `${Server.NOTIFICATION_API_PATH}/top50/${this.authUser.Id}`;
-      this.axios.get(url)
-        .then((res) => {
+      this.axios
+        .get(url)
+        .then(res => {
           if (res.status == 200) {
             let notifications = [];
             res.data.forEach(value => {
@@ -67,14 +83,15 @@ export default {
                 TimeString: null,
                 Status: value.Status,
                 Metadata: value.Metadata
-              }
+              };
               notifications.push(noti);
             });
             this.$store.state.notifications = notifications;
           }
-        }).catch((error) => {
-          console.log(error);
         })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };
@@ -90,7 +107,7 @@ export default {
   --dark-background: #263238;
   --success-color: #00c853;
   --danger-color: #ef5350;
-  --cancel-color: #FFAB91;
+  --cancel-color: #ffab91;
 
   --warning-color: #ffc107;
   --strong-warning-color: #ff7b07;
@@ -122,7 +139,7 @@ body {
   width: 100%;
   height: 100%;
   font-size: 1rem !important;
-  background-color: #616161 !important;  
+  background-color: #616161 !important;
 }
 
 a {
