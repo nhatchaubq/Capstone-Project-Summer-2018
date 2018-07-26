@@ -81,15 +81,17 @@
       {{ team.Name }}
     </span>
   </div> -->
-  
-<Page :current="1" :total="teamAccount.length" show-elevator show-sizer 
-  @on-change="(newPageNumber) => {
-    let start = 10 * (newPageNumber - 1);
-    let end = start + 10;
-    
-    toDisplayData = teamAccount.slice(start, end);
-  }">
-</Page>
+  <div v-if="teamAccount.length >9">
+    <Page :current="1" :total="teamAccount.length" show-elevator show-sizer 
+      @on-change="(newPageNumber) => {
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayData = teamAccount.slice(start, end);
+      }">
+    </Page>
+  </div>    
+
   </div>
 </div>
 </div>            
