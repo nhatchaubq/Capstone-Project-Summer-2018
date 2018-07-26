@@ -8,6 +8,7 @@
     <div>
         <!-- <h1>{{this.EquimentByID.Name}}</h1> -->
         <div class="field" style=" display: grid; grid-template-columns: 45% 55%; width: 100;">
+           <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
             <div class="left" style="padding-top:0.5rem; padding-left:1rem ">
                 <img :src= "this.EquimentByID.Image" style="width: 400px; height: 350px; ">
             </div>
@@ -85,7 +86,7 @@
                   <div class="" style="margin-top:0.5rem" >
                       Schedule:  <span v-if="editMode" style="color:red; font-size:18px">*</span>
                   </div>
-                  <div class="is-horizontal" v-if="!editMode" style="height:36px; display: grid;grid-template-columns: 30% 70%;">
+                  <div class="is-horizontal" v-if="!editMode" style="height:36px; display: grid;grid-template-columns: 38% 60%;">
                     <input  v-model="EquimentByID.MaintenanceDuration.Months" class="input col-7 " type="text" disabled="disabled"> 
                     <label style=" margin-top: 0.75rem;margin-left: 0.2rem;padding-left:1rem">months/time maintenance</label>
                   </div>
@@ -168,7 +169,8 @@
               </tbody>
           </table>
         </div>
-        <modal v-model="addPopUp" >
+        <modal v-model="addPopUp" :maskClosable="false">
+          <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert>
           <div slot="header">
             <h3 style="paddingbtn- Add-top:0.5rem; text-transform: uppercase;  font-size: 20px; color: #26a69a">Add Items</h3>
           </div>
@@ -243,6 +245,7 @@
             </div>
           </div>          
           <div slot="footer">
+            <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
             <div class="" style="align-items: center; display: flex; justify-content: center;">
               <button class="btn-CancelItem" v-on:click="addPopUp = false">Cancel</button>
               <button id="" class="button is-rounded is-primary" style="border-radius: 8px" v-on:click="createNewEquipentItem">Create New Items</button>  
@@ -257,9 +260,10 @@
           <!-- <equipment-detail-popup :equipment="selectedItem" class="" v-show="selectedItem != null"></equipment-detail-popup> -->
       <modal v-model="detailPopUp" >
          <div v-if="selectedItem!=null" > 
+           <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
           <div slot="header">
               <div class="field" style=" display: grid; grid-template-columns: 10% 75% 10%">
-                <i class="material-icons" style="font-size: 2rem;">clear_all</i>
+                <i class="material-icons" style="font-size: 1.75rem;color:gray;padding-top: 0.4rem;padding-left: 0.4rem">forumbee</i>
                 <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong>
                 <div class="" v-if="currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation)">
                   <div class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button></div>  
@@ -359,7 +363,7 @@
                       <div class="" style="margin-top:0.5rem;" >
                         Status:  
                       </div>
-                      <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert>
+                      
                       <!-- <div class="" v-if="!editItemMode" ><input v-model="selectedItem.Item.Status" class="input col-7 " type="text" disabled="disabled"></div> -->
                       <div class="" v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.2rem">
                         <select  class=""   v-model="selectedItem.Item.StatusID" disabled="disabled">
@@ -765,7 +769,7 @@ export default {
       .catch(error => {
         alert(error);
       });
-    
+
     this.axios
       .get("http://localhost:3000/api/EquipmentCategory")
       .then(response => {
@@ -829,6 +833,18 @@ export default {
         let data = response.data;
         data.forEach(status => {
           this.statusOptions.push(status);
+          // alert(this.statusOptions.length);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
+      this.axios
+      .get("http://localhost:3000/api/equipmentItem/allserialnumber")
+      .then(response => {
+        let data = response.data;
+        data.forEach(serialnumber => {
+          this.serialNumbers.push(serialnumber);
           // alert(this.statusOptions.length);
         });
       })
@@ -920,6 +936,7 @@ export default {
       statusHistories: [],
       allworkorder: [],
       tiles: [],
+      serialNumbers: [],
       oldstt: "",
       currentsttName: "",
       currentsttId: "",
@@ -966,8 +983,8 @@ export default {
         text: "",
         value: ""
       },
-      warehouseOptions:[],
-      maintenanceDurationOptions:[],
+      warehouseOptions: [],
+      maintenanceDurationOptions: [],
       form: {
         warrantyDuration: 1,
         price: 50000,
@@ -1050,7 +1067,7 @@ export default {
       this.cancelUpdatePosition();
       this.cancelUpdateItem();
     },
-    cancelPositionEQTLost(){
+    cancelPositionEQTLost() {
       this.changePositonLost = false;
     },
     setViewMode(mode) {
@@ -1115,10 +1132,16 @@ export default {
             result = false;
           }
         });
-        await Utils.sleep(500);
-
+        await Utils.sleep(600);
         if (result) {
-          alert("Add " + this.quantity + " item(s) successfully!");
+         let obj = {
+              message: "Create new "+ this.quantity+ " item(s) successfully",
+              type: "success",
+              hideAllButton: true,
+              showXclose: false,
+            };
+            this.$refs.simplert.openSimplert(obj);
+          await Utils.sleep(1500);
           location.reload();
         } else {
           alert("Add failed");
@@ -1128,10 +1151,18 @@ export default {
     getRandomNumber() {
       if (this.form.Category == "") {
         alert("Please choose category");
-      } else if (this.quantity === "" || this.quantity < 1) {
-        alert("Quantity must be bigger than 0");
-      }else if(this.quantity > 50){
-        alert("Quantity must be smaller than 50");
+      } else if (this.quantity === "") {
+        let obj = {
+          message: "You must enter quantity",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      } else if (this.quantity < 1 || this.quantity > 50) {
+        let obj = {
+          message: "Quantity must be from 1 to 50",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else {
         this.randomNumbers = [];
         for (var i = 0; i < this.quantity; i++) {
@@ -1154,14 +1185,24 @@ export default {
           } else {
             number = this.EquimentByID.CategoryId;
           }
+          var exist = 0
           number = number + Math.floor(Math.random() * 900000000 + 100000000);
-          this.randomNumbers.push(number);
+          for(var j = 0; j<this.serialNumbers.length; j++){
+            if (number == this.serialNumbers[i]){
+              exist = exist + 1;
+            }
+          }
+          if(exist == 0){
+            this.randomNumbers.push(number);
+          }else{
+            i = i-1;
+          }
+          
         }
         this.showingBarcode = true;
       }
     },
     setSelectedItem(itemId) {
-     
       this.axios
         .get("http://localhost:3000/api/equipmentItem/sttItem/" + itemId)
         .then(response => {
@@ -1192,8 +1233,12 @@ export default {
                 this.lastWorkedDate = "";
                 this.downtime = 0;
                 // this.totalRuntime = 0;
-                this.percentRuntime = 0
-                this.percentRuntime = (this.selectedItem.Item.RuntimeDays / this.totalRuntime * 100).toFixed(3);; 
+                this.percentRuntime = 0;
+                this.percentRuntime = (
+                  this.selectedItem.Item.RuntimeDays /
+                  this.totalRuntime *
+                  100
+                ).toFixed(3);
                 this.axios
                   .get(
                     "http://localhost:3000/api/equipmentItemHistory/" + itemId
@@ -1222,26 +1267,30 @@ export default {
                   .catch(error => {
                     alert(error);
                   });
-                  this.axios
-                    .get(
-                      "http://localhost:3000/api/equipmentItem/closedate/" +
-                        itemId
-                    )
-                    .then(response => {
-                      let data = response.data;
-                      data.forEach(closedate => {
-                        this.lastWorkedDate = closedate.ClosedDate;
-                        this.lastWorkedDate = moment(this.lastWorkedDate).valueOf();
-                        // this.downtime =  moment().valueOf() - this.lastWorkedDate;
-                        // var today = moment().format("DD/MM/YYYY");
-                        // alert(today.valueOf());
-                        let timeDiff = Math.abs(moment().valueOf() - this.lastWorkedDate);
-                        this.downtime = Math.floor(timeDiff / (1000 * 3600 * 24));
-                      });
-                    })
-                    .catch(error => {
-                      alert(error);
+                this.axios
+                  .get(
+                    "http://localhost:3000/api/equipmentItem/closedate/" +
+                      itemId
+                  )
+                  .then(response => {
+                    let data = response.data;
+                    data.forEach(closedate => {
+                      this.lastWorkedDate = closedate.ClosedDate;
+                      this.lastWorkedDate = moment(
+                        this.lastWorkedDate
+                      ).valueOf();
+                      // this.downtime =  moment().valueOf() - this.lastWorkedDate;
+                      // var today = moment().format("DD/MM/YYYY");
+                      // alert(today.valueOf());
+                      let timeDiff = Math.abs(
+                        moment().valueOf() - this.lastWorkedDate
+                      );
+                      this.downtime = Math.floor(timeDiff / (1000 * 3600 * 24));
                     });
+                  })
+                  .catch(error => {
+                    alert(error);
+                  });
               })
               .catch(error => {
                 console.log(error);
@@ -1322,8 +1371,24 @@ export default {
       this.files = this.$refs.fileInput.files;
     },
     async updateEquipment() {
-      if (this.EquimentByID.Name.trim().length < 5) {
-        alert("Equipment name must contain more than 5 characters");
+      if (this.EquimentByID.Name.trim().length < 5 || this.EquimentByID.Name.trim().length >250) {
+        let obj = {
+          message: "Equipment Name can be contained from 5 to 250 characters",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      }else if (this.EquimentByID.MadeIn.trim().length >50) {
+        let obj = {
+          message: "MadeIn can be contained 50 characters",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      // }else if (this.EquimentByID.Description.trim().length >250) {
+      //   let obj = {
+      //     message: "Description can be contained 250 characters",
+      //     type: "warning"
+      //   };
+      //   this.$refs.simplert.openSimplert(obj);
       } else {
         this.imageUrl = this.EquimentByID.Image;
         if (this.files[0] && this.files[0].name) {
@@ -1344,23 +1409,30 @@ export default {
           }
         }
         // alert(this.selectedCategory.value);
-
-        this.axios
-          .put("http://localhost:3000/api/equipment/" + this.equipmentId, {
-            id: this.equipmentId,
-            name: this.EquimentByID.Name,
-            vendorid: this.EquimentByID.VendorId,
-            image: this.imageUrl,
-            madein: this.EquimentByID.MadeIn,
-            categoryid: this.EquimentByID.CategoryId,
-            description: this.EquimentByID.Description,
-            unitid: this.EquimentByID.UnitID,
-            maintenanceDurationid: this.EquimentByID.MaintenanceDurationID
+        let context = this;
+        context.axios
+          .put("http://localhost:3000/api/equipment/" + context.equipmentId, {
+            id: context.equipmentId,
+            name: context.EquimentByID.Name,
+            vendorid: context.EquimentByID.VendorId,
+            image: context.imageUrl,
+            madein: context.EquimentByID.MadeIn,
+            categoryid: context.EquimentByID.CategoryId,
+            description: context.EquimentByID.Description,
+            unitid: context.EquimentByID.UnitID,
+            maintenanceDurationid: context.EquimentByID.MaintenanceDurationID
           })
-          .then(function(respone) {
-            alert("Update successfully");
+          .then(async function(respone) {
+            let obj = {
+              message: "Update successfully",
+              type: "success",
+              hideAllButton: true,
+              showXclose: false,
+            };
+            context.$refs.simplert.openSimplert(obj);
+            await Utils.sleep(1500);
             location.reload();
-            this.editMode = !this.editMode;
+            context.editMode = !context.editMode;
           })
           .catch(function(error) {
             console.log(error);
@@ -1368,8 +1440,12 @@ export default {
       }
     },
     async updatePositionItem() {
-      if (this.selectedItem.Item.TileID === "") {
-        alert("Please choose position for this item");
+      if (this.selectedItem.Item.TileID == null ) {
+        let obj = {
+          message: "Please choose position for this item",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else {
         var result = false;
         try {
@@ -1387,9 +1463,14 @@ export default {
           console.log(error);
           result = false;
         }
-        await Utils.sleep(100);
+        await Utils.sleep(200);
         if (result) {
-          alert("Update successfully");
+          let obj = {
+              message: "Update successfully",
+              type: "success",
+              showXclose: false,
+            };
+          this.$refs.simplert.openSimplert(obj);
           this.updateNumber = this.updateNumber + 1;
           this.editItemMode = !this.editItemMode;
           this.itemLocationID = this.selectedItem.Item.LocationID;
@@ -1401,13 +1482,15 @@ export default {
         }
       }
     },
-    async updatePositionEQTLost(){
+    async updatePositionEQTLost() {
       let authUser = JSON.parse(window.localStorage.getItem("user"));
       if (this.form.selectedTile.value === "") {
-        alert('Please choose position for this item to update')
+        let obj = {
+          message: "Please choose position for this item",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else {
-        alert(this.selectedItem.Item.Id);
-        alert(this.form.selectedTile.value);
         var result = false;
         try {
           let res = await this.axios.put(
@@ -1446,7 +1529,12 @@ export default {
           }
           await Utils.sleep(50);
           if (updateSttBool) {
-            alert("Update status successfully");
+             let obj = {
+              message: "Update status successfully",
+              type: "success",  
+              showXclose: false,
+            };
+            this.$refs.simplert.openSimplert(obj);
             this.changePositonLost = false;
             this.updateNumber = this.updateNumber + 1;
             this.editItemMode = !this.editItemMode;
@@ -1476,11 +1564,9 @@ export default {
         };
         this.$refs.simplert.openSimplert(obj);
       } else {
-        if (this.currentsttName.toUpperCase() == "LOST") {
-          alert("lost");
+        if (this.currentsttName.toUpperCase() == "LOST") {         
           this.changePositonLost = true;
-        } else {
-          alert("k lost");
+        } else {          
           var result = false;
           try {
             let res = await this.axios.put(
@@ -1501,7 +1587,14 @@ export default {
           }
           await Utils.sleep(50);
           if (result) {
-            alert("Update status successfully");
+            let obj = {
+              message: "Update status successfully",
+              type: "success",  
+              showXclose: false,
+            };
+            this.$refs.simplert.openSimplert(obj);
+            this.oldstt = this.selectedItem.Item.StatusID;
+            this.changeItemSttDescription = "";
             this.updateNumber = this.updateNumber + 1;
             this.editItemMode = !this.editItemMode;
             // this.currentsttName = this.selectedItem.Item.Status;
@@ -1511,22 +1604,6 @@ export default {
           }
         }
       }
-
-      // }
-      // if (this.selectedItem.Item.StatusID == 7) {
-      //   alert(this.selectedItem.Item.Id);
-      //   this.axios
-      //     .put(
-      //       "http://localhost:3000/api/equipmentItem/tileId/" +
-      //         this.selectedItem.Item.Id
-      //     )
-      //     .then(function(respone) {
-      //       location.reload();
-      //     })
-      //     .catch(function(error) {
-      //       consonle.log(error);
-      //     });
-      // }
     },
     async updateItem() {
       // if (this.selectedStatus.value == "") {
@@ -1541,14 +1618,26 @@ export default {
         this.selectedItem.Item.Price === "" ||
         this.selectedItem.Item.Price < 50000
       ) {
-        alert("Price must be bigger than 50000");
+         let obj = {
+          message: "Price must be bigger than 50000!",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else if (
         this.selectedItem.Item.WarrantyDuration === "" ||
         this.selectedItem.Item.WarrantyDuration < 1
       ) {
-        alert("Warranty durration must be bigger than 0");
+        let obj = {
+          message: "Warranty must be bigger than 1",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else if (nextmaintaindate < currentdate) {
-        alert("Next maintain date must be BIGGER than current date");
+         let obj = {
+          message: "Next maintain date must be BIGGER than current date",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else {
         var result = false;
         try {
@@ -1577,7 +1666,12 @@ export default {
         await Utils.sleep(100);
 
         if (result) {
-          alert("Update successfully");
+          // alert("Update successfully");
+          let obj = {
+            message: "Update successfully",
+            type: "success"
+          };
+          this.$refs.simplert.openSimplert(obj);
           this.updateNumber = this.updateNumber + 1;
           this.editItemMode = !this.editItemMode;
           this.itemPrice = this.selectedItem.Item.Price;
@@ -1615,8 +1709,8 @@ export default {
     }
   },
   watch: {
-    changePositonLost: function(){
-      if (this.changePositonLost == false){
+    changePositonLost: function() {
+      if (this.changePositonLost == false) {
         this.form.selectedLocation.value = "";
         this.form.selectedLocation.text = "";
         this.locationModalSelect = [];
@@ -1702,7 +1796,7 @@ export default {
     detailPopUp: function() {
       if (this.detailPopUp == false) {
         this.selectedItem.Item.Price = this.selectedItem.Item.Price;
-        this.selectedItem.Item.WarehouseID = this.selectedItem.Item.WarehouseID
+        this.selectedItem.Item.WarehouseID = this.selectedItem.Item.WarehouseID;
         this.selectedItem.Item.NextMaintainDate = this.selectedItem.Item.NextMaintainDate;
         this.selectedItem.Item.Description = this.selectedItem.Item.Description;
         this.selectedItem.Item.StatusID = this.oldstt;

@@ -7,9 +7,11 @@
             <div class="form-title-end">
                 <router-link to='/equipment'> <button id="" class="button is-rounded" style="margin-right: .6rem">Cancel</button></router-link>
                 <button id="" class="button is-rounded is-primary" v-on:click="createNewEquipment">Create New Equipment</button>
+                
             </div>
         </div>
-        <div class="form-content">            
+        <div class="form-content">
+          <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>          
             <div class="form-field-picture">
                 <div class="form-field-title">
                   <span><strong>  Picture (required) </strong></span><span v-if="CreateEquipmentErrors.NoImage != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoImage }}</span></span>
@@ -102,7 +104,7 @@
                       <span v-if="CreateEquipmentErrors.NoMaintenanceDuration != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoMaintenanceDuration }}</span></span>
                     </div>
                     <div class="field is-horizontal" style="">
-                        <model-select style="width: 100% !important" :options="maintenanceDurationOptions" v-model="form.MaintenanceDuration" placeholder="Select maintenance duration"></model-select>  
+                        <model-select style="width: 100% !important" :options="maintenanceDurationOptions" v-model="form.MaintenanceDuration" placeholder="Select maintenance duration (months)"></model-select>  
                         <button class="btn-new" style="margin: 0rem 0.3rem" v-on:click= "showingAddMaintenanceDuration = true"><i class="fa fa-plus"></i></button>
                     </div>
                     <div class="" v-show = "showingAddMaintenanceDuration" style="margin-right:2rem">
@@ -141,6 +143,7 @@
             <div class="form-field">
                 <div class="form-field-title">
                   <span><strong>  Made In </strong></span>
+                  <span v-if="CreateEquipmentErrors.MadeInTooLong != ''">. <span class="error-text">{{ CreateEquipmentErrors.MadeInTooLong }}</span></span>
                 </div>
                 <div class="form-field-input">
                     <input type="text" class="input" placeholder="Made In" v-model="form.MadeIn">
@@ -149,11 +152,13 @@
             <div class="form-field">
                 <div class="form-field-title">
                   <span><strong>  Description </strong></span>
+                  <span v-if="CreateEquipmentErrors.DescriptionTooLong != ''">. <span class="error-text">{{ CreateEquipmentErrors.DescriptionTooLong }}</span></span>
                 </div>
                 <div class="form-field-input">
                     <input type="text" class="input" placeholder="Description" v-model="form.Description">
                 </div>
             </div>
+            
             <!-- <div class="form-field">
               <label class="checkbox">
                 <input type="checkbox" id="checkbox" v-model="checked">
@@ -235,15 +240,31 @@ import Autocomplete from "./Autocomplete";
 import Utils from "@/utils.js";
 import fileBase64 from "vue-file-base64";
 import moment from "moment";
+import Simplert from "vue2-simplert";
 export default {
   props: ["filterby"],
   components: {
+    Simplert,
     AddEquipment,
     VueBase64FileUpload,
     ModelSelect,
     Autocomplete
   },
   created() {
+    let URL = "http://localhost:3000/api/equipment";
+    this.axios
+      .get(URL)
+      .then(response => {
+        let data = response.data;
+        // alert('in');
+        data.forEach(element => {
+          let equipment = element.Equipment;
+          this.equipments.push(equipment);
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
     this.axios
       .get("http://localhost:3000/api/location")
       .then(response => {
@@ -274,7 +295,7 @@ export default {
       .catch(error => {
         alert(error);
       });
-      this.axios
+    this.axios
       .get("http://localhost:3000/api/unit")
       .then(response => {
         let data = response.data;
@@ -319,41 +340,31 @@ export default {
       .catch(error => {
         alert(error);
       });
-    this.axios
-      .get("http://localhost:3000/api/equipment")
-      .then(response => {
-        let data = response.data;
-        data.forEach(element => {
-          let option = {
-            text: element.Equipment.Name,
-            value: element.Equipment.Id
-          };
-          this.equipmentOptions.push(option);
-        });
-      })
-      .catch(error => {
-        alert(error);
-      });
   },
   data() {
     return {
-      CreateEquipmentErrors:{
+      CreateEquipmentErrors: {
         NoImage: "",
         NoName: "",
         NameLength: "",
         NoCategory: "",
         NoVendor: "",
-        NoUnit: "", 
+        NoUnit: "",
         NoMaintenanceDuration: "",
+        MadeInTooLong: "",
+        DescriptionTooLong: ""
       },
-      ErrorStrings:{
-        NoImage: 'You must choose an image',
-        NoName: 'You must enter equipment name',
-        NameLength: "The length of name must be more than 5 characters",
-        NoCategory: 'Please choose a category',
-        NoVendor: 'Please choose a vendor',
-        NoUnit: 'Please choose a unit',
-        NoMaintenanceDuration: 'Please choose maintenance duration'
+      ErrorStrings: {
+        NoImage: "You must choose an image",
+        NoName: "You must enter equipment name",
+        NameLength:
+          "The length of name must be more than 5 characters and less than 250 characters",
+        NoCategory: "Please choose a category",
+        NoVendor: "Please choose a vendor",
+        NoUnit: "Please choose a unit",
+        NoMaintenanceDuration: "Please choose duration",
+        DescriptionTooLong: "Description can be contained 250 characters",
+        MadeInTooLong: "MadeIn can be contained 50 characters"
       },
       form: {
         EquipmentName: "",
@@ -402,11 +413,11 @@ export default {
         text: "",
         value: ""
       },
-      byName:"",
+      byName: "",
       imageUrl: "",
       newCategory: "",
       newVendor: "",
-      newUnit:"",
+      newUnit: "",
       newDuration: "",
       showingAddCategory: false,
       showingAddVendor: false,
@@ -421,6 +432,7 @@ export default {
       files: [],
       randomNumbers: [],
       existEquipment: [],
+      equipments: [],
       quantity: 1,
       validateExistEquipment: false,
       file: "",
@@ -477,78 +489,78 @@ export default {
         });
     },
     createNewCategory() {
-      if(this.newCategory.trim() == ""){
+      if (this.newCategory.trim() == "") {
         alert("Please enter Category name");
-      }else{
+      } else {
         this.axios
-        .post("http://localhost:3000/api/EquipmentCategory/categoryName", {
-          name: this.newCategory
-        })
-        .then(function(respone) {
-          // console.log(respone);
-          location.reload();
-          alert("Add new category successfully");
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-      } 
+          .post("http://localhost:3000/api/EquipmentCategory/categoryName", {
+            name: this.newCategory
+          })
+          .then(function(respone) {
+            // console.log(respone);
+            location.reload();
+            alert("Add new category successfully");
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      }
     },
     createNewVendor() {
-      if (this.newVendor == ""){
-         alert("Please enter vendor name");
-      }else{
+      if (this.newVendor == "") {
+        alert("Please enter vendor name");
+      } else {
         this.axios
-        .post("http://localhost:3000/api/Vendor/vendorName", {
-          businessName: this.newVendor
-        })
-        .then(function(respone) {
-          // console.log(respone);
-          location.reload();
-          alert("Add new vendor successfully");
-          this.created();
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+          .post("http://localhost:3000/api/Vendor/vendorName", {
+            businessName: this.newVendor
+          })
+          .then(function(respone) {
+            // console.log(respone);
+            location.reload();
+            alert("Add new vendor successfully");
+            this.created();
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
       }
     },
-    createNewUnit(){
-      if (this.newUnit == ""){
-        alert('Please enter Unit name');
-      }else{
+    createNewUnit() {
+      if (this.newUnit == "") {
+        alert("Please enter Unit name");
+      } else {
         this.axios
-        .post("http://localhost:3000/api/unit", {
-          name: this.newUnit
-        })
-        .then(function(respone) {
-          // console.log(respone);
-          location.reload();
-          alert("Add new Unit successfully");
-          this.created();
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+          .post("http://localhost:3000/api/unit", {
+            name: this.newUnit
+          })
+          .then(function(respone) {
+            // console.log(respone);
+            location.reload();
+            alert("Add new Unit successfully");
+            this.created();
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
       }
     },
-    createNewMaintenanceDuration(){
-      if (this.newDuration == "" || this.newDuration < 3){
-        alert('Maintenance duration must be bigger than 3 months');
-      }else{
+    createNewMaintenanceDuration() {
+      if (this.newDuration == "" || this.newDuration < 3) {
+        alert("Maintenance duration must be bigger than 3 months");
+      } else {
         this.axios
-        .post("http://localhost:3000/api/maintenanceDuration", {
-          month: this.newDuration
-        })
-        .then(function(respone) {
-          // console.log(respone);
-          location.reload();
-          alert("Add new Maintenance Duration successfully");
-          this.created();
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+          .post("http://localhost:3000/api/maintenanceDuration", {
+            month: this.newDuration
+          })
+          .then(function(respone) {
+            // console.log(respone);
+            location.reload();
+            alert("Add new Maintenance Duration successfully");
+            this.created();
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
       }
     },
     async createNewEquipment() {
@@ -560,27 +572,34 @@ export default {
       // this.files[0].name = "";
       // alert(this.files[0].name);
       let context = this;
-      if(this.form.EquipmentName.trim() === ''){
+      var exist = 0;
+      if (this.form.EquipmentName.trim() === "") {
         this.CreateEquipmentErrors.NoName = this.ErrorStrings.NoName;
       }
-      if(this.form.EquipmentName.trim().length <5){
+      if (this.form.EquipmentName.trim().length < 5) {
         this.CreateEquipmentErrors.NameLength = this.ErrorStrings.NameLength;
       }
-      if(this.selectedVendor.value  === ''){
+      if (this.selectedVendor.value === "") {
         this.CreateEquipmentErrors.NoVendor = this.ErrorStrings.NoVendor;
       }
-      if(this.form.Category === ''){
+      if (this.form.Category === "") {
         this.CreateEquipmentErrors.NoCategory = this.ErrorStrings.NoCategory;
       }
-      if(this.form.Unit === ''){
+      if (this.form.Unit === "") {
         this.CreateEquipmentErrors.NoUnit = this.ErrorStrings.NoUnit;
       }
-      if(this.form.Unit === ''){
+      if (this.form.Unit === "") {
         this.CreateEquipmentErrors.NoMaintenanceDuration = this.ErrorStrings.NoMaintenanceDuration;
       }
-      if(this.files[0] && this.files[0].name){
-        this.CreateEquipmentErrors.NoImage = '';
-         let formData = new FormData();
+      if (this.form.MadeIn.trim().length > 250) {
+        this.CreateEquipmentErrors.MadeInTooLong = this.ErrorStrings.MadeInTooLong;
+      }
+      if (this.form.Description.trim().length > 250) {
+        this.CreateEquipmentErrors.DescriptionTooLong = this.ErrorStrings.DescriptionTooLong;
+      }
+      if (this.files[0] && this.files[0].name) {
+        this.CreateEquipmentErrors.NoImage = "";
+        let formData = new FormData();
         formData.append("api_key", "982394881563116");
         formData.append("file", this.files[0]);
         formData.append("public_id", this.files[0].name);
@@ -596,41 +615,71 @@ export default {
         } catch (error) {
           console.log(error);
         }
-      }else{
+      } else {
         //  alert(this.files[0])
         //alert(this.files[0].name)
         this.CreateEquipmentErrors.NoImage = this.ErrorStrings.NoImage;
-        
       }
-      if (this.CreateEquipmentErrors.NoImage === '' &&
-          this.CreateEquipmentErrors.NoName === '' &&
-          this.CreateEquipmentErrors.NoCategory === '' &&
-          this.CreateEquipmentErrors.NoVendor === '' &&
-          this.CreateEquipmentErrors.NoUnit === '' &&
-          this.CreateEquipmentErrors.NoMaintenanceDuration ===''
-      ){
-           context.axios
-          .post("http://localhost:3000/api/equipment", {
-            name: context.form.EquipmentName,
-            vendorID: context.selectedVendor.value,
-            image: context.imageUrl,
-            madein: context.form.MadeIn,
-            description: context.form.Description,
-            categoryID: context.form.Category,
-            unitID: context.form.Unit,
-            maintenanceDurationID : context.form.MaintenanceDuration
-          })
-          .then(function(respone) {
-            // console.log(respone);
-            if (respone.status == 200) {
-              alert("Add successfully!!!");
-              context.$router.push('/equipment');
+      if (
+        this.CreateEquipmentErrors.NoImage === "" &&
+        this.CreateEquipmentErrors.NoName === "" &&
+        this.CreateEquipmentErrors.NoCategory === "" &&
+        this.CreateEquipmentErrors.NoVendor === "" &&
+        this.CreateEquipmentErrors.NoUnit === "" &&
+        this.CreateEquipmentErrors.NoMaintenanceDuration === ""
+      ) {
+         
+          for(var i = 0 ; i <context.equipments.length; i++){
+            if(context.form.EquipmentName.toUpperCase() === context.equipments[i].Name.toUpperCase() &&
+              context.selectedVendor.value == context.equipments[i].VendorId &&
+              context.form.Category == context.equipments[i].CategoryId &&
+              context.form.Unit == context.equipments[i].UnitId &&
+              context.form.MaintenanceDuration == context.equipments[i].MaintenanceDurationId &&
+              context.form.MadeIn.toUpperCase() === context.equipments[i].MadeIn.toUpperCase()
+            ){
+              exist = exist + 1;
             }
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+          }
+        alert(exist)
+        if(exist == 0){
+          context.axios
+            .post("http://localhost:3000/api/equipment", {
+              name: context.form.EquipmentName,
+              vendorID: context.selectedVendor.value,
+              image: context.imageUrl,
+              madein: context.form.MadeIn,
+              description: context.form.Description,
+              categoryID: context.form.Category,
+              unitID: context.form.Unit,
+              maintenanceDurationID: context.form.MaintenanceDuration
+            })
+            .then(async function(respone) {
+              // console.log(respone);
+              if (respone.status == 200) {
+                let obj = {
+                  message: "A new equipment is created successfully",
+                  type: "success",
+                  hideAllButton: true,
+                  showXclose: false
+                };
+                context.$refs.simplert.openSimplert(obj);
+                await Utils.sleep(1500);
+                context.$router.push("/equipment");
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            }); 
+        }else{
+          let obj = {
+            message: "This equipment is existed!!!",
+            type: "warning",
+            // hideAllButton: true,
+            showXclose: false
+          };
+          context.$refs.simplert.openSimplert(obj);
         }
+      }
     },
     getRandomNumber() {
       if (this.form.Category == "") {
@@ -656,25 +705,24 @@ export default {
     },
     createNewEquipentItem() {
       let result = false;
-      if (this.form.Price === '' || this.form.Price < 50000) {
+      if (this.form.Price === "" || this.form.Price < 50000) {
         alert("Please enter price more than 50000");
-      }else if (this.form.Warranty === '' || this.form.Warranty < 1) {
-          alert("Please enter warranty duration more than 1");
-      }else if  (this.randomNumbers.length == 0) {
-          alert("Please create serial number for item(s) to add");
-      }else if(this.selectedTile.value === ''){
-            alert("Please choose tile for item(s)");
-      } else{
-         let name = this.form.EquipmentName.trim();
+      } else if (this.form.Warranty === "" || this.form.Warranty < 1) {
+        alert("Please enter warranty duration more than 1");
+      } else if (this.randomNumbers.length == 0) {
+        alert("Please create serial number for item(s) to add");
+      } else if (this.selectedTile.value === "") {
+        alert("Please choose tile for item(s)");
+      } else {
+        let name = this.form.EquipmentName.trim();
         this.axios
-            .get("http://localhost:3000/api/equipment/byName/"+name)
-            .then(function(respone) {
-              this.byName = response.data
-              
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
+          .get("http://localhost:3000/api/equipment/byName/" + name)
+          .then(function(respone) {
+            this.byName = response.data;
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
         alert(byName.Id);
         // for (var i = 0; i < this.quantity; i++) {
         //   this.axios
@@ -694,13 +742,12 @@ export default {
         //       console.log(error);
         //     });
         // }
-      if (result = true) {
-        alert("Add " + this.quantity + " item(s) successfully!");
-        location.reload();
-      }
+        if ((result = true)) {
+          alert("Add " + this.quantity + " item(s) successfully!");
+          location.reload();
+        }
       }
     }
-
   },
   // watch: {
   //   selectedEquipment: function() {
@@ -723,37 +770,78 @@ export default {
   //   }
   // }
   watch: {
-    'form.EquipmentName': function() {
-      if (this.form.EquipmentName.trim() != '' && this.CreateEquipmentErrors.NoName != '') {
-        this.CreateEquipmentErrors.NoName = '';
+    "form.EquipmentName": function() {
+      if (
+        this.form.EquipmentName.trim() != "" &&
+        this.CreateEquipmentErrors.NoName != ""
+      ) {
+        this.CreateEquipmentErrors.NoName = "";
       }
-      if(this.form.EquipmentName.trim().length >=5 && this.CreateEquipmentErrors.NameLength != ''){
-        this.CreateEquipmentErrors.NameLength = '';
+      if (
+        this.form.EquipmentName.trim().length >= 5 &&
+        this.CreateEquipmentErrors.NameLength != ""
+      ) {
+        this.CreateEquipmentErrors.NameLength = "";
       }
-    },
-    'selectedVendor': function() {
-      if (this.selectedVendor.value != '' && this.CreateEquipmentErrors.NoVendor != '') {
-        this.CreateEquipmentErrors.NoVendor = '';
-      }
-    },
-    'form.Category': function() {
-      if (this.form.Category != '' && this.CreateEquipmentErrors.NoCategory != '') {
-        this.CreateEquipmentErrors.NoCategory = '';
-      }
-    },
-    'form.Unit': function() {
-      if (this.form.Unit != '' && this.CreateEquipmentErrors.NoUnit != '') {
-        this.CreateEquipmentErrors.NoUnit = '';
+      if (
+        this.form.EquipmentName.trim().length < 250 &&
+        this.CreateEquipmentErrors.NameLength != ""
+      ) {
+        this.CreateEquipmentErrors.NameLength = "";
       }
     },
-    'form.MaintenanceDuration': function(){
-      if (this.form.MaintenanceDuration != '' && this.CreateEquipmentErrors.NoMaintenanceDuration != '') {
-        this.CreateEquipmentErrors.NoMaintenanceDuration = '';
+    selectedVendor: function() {
+      if (
+        this.selectedVendor.value != "" &&
+        this.CreateEquipmentErrors.NoVendor != ""
+      ) {
+        this.CreateEquipmentErrors.NoVendor = "";
       }
     },
-    'files':function(){
-       if ( !this.files[0] && !this.files[0].name && this.CreateEquipmentErrors.NoImage != '') {
-        this.CreateEquipmentErrors.Image = '';
+    "form.Category": function() {
+      if (
+        this.form.Category != "" &&
+        this.CreateEquipmentErrors.NoCategory != ""
+      ) {
+        this.CreateEquipmentErrors.NoCategory = "";
+      }
+    },
+    "form.Unit": function() {
+      if (this.form.Unit != "" && this.CreateEquipmentErrors.NoUnit != "") {
+        this.CreateEquipmentErrors.NoUnit = "";
+      }
+    },
+    "form.MaintenanceDuration": function() {
+      if (
+        this.form.MaintenanceDuration != "" &&
+        this.CreateEquipmentErrors.NoMaintenanceDuration != ""
+      ) {
+        this.CreateEquipmentErrors.NoMaintenanceDuration = "";
+      }
+    },
+    "form.MadeIn": function() {
+      if (
+        this.form.MadeIn.trim().length < 250 &&
+        this.CreateEquipmentErrors.MadeInTooLong != ""
+      ) {
+        this.CreateEquipmentErrors.MadeInTooLong = "";
+      }
+    },
+    "form.Description": function() {
+      if (
+        this.form.Description.trim().length < 250 &&
+        this.CreateEquipmentErrors.DescriptionTooLong != ""
+      ) {
+        this.CreateEquipmentErrors.DescriptionTooLong = "";
+      }
+    },
+    files: function() {
+      if (
+        !this.files[0] &&
+        !this.files[0].name &&
+        this.CreateEquipmentErrors.NoImage != ""
+      ) {
+        this.CreateEquipmentErrors.Image = "";
       }
     },
     selectedLocation: function() {
