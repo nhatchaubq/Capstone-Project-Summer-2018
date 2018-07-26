@@ -18,7 +18,11 @@ router.get("/chau/:id", (req, res) => {
 //         .param('id', req.params.id, TYPES.Int)
 //         .into(res);
 // });
-
+router.get("/allserialnumber", (req, res) => {
+    req
+        .sql("select EquipmentItem.SerialNumber as SerialNumber from EquipmentItem for json path")
+        .into(res);
+});
 /* Get all Item of an equipment by EquipmentID */
 router.get("/:id", (req, res) => {
     req
@@ -132,8 +136,8 @@ router.get("/closedate/:id", (req, res) => {
 router.post("/", (request, response) => {
     request
         .sql(
-            "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarehouseID, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
-            " VALUES (@equipmentID, @serialNumber, @warehoueid , @warrantyDuration, 0, @price, GETDATE(), @statusId, @description, @tileID)"
+            "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarehouseID, WarrantyDuration, RuntimeDays, Price, ImportDate, LastMaintainDate, StatusId, Description, TileID)" +
+            " VALUES (@equipmentID, @serialNumber, @warehoueid , @warrantyDuration, 0, @price, GETDATE(), GETDATE(),  @statusId, @description, @tileID)"
         )
         .param("equipmentID", request.body.equipmentID, TYPES.Int)
         .param("serialNumber", request.body.serialNumber, TYPES.NVarChar)
