@@ -53,5 +53,27 @@ export default {
       },
       { responsive: true, maintainAspectRatio: false }
     );
+  },
+  methods: {
+    update: function(data) {
+      this.renderChart(
+        {
+          labels: data.monthLabels,
+          datasets: [
+            {
+              label: data.labels[0],
+              backgroundColor: this.gradient,
+              data: data.monthData[0]
+            },
+            {
+              label: data.labels[1],
+              backgroundColor: this.gradient2,
+              data: data.monthData[1]
+            }
+          ]
+        },
+        { responsive: true, maintainAspectRatio: false }
+      );
+    }
   }
 };

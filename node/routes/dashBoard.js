@@ -65,10 +65,10 @@ router.get("/", (request, response) => {
         "(SELECT STUFF( CONVERT( char(11), DATEADD(month,0,getdate())), 5, 5, '')) as 'LineChart.Month.ThisMonth', " +
         "(SELECT Name from [WorkOrderCategory] where Id =(SELECT woc.Id FROM [WorkOrderCategory] as woc WHERE woc.Name = N'Maintain')) as 'LineChart.MaintainName'," +
         "(SELECT Name from [WorkOrderCategory] where Id =(SELECT woc.Id FROM [WorkOrderCategory] as woc WHERE woc.Name = N'Working')) as 'LineChart.WorkingName'," +
-        "(SELECT count(*) FROM [Equipment] as e JOIN [EquipmentItem] as ei ON ei.EquipmentID =e.Id WHERE StatusId not in (select es.Id from [EquipmentStatus] as es where es.Name = N'Available' or es.Name = N'Archived' or es.Name = N'Lost') ) as 'Doughnut.Today.UnAvailableItemCount'," +
-        "(SELECT count(*) FROM [Equipment] as e JOIN [EquipmentItem] as ei ON ei.EquipmentID =e.Id WHERE StatusId =(select es.Id from [EquipmentStatus] as es where es.Name = N'Available') ) as 'Doughnut.Today.AvailableItemCount'," +
-        "(select [Name] from EquipmentStatus where Id = (select es.Id from [EquipmentStatus] as es where es.Name = N'Available')) as 'Doughnut.Available.Name'," +
-        "(select [Name] from EquipmentStatus where Id = (select es.Id from [EquipmentStatus] as es where es.Name = N'Working Approved')) as 'Doughnut.Unavailable.Name' ," +
+        // "(SELECT count(*) FROM [Equipment] as e JOIN [EquipmentItem] as ei ON ei.EquipmentID =e.Id WHERE StatusId not in (select es.Id from [EquipmentStatus] as es where es.Name = N'Available' or es.Name = N'Archived' or es.Name = N'Lost') ) as 'Doughnut.Today.UnAvailableItemCount'," +
+        // "(SELECT count(*) FROM [Equipment] as e JOIN [EquipmentItem] as ei ON ei.EquipmentID =e.Id WHERE StatusId =(select es.Id from [EquipmentStatus] as es where es.Name = N'Available') ) as 'Doughnut.Today.AvailableItemCount'," +
+        // "(select [Name] from EquipmentStatus where Id = (select es.Id from [EquipmentStatus] as es where es.Name = N'Available')) as 'Doughnut.Available.Name'," +
+        // "(select [Name] from EquipmentStatus where Id = (select es.Id from [EquipmentStatus] as es where es.Name = N'Working Approved')) as 'Doughnut.Unavailable.Name' ," +
         " (SELECT COUNT(Id) FROM [EquipmentItemHistory] Where NewStatusID =(SELECT es.Id FROM [EquipmentStatus] as es WHERE es.Name = 'Damaged') and convert(date, [Date]) between (SELECT convert(date, dateadd(day, 1,EOMONTH (GETDATE(), -12))))  and (SELECT EOMONTH ( GETDATE(), -11))) as 'LC.Damaged.Last11Month', " +
         " (SELECT COUNT(Id) FROM [EquipmentItemHistory] Where NewStatusID =(SELECT es.Id FROM [EquipmentStatus] as es WHERE es.Name = 'Damaged') and convert(date, [Date]) between (SELECT convert(date, dateadd(day, 1,EOMONTH (GETDATE(), -11))))  and (SELECT EOMONTH ( GETDATE(), -10))) as 'LC.Damaged.Last10Month', " +
         " (SELECT COUNT(Id) FROM [EquipmentItemHistory] Where NewStatusID =(SELECT es.Id FROM [EquipmentStatus] as es WHERE es.Name = 'Damaged') and convert(date, [Date]) between (SELECT convert(date, dateadd(day, 1,EOMONTH (GETDATE(), -10))))  and (SELECT EOMONTH ( GETDATE(), -9))) as 'LC.Damaged.Last9Month', " +
@@ -171,6 +171,16 @@ router.get("/getCategory", (req, res) => {
         "for json path, without_array_wrapper)) as 'Unavailable' " +
         "from EquipmentCategory as ec " +
         "for json path "
+    )
+    .into(res);
+});
+
+router.get("/maintainCalendar", (req, res) => {
+  req
+    .sql(
+      "select e.Name,ei.Id,ei.SerialNumber,ei.WarrantyDuration,convert(date,ei.NextMaintainDate) as 'MaintainDate',convert(date,ei.LastMaintainDate) as 'LastMaintainDate' " +
+        " from EquipmentItem as ei join Equipment as e on e.Id = ei.EquipmentID " +
+        " for json path"
     )
     .into(res);
 });

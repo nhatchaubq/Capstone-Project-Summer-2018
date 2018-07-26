@@ -2,47 +2,40 @@
     <div v-if="Dashboard">
         <div>
             <div class="row " style="width: 100%; margin-bottom: 1rem; margin-right: 0rem ; margin-left:0rem !important">
-              <div class="col-8" style="padding-left:0Rem !important">
+              <div class="col-7" style="padding-left:0Rem !important">
                 <!-- line chart -->
                 <div  class="Chart col-12">
-                  <div class="select">
-                    <select v-model="linechartOption" class="select">
-                      <!-- <option disabled :value="null">Hello?</option> -->
+                  <!-- <div class="select">
+                    <select v-model="linechartOption" class="select">                      
                       <option value="order">Work aaa</option> 
                       <option value="eqt">Equipment</option>
                     </select>
-                  </div>                
-                    <bar-chart :chartData="lineChartData" styles="height: 50vh"  ></bar-chart>                    
+                  </div>-->
+                  <div>
+                    <label class="radio" v-on:click="linechartOption = true">
+                      <input type="radio" name="status" style="padding-right:0.5rem" :checked="linechartOption"> Completed Work Orders
+                    </label>
+                    <label class="radio" v-on:click="linechartOption = false">
+                      <input type="radio" name="status" style="padding-right:0.5rem" :checked="!linechartOption"> Damaged and Lost Equipment Items
+                    </label>
+                  </div>
+                    <bar-chart :chartData="lineChartData" ref="lineChart" styles="height: 40vh"  ></bar-chart>                    
                 </div>
                 <!-- line chart- end -->
               </div>
-              <div class="col-4" style="padding:0rem !important">
-                <!-- DoughnutChart  -->
-                <!-- <div style=" margin-left: 2rem !important" class="Chart col-4" > -->
-                <div class="Chart col-12" >
-                  <div class="row">
-                    <div class="col-6" style="padding:0 0 0 0.5rem !important">
-                      <!-- <strong>Available Equipment Percent</strong> -->
-                      <strong>Available Equipment Percent</strong>
-                    </div>
-                    <div class="col-6">
-                      <div class="select">
-                        <select style="width:100%" v-model="tmpCategory">                                                    
-                            <option :value='null'>All</option>
-                            <option :key="category.Id" v-for="category in categories" :value="category" >{{category.Name}} </option>                                                                           
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                    <doughnut-chart :data="doughnutChartData" styles="height: 36vh"></doughnut-chart>
-                </div>
-                <!-- DoughnutChart- end -->
+              <div class="col-5" style="padding:0rem !important">  
+                <div id="header-mainCalen">
+                  Maintain Calendar
+                </div>       
+                <div>
+                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width:445px !important; height:285px">
 
+                  </v-calendar>
+                </div>                       
+                    <!-- <doughnut-chart :data="doughnutChartData" styles="height: 36vh"></doughnut-chart> -->
+              </div>                
               </div>
             </div> 
-            
-            
-
             <!-- <div class="col-12 row">
                 <div class="col-6">&#8203</div>
                 <div class="col-6" style="padding-left:2rem"><strong>Equipment items by status</strong></div>
@@ -162,32 +155,8 @@
                                       <div class="numItem column" style="text-align:right;">
                                           <strong>{{Dashboard.ReturnCountTomorrowQItem}}</strong> items
                                       </div>
-                                  </div>
-                                  
-                                  <div class="contentstatus" style="padding: 0.2rem;" >
-                                    <!-- dien-start -->
-                                      <!-- <div v-if="workOrdersWokingTomorrow"> 
-                                        <div :key="workOrder3.Id" v-for="workOrder3 in workOrdersWokingTomorrow" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
-                                          
-                                          <div class="col-10" style="padding: 0rem">
-                                            <div class="row">
-                                              <div class="col-2"> <strong>{{workOrder3.Priority}}</strong> </div>
-                                              <div class="col-10" style="text-align:center"> <strong>{{workOrder3.Name}}</strong> </div>
-                                            </div>
-                                            <div class="row" >
-                                              <div class="col-1" >#{{workOrder3.Id}} </div>
-                                              <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder3.RequestUsername}} </div>
-                                              <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder3.CreateDate)}} </div>                                
-                                            </div>
-                                          </div>
-                                          <div class="col-2">
-                                            <i class="fa fa-archive closed fa-2x"></i>
-                                            <div>archive</div>
-                                          </div>
-                                        </div>
-                                      </div> -->
-                                      <!-- dien-end -->
-                                          <!-- chow- start -->
+                                  </div>                                  
+                                  <div class="contentstatus" style="padding: 0.2rem;" >                                    
                                           <div class="order-blocks">
                                               <div>
                                                   <div class="emtpy-text" v-if="workOrdersWokingTomorrow && workOrdersWokingTomorrow.length == 0">
@@ -200,18 +169,11 @@
                                               </div>
                                           </div>
                                           <!-- chow-end -->
-
                                   </div>   
                               </div>
-
-
                       </div>
                       <div class="column " style="padding: 0 !important; " >
-                          <div class="row3childs">
-                          <!-- <div> -->
-                              <!-- <div style="font-size:17px; margin:0.8rem 0rem">
-                                  <strong>Maintain</strong>
-                              </div> -->
+                          <div class="row3childs">                          
                               <div class=" material-shadow-animate1 " style="margin-bottom: 1rem; margin-right: 0.9rem">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
                                       <div class="column is-9">
@@ -220,32 +182,8 @@
                                       <div class="numItem column" style="text-align:right;">
                                           <strong>{{Dashboard.MaintainCountTodayQItem}}</strong> items
                                       </div>
-                                  </div>
-                                  
-                                  <div class="contentstatus" style="padding: 0.2rem;" >
-                                    <!-- dien-start -->
-                                      <!-- <div v-if="workOrders"> 
-                                        <div :key="workOrder.Id" v-for="workOrder in workOrders" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
-                                          
-                                          <div class="col-10" style="padding: 0rem">
-                                            <div class="row">
-                                              <div class="col-10" style="text-align:center"> <strong>{{workOrder.Name}}</strong> </div>
-                                            </div>
-                                            <div class="row" >
-                                              <div class="col-2"> <strong>{{workOrder.Priority}}</strong> </div>
-                                              <div class="col-1" >#{{workOrder.Id}} </div>
-                                              <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder.RequestUsername}} </div>
-                                              <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder.CreateDate)}} </div>                                
-                                            </div>
-                                          </div>
-                                          <div class="col-2">
-                                            <i class="fa fa-archive closed fa-2x"></i>
-                                            <div>archive</div>
-                                          </div>
-                                        </div>
-                                      </div> -->
-                                      <!-- dien-end -->
-                                      <!-- chow- start -->
+                                  </div>                                  
+                                  <div class="contentstatus" style="padding: 0.2rem;" >                                   
                                           <div class="order-blocks">
                                               <div>
                                                   <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
@@ -268,33 +206,8 @@
                                       <div class="numItem column" style="text-align:right;">
                                           <strong>{{Dashboard.MaintainCountTomorrowQItem}}</strong> items
                                       </div>
-                                  </div>
-                                  
-                                  <div class="contentstatus" style="padding: 0.2rem;" >
-                                    
-                                    <!-- dien-start -->
-                                      <!-- <div v-if="workOrdersMaintainTomorrow"> 
-                                        <div :key="workOrder2.Id" v-for="workOrder2 in workOrdersMaintainTomorrow" class="material-box material-shadow row" style="margin-bottom:0.5rem; padding-left:1.5rem">
-                                          
-                                          <div class="col-10" style="padding: 0rem">
-                                            <div class="row">
-                                              <div class="col-10" style="text-align:center"> <strong>{{workOrder2.Name}}</strong> </div>
-                                            </div>
-                                            <div class="row" >
-                                              <div class="col-2"> <strong>{{workOrder2.Priority}}</strong> </div>
-                                              <div class="col-1" >#{{workOrder2.Id}} </div>
-                                              <div class="col-5"  ><i class="fa fa-user" style="margin:0.2rem 0.1rem 0 0"></i>{{workOrder2.RequestUsername}} </div>
-                                              <div class="col-4  " ><i class="fa fa-calendar" style="margin-top:0.2rem"></i>{{getDate(workOrder2.CreateDate)}} </div>                                
-                                            </div>
-                                          </div>
-                                          <div class="col-2">
-                                            <i class="fa fa-archive closed fa-2x"></i>
-                                            <div>archive</div>
-                                          </div>
-                                        </div>
-                                      </div> -->
-                                      <!-- dien-end -->
-                                      <!-- chow- start -->
+                                  </div>                                  
+                                  <div class="contentstatus" style="padding: 0.2rem;" >                                                                       
                                           <div class="order-blocks">
                                               <div>
                                                   <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
@@ -309,26 +222,44 @@
                                           <!-- chow-end -->
                                   </div>  
                               </div>
-
                           </div>
                       </div>
-
-                  </div>
-                
-                </div>
-  
-
+                  </div>                
+                </div>  
             </div>
-        </div>
-                    
-    </div>
+            <modal v-model="addPopUp" v-if="this.maintainItems.length > 0">
+              <div slot="header" class="title-modal"> 
+                List Of Maintain Equipments: {{this.maintainItems[0].MaintainDate}}
+              </div>
+              <div>
+                <table style="width:100%"> 
+                  <thead>
+                    <tr style="width:100%">
+                      <th><strong>Equipment</strong></th>
+                      <th><strong>Serial #</strong></th>   
+                      <th><strong>Last MaintainDate</strong></th>                                            
+                    </tr>                
+                  </thead>
+                  <tbody style="font-size:14px" >                
+                    <tr :key="item.Id" v-for="item in maintainItems">
+                      <td>{{item.Name}}</td>                                        
+                      <td>{{item.SerialNumber}}</td>
+                      <td>{{item.LastMaintainDate}}</td>
+                    </tr>
+                  </tbody>
+              </table>   
+              </div>
+
+              <div slot="footer"><button class="button" v-on:click="addPopUp = false" style="background-color:var(--primary-color);color:white">OK</button></div>
+            </modal>   
+        </div>                          
 </template>
 
 <script>
 import Server from "@/config/config.js";
 import BarChart from "../../components/chartTest/bar-chart.js";
 import PieChart from "../../components/chartTest/pie-chart.js";
-import DoughnutChart from "../../components/chartTest/Doughnut-chart.js";
+// import DoughnutChart from "../../components/chartTest/Doughnut-chart.js";
 import moment from "moment";
 import OrderBlock from "../Dashboard/OrderBlock/OrderBlock";
 import Vue from "vue";
@@ -337,21 +268,25 @@ export default {
   components: {
     BarChart,
     PieChart,
-    OrderBlock,
-    DoughnutChart
+    OrderBlock
+
+    // DoughnutChart
   },
   data() {
     return {
-      linechartOption: null,
+      addPopUp: false,
+      selectedDay: null,
+      attrs: [],
+      linechartOption: true,
       Dashboard: null,
       pieChartData: {
         labels: [],
         values: []
       },
-      doughnutChartData: {
-        TodayLabels: [],
-        TodayData: []
-      },
+      // doughnutChartData: {
+      //   TodayLabels: [],
+      //   TodayData: []
+      // },
       lineChartData: {
         // workingLabel: "",
         // maintainLabel: "",
@@ -364,6 +299,8 @@ export default {
       mainWoMonths: [],
       damaEqtMonths: [],
       lostEqtMonths: [],
+      items: [],
+      maintainItems: [],
 
       //cate start
 
@@ -376,8 +313,46 @@ export default {
       workOrdersWokingTomorrow: [] // orders data to display in orderblocks <order-block></order-block>
     };
   },
+  mounted() {
+    // this.$refs.fullcalendar.height = "400px";
+  },
   created() {
     let URL = Server.DASHBOARD_API_PATH;
+
+    this.axios
+      .get("http://localhost:3000/api/dashboard/maintainCalendar")
+      .then(res => {
+        if (res.status == 200) {
+          let data = res.data;
+          data.forEach(item => {
+            this.items.push(item);
+            let attr = {
+              key: `today ${item.Id}`,
+              highlight: {
+                backgroundColor: "#ff8080"
+                // Other properties are available too, like `height` & `borderRadius`
+              },
+              contentStyle: {
+                color: "#fafafa"
+              },
+              popover: {
+                label: item
+              },
+              dates: [
+                new Date(
+                  moment(item.MaintainDate).year(),
+                  moment(item.MaintainDate).month() - 1,
+                  moment(item.MaintainDate).day()
+                )
+              ]
+            };
+            this.attrs.push(attr);
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
     this.axios.get(URL).then(res => {
       if (res.status == 200) {
         // alert("alao alo");
@@ -484,55 +459,6 @@ export default {
         this.mainWoMonths.forEach(quanMa =>
           this.lineChartData.monthData[1].push(quanMa)
         );
-        //push(damaged)
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last11Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last10Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last9Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last8Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last7Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last6Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last5Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last4Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last3Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.Last2Month
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.LastMonth
-        // );
-        // this.lineChartData.monthData.damagedItem.push(
-        //   data.LC.Damaged.ThisMonth
-        // );
-        // line chart data - end
-        // doughnut chart data - start
-        this.doughnutChartData.TodayLabels.push(data.Doughnut.Available.Name);
-        this.doughnutChartData.TodayLabels.push("Unavailable");
-        this.doughnutChartData.TodayData.push(
-          data.Doughnut.Today.AvailableItemCount
-        );
-        this.doughnutChartData.TodayData.push(
-          data.Doughnut.Today.UnAvailableItemCount
-        );
-
-        // doughnut chart data - end
       }
     });
     let workOrderdb = "http://localhost:3000/api/dashboard/workorderdb";
@@ -560,8 +486,38 @@ export default {
   },
 
   methods: {
-    getDate(date) {
+    dayClicked(day) {
+      this.selectedDay = day;
+      if (this.selectedDay.attributes.length > 0) {
+        // alert(JSON.stringify(this.selectedDay));
+        // alert(
+        //   JSON.stringify(
+        //     this.selectedDay.attributes[0].popover.label.MaintainDate
+        //   )
+        // );
+
+        this.selectedDay.attributes.forEach(tmp => {
+          this.maintainItems.push(tmp.popover.label);
+        });
+
+        // alert(this.maintainItems[0].Name);
+        this.addPopUp = true;
+      }
+    },
+    setShowDate(d) {
+      this.showDate = d;
+    },
+    getFormatDate(date) {
       return moment(date).format("L");
+    },
+    getDay(date) {
+      return moment(date).day;
+    },
+    getMonth(date) {
+      return moment(date).month;
+    },
+    getYear(date) {
+      return moment(date).year;
     }
   },
   watch: {
@@ -576,7 +532,7 @@ export default {
     },
     linechartOption: function() {
       Vue.nextTick(() => {
-        if (this.linechartOption == "order") {
+        if (this.linechartOption) {
           this.lineChartData.labels = [];
           this.lineChartData.monthData = [];
 
@@ -591,8 +547,8 @@ export default {
             this.lineChartData.monthData[1].push(quanMa)
           );
 
-          alert(this.lineChartData.labels[0]);
-        } else if (this.linechartOption == "eqt") {
+          // alert(this.lineChartData.labels[0]);
+        } else {
           this.lineChartData.labels = [];
           this.lineChartData.monthData = [];
 
@@ -607,8 +563,9 @@ export default {
           this.mainWoMonths.forEach(quanLo =>
             this.lineChartData.monthData[1].push(quanLo)
           );
-        } else {
+          // alert(this.lineChartData.labels[0]);
         }
+        this.$refs.lineChart.update(this.lineChartData);
       });
     }
   }
@@ -616,6 +573,28 @@ export default {
 </script>
 
 <style scoped>
+.title-modal {
+  font-size: 24px;
+  font-weight: bold;
+}
+#calendar {
+  /* font-family: "Avenir", Helvetica, Arial, sans-serif;
+  color: #2c3e50;
+  padding-top: 7px;
+  /* height: 37vh; */
+  /* width: 32.1vw;  */
+  /* height: 1000px; */
+}
+#header-mainCalen {
+  text-align: center;
+  height: 50px;
+  line-height: 50px;
+  color: var(--dark-background);
+  font-size: 20px;
+  font-weight: bold;
+
+  background-color: #eeeeee;
+}
 .dashboard-tile {
   /* border: 1px solid #bdbdbd; */
   height: 200px;
