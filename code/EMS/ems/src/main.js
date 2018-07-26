@@ -9,6 +9,8 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import VueBar from "vuebar";
 import router from "./router";
 import store from "./store";
+import CroudGantt from 'croud-vue-gantt'
+import VueWaypoint from 'vue-waypoint'
 import "./styles/style.scss";
 import * as VueGoogleMaps from "vue2-google-maps";
 import iView from "iview";
@@ -40,6 +42,8 @@ Vue.use(VueGoogleMaps, {
 Vue.use(VueAxios, axios);
 Vue.use(Vuetify);
 Vue.use(iView);
+Vue.use(CroudGantt);
+Vue.use(VueWaypoint);
 Vue.component("v-bar", VueBar);
 
 Vue.config.productionTip = false;

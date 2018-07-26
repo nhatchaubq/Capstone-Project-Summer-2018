@@ -29,12 +29,12 @@
                   <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer'" style="width: 60%; user-select: none">
                       <div class="row" style="margin: 0 !important; margin-bottom: 1rem">
                           <div class="view-mode col-4" 
-                                :class="{'view-mode-active': myWorkOrderViewMode}"
+                                :class="{'view-mode-active': $store.state.workOrderPage.myOrderViewMode}"
                                 v-on:click="() => {myWorkOrderViewMode = true}">
                               My Work Orders
                           </div>
                           <div class="view-mode col-4" 
-                                :class="{'view-mode-active': !myWorkOrderViewMode}"
+                                :class="{'view-mode-active': !$store.state.workOrderPage.myOrderViewMode}"
                                 v-on:click="() => {myWorkOrderViewMode = false}">
                               All
                           </div>
@@ -63,7 +63,7 @@
                     :style="{'max-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '62%' : '68.5%',
                             'height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '62%' : '68.5%',}">
               <div class="detail">
-                  <div class="detail-header" style="display: grid" :style="((selectedOrder.WorkOrderStatus == 'Requested' || selectedOrder.WorkOrderStatus == 'Rejected') && authUser.Id == selectedOrder.RequestUserID) ? 
+                  <div class="detail-header" style="display: grid" :style="((selectedOrder.WorkOrderStatus == 'Requested'|| selectedOrder.WorkOrderStatus == 'Checked' || selectedOrder.WorkOrderStatus == 'Rejected') && authUser.Id == selectedOrder.RequestUserID) ? 
                                                             'grid-template-columns: 16% 63% 21%;' : 'grid-template-columns: 16% 84%'">
                     <div style="padding-top: .5rem; padding-right: .5rem">
                         <span :style="`background-color: ${selectedOrder.PriorityColor}`" class="tag" style="color: white; width: 100%">
@@ -78,13 +78,13 @@
                     <!-- edit/cancel work order -->
                     <div style="margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="authUser.Id == selectedOrder.RequestUserID">
                         <!-- cancel work order -->
-                        <a  v-if="selectedOrder.WorkOrderStatus == 'Requested' || selectedOrder.WorkOrderStatus == 'Rejected'"
+                        <a  v-if="selectedOrder.WorkOrderStatus == 'Requested' || selectedOrder.WorkOrderStatus == 'Checked' || selectedOrder.WorkOrderStatus == 'Rejected'"
                             v-on:click="() => {
                                 showChangeStatusDialog = true;
                                 newStatusName = 'Cancelled';
                             }">Cancel</a> <!-- cancel work order -->
-                        <span v-if="selectedOrder.WorkOrderStatus == 'Rejected'">
-                            <span>&nbsp;|&nbsp;</span>
+                        <span v-if="selectedOrder.WorkOrderStatus == 'Requested' || selectedOrder.WorkOrderStatus == 'Rejected'">
+                            <span v-if="">&nbsp;|&nbsp;</span>
                             <!-- cancel work order -->
                             <a v-on:click="$router.push(`/work_order/edit/${selectedOrder.Id}`)">Edit</a> <!-- cancel work order -->
                         </span>
@@ -154,14 +154,14 @@
                       </div><!-- order detail view mode -->
                       <!-- detail view mode -->
                       <div v-if="viewDetailMode">
-                            <div class="detail-contents" style="width: 100%;">                                    
+                            <!-- <div class="detail-contents" style="width: 100%;">                                    
                                 <span class="detail-label">Created on: </span><span>{{ getDateWithTime(selectedOrder.CreateDate) }}</span>
                             </div>
                             <div class="detail-contents" style="width: 100%;">                                    
                                 <span class="detail-label">Requested by: </span><span> <router-link :to="`/account/${selectedOrder.RequestUserID}`">{{ selectedOrder.RequestUserID == authUser.Id ? 'You' : selectedOrder.RequestUsername }}</router-link>. </span><span class="detail-label">Team: </span><span> <router-link :to="`/team/${selectedOrder.Team.Id}`">{{ selectedOrder.Team.Name }}</router-link></span>
-                            </div>
+                            </div> -->
                             <div class="detail-contents" style="width: 100%;">                                    
-                                
+                                <span class="detail-label">Planning to start on </span><span>{{ getDate(selectedOrder.ExpectingStartDate) }}</span><span class="detail-label"> and will close on </span><span>{{ getDate(selectedOrder.ExpectingCloseDate) }}</span>
                             </div>
                             <div class="detail-contents" style="width: 100%;">
                                 <span class="detail-label">Equipments:</span> 
@@ -268,7 +268,7 @@
                                     <span class="tag" style="width: 5rem;" :class="getStatusColorClass(orderRecord.NewStatus.Name)">{{ orderRecord.NewStatus.Name }}</span> 
                                         by <span class="tag">{{ orderRecord.ModifiedUser.Id == authUser.Id ? 'You' :  `${orderRecord.ModifiedUser.Role} ${orderRecord.ModifiedUser.Username}` }}</span> on {{ getDate(orderRecord.ModifiedByDateTime) }}
                                         <div style="margin-left: 2.5rem; padding: 1rem 1rem;" :style="((index != (selectedOrder.WorkOrderRecord.length - 1)) || (index == (selectedOrder.WorkOrderRecord.length - 1) && orderRecord.Description)) ? 
-                                                                                                    `border-left: 2px solid ${getStatusColor(orderRecord.OldStatus.Name)}` : ''">
+                                                                                                    `border-left: 2px solid ${getStatusColor(orderRecord.NewStatus.Name)}` : ''">
                                             <span v-if="orderRecord.Description" class="quote">&ldquo;{{ orderRecord.Description }}&rdquo;</span>
                                         </div> 
                                 </div>
@@ -691,7 +691,8 @@ export default {
             this.filterOrders();
         },
         ORDER_STATUS_CHANGED: function(data) {
-            if (data.noNeedToRefreshWorkOrderUserId && this.authUser.Id != data.noNeedToRefreshWorkOrderUserId) {
+            if (!data.noNeedToRefreshWorkOrderUserId 
+                    || (data.noNeedToRefreshWorkOrderUserId && this.authUser.Id != data.noNeedToRefreshWorkOrderUserId)) {
                 this.getWorkOrders();
                 this.filterOrders();
             }
@@ -742,7 +743,7 @@ export default {
         socket: io(`http://localhost:3000`),
         errorUpdatePosition: '',
         tempValues: null, // to hold the original orders when apply filters
-        myWorkOrderViewMode: true,
+        myWorkOrderViewMode: null,
         toDisplayWorkOrders: [],
         myWorkOrders: [],
         workOrders: [], // orders data to display in orderblocks <order-block></order-block>
@@ -811,6 +812,7 @@ export default {
   },
   methods: {
     getWorkOrders() {
+        this.myWorkOrderViewMode = null;
         this.axios.get(Server.WORKORDER_API_PATH).then(response => {
             if (response.data.WorkOrders) {
                 let data = response.data.WorkOrders;
@@ -824,11 +826,11 @@ export default {
                     this.toDisplayWorkOrders = this.workOrders;
                     this.myWorkOrderViewMode = false;
                 }
+                // this.filterOrders();
                 if (this.selectedOrder) {
                     this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
-                }
-                if (this.$route.params && this.$route.params.orderId) {
-                    this.selectedOrder = data.filter(order => order.Id == this.$route.params.orderId)[0];
+                } else if (this.$route.params && this.$route.params.orderId) {
+                    this.selectedOrder = this.toDisplayWorkOrders.filter(order => order.Id == this.$route.params.orderId)[0];
                     if (this.selectedOrder) {
                         this.getEquipmentsOfWorkOrder(this.selectedOrder);
                     }
@@ -899,9 +901,10 @@ export default {
         // this.equipmentPanelIndex = -1;
         if (this.selectedOrder == order) {
             this.selectedOrder = null;
+            this.$router.replace('/work_order');
         } else {
             // this.viewDetailMode = true;
-            this.$router.push(`/work_order/${order.Id}`)
+            this.$router.replace(`/work_order/${order.Id}`)
             // this.selectedOrder = order;
             // get equipments in the selected work order - start
             // this.getEquipmentsOfWorkOrder(order);
@@ -1159,6 +1162,7 @@ export default {
             this.showCancelDialog = false;
             this.showApproveRejectDialog = false;
             this.showChangeStatusDialog = false;
+            this.newStatusName = null;
             this.getWorkOrders();
           }
         })
@@ -1248,7 +1252,6 @@ export default {
                         userId: this.authUser.Id,
                         itemId: value.item.Id,
                         newItemStatus: value.status,
-                        currentDate: moment(),
                         description: value.description,
                     });
                     if (response.status == 200) {
@@ -1318,8 +1321,11 @@ export default {
       }
     },
     'myWorkOrderViewMode': function() {
+        this.$store.state.workOrderPage.myOrderViewMode = this.myWorkOrderViewMode;
         this.selectedOrder = null;
+        this.$route.params.orderId = null;
         this.toDisplayWorkOrders = [];
+        this.$router.replace('/work_order');
         if (this.myWorkOrderViewMode) {
             this.toDisplayWorkOrders = this.myWorkOrders;
         } else {
@@ -1345,14 +1351,18 @@ export default {
             this.updateTile = null;
         }
     },
-    '$route.params.orderId': function() {
+    '$route.params': function() {
         if (this.$route.params.orderId) {
+            // if (this.$route.params.orderId == 'create') {
+            //     this.$router.push({name: 'create_work_order'});
+            // } else {
             let toSelectOrder = this.toDisplayWorkOrders.filter(order => order.Id == this.$route.params.orderId)[0];
             if (toSelectOrder) {
                 this.selectedOrder = toSelectOrder;
                 this.getEquipmentsOfWorkOrder(toSelectOrder);
                 this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == toSelectOrder.Location.Id)[0];
             }
+            // }
         }
     }
   }
@@ -1449,11 +1459,11 @@ export default {
 
 .order-detail {
   position: fixed;
-  left: 60%;
+  left: 59.5%;
   min-height: 75.5%;
   max-height: 75.5%;
   overflow-y: auto;
-  width: 38%;
+  width: 39%;
   z-index: 2;
 }
 

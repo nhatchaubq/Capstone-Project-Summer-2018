@@ -13,22 +13,7 @@
             </div>
         </div>
         <div class="form-content">
-            <div class="form-field is-horizonal">
-                <div class="form-field-title">Category: </div>
-                <!-- <label class="radio" :key="'category' + category.Id" v-for="category in categories" style="margin-right: 1rem;">
-                    <input required type="radio" name="category" 
-                    :disabled="authUser.RoleID == 6 && category.Name != 'Maintain'
-                              || authUser.RoleID == 5 && category.Name != 'Working'"
-                    :checked="authUser.RoleID == 6 && category.Name == 'Maintain' 
-                              || authUser.RoleID == 5 && category.Name == 'Working'">
-                    {{ category.Name }}
-                </label> -->
-                <RadioGroup v-model.trim="workOrderCategory" type="button" style="user-select: none">
-                  <Radio :disabled="authUser.Role != 'Staff'" label="Working"></Radio>
-                  <Radio :disabled="authUser.Role != 'Maintainer'" label="Maintain"></Radio>
-                </RadioGroup>
-            </div>
-            <div class="form-field is-horizonal">
+            <div class="form-field is-horizonal" style="margin-top: 1rem;">
                 <div class="form-field-title" style="margin-right: 1rem">Priority:</div> 
                 <label class="radio" :key="'priority' + priority.Id" v-for="priority in priorities" v-on:click="workOrderPriority = priority.Id" style="margin-right: 1rem; user-select: none;">
                     <input type="radio" name="priority" :checked="priority.Id == workOrderPriority" style="margin-right: .3rem;">
@@ -65,41 +50,41 @@
                     You are not a team leader of any teams in <strong style="font-style: italic">{{ selectedLocation.text }}</strong>
                 </div>
             </div> <!-- select team from selected location -->
+            <div class="form-field">
+                <div class="form-field-title">
+                    Choose a start date and close date for this Work Order<span v-if="CreateWorkOrderErrors.NoWorkOrderDateRange != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoWorkOrderDateRange }}</span></span>
+                </div>
+                <div class="form-field-input">
+                    <date-picker v-model="workOrderDateRange" :not-before="new Date()" :editable="false" 
+                              style="width: 40%; font-size: 1rem" :shortcuts="false" range lang="en" format="MM/DD/YYYY" 
+                              range-separator="-" 
+                              :style="CreateWorkOrderErrors.NoWorkOrderDateRange != '' ? 'border: 1px solid var(--danger-color); border-radius: 5px' : ''"></date-picker>
+                </div>
+            </div>
             <!-- select equipments - start -->
             <div class="form-field" style="padding-bottom: 0 !important">
               <div class="form-field-title">
-                <span style="position: relative; top: .5rem; margin-right: .2rem;">Choose equipment(s) (required) (press </span><button style="border-radius: 50% !important; z-index: 1;" class="button btn-primary material-shadow-animate"><i class="fa fa-plus"></i></button><span style="position: relative; top: .5rem; margin-left: .2rem"> after select)</span>
+                <span style="position: relative; top: .5rem; margin-right: .2rem;">Choose equipment(s) (press </span><button style="border-radius: 50% !important; z-index: 1;" class="button btn-primary material-shadow-animate"><i class="fa fa-plus"></i></button><span style="position: relative; top: .5rem; margin-left: .2rem"> in the panel below after select to add equipment) (required)</span>
                 <span style="position: relative; top: .5rem;" v-if="CreateWorkOrderErrors.NoEquipmentSelected != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoEquipmentSelected }}</span></span>
               </div>
             </div>
             <div class="form-field">
               <!-- header -->
-              <div class="" style="display: grid; grid-template-columns: 40% 8% 18% 18% 10%; grid-column-gap: 1%; margin-bottom: .5rem">
+              <div class="" style="display: grid; grid-template-columns: 40% 10% 10%;; grid-column-gap: 1%; margin-bottom: .5rem">
                 <div>Equipment</div>
                 <div style="width: 100%; text-align: center">Quantity</div>
-                <div>From</div>
-                <div>To</div>
                 <div></div>
               </div> <!-- header -->
               <!-- display selected equipment items -->
               <div :key="'selectedEquipment' + selectedEquipment.id" v-for="selectedEquipment in selectedEquipments">
                 <!-- display errors -->
-                <div style="display: grid; grid-template-columns: 40% 8% 18% 18% 10%; grid-column-gap: 1%; margin-bottom: 1rem;">
+                <div style="display: grid; grid-template-columns: 40% 10% 10%;; grid-column-gap: 1%; margin-bottom: 1rem;">
                   <div></div>
-                  <div></div>
-                  <div>
-                    <div class="error-text" v-if="selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate != ''">
-                      {{ selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate }}
-                    </div>
-                    <div class="error-text" v-if="selectedEquipment.addEquipmentWarnings.FromDateIsFromThePast != ''">
-                      {{ selectedEquipment.addEquipmentWarnings.FromDateIsFromThePast }}
-                    </div>
-                  </div>
                   <div></div>
                   <div></div>
                 </div><!-- display errors -->
                 <!-- display equipments -->
-                <div style="display: grid; grid-template-columns: 40% 8% 18% 18% 10%; grid-column-gap: 1%; margin-bottom: 1rem;">
+                <div style="display: grid; grid-template-columns: 40% 10% 10%;; grid-column-gap: 1%; margin-bottom: 1rem;">
                   <div style="padding-left: 1rem; display: grid; grid-template-columns: 5rem auto; grid-column-gap: 1rem;">
                     <img style="width: 100%; height: 5rem;" :src="selectedEquipment.image" alt="">
                     <div style="">
@@ -112,7 +97,7 @@
                                     'border: 1px solid var(--danger-color)' : ''"
                             type="number" min="0" :max="selectedEquipment.totalQuantity" 
                             v-model.trim="selectedEquipment.quantity" 
-                            v-on:change="() => {
+                            v-on:input="() => {
                               if (selectedEquipment.quantity === '') {
                                   selectedEquipment.quantity = 0;
                                   selectedEquipment.equipmentItemIds = [];
@@ -124,16 +109,15 @@
                                   selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = ErrorStrings.SelectedEquipmentQuantityIsZero;
                                 } else {
                                   //if (this.selectedEquipment.value != '' && this.selectedEquipment.totalQuantity > 0) {
-                                    var currentQuantity = parseInt(selectedEquipment.quantity);
-                                    let equipmentQuantity = parseInt(selectedEquipment.totalQuantity);
-                                    if (currentQuantity < 0) {
+                                    let equipmentTotalQuantity = parseInt(selectedEquipment.totalQuantity);
+                                    if (parseInt(selectedEquipment.quantity) < 0) {
                                       selectedEquipment.quantity = 0;
-                                    } else if (currentQuantity > equipmentQuantity) {
-                                      selectedEquipment.quantity = equipmentQuantity;
+                                    } else if (parseInt(selectedEquipment.quantity) > equipmentTotalQuantity) {
+                                      selectedEquipment.quantity = equipmentTotalQuantity;
                                     }
 
                                     // if the selectedEquipmentQuantity = 0, we should display a warning to user
-                                    if (currentQuantity == 0) {
+                                    if (parseInt(selectedEquipment.quantity) == 0) {
                                       selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = ErrorStrings.SelectedEquipmentQuantityIsZero;
                                       selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
                                       selectedEquipment.equipmentItemIds = [];
@@ -145,8 +129,8 @@
                                       selectedEquipment.indeterminate = true;
                                       // if the selectedEquipmentQuantity is greater than selectedEquipmentItemIds.length
                                       //, it means we should add the next item to selectedEquipmentItemIds
-                                      if (currentQuantity > selectedEquipment.equipmentItemIds.length) {
-                                        while(selectedEquipment.equipmentItemIds.length != currentQuantity) {
+                                      if (parseInt(selectedEquipment.quantity) > selectedEquipment.equipmentItemIds.length) {
+                                        while(selectedEquipment.equipmentItemIds.length != parseInt(selectedEquipment.quantity)) {
                                           let tempItems = selectedEquipment.equipmentItemList;
                                           selectedEquipment.equipmentItemIds.forEach(itemId => {
                                             tempItems = tempItems.filter(item => item.Id != itemId);
@@ -157,131 +141,24 @@
                                           selectedEquipment.indeterminate = false;
                                           selectedEquipment.checkAllItems = true;
                                         } 
-                                      } else if (currentQuantity < selectedEquipment.equipmentItemIds.length) {
+                                      } else if (parseInt(selectedEquipment.quantity) < selectedEquipment.equipmentItemIds.length) {
                                         // the code below will simply pop the last id out of the list, so if user has pick an equipment by hand (not using the number input)
                                         // and then use the number input, the item is not automatically calculate to choose the best ideal one
                                         // in other words, the order of item will not be the best ideal order the algorithm should give out
                                         // then the user would see item unchecks in the incorrect descending order
                                         // but i think we should respect the user's choice
-                                        while(selectedEquipment.equipmentItemIds.length != currentQuantity) {
+                                        while(selectedEquipment.equipmentItemIds.length != parseInt(selectedEquipment.quantity)) {
                                           selectedEquipment.equipmentItemIds.pop();
                                         }
                                       }
                                       selectedEquipment.conflictItems = [];
                                       selectedEquipment.unableSelectItems = [];
-                                      // check if from date conflicts any item in work orders
-                                      let tempItems = [];
-                                      // get the selected items in equipmentTable to tempItems
-                                      selectedEquipment.equipmentItemIds.forEach(itemId => {
-                                        tempItems = tempItems.concat(selectedEquipment.equipmentItemList.filter(item => item.Id == itemId));
-                                      })
-                                      // get the selected items in equipmentTable to tempItems
-                                      checkSelectedItemDateConflict(tempItems, selectedEquipment.conflictItems, selectedEquipment.unableSelectItems,
-                                                    getMilis(selectedEquipment.fromDate), getMilis(selectedEquipment.toDate));
-                                      if (selectedEquipment.conflictItems.length == 0) {
-                                        selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                                      } else {
-                                        selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = ErrorStrings.SelectedDateConflictWorkOrders;
-                                      }
-                                      if (selectedEquipment.unableSelectItems.length == 0) {
-                                        selectedEquipment.addEquipmentWarnings.UnableToSelectItem = '';
-                                      } else {
-                                        selectedEquipment.addEquipmentWarnings.UnableToSelectItem = ErrorStrings.UnableToSelectItem;
-                                      }
+                                      checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList, 
+                                                                selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
+                                                                selectedEquipment.addEquipmentWarnings);
                                     }          
                                   //}
                                 }
-                    }">
-                  </div>
-                  <div>
-                    <input :disabled="!selectedEquipment.editMode" type="date" 
-                            :style="(selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate != '') 
-                                  || (selectedEquipment.addEquipmentWarnings.FromDateIsFromThePast != '') 
-                                  || (selectedEquipment.addEquipmentWarnings.UnableToSelectItem != '') ?
-                                'border: 1px solid var(--danger-color)' : (selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 
-                                'border: 1px solid var(--warning-color)' : ''" 
-                            class="input" v-model.trim="selectedEquipment.fromDate"
-                            v-on:change="() => {
-                      if (selectedEquipment.fromDate === '') {
-                        selectedEquipment.fromDate = this.getToday();
-                      } else {
-                        let fromDate = getMilis(selectedEquipment.fromDate);
-                        let toDate = getMilis(selectedEquipment.toDate);
-                        if (fromDate < getMilis(getToday())) {
-                          selectedEquipment.addEquipmentWarnings.FromDateIsFromThePast = ErrorStrings.FromDateIsFromThePast;
-                        } else {
-                          selectedEquipment.addEquipmentWarnings.FromDateIsFromThePast = '';
-                        }
-                        if (fromDate > toDate) {
-                          selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate = ErrorStrings.FromDateIsLargerThanToDate;
-                        } else if (fromDate <= toDate) {
-                          selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate = '';
-
-                          selectedEquipment.conflictItems = [];
-                          selectedEquipment.unableSelectItems = [];
-                          // check if from date conflicts any item in work orders
-                          let tempItems = [];
-                          // get the selected items in equipmentTable to tempItems
-                          selectedEquipment.equipmentItemIds.forEach(itemId => {
-                            tempItems = tempItems.concat(selectedEquipment.equipmentItemList.filter(item => item.Id == itemId));
-                          })
-                          // get the selected items in equipmentTable to tempItems
-                          checkSelectedItemDateConflict(tempItems, selectedEquipment.conflictItems, selectedEquipment.unableSelectItems,
-                                        getMilis(selectedEquipment.fromDate), getMilis(selectedEquipment.toDate));
-                          if (selectedEquipment.conflictItems.length == 0) {
-                            selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                          } else {
-                            selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = ErrorStrings.SelectedDateConflictWorkOrders;
-                          }
-                          if (selectedEquipment.unableSelectItems.length == 0) {
-                            selectedEquipment.addEquipmentWarnings.UnableToSelectItem = '';
-                          } else {
-                            selectedEquipment.addEquipmentWarnings.UnableToSelectItem = ErrorStrings.UnableToSelectItem;
-                          }
-                        }
-                      }
-                    }">
-                  </div>
-                  <div>
-                    <input :disabled="!selectedEquipment.editMode" type="date" 
-                            :style="(selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate != '') 
-                                  || (selectedEquipment.addEquipmentWarnings.UnableToSelectItem != '') ?
-                                'border: 1px solid var(--danger-color)' : (selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 
-                                'border: 1px solid var(--warning-color)' : ''" 
-                            class="input" v-model.trim="selectedEquipment.toDate" 
-                            v-on:change="() => {
-                      if (selectedEquipment.toDate === '') {
-                        selectedEquipment.toDate = this.getToday();
-                      } else {
-                        let fromDate = getMilis(selectedEquipment.fromDate);
-                        let toDate = getMilis(selectedEquipment.toDate);
-                        if (fromDate > toDate) {
-                          selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate = ErrorStrings.FromDateIsLargerThanToDate;
-                        } else if (fromDate <= toDate) {
-                          selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate = '';
-                          selectedEquipment.conflictItems = [];
-                          selectedEquipment.unableSelectItems = [];
-                          // check if from date conflicts any item in work orders
-                          let tempItems = [];
-                          // get the selected items in equipmentTable to tempItems
-                          selectedEquipment.equipmentItemIds.forEach(itemId => {
-                            tempItems = tempItems.concat(selectedEquipment.equipmentItemList.filter(item => item.Id == itemId));
-                          })
-                          // get the selected items in equipmentTable to tempItems
-                          checkSelectedItemDateConflict(tempItems, selectedEquipment.conflictItems, selectedEquipment.unableSelectItems,
-                                        getMilis(selectedEquipment.fromDate), getMilis(selectedEquipment.toDate));
-                          if (selectedEquipment.conflictItems.length == 0) {
-                            selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                          } else {
-                            selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = ErrorStrings.SelectedDateConflictWorkOrders;
-                          }
-                          if (selectedEquipment.unableSelectItems.length == 0) {
-                            selectedEquipment.addEquipmentWarnings.UnableToSelectItem = '';
-                          } else {
-                            selectedEquipment.addEquipmentWarnings.UnableToSelectItem = ErrorStrings.UnableToSelectItem;
-                          }
-                        }
-                      }                   
                     }">
                   </div>
                   <div style="padding-top: .5rem; text-align: center;">
@@ -389,28 +266,11 @@
                                       selectedEquipment.checkAllItems = true;
                                   }
                                 }
-                                
                                 selectedEquipment.conflictItems = [];
                                 selectedEquipment.unableSelectItems = [];
-                                // check if from date conflicts any item in work orders
-                                let tempItems = [];
-                                // get the selected items in equipmentTable to tempItems
-                                selectedEquipment.equipmentItemIds.forEach(itemId => {
-                                  tempItems = tempItems.concat(selectedEquipment.equipmentItemList.filter(item => item.Id == itemId));
-                                })
-                                // get the selected items in equipmentTable to tempItems
-                                checkSelectedItemDateConflict(tempItems, selectedEquipment.conflictItems, selectedEquipment.unableSelectItems,
-                                              getMilis(selectedEquipment.fromDate), getMilis(selectedEquipment.toDate));
-                                if (selectedEquipment.conflictItems.length == 0) {
-                                  selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                                } else {
-                                  selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = ErrorStrings.SelectedDateConflictWorkOrders;
-                                }
-                                if (selectedEquipment.unableSelectItems.length == 0) {
-                                  selectedEquipment.addEquipmentWarnings.UnableToSelectItem = '';
-                                } else {
-                                  selectedEquipment.addEquipmentWarnings.UnableToSelectItem = ErrorStrings.UnableToSelectItem;
-                                }
+                                checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList,
+                                                            selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
+                                                            selectedEquipment.addEquipmentWarnings);
                               //}
                             }" :class="{'row-even': (itemIndex + 1) % 2 == 0,
                                         'row-odd': (itemIndex + 1) % 2 != 0}"
@@ -435,17 +295,17 @@
                                  'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
                                  'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems)),
                                  'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems))}"> <!-- work order name -->
-                          {{ workOrder.Id == editWorkOrder.Id ? 'This order' : workOrder.Name }}
+                          {{ editWorkOrder.Id == workOrder.Id ? 'This work order' : workOrder.Name }}
                           <span>[{{ workOrder.Status }}]</span>
                         </td>
                         <td :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
                                  'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
                                  'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems)),
-                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems))}">{{ getDate(workOrder.Detail.ExpectingStartDate) }}</td> <!-- work order detail from date -->
+                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems))}">{{ getDate(workOrder.ExpectingStartDate) }}</td> <!-- work order detail from date -->
                         <td :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
                                     'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
                                     'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems)),
-                                    'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems))}">{{ getDate(workOrder.Detail.ExpectingDueDate) }}</td> <!-- work order detail to date -->
+                                    'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems))}">{{ getDate(workOrder.ExpectingCloseDate) }}</td> <!-- work order detail to date -->
                         <!-- equipment item runtime days -->
                         <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
                           {{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}
@@ -460,7 +320,7 @@
                         </td>
                         <!-- equipment item locatoin -->
                         <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                          {{ equipmentItem.Location ? equipmentItem.Location : 'n/a' }}
+                          {{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}
                         </td>
                       </tr> <!-- work order detail --> <!-- if equipment item is in some work order -->
                       <!-- else -->
@@ -476,7 +336,7 @@
                         <td>{{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}</td>
                         <td>{{ equipmentItem.LastMaintainDate ? getDate(equipmentItem.LastMaintainDate) : 'n/a' }}</td>
                         <td>{{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}</td>
-                        <td>{{ equipmentItem.Location ? equipmentItem.Location : 'n/a' }}</td>
+                        <td>{{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}</td>
                       </tr> <!-- else -->
                     </tbody>
                   </table>
@@ -485,28 +345,24 @@
               <!-- display selected equipment items - end -->                           
             </div> 
             <!-- display errors -->
-            <div class="form-field" style="padding-bottom: 0; margin-bottom: 0rem; display: grid; grid-template-columns: 40% 8% 18% 18% 10%; grid-column-gap: 1%;">   
+            <div class="form-field" style="padding-bottom: 0; margin-bottom: 0rem; display: grid; grid-template-columns: 40% 10% 10%; grid-column-gap: 1%;">   
               <div>
               <!-- display error for not select equipment -->
                 <div class="strong-warning-text">{{ AddEquipmentWarnings.MustSelectEquipment }}</div>
                 <div class="strong-warning-text">{{ AddEquipmentWarnings.AvailableQuantityIsZero }}</div>
               </div>
               <div></div>
-              <div>
-                <div class="strong-warning-text">{{ AddEquipmentWarnings.FromDateIsLargerThanToDate }}</div>
-                <div class="strong-warning-text">{{ AddEquipmentWarnings.FromDateIsFromThePast }}</div>
-              </div>
-              <div></div>
               <div></div>
             </div> <!-- display errors --> 
             <!-- add equipment panel -->
-            <div style="background: #eee">
-              <div class="form-field" style="display: grid; grid-template-columns: 40% 8% 18% 18% 10%; grid-column-gap: 1%;">                
+            <div style="background: #eee;">
+              <div class="form-field" style="display: grid; grid-template-columns: 40% 10% 10%;; grid-column-gap: 1%;">                
                 <div class="form-field-input">
                   <div style="width: 100%">
                     <model-select :style="(AddEquipmentWarnings.MustSelectEquipment != '' 
                                           || AddEquipmentWarnings.AvailableQuantityIsZero != '') ?
-                                            'border: 1px solid var(--strong-warning-color)' : ''" :options="toDisplayEquipmentOptions" placeholder="Select an equipment" v-model.trim="selectedEquipment"></model-select>
+                                            'border: 1px solid var(--strong-warning-color)' : ''" 
+                                            :options="toDisplayEquipmentOptions" placeholder="Select an equipment" v-model.trim="selectedEquipment"></model-select>
                   </div>
                 </div>  
                 <div class="form-field-input">
@@ -514,21 +370,8 @@
                         type="number" :disabled="selectedEquipment.totalQuantity == 0" min="0" :max="selectedEquipment.totalQuantity" class="input" v-model.trim="selectedEquipmentQuantity">
                 </div>
                 <div>
-                  <input :style="(AddEquipmentWarnings.FromDateIsLargerThanToDate != '') 
-                                  || (AddEquipmentWarnings.FromDateIsFromThePast != '') 
-                                  || (AddEquipmentWarnings.UnableToSelectItem != '') ? 'border: 1px solid var(--strong-warning-color)' :
-                                      (AddEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 'border: 1px solid var(--warning-color)'
-                                      : ''" class="input" type="date" v-model.trim="selectedEquipmentFromDate">
-                </div>
-                <div>
-                  <input :style="(AddEquipmentWarnings.FromDateIsLargerThanToDate != '') 
-                                  || (AddEquipmentWarnings.UnableToSelectItem != '')? 'border: 1px solid var(--strong-warning-color)' :
-                                      (AddEquipmentWarnings.SelectedDateConflictWorkOrders != '') ? 'border: 1px solid var(--warning-color)'
-                                      : ''" class="input" type="date" v-model.trim="selectedEquipmentToDate">
-                </div>
-                <div>
-                  <button v-on:click="addEquipment(false, selectedEquipment, selectedEquipmentQuantity, selectedEquipmentFromDate, selectedEquipmentToDate, selectedEquipmentItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, AddEquipmentWarnings)" 
-                        style="margin-left: .5rem; border-radius: 50% !important;" class="button btn-primary material-shadow-animate"><i class="fa fa-plus"></i></button>
+                  <!-- <a v-on:click="addEquipment()" style="position: relative; top: .5rem;" class="btn-plus"><i class="fa fa-plus"></i></a> -->
+                  <button v-on:click="addEquipment()" style="margin-left: .5rem; border-radius: 50% !important;" class="button btn-primary material-shadow-animate"><i class="fa fa-plus"></i></button>
                   <button v-on:click="() => {
                       selectedEquipment = {
                         text: '',
@@ -611,17 +454,17 @@
                                  'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
                                  'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems)),
                                  'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems))}"> <!-- work order name -->
-                      {{ workOrder.Id == editWorkOrder.Id ? 'This order' : workOrder.Name }}
+                      {{ workOrder.Name }}
                       <span>[{{ workOrder.Status }}]</span>
                     </td>
                     <td :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
                                  'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
                                  'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems)),
-                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems))}">{{ getDate(workOrder.Detail.ExpectingStartDate) }}</td> <!-- work order detail from date -->
+                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems))}">{{ getDate(workOrder.ExpectingStartDate) }}</td> <!-- work order detail from date -->
                     <td :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
                                  'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
                                  'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems)),
-                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems))}">{{ getDate(workOrder.Detail.ExpectingDueDate) }}</td> <!-- work order detail to date -->
+                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems))}">{{ getDate(workOrder.ExpectingCloseDate) }}</td> <!-- work order detail to date -->
                     <!-- equipment item runtime days -->
                     <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
                       {{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}
@@ -636,7 +479,7 @@
                     </td>
                     <!-- equipment item locatoin -->
                     <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                      {{ equipmentItem.Location ? equipmentItem.Location : 'n/a' }}
+                      {{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}
                     </td>
                   </tr> <!-- work order detail --> <!-- if equipment item is in some work order -->
                   <!-- else -->
@@ -652,7 +495,7 @@
                     <td>{{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}</td>
                     <td>{{ equipmentItem.LastMaintainDate ? getDate(equipmentItem.LastMaintainDate) : 'n/a' }}</td>
                     <td>{{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}</td>
-                    <td>{{ equipmentItem.Location ? equipmentItem.Location : 'n/a' }}</td>
+                    <td>{{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}</td>
                   </tr> <!-- else -->
                 </tbody>
               </table>
@@ -663,7 +506,7 @@
                     Describe this work order (optional)
                 </div>
                 <div class="form-field-input">
-                    <textarea class="input" rows="5" v-model.trim="editWorkOrder.Description"></textarea>
+                    <textarea class="input" rows="5" v-model.trim="description"></textarea>
                 </div>
             </div> <!-- describe work order -->
         </div>
@@ -676,10 +519,11 @@ import Utils from "@/utils.js";
 import moment from "moment";
 import { ModelSelect } from "vue-search-select";
 import Simplert from "vue2-simplert";
+import DatePicker from 'vue2-datepicker';
 
 export default {
     components: {
-        ModelSelect, Simplert
+        ModelSelect, Simplert, DatePicker
     },
     data() {
         return {
@@ -687,9 +531,10 @@ export default {
             editWorkOrder: null,
             sending: false,
             ErrorStrings: {
+                InvalidTitleLength: 'Title must be from 6 to 50 characters',
                 MustSelectEquipment: 'You must select an equipment',
-                FromDateIsLargerThanToDate: 'From date is larger than to date',
                 AvailableQuantityIsZero: 'This equipment has no available units',
+                NoTitle: 'You must provide a title for this order',
                 NoEquipmentSelected: 'You must select at least one equipment',
                 NoLocation: 'You must select a location',
                 NoTeam: 'You must select a team in the selected location',
@@ -698,26 +543,27 @@ export default {
                                                     + '\nPlease reconsider choosing another date or the managers may reject your order.',
                 FromDateIsFromThePast: 'From date can not be in the past',
                 UnableToSelectItem: "You can not select items that are in work orders with status 'Approved' or 'In Progress' between your from date and to date",
+                NoWorkOrderDateRange: 'You must select expecting start date and expecting end date of this work order'
             },
             AddEquipmentWarnings: {
                 MustSelectEquipment: '',
-                FromDateIsLargerThanToDate: '',
                 AvailableQuantityIsZero: '',
                 SelectedEquipmentQuantityIsZero: '',
                 SelectedDateConflictWorkOrders: '',
-                FromDateIsFromThePast: '',
                 UnableToSelectItem: '',
             },
             CreateWorkOrderErrors: {
+                NoTitle: '',
+                InvalidTitleLength: '',
                 NoEquipmentSelected: '',
+                NoWorkOrderDateRange: '',
                 EquipmentErrors: [],
-                NoLocation: '',
-                NoTeam: '',
+                NoLocation: "",
+                NoTeam: ""
             },
             workOrderPriority: 1,
+            workOrderDateRange: [null, null],
             selectedEquipmentQuantity: 0,
-            selectedEquipmentFromDate: "",
-            selectedEquipmentToDate: "",
             selectedEquipments: [],
             toDisplayEquipmentOptions: [],
             selectedLocation: {
@@ -745,6 +591,7 @@ export default {
             indeterminate: true,
             conflictItems: [],
             unableSelectItems: [],
+            description: '',
         };
     },
     computed: {
@@ -766,6 +613,8 @@ export default {
             .then((res) => {
                 if (res.status == 200) {
                     context.editWorkOrder = res.data;
+                    context.workOrderDateRange[0] = context.editWorkOrder.ExpectingStartDate;
+                    context.workOrderDateRange[1] = context.editWorkOrder.ExpectingCloseDate;
                     // get work order priorities
                     context.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(res => {
                         if (res.data) {
@@ -825,8 +674,6 @@ export default {
                             context.editWorkOrder.Equipments.forEach(eq => {
                                 let equipmentOption = context.equipmentOptions.filter(op => parseInt(op.value) == parseInt(eq.Id))[0];
                                 let itemQuantity = eq.EquipmentItems.length;
-                                let fromDate = moment(eq.OrderDetail.ExpectingStartDate).format('YYYY-MM-DD');
-                                let toDate = moment(eq.OrderDetail.ExpectingDueDate).format('YYYY-MM-DD');
                                 let selectedItemIds = [];
                                 eq.EquipmentItems.forEach(item => {
                                     selectedItemIds.push(item.Id);
@@ -846,39 +693,20 @@ export default {
                                 // check if from date conflicts any item in work orders - start
                                 let conflictItems = [];
                                 let unableSelectItems = [];
-                                let tempItems = [];
-                                selectedItemIds.forEach(itemId => {
-                                    tempItems = tempItems.concat(equipmentTable.filter(item => item.Id == itemId));
-                                })
-                                // get the selected items in equipmentTable to tempItems
-                                context.checkSelectedItemDateConflict(tempItems, conflictItems, unableSelectItems,
-                                                    context.getMilis(eq.OrderDetail.ExpectingStartDate), context.getMilis(eq.OrderDetail.ExpectingDueDate));
-                                if (conflictItems.length == 0) {
-                                    addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                                } else {
-                                    addEquipmentWarnings.SelectedDateConflictWorkOrders = context.ErrorStrings.SelectedDateConflictWorkOrders;
-                                }
-                                if (unableSelectItems.length == 0) {
-                                    addEquipmentWarnings.UnableToSelectItem = '';
-                                } else {
-                                    addEquipmentWarnings.UnableToSelectItem = context.ErrorStrings.UnableToSelectItem;
-                                } // check if from date conflicts any item in work orders - end
+                                context.checkItemsIsSafeToSelect(selectedItemIds, equipmentTable, conflictItems, unableSelectItems, addEquipmentWarnings)
                                 
-                                context.addEquipment(true, equipmentOption, itemQuantity, fromDate, toDate, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, addEquipmentWarnings);
+                                context.addEquipment(true, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, addEquipmentWarnings);
                             })
                         }
                     });// get all equipments to display options
                 }
-            });       
-        
-        this.selectedEquipmentFromDate = this.getToday();
-        this.selectedEquipmentToDate = this.getToday();
+            });               
     },
     methods: {
         cancel() {
             this.$router.push("/work_order");
         },
-        addEquipment(editOrder, equipmentOption, itemQuantity, fromDate, toDate, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, addEquipmentWarnings) {
+        addEquipment(editOrder, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, addEquipmentWarnings) {
             if (equipmentOption.value == "") {
                 this.AddEquipmentWarnings.MustSelectEquipment = this.ErrorStrings.MustSelectEquipment;
             } 
@@ -900,8 +728,6 @@ export default {
                             totalQuantity: parseInt(
                                 equipmentOption.totalQuantity
                             ),
-                            fromDate: fromDate,
-                            toDate: toDate,
                             equipmentItemIds: selectedItemIds,
                             editMode: false,
                             indeterminate: indeterminate,
@@ -964,15 +790,17 @@ export default {
                                     if (res.data.Id) {
                                         let result = res.data.Id;
                                         // update team location
-                                        context.axios.put(`http://localhost:3000/api/work_order/team_location/${context.editWorkOrder.Id}`, {
-                                            teamLocationId: result
+                                        context.axios.put(`http://localhost:3000/api/work_order/${context.editWorkOrder.Id}`, {
+                                            teamLocationId: result,
+                                            expectingStartDate: context.workOrderDateRange[0],
+                                            expectingCloseDate: context.workOrderDateRange[1],
                                         });
                                         let url = `${Server.WORKORDER_API_PATH}/status/${context.editWorkOrder.Id}`;
                                         context.axios
                                             .put(url, {
                                                 userId: context.authUser.Id,
                                                 newStatusName: 'Requested',
-                                                description: context.editWorkOrder.Description.trim(),
+                                                description: context.description.trim() == '' ? null : context.description.trim(),
                                             });
 
                                         // add updated work order details
@@ -1000,7 +828,7 @@ export default {
                                         })
                                         context.sending = false;
                                         if (check) {
-                                            const notificationContent = `<strong>${context.authUser.Username}</strong> re-requested work order <strong>${context.editWorkOrder.Name}</strong>`;
+                                            const notificationContent = `<strong>${context.authUser.Username}</strong> updated work order <strong>${context.editWorkOrder.Name}</strong>`;
                                             let metaData = {
                                                 page: 'work_order',
                                                 elementId: context.editWorkOrder.Id,
@@ -1048,23 +876,22 @@ export default {
             }
         },
         validateAddEquipment() {
-            return this.AddEquipmentWarnings.MustSelectEquipment === '' && this.AddEquipmentWarnings.FromDateIsLargerThanToDate === ''
-                    && this.AddEquipmentWarnings.AvailableQuantityIsZero === '' && this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero === ''
-                    && this.AddEquipmentWarnings.FromDateIsFromThePast === '' && this.AddEquipmentWarnings.UnableToSelectItem === '';
+            return this.AddEquipmentWarnings.MustSelectEquipment === '' && this.AddEquipmentWarnings.AvailableQuantityIsZero === '' 
+                    && this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero === '' && this.AddEquipmentWarnings.UnableToSelectItem === '';
         },
         validateUpdateOrder() {  
             var checkSelectedItems = true; // check if currently there is no error messages of items are displaying
             for (var i = 0; i < this.selectedEquipments.length; i++) {
                 let selectedEquipment = this.selectedEquipments[i];
-                if (selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != '' 
-                    || selectedEquipment.addEquipmentWarnings.FromDateIsLargerThanToDate != ''
+                if (selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != ''
                     || selectedEquipment.addEquipmentWarnings.UnableToSelectItem != '') {
-                    checkSelectedItems = false;
-                    break;
+                checkSelectedItems = false;
+                selectedEquipment.editMode = true;
                 }
             }
             return this.CreateWorkOrderErrors.NoEquipmentSelected === ''
                     && this.CreateWorkOrderErrors.NoLocation === '' && this.CreateWorkOrderErrors.NoTeam === ''
+                    && this.CreateWorkOrderErrors.NoWorkOrderDateRange === ''
                     && checkSelectedItems;
         },
         getMilis(date) {
@@ -1075,9 +902,9 @@ export default {
         },
         checkItemFromTable(equipmentItemId) {
             this.indeterminate = true;
-            this.checkAllItems = false;
-            // if selectedEquipmentItemIds already has equipmentItemId, we decrease the selectedEquipmentQuantity, then remove the equipmentItemId from the selectedEquipmentItemIds
-            if (this.selectedEquipmentItemIds.includes(equipmentItemId)) {
+        this.checkAllItems = false;
+        // if selectedEquipmentItemIds already has equipmentItemId, we decrease the selectedEquipmentQuantity, then remove the equipmentItemId from the selectedEquipmentItemIds
+        if (this.selectedEquipmentItemIds.includes(equipmentItemId)) {
                 this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) - 1;
                 this.selectedEquipmentItemIds = this.selectedEquipmentItemIds.filter(itemId => itemId != equipmentItemId);
                 if (this.selectedEquipmentItemIds.length == 0) {
@@ -1085,9 +912,8 @@ export default {
                     this.checkAllItems = false;
                     this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
                 }
-            } 
-            else {
-                this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
+            } else {
+                this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = "";
                 this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) + 1;
                 this.selectedEquipmentItemIds.push(equipmentItemId);
                 if (this.selectedEquipmentItemIds.length == this.equipmentTable.length) {
@@ -1095,69 +921,32 @@ export default {
                     this.checkAllItems = true;
                 }
             }
-            
-            this.conflictItems = [];
-            this.unableSelectItems = [];
-                // check if from date conflicts any item in work orders
-            let tempItems = [];
-            this.selectedEquipmentItemIds.forEach(itemId => {
-                tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-            })
-            // get the selected items in equipmentTable to tempItems
-            this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems,
-                                this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
-            if (this.conflictItems.length == 0) {
-                this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-            } else {
-                this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
-            }
-            if (this.unableSelectItems.length == 0) {
-                this.AddEquipmentWarnings.UnableToSelectItem = '';
-            } else {
-                this.AddEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
-            }
         },
         handleCheckAllItems() {
-        if (this.indeterminate) {
-            this.checkAllItems = false;
-        } else {
-            this.checkAllItems = !this.checkAllItems;
-        }
+            if (this.indeterminate) {
+                this.checkAllItems = false;
+            } else {
+                this.checkAllItems = !this.checkAllItems;
+            }
 
-        this.indeterminate = false;
-        if (this.checkAllItems) {
-            this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
-            this.selectedEquipmentItemIds = [];
-            this.equipmentTable.forEach(item => this.selectedEquipmentItemIds.push(item.Id));
-            this.selectedEquipmentQuantity = this.equipmentTable.length;
+            this.indeterminate = false;
+            if (this.checkAllItems) {
+                this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
+                this.selectedEquipmentItemIds = [];
+                this.equipmentTable.forEach(item =>
+                    this.selectedEquipmentItemIds.push(item.Id)
+                );
+                this.selectedEquipmentQuantity = this.equipmentTable.length;
 
-            this.conflictItems = [];
-            this.unableSelectItems = [];
-            // check if from date conflicts any item in work orders
-            let tempItems = [];
-            this.selectedEquipmentItemIds.forEach(itemId => {
-            tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-            })
-            // get the selected items in equipmentTable to tempItems
-            this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems,
-                            this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
-            if (this.conflictItems.length == 0) {
+                this.conflictItems = [];
+                this.unableSelectItems = [];
+            } else {
+                this.conflictItems = [];
+                this.selectedEquipmentItemIds = [];
+                this.selectedEquipmentQuantity = 0;
                 this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-            } else {
-                this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
+                this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
             }
-            if (this.unableSelectItems.length == 0) {
-                this.AddEquipmentWarnings.UnableToSelectItem = '';
-            } else {
-                this.AddEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
-            }
-        } else {
-            this.conflictItems = [];
-            this.selectedEquipmentItemIds = [];
-            this.selectedEquipmentQuantity = 0;
-            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-            this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
-        }
         },
         resetEquipmentSelection() {
             this.equipmentTable = [];
@@ -1175,15 +964,12 @@ export default {
             this.AddEquipmentWarnings.AvailableQuantityIsZero = '';
             this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
             this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
-            this.AddEquipmentWarnings.FromDateIsLargerThanToDate = '';
             this.AddEquipmentWarnings.UnableToSelectItem = '';
         },
         isItemConflicted(itemId, workOrderId, conflictItems) {
             for (var i = 0; i < conflictItems.length; i++) {
                 let item = conflictItems[i];
-                if (workOrderId != this.editWorkOrder.Id
-                    && item.itemId == itemId 
-                    && item.workOrderId == workOrderId) {
+                if (item.itemId == itemId && item.workOrderId == workOrderId) {
                     return true;
                 }
             }
@@ -1200,26 +986,51 @@ export default {
             }
             return false;
         },
-        checkSelectedItemDateConflict(items, conflictItems, unableSelectItems, fromDate, toDate) {
-            items.forEach(item => {
-                if (item.WorkOrders) {
-                    item.WorkOrders.forEach(order => {
-                        let itemFromDate = this.getMilis(order.Detail.ExpectingStartDate);
-                        let itemToDate = this.getMilis(order.Detail.ExpectingDueDate);
-                        if (order.Id != this.editWorkOrder.Id 
-                            && ((fromDate >= itemFromDate && fromDate <= itemToDate)  
-                                || (toDate >= itemFromDate && toDate <= itemToDate)
-                                || (fromDate < itemFromDate && fromDate < itemToDate && toDate > itemFromDate && toDate > itemToDate))) {
-                            if (order.Status == 'Approved' || order.Status == 'In Progress') {
-                                unableSelectItems.push({itemId: item.Id, workOrderId: order.Id});
-                            } else {
-                                conflictItems.push({itemId: item.Id, workOrderId: order.Id});
+        checkSelectedItemDateConflict(items, conflictItems, unableSelectItems) {
+            if (items.length > 0 && (this.workOrderDateRange[0] && this.workOrderDateRange[1])) {
+                let workOrderStartDate = this.getMilis(this.workOrderDateRange[0]);
+                let workOrderCloseDate = this.getMilis(this.workOrderDateRange[1]);
+                items.forEach(item => {
+                    if (item.WorkOrders) {
+                        item.WorkOrders.forEach(order => {
+                            let itemFromDate = this.getMilis(order.ExpectingStartDate);
+                            let itemToDate = this.getMilis(order.ExpectingCloseDate);
+                            if (order.Id != this.editWorkOrder.Id && ((workOrderStartDate >= itemFromDate && workOrderStartDate <= itemToDate)  
+                                || (workOrderCloseDate >= itemFromDate && workOrderCloseDate <= itemToDate)
+                                || (workOrderStartDate < itemFromDate && workOrderCloseDate > itemToDate))) {
+                                if (order.Status == 'Approved' || order.Status == 'In Progress') {
+                                    unableSelectItems.push({itemId: item.Id, workOrderId: order.Id});
+                                } else {
+                                    conflictItems.push({itemId: item.Id, workOrderId: order.Id});
+                                }
                             }
-                        }
-                    })
-                }
-            });          
+                        });
+                    }
+                });
+            }
         },
+        checkItemsIsSafeToSelect(itemIds, itemTable, conflictItems, unableSelectItems, addEquipmentWarnings) {
+            // check if from date conflicts any item in work orders
+            let tempItems = [];
+            // get the selected items in equipmentTable to tempItems
+            itemIds.forEach(itemId => {
+                tempItems = tempItems.concat(
+                itemTable.filter(item => item.Id == itemId)
+                );
+            });
+            // get the selected items in equipmentTable to tempItems          
+            this.checkSelectedItemDateConflict(tempItems, conflictItems, unableSelectItems);
+            if (conflictItems.length == 0) {
+                addEquipmentWarnings.SelectedDateConflictWorkOrders = "";
+            } else {
+                addEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
+            }
+            if (unableSelectItems.length == 0) {
+                addEquipmentWarnings.UnableToSelectItem = '';
+            } else {
+                addEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
+            }
+        }
     },
     watch: {
         'selectedEquipment': function() {
@@ -1244,8 +1055,6 @@ export default {
                             this.selectedEquipmentItemIds.push(res.data[0].Id);
                             this.selectedEquipmentQuantity = 1;
                             this.indeterminate = true;
-                            this.selectedEquipmentFromDate = this.getToday();
-                            this.selectedEquipmentToDate = this.getToday();
                         }
                     })
                 }
@@ -1286,160 +1095,98 @@ export default {
                 }
             }
         },
-        'selectedEquipmentFromDate': function() {
-            if (this.selectedEquipmentFromDate === '') {
-                this.selectedEquipmentFromDate = this.getToday();
-            } else {
-                let fromDate = this.getMilis(this.selectedEquipmentFromDate);
-                let toDate = this.getMilis(this.selectedEquipmentToDate);
-                if (fromDate < this.getMilis(this.getToday())) {
-                    this.AddEquipmentWarnings.FromDateIsFromThePast = this.ErrorStrings.FromDateIsFromThePast;
-                } else {
-                    this.AddEquipmentWarnings.FromDateIsFromThePast = '';
-                }
-                if (fromDate > toDate) {
-                    this.AddEquipmentWarnings.FromDateIsLargerThanToDate = this.ErrorStrings.FromDateIsLargerThanToDate;
-                } else if (fromDate <= toDate) {
-                    this.AddEquipmentWarnings.FromDateIsLargerThanToDate = '';
+        'workOrderDateRange': function() {
+            if (this.workOrderDateRange[0] && this.workOrderDateRange[1]) {
+                this.CreateWorkOrderErrors.NoWorkOrderDateRange = '';
+                if (this.selectedEquipmentItemIds.length > 0) {
                     this.conflictItems = [];
                     this.unableSelectItems = [];
-                        // check if from date conflicts any item in work orders
-                    let tempItems = [];
-                    this.selectedEquipmentItemIds.forEach(itemId => {
-                        tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-                    })
-                    // get the selected items in equipmentTable to tempItems
-                    this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems,
-                                        this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
-                    if (this.conflictItems.length == 0) {
-                        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                    } else {
-                        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
-                    }
-                    if (this.unableSelectItems.length == 0) {
-                        this.AddEquipmentWarnings.UnableToSelectItem = '';
-                    } else {
-                        this.AddEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
-                    }
+                    this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, 
+                                    this.conflictItems, this.unableSelectItems, this.AddEquipmentWarnings);
                 }
-            }
-        },
-        'selectedEquipmentToDate': function() {
-            if (this.selectedEquipmentToDate === '') {
-                this.selectedEquipmentToDate = this.getToday();
-            } else {
-                let fromDate = moment(this.selectedEquipmentFromDate).valueOf();
-                let toDate = moment(this.selectedEquipmentToDate).valueOf();
-                if (fromDate > toDate) {
-                    this.AddEquipmentWarnings.FromDateIsLargerThanToDate = this.ErrorStrings.FromDateIsLargerThanToDate;
-                } else if (fromDate <= toDate){
-                    this.AddEquipmentWarnings.FromDateIsLargerThanToDate = '';
-
-                    this.conflictItems = [];
-                    this.unableSelectItems = [];
-                    // check if from date conflicts any item in work orders
-                    let tempItems = [];
-                    // get the selected items in equipmentTable to tempItems
-                    this.selectedEquipmentItemIds.forEach(itemId => {
-                        tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
+                if (this.selectedEquipments.length > 0) {
+                    this.selectedEquipments.forEach(eq => {
+                        eq.conflictItems = [];
+                        eq.unableSelectItems = [];
+                        this.checkItemsIsSafeToSelect(eq.equipmentItemIds, eq.equipmentItemList, 
+                                        eq.conflictItems, eq.unableSelectItems, eq.addEquipmentWarnings);
+                        if (eq.conflictItems.length > 0 || eq.unableSelectItems.length > 0) {
+                            eq.editMode = true;
+                        }
                     })
-                    // get the selected items in equipmentTable to tempItems
-                    this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems, fromDate, toDate);
-                    if (this.conflictItems.length == 0) {
-                        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                    } else {
-                        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
-                    }
-                    if (this.unableSelectItems.length == 0) {
-                        this.AddEquipmentWarnings.UnableToSelectItem = '';
-                    } else {
-                        this.AddEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
-                    }
                 }
             }
         },
         'selectedEquipmentQuantity': function() {
-            if (this.selectedEquipmentQuantity === '') {
+            if (this.selectedEquipmentQuantity === "") {
                 this.selectedEquipmentQuantity = 0;
                 this.selectedEquipmentItemIds = [];
                 this.conflictItems = [];
                 this.indeterminate = false;
                 this.checkAllItems = false;
-                this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
                 this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
             } else {
-                if (this.selectedEquipment.value != '' && this.selectedEquipment.totalQuantity > 0) {
-                    var currentQuantity = parseInt(this.selectedEquipmentQuantity);
-                    let equipmentQuantity = parseInt(this.selectedEquipment.totalQuantity);
-                    if (currentQuantity < 0) {
+                if (this.selectedEquipment.value != "" &&
+                    this.selectedEquipment.totalQuantity > 0) {
+                    let equipmentTotalQuantity = parseInt(this.selectedEquipment.totalQuantity);
+                    if (parseInt(this.selectedEquipmentQuantity) < 0) {
                         this.selectedEquipmentQuantity = 0;
-                    } else if (currentQuantity > equipmentQuantity) {
-                        this.selectedEquipmentQuantity = equipmentQuantity;
+                    } else if (parseInt(this.selectedEquipmentQuantity) > equipmentTotalQuantity) {
+                        this.selectedEquipmentQuantity = equipmentTotalQuantity;
                     }
-
                     // if the selectedEquipmentQuantity = 0, we should display a warning to user
-                    if (currentQuantity == 0) {
+                    if (parseInt(this.selectedEquipmentQuantity) == 0) {
                         this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
-                        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                        this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
                         this.selectedEquipmentItemIds = [];
                         this.conflictItems = [];
                         this.indeterminate = false;
                         this.checkAllItems = false;
                     } else {
-                        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
+                        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = "";
                         this.indeterminate = true;
                         // if the selectedEquipmentQuantity is greater than selectedEquipmentItemIds.length
                         //, it means we should add the next item to selectedEquipmentItemIds
-                        if (currentQuantity >= this.selectedEquipmentItemIds.length) {
-                            while(this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
+                        if (parseInt(this.selectedEquipmentQuantity) >= this.selectedEquipmentItemIds.length) {
+                            while (this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
                                 let tempItems = this.equipmentTable;
                                 this.selectedEquipmentItemIds.forEach(itemId => {
                                     tempItems = tempItems.filter(item => item.Id != itemId);
-                                })
+                                });
                                 this.selectedEquipmentItemIds.push(tempItems[0].Id);
                             }
                             if (this.selectedEquipmentItemIds.length == this.equipmentTable.length) {
                                 this.indeterminate = false;
                                 this.checkAllItems = true;
-                            } 
-                        } else if (currentQuantity < this.selectedEquipmentItemIds.length) {
-                        // the code below will simply pop the last id out of the list, so if user has pick an equipment by hand (not using the number input)
-                        // and then use the number input, the item is not automatically calculate to choose the best ideal one
-                        // in other words, the order of item will not be the best ideal order the algorithm should give out
-                        // then the user would see item unchecks in the incorrect descending order
-                        // but i think we should respect the user's choice
-                            while(this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
+                            }
+                        } else if (parseInt(this.selectedEquipmentQuantity) < this.selectedEquipmentItemIds.length) {
+                            // the code below will simply pop the last id out of the list, so if user has pick an equipment by hand (not using the number input)
+                            // and then use the number input, the item is not automatically calculate to choose the best ideal one
+                            // in other words, the order of item will not be the best ideal order the algorithm should give out
+                            // then the user would see item unchecks in the incorrect descending order
+                            // but i think we should respect the user's choice
+                            while (this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
                                 this.selectedEquipmentItemIds.pop();
                             }
                         }
                         this.conflictItems = [];
                         this.unableSelectItems = [];
-                        // check if from date conflicts any item in work orders
-                        let tempItems = [];
-                        // get the selected items in equipmentTable to tempItems
-                        this.selectedEquipmentItemIds.forEach(itemId => {
-                        tempItems = tempItems.concat(this.equipmentTable.filter(item => item.Id == itemId));
-                        })
-                        // get the selected items in equipmentTable to tempItems
-                        this.checkSelectedItemDateConflict(tempItems, this.conflictItems, this.unableSelectItems,
-                                    this.getMilis(this.selectedEquipmentFromDate), this.getMilis(this.selectedEquipmentToDate));
-                        if (this.conflictItems.length == 0) {
-                            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                        } else {
-                            this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = this.ErrorStrings.SelectedDateConflictWorkOrders;
-                        }
-                        if (this.unableSelectItems.length == 0) {
-                            this.AddEquipmentWarnings.UnableToSelectItem = '';
-                        } else {
-                            this.AddEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
-                        }
-                    }          
+                        this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, this.conflictItems, this.unableSelectItems, this.AddEquipmentWarnings);
+                    }
                 }
             }
         },
         'selectedTeam': function() {
             if (this.selectedTeam.value != '' && this.CreateWorkOrderErrors.NoTeam != '') {
                 this.CreateWorkOrderErrors.NoTeam = '';
+            }
+        },
+        'selectedEquipmentItemIds': function() {
+            if (this.selectedEquipmentItemIds.length > 0 && (this.workOrderDateRange[0] && this.workOrderDateRange[1])) {
+                this.conflictItems = [];
+                this.unableSelectItems = [];
+                this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, this.conflictItems, this.unableSelectItems, this.AddEquipmentWarnings);
             }
         }
     }

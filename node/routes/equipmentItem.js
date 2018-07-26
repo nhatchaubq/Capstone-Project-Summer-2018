@@ -38,7 +38,7 @@ router.get("/:id", (req, res) => {
 router.get("/Item/:id", (request, response) => {
     request
         .sql(
-            "select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
+            "select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.WarehouseID as [WarehouseID], location.Name as [Warehouse] ,ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
             "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, tile.Name as [Tile], tile.Id as [TileID] , floor.Name as [FLoor] , floor.Id as [FloorID], " +
             "block.Name as [Block], block.Id as [BlockID], loca.Name as [Location], loca.Id as [LocationID], loca.Address as [Address] ,(select wo.* " +
             "from WorkOrder as wo " +
@@ -54,6 +54,7 @@ router.get("/Item/:id", (request, response) => {
             "JOIN Floor as floor on floor.Id = tile.FloorID " +
             "JOIN Block as block on block.Id = floor.BlockID " +
             "JOIN Location as loca on loca.Id = block.LocationID " +
+            "JOIN Location as location on location.Id = ei.WarehouseID " +
             "where ei.Id = @id for json path, without_array_wrapper)) " +
             ") as [Item] " +
             "for json path, without_array_wrapper"
@@ -66,7 +67,7 @@ router.get("/Item/:id", (request, response) => {
 router.get("/Itemloststt/:id", (request, response) => {
     request
         .sql(
-            "select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
+            "select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.RuntimeDays, ei.WarehouseID as [WarehouseID], location.Name as [Warehouse]  ,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
             "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, ei.TileID as [TileID], (select wo.* " +
             "from WorkOrder as wo " +
             "where wo.StatusID < 5 and wo.Id in (select wod.WorkOrderID " +
@@ -77,6 +78,7 @@ router.get("/Itemloststt/:id", (request, response) => {
             "for json path) as [WorkOrders] " +
             "from EquipmentItem as ei " +
             "JOIN EquipmentStatus as es on es.Id = ei.StatusId " +
+            "JOIN Location as location on location.Id = ei.WarehouseID " +
             "where ei.Id = @id for json path, without_array_wrapper)) " +
             ") as [Item] " +
             "for json path, without_array_wrapper"
@@ -89,7 +91,8 @@ router.get("/Itemloststt/:id", (request, response) => {
 router.get("/allworkorder/:id", (req, res) => {
     req
         .sql(
-            "select wo.Id, wo.Name, acc.Fullname as [RequestUser], wos.Name as [Status] " +
+            "select wo.Id as [WorkOrderID], wo.Name, acc.Fullname as [RequestUser], wos.Name as [Status], convert(date,wo.StartDate) as [StartDate], " +
+            "(select convert(date,ClosedDate) as[ClosedDate] from WorkOrderDetail as wod where wod.EquipmentItemID = @id AND wo.Id = wod.WorkOrderID for json path) as [Detail] " +
             "from WorkOrder as wo " +
             "JOIN WorkOrderStatus as wos on wo.StatusID = wos.Id " +
             "JOIN Account as acc on acc.Id = wo.RequestUserID " +
@@ -129,11 +132,12 @@ router.get("/closedate/:id", (req, res) => {
 router.post("/", (request, response) => {
     request
         .sql(
-            "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
-            " VALUES (@equipmentID, @serialNumber, @warrantyDuration, 0, @price, GETDATE(), @statusId, @description, @tileID)"
+            "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarehouseID, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
+            " VALUES (@equipmentID, @serialNumber, @warehoueid , @warrantyDuration, 0, @price, GETDATE(), @statusId, @description, @tileID)"
         )
         .param("equipmentID", request.body.equipmentID, TYPES.Int)
         .param("serialNumber", request.body.serialNumber, TYPES.NVarChar)
+        .param("warehoueid", request.body.warehoueid, TYPES.Int)
         .param("warrantyDuration", request.body.warrantyDuration, TYPES.Int)
         .param("price", request.body.price, TYPES.Float)
         //.param('importDate', request.body.importDate, TYPES.DateTime)
@@ -263,11 +267,12 @@ router.put("/:eid", (req, res) => {
     req
         .sql(
             "Update EquipmentItem " +
-            "SET WarrantyDuration = @warrantyDuration, RuntimeDays = @runtimeDays, Price = @price, ImportDate = @importdate, " +
+            "SET WarrantyDuration = @warrantyDuration, WarehouseID = @warehouseid , RuntimeDays = @runtimeDays, Price = @price, ImportDate = @importdate, " +
             "LastMaintainDate = @lastmaintaindate, NextMaintainDate =@nextmaintaindate, Description = @description " +
             "WHERE Id = @id"
         )
         .param("warrantyDuration", req.body.warrantyDuration, TYPES.Int)
+        .param("warehouseid", req.body.warehouseid, TYPES.Int)
         .param("runtimeDays", req.body.runtimeDays, TYPES.Int)
         .param("price", req.body.price, TYPES.Float)
         .param("importdate", req.body.importdate, TYPES.NVarChar)
