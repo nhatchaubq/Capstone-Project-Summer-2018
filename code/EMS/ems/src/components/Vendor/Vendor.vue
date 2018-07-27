@@ -9,8 +9,8 @@
           <!-- <th><strong>ID</strong></th> -->
           <th style="width:3% !important"><strong>#</strong></th>
           <th style="width:22% !important"><strong>Business name</strong></th>
-          <th style="width:10% !important"><strong>Item quantity</strong></th>
-          <th style="width:30% !important"><strong>Business address</strong></th>
+          <th style="width:10% !important"><strong>Quantity</strong></th>
+          <th style="width:30% !important"><strong>Address</strong></th>
           <th style="width:20% !important"><strong>Website</strong></th>
           <th style="width:15% !important"><strong>Contact name</strong></th>
 
@@ -18,7 +18,7 @@
         </tr>
       </thead>  
       <tbody>
-          <tr v-bind:key="vendor.Id" v-for="(vendor, index) in vendors" class="txtText" v-on:click="gotoDetail(vendor.Id)">
+          <tr v-bind:key="vendor.Id" v-for="(vendor, index) in toDisplayData" class="txtText" v-on:click="gotoDetail(vendor.Id)">
             <!-- <td style="width:3rem">{{vendor.Id}}</td>     -->
             <!-- <router-link :to="`/team/${team.Id}`">   -->
             <td >{{ index + 1 }}</td>
@@ -31,6 +31,22 @@
           </tr>
       </tbody>
     </table>
+
+<!-- test1 -->
+  <div v-if="vendors.length >9" class="pageNa">
+    <Page :current="1" :total="vendors.length" show-elevator 
+      @on-change="(newPageNumber) => {
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayData = vendors.slice(start, end);
+      }">
+    </Page>
+  </div>  
+<!-- test1-end -->
+
+
+
     <router-link to='/vendor1/add/'>
       <button id="btn-add-vendor" class="button btn-primary material-shadow-animate">Add Vendor</button>
     </router-link>
@@ -47,12 +63,14 @@ export default {
       data.forEach(element => {
         let vendor = element;
         this.vendors.push(vendor);
+        this.toDisplayData = this.vendors.slice(0, 10);
       });
     });
   },
   data() {
     return {
-      vendors: []
+      vendors: [],
+      toDisplayData: []
     };
   },
   methods: {
@@ -124,7 +142,7 @@ table {
 #btn-add-vendor {
   position: fixed;
   right: 3rem;
-  bottom: 2rem;
+  bottom: 0.5rem;
   /* background-color: var(--primary-color);
   padding: 13px;
   color: white;
@@ -136,5 +154,10 @@ table {
   cursor: pointer;
   /* background-color: #009688;
   color: white; */
+}
+.pageNa {
+  position: fixed;
+  left: 17rem;
+  bottom: 0.5rem;
 }
 </style>
