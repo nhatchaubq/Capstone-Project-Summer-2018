@@ -10,16 +10,52 @@
       There is no equipment yet.
     </div>
     <div v-else>
-      <equipment-table :equipments="toDisplayData" v-if="isTableMode"></equipment-table>
+      <!-- <equipment-table :equipments="toDisplayData" v-if="isTableMode"></equipment-table> -->
       <!-- <equipment-card :equipments="equipments" v-else></equipment-card> -->
+ <div v-if="equipments">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><strong>Order #</strong></th>
+                    <th><strong>Equipment name</strong></th>
+                    <th><strong>Available</strong></th>
+                    <th><strong>Vendor name</strong></th>
+                    <th><strong>Made In</strong></th>
+                    <th><strong>Description</strong></th>
+                    <th><strong>Category</strong></th>
+                </tr>
+            </thead>  
+            <tbody>
+                <tr v-bind:key=" 'toDisplayData'+ index +''+ equipment.Id " v-for="(equipment, index) in toDisplayData" v-on:click="gotoDetail(equipment.Id)">
+                    <td>{{ 10*(currentPage -1) + (index + 1) }}</td>   
+                    <td>{{equipment.Name}}</td>
+                    <td style="width=40px">{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
+                    <td>{{equipment.Vendor.Name}}</td>
+                    <td>{{equipment.MadeIn}}</td>
+                    <!-- <td>{{equipment.Price ? equipment.Price : 'n/a'}}</td> -->
+                    <td style="width=70px">{{equipment.Description ? equipment.Description : 'N/A' }}</td>
+                    <td>{{equipment.Category.Name}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- <vodal class="no-padding" height="500" :show="selectedEquipment != null" @hide="selectedEquipment = null" animation="slideUp">
+          <equipment-detail-popup :equipment="selectedEquipment" class="" v-show="selectedEquipment != null"></equipment-detail-popup>
+        </vodal> -->
+    </div>
+
+
+
 
       <!-- test1 -->
   <div v-if="equipments.length >9" class="pageNa">
-    <Page :current="1" :total="equipments.length" show-elevator 
+    <Page :current="currentPage" :total="equipments.length" show-elevator 
       @on-change="(newPageNumber) => {
+        currentPage = newPageNumber
         let start = 10 * (newPageNumber - 1);
         let end = start + 10;
-        
+        showarlet(`${start } ${end} ${this.total}`)
+        //alert(start)
+      //  alert(end)
         toDisplayData = equipments.slice(start, end);
       }">
     </Page>
@@ -68,6 +104,7 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
       equipments: [],
       toDisplayData: [],
       selectedEquipment: null
@@ -79,6 +116,12 @@ export default {
     },
     setTableMode(value) {
       this.$store.state.equipmentPage.isTableMode = value;
+    },
+    showarlet(msg) {
+      console.log(msg);
+    },
+    gotoDetail(equipmentId) {
+      this.$router.push(`/equipment/${equipmentId}`);
     }
   }
 };

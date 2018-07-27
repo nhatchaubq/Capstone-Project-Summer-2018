@@ -21,7 +21,7 @@
           <tr v-bind:key="vendor.Id" v-for="(vendor, index) in toDisplayData" class="txtText" v-on:click="gotoDetail(vendor.Id)">
             <!-- <td style="width:3rem">{{vendor.Id}}</td>     -->
             <!-- <router-link :to="`/team/${team.Id}`">   -->
-            <td >{{ index + 1 }}</td>
+            <td >{{ 10*(currentPage -1) + (index + 1) }}</td>
             <td >{{vendor.BusinessName | truncate(30)}}</td>
             <td>{{vendor.Vendor.Quantityitems.Quantity}}</td>
             <!-- </router-link> -->
@@ -34,8 +34,9 @@
 
 <!-- test1 -->
   <div v-if="vendors.length >9" class="pageNa">
-    <Page :current="1" :total="vendors.length" show-elevator 
+    <Page :current="currentPage" :total="vendors.length" show-elevator 
       @on-change="(newPageNumber) => {
+        currentPage =newPageNumber
         let start = 10 * (newPageNumber - 1);
         let end = start + 10;
         
@@ -69,6 +70,7 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
       vendors: [],
       toDisplayData: []
     };

@@ -141,6 +141,13 @@ a:active {
   color: hsl(217, 71%, 30%) !important;
 }
 
+.ivu-page-item-active a {
+  color: white !important;
+}
+.ivu-page-item-active {
+  background-color: var(--primary-color) !important;
+}
+
 #app {
   font-family: "Roboto";
   -webkit-font-smoothing: antialiased;

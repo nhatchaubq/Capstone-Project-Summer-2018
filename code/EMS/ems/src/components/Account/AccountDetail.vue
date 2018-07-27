@@ -67,7 +67,7 @@
       </thead>  
       <tbody>
           <tr  :key="team.Id" v-for="(team, index) in toDisplayData" v-on:click="gotoDetail(team.Id)" >
-            <td >{{index + 1}}</td>
+            <td >{{ 10*(currentPage -1) + (index + 1)}}</td>
             <td >{{team.Name? team.Name: "N/A" }}</td>
             <td v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
             <td v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">♟Member</span> </strong> </td> 
@@ -82,9 +82,10 @@
     </span>
   </div> -->
   <div v-if="teamAccount.length >9">
-    <Page :current="1" :total="teamAccount.length" show-elevator show-sizer 
+    <Page :current="currentPage" :total="teamAccount.length" show-elevator  
       @on-change="(newPageNumber) => {
-        let start = 10 * (newPageNumber - 1);
+        currentPage = newPageNumber
+        let start = 10 * (currentPage - 1);
         let end = start + 10;
         
         toDisplayData = teamAccount.slice(start, end);
@@ -255,6 +256,7 @@ export default {
 
   data() {
     return {
+      currentPage: 1,
       teamAccount: [],
       toDisplayData: [],
       sending: false,

@@ -90,9 +90,9 @@
                       <!-- <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td> -->
                       <td v-on:click="toDetail(team.LeaderAccount.Id)" style="color:#26a69a"><span style="font-size: 25px; ">♛</span> Leader</td>
                       <strong v-on:click="toDetail(team.LeaderAccount.Id)"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
-                      <td v-if="editMode">&nbsp</td>
+                      <td v-if="editMode">&nbsp;</td>
                     </tr>
-                    <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
+                    <tr :key="'member2' + index" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
                       <td v-on:click="toDetail(member.Id)">{{index + 2}}</td>
                       <td v-on:click="toDetail(member.Id)">{{member.Username}}</td>
                       <!-- <td v-on:click="toDetail(member.Id)">{{member.Fullname ? member.Fullname :'N/A' }} </td> -->
@@ -107,6 +107,17 @@
                     </tr>
                 </tbody>
               </table>
+                  <!-- <div v-if="items1.length > 9" class="pageNa">
+    <Page :current="currentPageMember" :total="items1.length" show-elevator 
+      @on-change="(newPageNumber) => {
+        currentPageMember = newPageNumber;
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayMember = items1.slice(start, end);
+      }">
+    </Page>
+  </div>   -->
 
         </div>
       </div>
@@ -114,10 +125,23 @@
 
     <div class="col-6">
       <div v-if="!editMode">
-        <div v-if="!team.Location"  >
+        <div v-if="location1 && location1.length ==0"  >
           There is no location yet.
         </div>
         <div v-else>
+          <!-- page-navi -->
+    <!-- <div v-if="location.length > 9" class="pageNa">
+      <Page :current="currentPageLoca" :total="location.length" show-elevator 
+        @on-change="(newPageNumber) => {
+          currentPageLoca = newPageNumber;
+          let start = 10 * (newPageNumber - 1);
+          let end = start + 10;
+          
+          toDisplayLocation = location.slice(start, end);
+        }">
+      </Page>
+    </div>   -->
+    <!-- page-navi-end -->
           <table class="mytable" style="margin-bottom:1rem">
             <thead>
               <tr>
@@ -128,14 +152,26 @@
               </tr>
             </thead>  
             <tbody>
-                <tr :key="Loca.Id" v-for="(Loca, index) in team.Location" class="txtText" >
-                  <td style="cursor: context-menu !important">{{index + 1}}</td>
+                <tr :key="'Loca'+ index" v-for="(Loca, index) in toDisplayLocation" class="txtText" >
+                  <td style="cursor: context-menu !important">{{ 5*(currentPageLoca - 1) + (index + 1)}}</td>
                   <td style="cursor: context-menu !important">{{Loca.Name ? Loca.Name : "N/A" }}</td>
                   <td style="cursor: context-menu !important">{{Loca.Address ? Loca.Address : "N/A"}} </td>
                   <td style="cursor: context-menu !important"> <strong :style="{color: Loca.IsActive ? 'var(--primary-color)' : '#607D8B'}">{{Loca.IsActive ? "Active" : "Inactive"}}</strong></td>
                 </tr>
             </tbody>
           </table>
+    <div v-if="location1.length > 4" class="pageNa">
+      <Page :current="currentPageLoca" :total="location1.length" show-elevator 
+        @on-change="(newPageNumber) => {
+          currentPageLoca = newPageNumber;
+          let start = 5 * (newPageNumber - 1);
+          let end = start + 5;
+              showarlet(`start: ${start } end: ${end} total:${total} location: ${location1}`)
+          
+          toDisplayLocation = location1.slice(start, end);
+        }">
+      </Page>
+    </div>  
         </div>
       </div>
     </div>
@@ -169,9 +205,9 @@
                     <td style="cursor: context-menu !important">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
                     <td  style="color:#26a69a; cursor: context-menu !important"><span style="font-size: 25px; ">♛</span> Leader</td>
                     <strong style="cursor: context-menu !important"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
-                    <td v-if="editMode">&nbsp</td>
+                    <td v-if="editMode">&nbsp;</td>
                   </tr>
-                  <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
+                  <tr :key="'member' + index" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
                     <td style="cursor: context-menu !important">{{index + 2}}</td>
                     <td style="cursor: context-menu !important">{{member.Username}}</td>
                     <td style="cursor: context-menu !important">{{member.Fullname ? member.Fullname :'N/A' }} </td>
@@ -253,10 +289,10 @@
   <div class="col-12">
     <div v-if="!editMode">
     <strong>
-      Equipment item
+      Borrowing Equipment
     </strong>
       <div v-if="items1 && items1.length == 0">
-          There is no item yet.
+          There is no equipment yet.
       </div>
       <div v-else>
         <table  class="mytable" style="margin-bottom:1rem">
@@ -269,9 +305,9 @@
               </tr>
             </thead>  
             <tbody >
-              <tr  :key="item.Id" v-for="(item, index) in items1">
+              <tr v-bind:key="'toDisplayData' + index + '' + item.Id" v-for="(item, index) in toDisplayData">
                 <td style="cursor: context-menu !important">
-                  {{index +1}}
+                  {{ 10 * (currentPage - 1) + (index + 1) }}
                 </td> 
                 <td style="cursor: context-menu !important">
                   {{item.Name}}
@@ -288,6 +324,18 @@
       </div>
     </div>  
   </div>
+
+    <div v-if="items1.length > 9" class="pageNa">
+    <Page :current="currentPage" :total="items1.length" show-elevator 
+      @on-change="(newPageNumber) => {
+        currentPage = newPageNumber;
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayData = items1.slice(start, end);
+      }">
+    </Page>
+  </div>  
      <!-- equipmentItem-end -->
 
 
@@ -450,6 +498,7 @@ export default {
       let data = response.data.team;
       this.team = data;
     });
+
     let outsideTeamApiUrl = `http://localhost:3000/api/AllAccExceptThatTeam/${
       this.$route.params.id
     }`;
@@ -489,11 +538,33 @@ export default {
     this.axios.get(itemUrl).then(response => {
       let data = response.data;
       this.items1 = data;
+      this.toDisplayData = this.items1.slice(0, 10);
     });
+    let team1ApiUrl = `http://localhost:3000/api/team/id/${
+      this.$route.params.id
+    }`;
+
+    this.axios.get(team1ApiUrl).then(response => {
+      let data = response.data.team.Location;
+      this.location1 = data;
+      this.toDisplayLocation = this.location1.slice(0, 5);
+    });
+    // this.axios.get(team1ApiUrl).then(response => {
+    //   let data = response.data.team.Location;
+    //   this.location1 = data;
+    //   this.toDisplayLocation = this.location1.slice(0, 5);
+    // });
   },
 
   data() {
     return {
+      currentPageMember: 1,
+      toDisplayMember: [],
+      currentPageLoca: 1,
+      toDisplayLocation: [],
+      currentPage: 1,
+      location1: [],
+      toDisplayData: [],
       kickPopUp: false,
       ChangeLeadPopUp: false,
       EquiItems: [],
@@ -602,6 +673,9 @@ export default {
     },
     onSelect1(item) {
       this.item = item;
+    },
+    showarlet(msg) {
+      console.log(msg);
     },
     addNew() {
       this.selectedMemberList.forEach(element => {
