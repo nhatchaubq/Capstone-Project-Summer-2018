@@ -320,7 +320,7 @@
                         </td>
                         <!-- equipment item locatoin -->
                         <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                          {{ equipmentItem.Location ? equipmentItem.Location : 'n/a' }}
+                          {{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}
                         </td>
                       </tr> <!-- work order detail --> <!-- if equipment item is in some work order -->
                       <!-- else -->
@@ -336,7 +336,7 @@
                         <td>{{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}</td>
                         <td>{{ equipmentItem.LastMaintainDate ? getDate(equipmentItem.LastMaintainDate) : 'n/a' }}</td>
                         <td>{{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}</td>
-                        <td>{{ equipmentItem.Location ? equipmentItem.Location : 'n/a' }}</td>
+                        <td>{{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}</td>
                       </tr> <!-- else -->
                     </tbody>
                   </table>
@@ -479,7 +479,7 @@
                     </td>
                     <!-- equipment item locatoin -->
                     <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                      {{ equipmentItem.Location ? equipmentItem.Location : 'n/a' }}
+                      {{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}
                     </td>
                   </tr> <!-- work order detail --> <!-- if equipment item is in some work order -->
                   <!-- else -->
@@ -495,7 +495,7 @@
                     <td>{{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}</td>
                     <td>{{ equipmentItem.LastMaintainDate ? getDate(equipmentItem.LastMaintainDate) : 'n/a' }}</td>
                     <td>{{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}</td>
-                    <td>{{ equipmentItem.Location ? equipmentItem.Location : 'n/a' }}</td>
+                    <td>{{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}</td>
                   </tr> <!-- else -->
                 </tbody>
               </table>
