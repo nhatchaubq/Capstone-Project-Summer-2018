@@ -556,7 +556,8 @@ export default {
     this.axios.get(onlymemURL).then(response => {
       let data = response.data;
       this.teamOnly = data;
-      this.toDisplayTeam = this.teamOnly.slice(0, 5);
+      this.toDisplayMember = this.teamOnly.slice(0, 5);
+      // this.toDisplayTeam = this.teamOnly.slice(0, 5);
     });
     // this.axios.get(team1ApiUrl).then(response => {
     //   let data = response.data.team.Location;
