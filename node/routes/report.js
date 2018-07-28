@@ -11,10 +11,16 @@ router.get("/getCategory", (req, res) => {
     .into(res);
 });
 
+router.get("/getVendor", (req, res) => {
+  req
+    .sql("select * from [Vendor] order by [BusinessName] for json path")
+    .into(res);
+});
+
 router.get("/getEquipmentOverview", (req, res) => {
   req
     .sql(
-      "select e.Id,e.Name,e.MadeIn,e.CategoryID,v.BusinessName as 'Vendor',ec.Name as 'Category',ei.Quantity,json_query((select tmpEi.*,e.[Name],e.[Image],ec.[Name] as Category,tmpEs.[Name] as 'Status' " +
+      "select e.Id,e.Name,e.MadeIn,e.CategoryID,e.VendorID,v.BusinessName as 'Vendor',ec.Name as 'Category',ei.Quantity,json_query((select tmpEi.*,e.[Name],e.[Image],ec.[Name] as Category,tmpEs.[Name] as 'Status' " +
         "																		from EquipmentItem as tmpEi  join EquipmentStatus as tmpEs on tmpEi.StatusId = tmpEs.Id " +
         "																	where tmpEi.EquipmentID = e.Id for json path)) as 'Detail' " +
         "	from Equipment as e join Vendor as v on e.VendorID = v.Id " +
@@ -52,10 +58,10 @@ router.get("/getStatusEquipment", (req, res) => {
         "	json_query((select COUNT(*) as [Quantity], json_query(( " +
         "	 select  ei.*, e.[Name], e.[Image], e.MadeIn " +
         "					  from EquipmentItem as ei  " +
-        "					  where EquipmentID = e.Id and StatusId = 5  " +
+        "					  where EquipmentID = e.Id and StatusId = 4  " +
         "						  for json path)) as 'Detail' " +
         "	from EquipmentItem " +
-        "	where EquipmentID = e.Id and StatusId = 5 " +
+        "	where EquipmentID = e.Id and StatusId = 4 " +
         "	for json path, without_array_wrapper)) as[DAMAGED], " +
         "	json_query((select COUNT(*) as [Quantity], json_query((" +
         "	select  ei.*, e.[Name], e.[Image], e.MadeIn " +
@@ -74,7 +80,7 @@ router.get("/getStatusEquipment", (req, res) => {
         "	where EquipmentID = e.Id and StatusId = 8 " +
         "	for json path, without_array_wrapper)) as[ARCHIVE] " +
         "	from EquipmentItem as ei join Equipment as e on e.Id = ei.EquipmentID " +
-        "	where StatusId = 8 or StatusId = 7 or StatusId = 5 " +
+        "	where StatusId = 8 or StatusId = 7 or StatusId = 4 " +
         "	for json path"
     )
     .into(res);
@@ -98,14 +104,15 @@ router.get("/getAvailableEquipment", (req, res) => {
 router.get("/getMaintenanceCalendar", (req, res) => {
   req
     .sql(
-      "select ei.*,e.[Name],l.[Name] as 'Location',es.[Name] as 'Status',b.[Name] as 'Block',f.[Name] as 'Floor',t.[Name] as 'Tile' " +
-        "  from EquipmentItem as ei join Equipment as e on ei.EquipmentID = e.Id " +
-        " 					 join Tile as t on ei.TileID = t.Id " +
-        " 				 join[Floor] as f on f.Id = t.FloorID " +
-        " 			 join[Block] as b on b.Id = f.BlockID " +
-        " 		 join[Location] as l on l.Id = b.LocationID " +
-        " 	 join EquipmentStatus as es on es.Id = ei.StatusId " +
-        " for json path	"
+      // "select ei.*,e.[Name],l.[Name] as 'Location',es.[Name] as 'Status',b.[Name] as 'Block',f.[Name] as 'Floor',t.[Name] as 'Tile' " +
+      //   "  from EquipmentItem as ei join Equipment as e on ei.EquipmentID = e.Id " +
+      //   " 					 join Tile as t on ei.TileID = t.Id " +
+      //   " 				 join[Floor] as f on f.Id = t.FloorID " +
+      //   " 			 join[Block] as b on b.Id = f.BlockID " +
+      //   " 		 join[Location] as l on l.Id = b.LocationID " +
+      //   " 	 join EquipmentStatus as es on es.Id = ei.StatusId " +
+      //   " for json path	"
+      "exec GetMaintainCalendarEquipmentForReport "
     )
     .into(res);
 });

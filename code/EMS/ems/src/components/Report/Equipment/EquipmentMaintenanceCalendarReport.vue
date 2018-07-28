@@ -151,13 +151,18 @@
 
 <script>
 import Server from "@/config/config.js";
+import moment from "moment";
 export default {
   data() {
     return {
       equipments: []
     };
   },
-  methods: {},
+  methods: {
+      getFormatDate(date){
+          return moment(date).format("L");
+      }
+  },
   created() {
     this.axios
       .get(Server.REPORT_MAINTENANCE_CALENDAR_EQUIPMENT_API_PATH)
