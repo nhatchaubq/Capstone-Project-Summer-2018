@@ -15,9 +15,9 @@
               <div class="field" style=" display: grid; grid-template-columns: 70% 20% 10%">
                   <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{equipmentName}}</strong>
                   <button v-if="!addItemMode" class="btn-Add"   v-on:click="addItem">Add Item</button>
-                  <div class="" v-else ><button  class="btn-Add" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" >Add Item</button></div>
+                  <!-- <div class="" v-else ><button  class="btn-Add" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" >Add Item</button></div> -->
                   <button v-if="!editMode" class="btn-edit"  v-on:click="editMode = !editMode">Edit</button> 
-                  <div class="" v-else><button class="btn-edit" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" :class="{'is-active-option': editMode}">Edit</button> </div>
+                  <!-- <div class="" v-else><button class="btn-edit" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" :class="{'is-active-option': editMode}">Edit</button> </div> -->
              </div>
               <span v-if="editMode"  style="color:red; font-size:14px">* is required, please input these fields</span>
               <div class="row" style="height:36px" >
@@ -60,7 +60,7 @@
                     </select>
                   </div>
               </div>
-              <div class="row" style=" display: grid;grid-template-columns: 50% 50%;">
+               <div class="row" style=" display: grid;grid-template-columns: 50% 50%;">
                 <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 40% 60%;" >
                   <div class="" style="padding-top:0.25rem; " >
                       Quantity:  
@@ -81,6 +81,27 @@
                   </div>
                </div>
               </div>
+              <div  class="row" style="height:36px;" >
+                  <div class="" style="margin-top:0.5rem" >
+                      Schedule:  <span v-if="editMode" style="color:red; font-size:18px">*</span>
+                  </div>
+                  <div class="is-horizontal" v-if="!editMode" style="height:36px; display: grid;grid-template-columns: 30% 70%;">
+                    <input  v-model="EquimentByID.MaintenanceDuration.Months" class="input col-7 " type="text" disabled="disabled"> 
+                    <label style=" margin-top: 0.75rem;margin-left: 0.2rem;padding-left:1rem">months/time maintenance</label>
+                  </div>
+                  <div class="is-horizontal" v-else style="height:36px; display: grid;grid-template-columns: 30% 70%;">
+                    <div class="select" >
+                      <select class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width:100%"  v-model="EquimentByID.MaintenanceDurationID">
+                                <option :key="'duration' + duration.Id" v-for="duration in maintenanceDurationOptions"
+                                  :selected="EquimentByID.MaintenanceDurationID == duration.Id "                    
+                                  v-bind:value="duration.Id">{{duration.Months}}</option>
+                      </select>
+                    </div>
+                    <label style=" margin-top: 0.75rem;margin-left: 0.2rem;padding-left:1rem">months/time maintenance</label>
+                  </div>
+                  
+              </div>
+             
               <div  class="row" style="height:36px" >
                   <div class="" style="margin-top:0.5rem" >
                       Description:  
@@ -121,7 +142,7 @@
           <table class="table">
               <thead>
                   <tr>
-                      <th><strong>Order #</strong></th>
+                      <th><strong>Order#</strong></th>
                       <th><strong>Serial number</strong></th>
                       <th><strong>ImportDate</strong></th>
                       <th><strong>Warranty</strong></th>
@@ -192,7 +213,7 @@
               </div>
             </div>
             <div class="form-field-title">
-               <span><strong>  Location (required) </strong></span>
+               <span><strong>  Location - Warehouse (required) </strong></span>
                <span v-if="CreateItemErrors.NoLocation != ''">. <span class="error-text">{{ CreateItemErrors.NoLocation }}</span></span>
             </div>
             <div>
@@ -279,6 +300,19 @@
                     </div>
                       <input v-if="!editItemMode" v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="text" disabled="disabled"> 
                       <input v-else v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="number" min="1"> 
+                  </div>
+                  <div class="rowpu" style="height: 36px" >
+                    <div class="" style="margin-top:0.5rem" >
+                        Warehouse:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                    </div>
+                      <input v-if="!editItemMode" v-model="selectedItem.Item.Warehouse" class="input col-7 " type="text" disabled="disabled"> 
+                      <div class="select" v-else>
+                        <select class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width:100%"  v-model="selectedItem.Item.WarehouseID">
+                                  <option :key="'equipmentUnit' + warehouse.Id" v-for="warehouse in warehouseOptions"
+                                    :selected="selectedItem.Item.WarehouseID == warehouse.Id "                    
+                                    v-bind:value="warehouse.Id">{{warehouse.Name}}</option>
+                        </select>
+                      </div>
                   </div>
                   <div class="rowpu" style="height: 36px" >
                     <div class="" style="margin-top:0.5rem" >
@@ -529,9 +563,11 @@
                       <table class="mytable">
                         <thead>
                             <tr>
-                              <th><strong>Order #</strong></th>                            
+                              <th><strong>Order#</strong></th>                            
                               <th><strong>Name</strong></th>
                               <th><strong>RequestUser</strong></th>
+                              <th><strong>StartDate</strong></th>
+                              <th><strong>ClosedDate</strong></th>
                               <th><strong>Status</strong></th>
                             </tr>
                           </thead>  
@@ -539,7 +575,9 @@
                               <tr v-for="(workorder, index) in allworkorder" style="font-size=16">
                                 <td style="font-size=14;">{{index + 1}}</td>    
                                 <td style="font-size=14;">{{workorder.Name}}</td>    
-                                <td style="font-size=14;">{{workorder.RequestUser}}</td>  
+                                <td style="font-size=14;">{{workorder.RequestUser}}</td>
+                                <td style="font-size=14;">{{workorder.Detail[0].StartDate}}</td>  
+                                <td style="font-size=14;">{{workorder.Detail[0].ClosedDate ? workorder.Detail[0].ClosedDate : ''}}</td>
                                 <td style="font-size=14;">{{workorder.Status}}</td>     
                               </tr>
                             </tbody>
@@ -564,24 +602,27 @@
                       <div class="" style="margin-top:0.5rem" >
                           Run-times:  
                       </div>
-                      <div>  
+                      <div class=""style="margin-right:1rem; display: grid;grid-template-columns: 40% auto;">  
                         <input  v-model="selectedItem.Item.RuntimeDays" class="input col-7 " type="text" disabled="disabled"> 
+                        <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label> 
                       </div>
                     </div>
                     <div class="rowpu" style="height: 36px" >
                       <div class="" style="margin-top:0.5rem" >
                           Downtime:  
                       </div>
-                      <div>  
-                        <input  v-model="downtime" class="input col-7 " type="text" disabled="disabled"> 
+                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 40% auto;">  
+                        <input  v-model="downtime" class="input col-7 " type="text" disabled="disabled">
+                        <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label>  
                       </div>
                     </div>
                      <div class="rowpu" style="height: 36px" >
                       <div class="" style="margin-top:0.5rem" >
                           Percent:  
                       </div>
-                      <div>  
-                        <input  v-model="percentRuntime" class="input col-7 " type="text" disabled="disabled"> 
+                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 40% auto;">  
+                        <input  v-model="percentRuntime" class="input col-7 " type="text" disabled="disabled">
+                        <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">%</label> 
                       </div>
                     </div>
                   </div>
@@ -687,7 +728,6 @@ export default {
         data.forEach(element => {
           this.Items.push(element);
           this.totalRuntime = element.RuntimeDays + this.totalRuntime;
-          
         });
       })
       .catch(error => {
@@ -710,6 +750,23 @@ export default {
         alert(error);
       });
     this.axios
+      .get("http://localhost:3000/api/location/warehouse")
+      .then(response => {
+        let data = response.data;
+        data.forEach(warehouse => {
+          // let option = {
+          //   text: vendor.BusinessName,
+          //   value: vendor.Id
+          // };
+          this.warehouseOptions.push(warehouse);
+          // alert(this.vendorOptions.length);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
+    
+    this.axios
       .get("http://localhost:3000/api/EquipmentCategory")
       .then(response => {
         let data = response.data;
@@ -719,6 +776,18 @@ export default {
           //   value: category.Id
           // };
           this.categoryOptions.push(category);
+        });
+      })
+      .catch(error => {
+        alert(error);
+      });
+    this.axios
+      .get("http://localhost:3000/api/maintenanceDuration")
+      .then(response => {
+        let data = response.data;
+        data.forEach(maintenanceDuration => {
+          this.maintenanceDurationOptions.push(maintenanceDuration);
+          // alert(this.maintenanceDurationOptions.length)
         });
       })
       .catch(error => {
@@ -897,6 +966,8 @@ export default {
         text: "",
         value: ""
       },
+      warehouseOptions:[],
+      maintenanceDurationOptions:[],
       form: {
         warrantyDuration: 1,
         price: 50000,
@@ -929,6 +1000,7 @@ export default {
       itemPrice: "",
       itemDescription: "",
       itemWarranty: "",
+      itemWarehouse: "",
       itemNextMaintainDate: "",
       itemLocationID: "",
       itemBlockID: "",
@@ -951,6 +1023,7 @@ export default {
       this.editItemMode = false;
       this.selectedItem.Item.Price = this.itemPrice;
       this.selectedItem.Item.Description = this.itemDescription;
+      this.selectedItem.Item.WarehouseID = this.itemWarehouse;
       this.selectedItem.Item.WarrantyDuration = this.itemWarranty;
       this.selectedItem.Item.NextMaintainDate = this.itemNextMaintainDate;
       this.selectedItem.Item.LocationID = this.itemLocationID;
@@ -1026,6 +1099,7 @@ export default {
               {
                 equipmentID: this.EquimentByID.Id,
                 serialNumber: number,
+                warehoueid: this.form.selectedLocation.value,
                 warrantyDuration: this.form.warrantyDuration,
                 price: this.form.price,
                 statusId: 1,
@@ -1056,6 +1130,8 @@ export default {
         alert("Please choose category");
       } else if (this.quantity === "" || this.quantity < 1) {
         alert("Quantity must be bigger than 0");
+      }else if(this.quantity > 50){
+        alert("Quantity must be smaller than 50");
       } else {
         this.randomNumbers = [];
         for (var i = 0; i < this.quantity; i++) {
@@ -1103,6 +1179,7 @@ export default {
                 this.selectedItem = response.data;
                 this.itemPrice = this.selectedItem.Item.Price;
                 this.itemDescription = this.selectedItem.Item.Description;
+                this.itemWarehouse = this.selectedItem.Item.WarehouseID;
                 this.itemWarranty = this.selectedItem.Item.WarrantyDuration;
                 this.itemNextMaintainDate = this.selectedItem.Item.NextMaintainDate;
                 this.itemLocationID = this.selectedItem.Item.LocationID;
@@ -1138,6 +1215,7 @@ export default {
                   .then(response => {
                     let data = response.data;
                     data.forEach(workorder => {
+                      // alert(workorder.CreateDate);
                       this.allworkorder.push(workorder);
                     });
                   })
@@ -1180,6 +1258,7 @@ export default {
                 this.detailPopUp = true;
                 this.selectedItem = response.data;
                 this.itemPrice = this.selectedItem.Item.Price;
+                this.itemWarehouse = this.selectedItem.Item.WarehouseID;
                 this.itemDescription = this.selectedItem.Item.Description;
                 this.itemWarranty = this.selectedItem.Item.WarrantyDuration;
                 this.itemNextMaintainDate = this.selectedItem.Item.NextMaintainDate;
@@ -1275,7 +1354,8 @@ export default {
             madein: this.EquimentByID.MadeIn,
             categoryid: this.EquimentByID.CategoryId,
             description: this.EquimentByID.Description,
-            unitid: this.EquimentByID.UnitID
+            unitid: this.EquimentByID.UnitID,
+            maintenanceDurationid: this.EquimentByID.MaintenanceDurationID
           })
           .then(function(respone) {
             alert("Update successfully");
@@ -1478,6 +1558,7 @@ export default {
             {
               // id: this.selectedItem.Item.Id,
               warrantyDuration: this.selectedItem.Item.WarrantyDuration,
+              warehouseid: this.selectedItem.Item.WarehouseID,
               runtimeDays: this.selectedItem.Item.RuntimeDays,
               price: this.selectedItem.Item.Price,
               importdate: this.selectedItem.Item.ImportDate,
@@ -1501,6 +1582,7 @@ export default {
           this.editItemMode = !this.editItemMode;
           this.itemPrice = this.selectedItem.Item.Price;
           this.itemDescription = this.selectedItem.Item.Description;
+          this.itemWarehouse = this.selectedItem.Item.WarehouseID;
           this.itemWarranty = this.selectedItem.Item.WarrantyDuration;
           this.itemNextMaintainDate = this.selectedItem.Item.NextMaintainDate;
         } else {
@@ -1620,6 +1702,7 @@ export default {
     detailPopUp: function() {
       if (this.detailPopUp == false) {
         this.selectedItem.Item.Price = this.selectedItem.Item.Price;
+        this.selectedItem.Item.WarehouseID = this.selectedItem.Item.WarehouseID
         this.selectedItem.Item.NextMaintainDate = this.selectedItem.Item.NextMaintainDate;
         this.selectedItem.Item.Description = this.selectedItem.Item.Description;
         this.selectedItem.Item.StatusID = this.oldstt;
@@ -2027,7 +2110,7 @@ export default {
   margin-top: 0.5rem;
   margin-right: 1rem;
   display: grid;
-  grid-template-columns: 42% 58%;
+  grid-template-columns: 40% auto;
 }
 .rowstt {
   margin-left: 0.5rem;
