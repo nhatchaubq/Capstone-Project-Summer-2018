@@ -22,7 +22,7 @@
             <!-- <td style="width:3rem">{{vendor.Id}}</td>     -->
             <!-- <router-link :to="`/team/${team.Id}`">   -->
             <td >{{ index + 1 }}</td>
-            <td >{{vendor.BusinessName}}</td>
+            <td >{{vendor.BusinessName | truncate(30)}}</td>
             <td>{{vendor.Vendor.Quantityitems.Quantity}}</td>
             <!-- </router-link> -->
             <td >{{vendor.BusinessAddress ? vendor.BusinessAddress : "N/A" }}</td>

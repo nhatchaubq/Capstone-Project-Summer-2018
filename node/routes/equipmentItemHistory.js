@@ -4,7 +4,7 @@ var TYPES = require("tedious").TYPES;
 /* GET status history of an Item by ID */
 router.get("/:id", (req, res) => {
     req
-        .sql("SELECT acc.Fullname, eih.[Date] as [Date] , eih.Description, " +
+        .sql("SELECT acc.Fullname, CONVERT(smalldatetime,eih.[Date]) as [Date] , eih.Description, " +
             "json_query((select [Name] " +
             "from EquipmentStatus as es " +
             "where Id = eih.OldStatusID " +

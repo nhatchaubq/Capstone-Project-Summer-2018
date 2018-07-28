@@ -16,7 +16,7 @@
 
 
 <!-- test -->
-<div v-if="!editMode">
+<!-- <div v-if="!editMode">
  <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
   <div v-if="!account.Teams">
     This account has no team.
@@ -26,7 +26,7 @@
     <table class="mytable">
       <thead>
         <tr>
-          <!-- <th><strong>ID</strong></th> -->
+
           <th style="width:3% !important"><strong>#</strong></th>
           <th style="width:47% !important"><strong>Team name </strong></th>
           <th style="width:15% !important"><strong>Team role </strong></th>
@@ -38,15 +38,65 @@
             <td >{{team.Name? team.Name: "N/A" }}</td>
             <td v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
             <td v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">♟Member</span> </strong> </td> 
-            <!-- <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td> -->
+
 
           </tr>
       </tbody>
     </table>
 
   </div>
-</div>
+</div> -->
 <!-- test-end -->
+
+<!-- test- page-navigate-start -->
+<div>
+  <div v-if="!editMode">
+ <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
+  <div v-if="!teamAccount">
+    This account has no team.
+  </div>
+  <div v-else>
+    <table class="mytable">
+      <thead>
+        <tr>
+          <!-- <th><strong>ID</strong></th> -->
+          <th style="width:3% !important"><strong>#</strong></th>
+          <th style="width:47% !important"><strong>Team name </strong></th>
+          <th style="width:15% !important"><strong>Team role </strong></th>
+        </tr>
+      </thead>  
+      <tbody>
+          <tr  :key="team.Id" v-for="(team, index) in toDisplayData" v-on:click="gotoDetail(team.Id)" >
+            <td >{{index + 1}}</td>
+            <td >{{team.Name? team.Name: "N/A" }}</td>
+            <td v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
+            <td v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">♟Member</span> </strong> </td> 
+            <!-- <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td> -->
+
+          </tr>
+      </tbody>
+    </table>  
+  <!-- <div>
+    <span style="margin-right: 1rem;" :key="team.Id" v-for="team in toDisplayData">
+      {{ team.Name }}
+    </span>
+  </div> -->
+  <div v-if="teamAccount.length >9">
+    <Page :current="1" :total="teamAccount.length" show-elevator show-sizer 
+      @on-change="(newPageNumber) => {
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayData = teamAccount.slice(start, end);
+      }">
+    </Page>
+  </div>    
+
+  </div>
+</div>
+</div>            
+
+<!-- test- page-navigate-end -->
 
 
 
@@ -176,6 +226,15 @@
 <script>
 import moment from "moment";
 export default {
+  computed: {
+    data1() {
+      let array = [];
+      for (var i = 0; i < 100; i++) {
+        array.push(i);
+      }
+      return array;
+    }
+  },
   components: {
     moment
   },
@@ -191,10 +250,13 @@ export default {
     //   });
     // },
     this.getAccountDetail(this.$route.params.id);
+    this.getAllTeamOfThisAccount(this.$route.params.id);
   },
 
   data() {
     return {
+      teamAccount: [],
+      toDisplayData: [],
       sending: false,
       ErrorStrings: {
         // NoUsername: 'You must provide username for this account',
@@ -308,6 +370,14 @@ export default {
       this.axios.get(URL).then(response => {
         let data = response.data;
         this.account = data;
+      });
+    },
+    getAllTeamOfThisAccount(accountId) {
+      let URL = `http://localhost:3000/api/account/id/${accountId}`;
+      this.axios.get(URL).then(response => {
+        let data2 = response.data.Teams;
+        this.teamAccount = data2;
+        this.toDisplayData = this.teamAccount.slice(0, 10);
       });
     },
     getDate(date) {

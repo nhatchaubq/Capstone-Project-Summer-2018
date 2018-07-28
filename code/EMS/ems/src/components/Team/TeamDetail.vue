@@ -143,11 +143,11 @@
 
   <div class="col-12">
     <div v-if="editMode">
-      <div v-if="!team.LeaderAccount ">
+      <!-- <div v-if="!team.LeaderAccount ">
         There is no team leader yet.
-      </div>
-      <div v-if="!team.MemberAccounts">
-        There is no team member yet
+      </div> -->
+      <div v-if="!team.MemberAccounts && !team.LeaderAccount">
+        There is no  member yet
       </div>
       <div v-else>
         
@@ -520,6 +520,7 @@ export default {
       lastSelectItem: {},
       show: false,
       showConfirm: false
+      // editMode: false
     };
   },
   computed: {

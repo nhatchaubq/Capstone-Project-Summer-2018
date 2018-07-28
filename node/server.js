@@ -17,7 +17,11 @@ var connection = {
   server: "localhost",
   userName: "sa",
 
+<<<<<<< HEAD
   password: "123456",
+=======
+  password: "tien1005",
+>>>>>>> 2723d09b5eb3577927aef1f1dc23c57a2d725ff4
 
   port: "1433",
   options: {
