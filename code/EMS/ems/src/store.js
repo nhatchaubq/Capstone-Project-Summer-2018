@@ -16,6 +16,7 @@ const state = {
   workOrderPage: {
     orders: [],
     searchValues: [],
+    myOrderViewMode: true,
   },
   equipmentPage: {
     isTableMode: true
