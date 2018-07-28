@@ -2,7 +2,7 @@
     <div v-if="Dashboard">
         <div>
             <div class="row " style="width: 100%; margin-bottom: 1rem; margin-right: 0rem ; margin-left:0rem !important">
-              <div class="col-7" style="padding-left:0Rem !important">
+              <div class="col-8" style="padding-left:0Rem !important">
                 <!-- line chart -->
                 <div  class="Chart col-12">
                   <!-- <div class="select">
@@ -23,13 +23,13 @@
                 </div>
                 <!-- line chart- end -->
               </div>
-              <div class="col-5" style="padding:0rem !important">  
+              <div class="col-4" style="padding:0rem !important">  
                 <div id="header-mainCalen">
-                  Maintain Calendar
+                  Maintenance Calendar
                 </div>       
                 <div>
-                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width:445px !important; height:285px">
-
+                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width:356.5px !important; height:288px">
+                    
                   </v-calendar>
                 </div>                       
                     <!-- <doughnut-chart :data="doughnutChartData" styles="height: 36vh"></doughnut-chart> -->
@@ -119,7 +119,7 @@
                 </div>                
                 <div class=" row"  >
                   <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Working</strong></div>
-                  <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Maintain</strong></div>
+                  <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Maintenance</strong></div>
                   <div class="divrow3 columns " style="margin-right:0rem !important">
                     <div class="col-6" style="padding: 0 1rem 0 0.7rem  !important; margin-right: 0rem ">
                               <div class=" material-shadow-animate1" style="margin-bottom: 1rem">                            
@@ -229,7 +229,7 @@
             </div>
             <modal v-model="addPopUp" v-if="this.maintainItems.length > 0">
               <div slot="header" class="title-modal"> 
-                List Of Maintain Equipments: {{this.maintainItems[0].MaintainDate}}
+                List Of Maintain Equipments: {{this.selectedDay.day}}-{{this.selectedDay.month}}-{{this.selectedDay.year}}
               </div>
               <div>
                 <table style="width:100%"> 
@@ -299,7 +299,7 @@ export default {
       mainWoMonths: [],
       damaEqtMonths: [],
       lostEqtMonths: [],
-      items: [],
+
       maintainItems: [],
 
       //cate start
@@ -317,6 +317,7 @@ export default {
     // this.$refs.fullcalendar.height = "400px";
   },
   created() {
+    // alert(moment(moment()).format("L"));
     let URL = Server.DASHBOARD_API_PATH;
 
     this.axios
@@ -325,7 +326,6 @@ export default {
         if (res.status == 200) {
           let data = res.data;
           data.forEach(item => {
-            this.items.push(item);
             let attr = {
               key: `today ${item.Id}`,
               highlight: {
@@ -341,13 +341,35 @@ export default {
               dates: [
                 new Date(
                   moment(item.MaintainDate).year(),
-                  moment(item.MaintainDate).month() - 1,
-                  moment(item.MaintainDate).day()
+                  moment(item.MaintainDate).month(),
+                  moment(item.MaintainDate).date()
                 )
               ]
             };
+
             this.attrs.push(attr);
           });
+          let today = {
+            key: `today`,
+            highlight: {
+              backgroundColor: "#26a69a"
+              // Other properties are available too, like `height` & `borderRadius`
+            },
+            contentStyle: {
+              color: "#fafafa"
+            },
+            popover: {
+              label: ""
+            },
+            // bar({ isHovered }) {
+            //   return {
+            //     backgroundColor: "#26a69a",
+            //     opacity: (isHovered && 0.5) || 1
+            //   };
+            // },
+            dates: [new Date(moment(moment()).format("L"))]
+          };
+          this.attrs.push(today);
         }
       })
       .catch(error => {
@@ -383,8 +405,10 @@ export default {
         this.pieChartData.values.push(data.PieChartData.Archived.Quantity);
 
         // line chart data - start
-        this.lineChartData.labels.push(data.LineChart.WorkingName);
-        this.lineChartData.labels.push(data.LineChart.MaintainName);
+        // this.lineChartData.labels.push(data.LineChart.WorkingName);
+        // this.lineChartData.labels.push(data.LineChart.MaintainName);
+        this.lineChartData.labels.push("Working");
+        this.lineChartData.labels.push("Maintenance");
 
         // months labels
         this.lineChartData.monthLabels.push(data.LineChart.Month.Last11Month);
@@ -440,18 +464,18 @@ export default {
         this.damaEqtMonths.push(data.LC.Damaged.LastMonth);
         this.damaEqtMonths.push(data.LC.Damaged.ThisMonth);
 
-        this.lostEqtMonths.push(data.LC.Damaged.Last11Month);
-        this.lostEqtMonths.push(data.LC.Damaged.Last10Month);
-        this.lostEqtMonths.push(data.LC.Damaged.Last9Month);
-        this.lostEqtMonths.push(data.LC.Damaged.Last8Month);
-        this.lostEqtMonths.push(data.LC.Damaged.Last7Month);
-        this.lostEqtMonths.push(data.LC.Damaged.Last6Month);
-        this.lostEqtMonths.push(data.LC.Damaged.Last5Month);
-        this.lostEqtMonths.push(data.LC.Damaged.Last4Month);
-        this.lostEqtMonths.push(data.LC.Damaged.Last3Month);
-        this.lostEqtMonths.push(data.LC.Damaged.Last2Month);
-        this.lostEqtMonths.push(data.LC.Damaged.LastMonth);
-        this.lostEqtMonths.push(data.LC.Damaged.ThisMonth);
+        this.lostEqtMonths.push(data.LC.Lost.Last11Month);
+        this.lostEqtMonths.push(data.LC.Lost.Last10Month);
+        this.lostEqtMonths.push(data.LC.Lost.Last9Month);
+        this.lostEqtMonths.push(data.LC.Lost.Last8Month);
+        this.lostEqtMonths.push(data.LC.Lost.Last7Month);
+        this.lostEqtMonths.push(data.LC.Lost.Last6Month);
+        this.lostEqtMonths.push(data.LC.Lost.Last5Month);
+        this.lostEqtMonths.push(data.LC.Lost.Last4Month);
+        this.lostEqtMonths.push(data.LC.Lost.Last3Month);
+        this.lostEqtMonths.push(data.LC.Lost.Last2Month);
+        this.lostEqtMonths.push(data.LC.Lost.LastMonth);
+        this.lostEqtMonths.push(data.LC.Lost.ThisMonth);
 
         this.workWoMonths.forEach(quanWo =>
           this.lineChartData.monthData[0].push(quanWo)
@@ -489,13 +513,13 @@ export default {
     dayClicked(day) {
       this.selectedDay = day;
       if (this.selectedDay.attributes.length > 0) {
-        // alert(JSON.stringify(this.selectedDay));
+        alert(JSON.stringify(this.selectedDay));
         // alert(
         //   JSON.stringify(
         //     this.selectedDay.attributes[0].popover.label.MaintainDate
         //   )
         // );
-
+        this.maintainItems = [];
         this.selectedDay.attributes.forEach(tmp => {
           this.maintainItems.push(tmp.popover.label);
         });
@@ -537,7 +561,7 @@ export default {
           this.lineChartData.monthData = [];
 
           this.lineChartData.labels.push("Working");
-          this.lineChartData.labels.push("Maintain");
+          this.lineChartData.labels.push("Maintenance");
 
           this.lineChartData.monthData = [[], []];
           this.workWoMonths.forEach(quanWo =>
@@ -560,7 +584,7 @@ export default {
           this.damaEqtMonths.forEach(quanDa =>
             this.lineChartData.monthData[0].push(quanDa)
           );
-          this.mainWoMonths.forEach(quanLo =>
+          this.lostEqtMonths.forEach(quanLo =>
             this.lineChartData.monthData[1].push(quanLo)
           );
           // alert(this.lineChartData.labels[0]);

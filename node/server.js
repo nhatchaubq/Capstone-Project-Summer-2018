@@ -17,7 +17,7 @@ var connection = {
   server: "localhost",
   userName: "sa",
 
-  password: "cCS94@bcnq836894",
+  password: "123456",
 
   port: "1433",
   options: {
@@ -79,7 +79,6 @@ app.use("/api/notification", require("./routes/notification")(io));
 // app.use('/api/account/edit/id', require('./routes/account'));
 // app.use('/api/account', require('./routes/account'));
 // app.use('/api/account/delete/id', require('./routes/'));
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

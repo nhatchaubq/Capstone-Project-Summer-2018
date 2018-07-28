@@ -22,13 +22,13 @@ export default {
       .getContext("2d")
       .createLinearGradient(0, 0, 0, 450);
 
-    this.gradient.addColorStop(0, "rgba(255, 0, 0, 0.8)");
-    this.gradient.addColorStop(0.5, "rgba(255, 0, 0, 0.6)");
-    this.gradient.addColorStop(1, "rgba(255, 0, 0, 0.3)");
+    this.gradient.addColorStop(0, "rgba(204, 0, 0, 0.8)");
+    this.gradient.addColorStop(0.5, "rgba(204, 0, 0, 0.5)");
+    this.gradient.addColorStop(1, "rgba(204, 0, 0, 0.3)");
 
-    this.gradient2.addColorStop(0, "rgba(0, 0, 255, 0.8)");
-    this.gradient2.addColorStop(0.5, "rgba(0, 0, 255, 0.5)");
-    this.gradient2.addColorStop(1, "rgba(0, 0, 255, 0.3)");
+    this.gradient2.addColorStop(0, "rgba(0, 0, 204, 0.8)");
+    this.gradient2.addColorStop(0.5, "rgba(0, 0, 204, 0.5)");
+    this.gradient2.addColorStop(1, "rgba(0, 0, 204, 0.3)");
 
     this.gradient3.addColorStop(0, "rgba(255, 255, 0, 0.6)");
     this.gradient3.addColorStop(0.5, "rgba(255, 255, 0, 0.3)");
