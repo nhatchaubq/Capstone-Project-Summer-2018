@@ -60,7 +60,7 @@
   <div class="row" > 
     <div class="col-6">   
       <div v-if="!editMode">
-        <div v-if="!team.LeaderAccount && !team.MemberAccounts">
+        <div v-if="!teamOnly">
           There is no team member yet.
         </div>
         <!-- <div v-if="!team.LeaderAccount ">
@@ -78,46 +78,46 @@
                     <th style="width:3% !important"><strong># </strong></th>
                     <th style="width:15% !important"><strong>Username</strong></th>
                     <!-- <th style="width: 30% !important"><strong>Full Name</strong></th> -->
-                    <th style="width: 5% !important"><strong>Status</strong></th>
                     <th style="width: 5% !important"><strong>Role</strong></th>
+                    <th style="width: 5% !important"><strong>Status</strong></th>
                     <th style="width: 20% !important" v-if="editMode"><strong>Action</strong></th>
                   </tr>
                 </thead>  
                 <tbody>
-                    <tr v-if="team.LeaderAccount" >
+                    <!-- <tr v-if="teamOnly" >
                       <td v-on:click="toDetail(team.LeaderAccount.Id)">1</td>
                       <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Username}}</td>
-                      <!-- <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td> -->
                       <td v-on:click="toDetail(team.LeaderAccount.Id)" style="color:#26a69a"><span style="font-size: 25px; ">♛</span> Leader</td>
                       <strong v-on:click="toDetail(team.LeaderAccount.Id)"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
                       <td v-if="editMode">&nbsp;</td>
-                    </tr>
-                    <tr :key="'member2' + index" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
-                      <td v-on:click="toDetail(member.Id)">{{index + 2}}</td>
+                    </tr> -->
+
+                    <tr :key="'member2' + index" v-for="(member, index) in toDisplayMember"  v-if="teamOnly">
+                      <td v-on:click="toDetail(member.Id)">{{ 5*(currentPageMember -1) + (index + 1)}}</td>
                       <td v-on:click="toDetail(member.Id)">{{member.Username}}</td>
-                      <!-- <td v-on:click="toDetail(member.Id)">{{member.Fullname ? member.Fullname :'N/A' }} </td> -->
-                      <td v-on:click="toDetail(member.Id)"><span style="font-size: 25px">♟</span>Member </td>
+                    
+                      <!-- <td v-on:click="toDetail(member.Id)"><span v-if="member.TeamRoleID =2" style="font-size: 25px">♟Member</span> </td> -->
+                      <td v-on:click="toDetail(member.Id)"> <span >{{member.TeamRole}}</span> </td>
                       <strong v-on:click="toDetail(member.Id)"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
                       <td v-if="editMode" style="padding-top: 0rem important">
                         <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
-                          <!-- <button v-if="editMode" class="material-icons"  style="color: var(--danger); margin-left:1rem !important" v-on:click="confirmKick(member.Id, member.Username)">close</button> -->
                           <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important; border-style: none" v-on:click="confirmKick(member.Id, member.Username)">Remove</button>
 
                       </td>
                     </tr>
                 </tbody>
               </table>
-                  <!-- <div v-if="items1.length > 9" class="pageNa">
-    <Page :current="currentPageMember" :total="items1.length" show-elevator 
+                  <div v-if="teamOnly.length > 4" class="pageNa">
+    <Page :current="currentPageMember" :total="teamOnly.length" show-elevator 
       @on-change="(newPageNumber) => {
         currentPageMember = newPageNumber;
-        let start = 10 * (newPageNumber - 1);
-        let end = start + 10;
+        let start = 5 * (newPageNumber - 1);
+        let end = start + 5;
         
-        toDisplayMember = items1.slice(start, end);
+        toDisplayMember = teamOnly.slice(start, end);
       }">
     </Page>
-  </div>   -->
+  </div>  
 
         </div>
       </div>
@@ -154,8 +154,8 @@
             <tbody>
                 <tr :key="'Loca'+ index" v-for="(Loca, index) in toDisplayLocation" class="txtText" >
                   <td style="cursor: context-menu !important">{{ 5*(currentPageLoca - 1) + (index + 1)}}</td>
-                  <td style="cursor: context-menu !important">{{Loca.Name ? Loca.Name : "N/A" }}</td>
-                  <td style="cursor: context-menu !important">{{Loca.Address ? Loca.Address : "N/A"}} </td>
+                  <td style="cursor: context-menu !important">{{Loca.Name | truncate(17) }}</td>
+                  <td style="cursor: context-menu !important">{{Loca.Address | truncate(38)}} </td>
                   <td style="cursor: context-menu !important"> <strong :style="{color: Loca.IsActive ? 'var(--primary-color)' : '#607D8B'}">{{Loca.IsActive ? "Active" : "Inactive"}}</strong></td>
                 </tr>
             </tbody>
@@ -321,9 +321,6 @@
               </tr>
             </tbody>
         </table>
-      </div>
-    </div>  
-  </div>
 
     <div v-if="items1.length > 9" class="pageNa">
     <Page :current="currentPage" :total="items1.length" show-elevator 
@@ -336,6 +333,9 @@
       }">
     </Page>
   </div>  
+      </div>
+    </div>  
+  </div>
      <!-- equipmentItem-end -->
 
 
@@ -548,6 +548,15 @@ export default {
       let data = response.data.team.Location;
       this.location1 = data;
       this.toDisplayLocation = this.location1.slice(0, 5);
+    });
+    let onlymemURL = `http://localhost:3000/api/team/id/${
+      this.$route.params.id
+    }/OnlyteamMember`;
+
+    this.axios.get(onlymemURL).then(response => {
+      let data = response.data;
+      this.teamOnly = data;
+      this.toDisplayTeam = this.teamOnly.slice(0, 5);
     });
     // this.axios.get(team1ApiUrl).then(response => {
     //   let data = response.data.team.Location;

@@ -16,25 +16,25 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th><strong>Order #</strong></th>
-                    <th><strong>Equipment name</strong></th>
-                    <th><strong>Available</strong></th>
-                    <th><strong>Vendor name</strong></th>
-                    <th><strong>Made In</strong></th>
-                    <th><strong>Description</strong></th>
-                    <th><strong>Category</strong></th>
+                    <th ><strong>Order #</strong></th>
+                    <th ><strong>Equipment name</strong></th>
+                    <th ><strong>Available</strong></th>
+                    <th ><strong>Vendor name</strong></th>
+                    <th ><strong>Made In</strong></th>
+                    <th ><strong>Description</strong></th>
+                    <th ><strong>Category</strong></th>
                 </tr>
             </thead>  
             <tbody>
                 <tr v-bind:key=" 'toDisplayData'+ index +''+ equipment.Id " v-for="(equipment, index) in toDisplayData" v-on:click="gotoDetail(equipment.Id)">
-                    <td>{{ 10*(currentPage -1) + (index + 1) }}</td>   
-                    <td>{{equipment.Name}}</td>
-                    <td style="width=40px">{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
-                    <td>{{equipment.Vendor.Name}}</td>
-                    <td>{{equipment.MadeIn}}</td>
+                    <td width=5% >{{ 10*(currentPage -1) + (index + 1) }}</td>   
+                    <td width=30% >{{equipment.Name | truncate(50)}}</td>
+                    <td width=5% >{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
+                    <td width=20% >{{equipment.Vendor.Name | truncate(35)}}</td>
+                    <td width=10%>{{equipment.MadeIn| truncate(10)  }}</td>
                     <!-- <td>{{equipment.Price ? equipment.Price : 'n/a'}}</td> -->
-                    <td style="width=70px">{{equipment.Description ? equipment.Description : 'N/A' }}</td>
-                    <td>{{equipment.Category.Name}}</td>
+                    <td width=15% >{{equipment.Description ? equipment.Description: 'N/A' }}</td>
+                    <td width=10% >{{equipment.Category.Name }}</td>
                 </tr>
             </tbody>
         </table>

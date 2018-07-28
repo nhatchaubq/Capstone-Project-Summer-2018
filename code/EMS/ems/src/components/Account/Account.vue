@@ -54,7 +54,7 @@
       <tbody>
           <tr  :key="account.Id" v-for="(account, index) in toDisplayData"  style="height:28px !important" v-on:click="gotoDetail(account.Id)"  >
           <td>{{ 10*(currentPage -1) + (index + 1) }}</td>   
-          <td>{{account.Username }}</td>
+          <td>{{account.Username | truncate(11)}}</td>
           <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
           <td>{{account.Email ? account.Email : "N/A" }}</td>
           <td>{{account.Phone ? account.Phone : "N/A"}}</td>
