@@ -7,12 +7,12 @@
       <thead>
         <tr>
           <!-- <th><strong>ID</strong></th> -->
-          <th style="width:3% !important"><strong>#</strong></th>
-          <th style="width:22% !important"><strong>Business name</strong></th>
-          <th style="width:10% !important"><strong>Quantity</strong></th>
-          <th style="width:30% !important"><strong>Address</strong></th>
-          <th style="width:20% !important"><strong>Website</strong></th>
-          <th style="width:15% !important"><strong>Contact name</strong></th>
+          <th ><strong>#</strong></th>
+          <th ><strong>Business name</strong></th>
+          <th ><strong>Quantity</strong></th>
+          <th ><strong>Address</strong></th>
+          <th><strong>Website</strong></th>
+          <th ><strong>Contact name</strong></th>
 
           <!-- <th><strong>Department</strong></th> -->
         </tr>
@@ -21,21 +21,22 @@
           <tr v-bind:key="vendor.Id" v-for="(vendor, index) in toDisplayData" class="txtText" v-on:click="gotoDetail(vendor.Id)">
             <!-- <td style="width:3rem">{{vendor.Id}}</td>     -->
             <!-- <router-link :to="`/team/${team.Id}`">   -->
-            <td >{{ index + 1 }}</td>
-            <td >{{vendor.BusinessName | truncate(30)}}</td>
-            <td>{{vendor.Vendor.Quantityitems.Quantity}}</td>
+            <td width=3% >{{ 10*(currentPage -1) + (index + 1) }}</td>
+            <td width=22%>{{vendor.BusinessName | truncate(25)}}</td>
+            <td width=10%>{{vendor.Vendor.Quantityitems.Quantity ? vendor.Vendor.Quantityitems.Quantity : "N/A" }}</td>
             <!-- </router-link> -->
-            <td >{{vendor.BusinessAddress ? vendor.BusinessAddress : "N/A" }}</td>
-            <td >{{vendor.Website ? vendor.Website : "N/A"}} </td>
-            <td>{{vendor.ContactName ? vendor.ContactName : "N/A"}}</td>
+            <td width=30%>{{vendor.BusinessAddress ? vendor.BusinessAddress : "N/A" }}</td>
+            <td width=20%>{{vendor.Website ? vendor.Website : "N/A"}} </td>
+            <td width=15%>{{vendor.ContactName ? vendor.ContactName : "N/A"}}</td>
           </tr>
       </tbody>
     </table>
 
 <!-- test1 -->
   <div v-if="vendors.length >9" class="pageNa">
-    <Page :current="1" :total="vendors.length" show-elevator 
+    <Page :current="currentPage" :total="vendors.length" show-elevator 
       @on-change="(newPageNumber) => {
+        currentPage =newPageNumber
         let start = 10 * (newPageNumber - 1);
         let end = start + 10;
         
@@ -69,6 +70,7 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
       vendors: [],
       toDisplayData: []
     };

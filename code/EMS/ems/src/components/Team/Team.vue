@@ -43,7 +43,7 @@
 
                 <th><strong>#</strong></th>
                 <th><strong>Team name</strong></th>
-                <th><strong>Leader </strong></th>
+                <th><strong> <span style="font-size: 25px">♛</span>  Leader </strong></th>
                 <th><strong>Members </strong></th>
                 <th><strong>Create date </strong></th>
 
@@ -56,10 +56,10 @@
         <tbody>
             <tr v-bind:key="team.Id" v-for="(team, index) in toDisplayData" v-on:click="gotoDetail(team.Id)">
               <!-- <td>{{team.Id}}</td>     -->
-              <td>{{ index + 1}}</td>   
+              <td>{{ 10*(currentPage - 1) + (index + 1 )}}</td>   
               <td>{{team.Name}}</td>
               <!-- <router-link :to="`/account/${team.TeamLeader.Id}`">   -->
-                <td>{{ team.TeamLeader ? team.TeamLeader.Username : 'n/a'}}</td>
+                <td :style="{color: team.TeamLeader ? 'var(--primary-color)' : '#607D8B'}"> <span style="font-size: 25px;"></span> {{ team.TeamLeader ? team.TeamLeader.Username : 'n/a'}}</td>
               <!-- </router-link> -->
               <td>{{team.Members.Quantity}}</td>
               <td>{{getDate(team.CreatedDate)}}</td>
@@ -68,8 +68,9 @@
         </tbody>
     </table>
   <div v-if="teams.length >9" class="pageNa">
-    <Page :current="1" :total="teams.length" show-elevator 
+    <Page :current="currentPage" :total="teams.length" show-elevator 
       @on-change="(newPageNumber) => {
+        currentPage = newPageNumber
         let start = 10 * (newPageNumber - 1);
         let end = start + 10;
         
@@ -109,6 +110,7 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
       teams: [],
       toDisplayData: []
     };
