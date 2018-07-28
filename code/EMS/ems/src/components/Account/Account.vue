@@ -53,8 +53,8 @@
       </thead>  
       <tbody>
           <tr  :key="account.Id" v-for="(account, index) in toDisplayData"  style="height:28px !important" v-on:click="gotoDetail(account.Id)"  >
-          <td>{{ index + 1 }}</td>   
-          <td>{{account.Username }}</td>
+          <td>{{ 10*(currentPage -1) + (index + 1) }}</td>   
+          <td>{{account.Username | truncate(11)}}</td>
           <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
           <td>{{account.Email ? account.Email : "N/A" }}</td>
           <td>{{account.Phone ? account.Phone : "N/A"}}</td>
@@ -67,8 +67,9 @@
     </table>  
 
   <div v-if="accounts.length >9" class="pageNa">
-    <Page :current="1" :total="accounts.length" show-elevator 
+    <Page :current="currentPage" :total="accounts.length" show-elevator 
       @on-change="(newPageNumber) => {
+        currentPage = newPageNumber
         let start = 10 * (newPageNumber - 1);
         let end = start + 10;
         
@@ -121,6 +122,7 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
       toDisplayData: [],
       accounts: [],
       selectedAccount: null,
