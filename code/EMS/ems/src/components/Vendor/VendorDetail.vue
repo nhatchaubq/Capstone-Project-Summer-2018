@@ -141,7 +141,7 @@
       -->
 
 
-    <div v-if="!Vendor.Equipments">
+    <div v-if="!vendorItem">
       This vendor has no equipment in system.
     </div>
     <div v-else>
@@ -161,7 +161,7 @@
           </tr>
         </thead>  
         <tbody>
-            <tr :key="Equipment.Id" v-for="(Equipment, index) in Vendor.Equipments" class="txtText" v-on:click="gotoDetail(Equipment.Id)" >
+            <tr :key="Equipment.Id" v-for="(Equipment, index) in toDisplayData" class="txtText" v-on:click="gotoDetail(Equipment.Id)" >
               <td >{{index + 1}}</td>
               <td >{{Equipment.Name ? Equipment.Name : "N/A" }}</td>
               <td >{{Equipment.MadeIn ? Equipment.MadeIn : "N/A"}} </td>
@@ -170,6 +170,21 @@
             </tr>
         </tbody>
       </table>
+
+<!-- test1 -->
+  <div v-if="vendorItem.length >9" class="pageNa">
+    <Page :current="1" :total="vendorItem.length" show-elevator 
+      @on-change="(newPageNumber) => {
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayData = vendorItem.slice(start, end);
+      }">
+    </Page>
+  </div>  
+<!-- test1-end -->
+
+
       <!-- <router-link to='/vendor1/add/'>
         <button id="btn-add-vendor" class="button btn-primary material-shadow-animate">Add Vendor</button>
       </router-link> -->
@@ -371,9 +386,12 @@ export default {
       let data = response.data;
       this.Vendor = data;
     });
+    this.getItemOfVendor(this.$route.params.id);
   },
   data() {
     return {
+      vendorItem: [],
+      toDisplayData: [],
       sending: false,
       ErrorStrings: {
         // NoBusinessName: "You must provide business name for this vendor",
@@ -467,6 +485,14 @@ export default {
       this.axios.get(URL).then(response => {
         let data = response.data;
         this.Vendor = data;
+      });
+    },
+    getItemOfVendor(vendorId) {
+      let URL = `http://localhost:3000/api/vendor/${vendorId}`;
+      this.axios.get(URL).then(response => {
+        let data = response.data.Equipments;
+        this.vendorItem = data;
+        this.toDisplayData = this.vendorItem.slice(0, 10);
       });
     },
     getAccountAvatar(equip) {

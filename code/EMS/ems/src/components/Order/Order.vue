@@ -6,25 +6,33 @@
                     <!-- <div style="width: 100%;">
                         Filter:
                     </div> -->
-                  <div class="filter" style="width: 100%">
-                      <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
-                            <div>Priority:</div>
-                            <div>
-                                <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: .5rem;">
-                                    <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="filterOptionsValues.priorities.includes(priority)">
-                                    {{ priority.name }}
-                                </label>                              
-                            </div>                        
-                      </div>
-                      <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
-                            <div>Status:</div>
-                            <div>
-                                <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
-                                    <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="filterOptionsValues.status.includes(status)">
-                                    {{ status.name }}
-                                </label>
+                  <div class="filter" style="width: 100%; display: grid; grid-template-columns: 6% auto">
+                        <div style="font-weight: bold">
+                            Filter:
+                        </div>
+                        <div>
+                            <div style="width: 100%; display: grid; grid-template-rows: auto auto,">
+                                <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
+                                        <div>Priority:</div>
+                                        <div>
+                                            <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: .5rem;">
+                                                <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="filterOptionsValues.priorities.includes(priority)">
+                                                {{ priority.name }}
+                                            </label>                              
+                                        </div>                        
+                                </div>
+                                <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
+                                        <div>Status:</div>
+                                        <div>
+                                            <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
+                                                <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="filterOptionsValues.status.includes(status)">
+                                                {{ status.name }}
+                                            </label>
+                                        </div>
+                                </div>
+
                             </div>
-                      </div>
+                        </div>
                   </div>
                   <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer'" style="width: 60%; user-select: none">
                       <div class="row" style="margin: 0 !important; margin-bottom: 1rem">
@@ -144,7 +152,7 @@
                                     })
                                     showCloseWorkOrderDetailDialog = true;
                                     newStatusName = 'Closed';
-                                }">Close this work order</button>
+                                }">Close work order</button>
                             </div>
                       </div>
                       <!-- order detail view mode -->
@@ -160,8 +168,13 @@
                             <div class="detail-contents" style="width: 100%;">                                    
                                 <span class="detail-label">Requested by: </span><span> <router-link :to="`/account/${selectedOrder.RequestUserID}`">{{ selectedOrder.RequestUserID == authUser.Id ? 'You' : selectedOrder.RequestUsername }}</router-link>. </span><span class="detail-label">Team: </span><span> <router-link :to="`/team/${selectedOrder.Team.Id}`">{{ selectedOrder.Team.Name }}</router-link></span>
                             </div> -->
-                            <div class="detail-contents" style="width: 100%;">                                    
-                                <span class="detail-label">Planning to start on </span><span>{{ getDate(selectedOrder.ExpectingStartDate) }}</span><span class="detail-label"> and will close on </span><span>{{ getDate(selectedOrder.ExpectingCloseDate) }}</span>
+                            <div class="detail-contents" style="width: 100%;" v-if="selectedOrder.WorkOrderStatus != 'Cancelled'">                                    
+                                <div v-if="!selectedOrder.ClosedDate">
+                                    <span class="detail-label">Planning to start on </span><span>{{ getDate(selectedOrder.ExpectingStartDate) }}</span><span class="detail-label"> and will close on </span><span>{{ getDate(selectedOrder.ExpectingCloseDate) }}.</span>
+                                </div>
+                                <div v-if="selectedOrder.StartDate || selectedOrder.ClosedDate" style="margin-top: .5rem">
+                                    <span class="detail-label">Started on </span><span>{{ getDateWithTime(selectedOrder.StartDate) }}.</span><span v-if="selectedOrder.ClosedDate"><span class="detail-label"> Closed on </span><span>{{ getDateWithTime(selectedOrder.ClosedDate) }}</span></span>
+                                </div>
                             </div>
                             <div class="detail-contents" style="width: 100%;">
                                 <span class="detail-label">Equipments:</span> 
@@ -189,7 +202,7 @@
                                             <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
                                                 <v-card-text style="font-size: .9rem">
                                                     <div>
-                                                        Serial #: <strong>{{ item.SerialNumber }}</strong>
+                                                        Serial #: <strong>{{ item.SerialNumber }}</strong><span v-if="selectedOrder.WorkOrderStatus != 'Closed' && selectedOrder.WorkOrderStatus != 'Cancelled'"> (status: <strong>{{ item.Status.toLowerCase() }}</strong>)</span>
                                                         <span v-if="(authUser.Role == 'Staff' || authUser.Role == 'Maintainer')
                                                                     && selectedOrder.WorkOrderStatus == 'In Progress' && !item.DetailReturn" >
                                                              | 
@@ -582,6 +595,7 @@
                             }">
                         {{ closeOrderDetailStep == 0 ? 
                             'Next: Update Position' : ((toCloseEquipments.length == selectedOrder.WorkOrderDetails.length) ? 'Close Order' : 'Close Order Detail') }}
+                            <i v-show="closeOrderDetailStep == 1 && sending" class="fa fa-circle-o-notch fa-spin"></i>
                     </button>
                 </div>
               </div>
@@ -675,6 +689,7 @@ import Vodal from "vodal";
 import { gmapApi } from "vue2-google-maps";
 import { BasicSelect } from "vue-search-select";
 import io from 'socket.io-client';
+import Utils from "@/utils.js";
 
 export default {
   components: {
@@ -698,12 +713,10 @@ export default {
             }
         }
   },
-  created() {
-    this.getWorkOrders();
-    this.getBlockFloorTile();
-    this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
+  async created() {    
+    await this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
         let data = response.data;
-        data.forEach(element => {
+        for (const element of data) {
             let status = {
                 id: element.Id,
                 name: element.Name,
@@ -713,16 +726,15 @@ export default {
             if (status.name != 'Cancelled' && status.name != 'Closed') {
                 this.filterOptionsValues.status.push(status);
             }
-        });
-        this.filterOrders();
+        }
     }).catch((error) => {
         if (error == 'Request failed with status code 500') {
             this.$router.push('/500');
         }
     });
-    this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
+    await this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
         let data = response.data;
-        data.forEach(element => {
+        for (const element of data) {
             let priority = {
                 id: element.Id,
                 name: element.Name,
@@ -730,13 +742,15 @@ export default {
             };
             this.options.priorities.push(priority);
             this.filterOptionsValues.priorities.push(priority);
-        });
-        this.filterOrders();
+        }
     }).catch((error) => {
         if (error == 'Request failed with status code 500') {
             this.$router.push('/500');
         }
     });
+
+    this.getWorkOrders();
+    this.getBlockFloorTile();
   },
   data() {
     return {
@@ -801,6 +815,7 @@ export default {
         selectedLocationOptionError: '',
 
         selectedLocationOption: {},
+        sending: false,
     };
   },
   computed: {
@@ -826,15 +841,16 @@ export default {
                     this.toDisplayWorkOrders = this.workOrders;
                     this.myWorkOrderViewMode = false;
                 }
-                // this.filterOrders();
                 if (this.selectedOrder) {
                     this.selectedOrder = data.filter(order => order.Id == this.selectedOrder.Id)[0];
+                    this.getEquipmentsOfWorkOrder(this.selectedOrder);
                 } else if (this.$route.params && this.$route.params.orderId) {
                     this.selectedOrder = this.toDisplayWorkOrders.filter(order => order.Id == this.$route.params.orderId)[0];
                     if (this.selectedOrder) {
                         this.getEquipmentsOfWorkOrder(this.selectedOrder);
                     }
                 } 
+                this.filterOrders();
             }
         }).catch(error => {
             if (error == 'Request failed with status code 500') {
@@ -912,12 +928,12 @@ export default {
             // get equipments in the selected work order - end
         }
     },
-    getEquipmentsOfWorkOrder(workOrder) {
+    async getEquipmentsOfWorkOrder(workOrder) {
       this.equipments = [];
       let equipmentsUrl = `${Server.WORKORDER_API_PATH}/${
         workOrder.Id
       }/equipments`;
-      this.axios
+      await this.axios
         .get(equipmentsUrl)
         .then(res => {
           this.equipments = res.data;
@@ -1065,9 +1081,9 @@ export default {
         this.changeWorkOrderStatus(orderId, newStatusName);
       }
     },
-    changeWorkOrderStatus(orderId, newOrderStatusName) {
+    async changeWorkOrderStatus(orderId, newOrderStatusName) {
       let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
-      this.axios
+      await this.axios
         .put(url, {
             userId: this.authUser.Id,
             newStatusName: newOrderStatusName,
@@ -1077,7 +1093,7 @@ export default {
                 : null,
             noNeedToRefreshWorkOrderUserId: this.authUser.Id
         })
-        .then(res => {
+        .then(async res => {
           if (res.status == 200) {
             if (newOrderStatusName == "Approved" ||
               newOrderStatusName == "In Progress" ||
@@ -1087,18 +1103,18 @@ export default {
                     newItemStatusName = "Working Approved";
                 } else if (newOrderStatusName == "In Progress") {
                     newItemStatusName = "Working";
-                } else if (newOrderStatusName == "Closed") {
-                    newItemStatusName = "Available";
                 }
-                this.selectedOrder.WorkOrderDetails.forEach(async orderDetail => {
+                for (const orderDetail of this.selectedOrder.WorkOrderDetails) {
                     let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/chau/${orderDetail.EquipmentItem.Id}`;
                     await this.axios.put(equipmentStatusApi, {
                         userId: this.authUser.Id,
                         newStatusName: newItemStatusName,
                         description: null
                     });
-              });
+                }
             }
+            this.$socket.emit('ORDER_STATUS_CHANGED', {});
+
             // make new notification
             var teamLeaderNotiContent = '';
             var managerNotiContent = '';
@@ -1116,48 +1132,54 @@ export default {
                 }
             } else if (newOrderStatusName == 'In Progress') {
                 teamLeaderNotiContent = `Your work order <strong>${this.selectedOrder.Name}</strong> has changed status to <strong>In Progress</strong>. Please remember to change new position for equipments.`;
-            } // prepare notification content - start
+            } // prepare notification content - end
+            
             if (newOrderStatusName != 'Closed') {
                 // notification for managers and equipment staff - start
                 if ((newOrderStatusName == 'Checked' || newOrderStatusName == 'Rejected') && this.authUser.Role == 'Equipment Staff') {
-                    this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
                         notificationContent: managerNotiContent,
                         userRole: 'Manager',
                         metaData: JSON.stringify(metaData),
-                        needToUpdateNotification: {
-                            roles: ['Manager'],
-                        },
+                    }).then((res) => {
+                        if (res.status == 200) {
+                            this.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Manager'],}});
+                        }
                     });
                 } else if (newOrderStatusName == 'Cancelled') {
-                    this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
                         notificationContent: `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has cancelled work order <strong>${this.selectedOrder.Name}</strong>`,
                         userRole: 'Equipment Staff',
                         metaData: JSON.stringify(metaData),
-                        needToUpdateNotification: {
-                            roles: ['Equipment Staff'],
-                        },
+                    }).then((res) => {
+                        if (res.status == 200) {
+                            this.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Equipment Staff'],}});
+                        }
                     });
-                    this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
                         notificationContent: `${this.authUser.Role} ${this.authUser.Username} has cancelled work order ${this.selectedOrder.Name}`,
                         userRole: 'Manager',
                         metaData: JSON.stringify(metaData),
-                        needToUpdateNotification: {
-                            roles: ['Manager'],
+                    }).then((res) => {
+                        if (res.status == 200) {
+                            this.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Manager'],}});
                         }
                     });
                 } // notification for managers and equipment staff - end
                 // notification for teamleader and maintainer - start
                 if (newOrderStatusName != 'Cancelled') {
-                    this.axios.post(`${Server.NOTIFICATION_API_PATH}/userid/${this.selectedOrder.RequestUserID}`, {
+                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/userid/${this.selectedOrder.RequestUserID}`, {
                         notificationContent: teamLeaderNotiContent,
                         metaData: JSON.stringify(metaData),
-                        needToUpdateNotification: {
-                            userIds: [this.selectedOrder.RequestUserID],
+                    }).then((res) => {
+                        if (res.status == 200) {
+                            this.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {userIds: [this.selectedOrder.RequestUserID]}});
                         }
                     });
                 }
                 // notification for teamleader and maintainer - end
             }
+            // await Utils.sleep(500);
             this.changeStatusDescription = '';            
             this.showCancelDialog = false;
             this.showApproveRejectDialog = false;
@@ -1214,7 +1236,7 @@ export default {
     getDateWithTime(date) {
         return moment(date).format('LLL');
     },
-    updateItemPosition(itemId, tileId) {
+    async updateItemPosition(itemId, tileId) {
         this.equipmentPanelIndex = -1;
         let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${itemId}`;
         this.axios.put(url, {
@@ -1236,42 +1258,44 @@ export default {
     },
     async closeWorkOrderDetails() {
         if (this.validateCloseWorkOrder()) {
-            var check = true;
-            this.toCloseEquipments.forEach(async value => {
+            this.sending = true;
+            var check = false;
+            for (const value of this.toCloseEquipments) {
                 var workOrderDetail = null;
-                for (var i = 0; i < this.selectedOrder.WorkOrderDetails.length; i++) {
-                    let detail = this.selectedOrder.WorkOrderDetails[i];
+                for (const detail of this.selectedOrder.WorkOrderDetails) {
                     if (detail.EquipmentItemID == value.item.Id) {
                         workOrderDetail = detail;
                         break;
                     }
                 }
-                try {
-                    let url = `${Server.WORKORDER_API_PATH}/close_detail/${workOrderDetail.Id}`;
-                    let response = await this.axios.post(url, {                
-                        userId: this.authUser.Id,
-                        itemId: value.item.Id,
-                        newItemStatus: value.status,
-                        description: value.description,
-                    });
+                let url = `${Server.WORKORDER_API_PATH}/close_detail/${workOrderDetail.Id}`;
+                await this.axios.post(url, {                
+                    userId: this.authUser.Id,
+                    itemId: value.item.Id,
+                    newItemStatus: value.status,
+                    description: value.description,
+                }).then((response) => {
                     if (response.status == 200) {
                         check = true;
                         var tileId = null;
                         if (value.status != 'Lost') {
                             tileId = parseInt(value.tileOption.value);
-                        }
-                        this.updateItemPosition(parseInt(value.item.Id), tileId);                    
+                        }                                         
                     } else {
                         check = false;
                     }
-                } catch(error)  { 
+                }).catch(error => {
                     console.log(error);
                     check = false;
-                }
-            });
+                })
+            }
+            // await Utils.sleep(500);
+            this.sending = false;
             if (check) {
+                // awthis.updateItemPosition(parseInt(value.item.Id), tileId);   
+                this.$socket.emit('CLOSE_WORK_ORDER_DETAIL', {noNeedToRefreshWorkOrderUserId: this.authUser.Id});
                 this.getWorkOrders();
-                this.getEquipmentsOfWorkOrder(this.selectedOrder);                
+                // this.getEquipmentsOfWorkOrder(this.selectedOrder);
                 this.showCloseWorkOrderDetailDialog = false;
             } else {
                 alert('Error occured!')

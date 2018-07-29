@@ -26,6 +26,7 @@ import VendorDetailComponent from "./components/Vendor/VendorDetail.vue";
 import AddVendor1Component from "./components/Vendor/AddVendor1.vue";
 import EditLocation from "./components/Location/EditLocation.vue";
 
+
 // chaubqn - start
 import TestComponent from "./components/TestSite/Test.vue";
 import LocationMapViewComponent from "./components/Location/MapView.vue";
@@ -54,6 +55,7 @@ import DienComponent from "./components/chartTest/test1.vue";
 
 //Dien addEquipmentCategory-start
 import AddEquipmentCategoryComponent from "./components/Equipment/AddEquipmentCategory.vue";
+// import TestPageNaviComponent from "./components/Vendor/testPageNavi.vue";
 //Dien addEquipmentCategory-end
 
 Vue.use(Router);
@@ -286,6 +288,14 @@ let router = new Router({
         next();
       }
     },
+    // {
+    //   path: "/testpage",
+    //   component: TestPageNaviComponent,
+    //   beforeEnter: (to, from, next) => {
+    //     store.set("title", menu.Vendors);
+    //     next();
+    //   }
+    // },
     {
       name: "create_location",
       path: "/location/create-location",

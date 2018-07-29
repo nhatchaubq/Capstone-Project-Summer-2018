@@ -86,8 +86,15 @@ export default {
 </script>
 
 <style scoped>
+table {
+  /* border: 1px solid black; */
+  width: 100%;
+  font-size: 30px;
+  /* text-align: left; */
+}
+
 th {
-  text-align: left;
+  text-align: center !important;
   background-color: #cfd8dc;
   height: 30px;
   line-height: 30px;
@@ -95,10 +102,12 @@ th {
 }
 
 td {
-  vertical-align: middle;
-  height: 40px;
+  text-align: left;
+  vertical-align: middle !important;
+  height: 25px;
   line-height: 25px;
-  padding: 0.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 1rem !important;
+  /* text-align: justify; */
 }
 
 tr:nth-child(odd) {
@@ -107,39 +116,19 @@ tr:nth-child(odd) {
 }
 
 tr:nth-child(even) {
-  background-color: #f5f5f5;
+  background-color: #f5f5f5e8;
   color: #263238;
 }
 
 #th1:curve {
   text-align: justify;
-
   background-color: #b0bec5;
 }
-
 tr:hover {
   background-color: #eceff1;
 }
-td:hover {
-  cursor: pointer;
-}
-.txtText {
-  text-align: left;
 
-  /*margin: 0.3rem;*/
-
-  padding: 0.5rem;
-
-  background-color: #cfd8dc;
-}
-
-table {
-  /* border: 1px solid black; */
-
-  width: 100%;
-
-  font-size: 15px;
-
-  /* text-align: right; */
+.no-padding {
+  padding: 0 !important;
 }
 </style>

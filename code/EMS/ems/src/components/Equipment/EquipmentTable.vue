@@ -14,7 +14,7 @@
             </thead>  
             <tbody>
                 <tr v-bind:key="equipment.Id" v-for="(equipment, index) in equipments" v-on:click="gotoDetail(equipment.Id)">
-                    <td>{{ index + 1 }}</td>   
+                    <td>{{ 10*(currentPage -1) + (index + 1) }}</td>   
                     <td>{{equipment.Name}}</td>
                     <td style="width=40px">{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
                     <td>{{equipment.Vendor.Name}}</td>
@@ -48,6 +48,7 @@ export default {
   },
   data() {
     return {
+      // currentPage: 1,
       selectedEquipment: null
     };
   },

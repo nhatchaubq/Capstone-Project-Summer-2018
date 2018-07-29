@@ -13,7 +13,7 @@
       </div> -->
     
     <div >
-      <div class="field is-grouped view-mode" style="margin-bottom: 1rem !important">
+      <div class="field is-grouped view-mode" style="margin-bottom: 0.2rem !important; padding: 0rem!important">
         <!-- <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button> -->
         <router-link to='/account/'>  
@@ -24,19 +24,59 @@
         </router-link>
       </div>
     </div>
-    <!-- <div class="btncotrol" style="margin-bottom: 1rem">
-      <div class="field is-grouped view-mode1">
-        <button class="btn-view-mode1"  :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
-        <button class="btn-view-mode1" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
-      </div>
-    </div> -->
+
         <div v-if="!accounts">
       There is no account yet.
     </div>
     <div v-else>
 
-      <account-table :accounts="accounts" v-if="isTableMode"></account-table>
-      <account-card :accounts="accounts" v-else></account-card>
+      <!-- <account-table :accounts="accounts" v-if="isTableMode"></account-table>
+      <account-card :accounts="accounts" v-else></account-card> -->
+    <table class="mytable">
+      <thead>
+        <tr style="height:28px !important">
+          <!-- <th><strong>ID</strong></th> -->
+  
+          <th style="width:3% !important"><strong >#</strong></th>
+          <th style="width:15% !important"><strong>User name</strong></th>
+  
+          <th style="width:25% !important"><strong>Full name </strong></th>
+  
+          <th style="width:20% !important"><strong>Email </strong></th>
+  
+          <th style="width:15% !important"><strong>Phone</strong></th>
+  
+          <th style="width:15% !important"><strong>Role</strong></th>
+  
+          <th style="width:7% !important"><strong>Status</strong></th>
+        </tr>
+      </thead>  
+      <tbody>
+          <tr  :key="account.Id" v-for="(account, index) in toDisplayData"  style="height:28px !important" v-on:click="gotoDetail(account.Id)"  >
+          <td>{{ 10*(currentPage -1) + (index + 1) }}</td>   
+          <td>{{account.Username | truncate(11)}}</td>
+          <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
+          <td>{{account.Email ? account.Email : "N/A" }}</td>
+          <td>{{account.Phone ? account.Phone : "N/A"}}</td>
+          <td>{{account.Role.Name}}</td>
+          <strong>
+            <td :style="{color: account.IsActive? 'var(--primary-color)' : '#607D8B'}">{{account.IsActive? "Active" : "Inactive"}}</td>
+          </strong> 
+          </tr>
+      </tbody>
+    </table>  
+
+  <div v-if="accounts.length >9" class="pageNa">
+    <Page :current="currentPage" :total="accounts.length" show-elevator 
+      @on-change="(newPageNumber) => {
+        currentPage = newPageNumber
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayData = accounts.slice(start, end);
+      }">
+    </Page>
+  </div>  
 
     </div>
 
@@ -70,6 +110,7 @@ export default {
         data.forEach(element => {
           let account = element.Account;
           this.accounts.push(account);
+          this.toDisplayData = this.accounts.slice(0, 10);
         });
       })
       .catch(error => {
@@ -81,6 +122,8 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
+      toDisplayData: [],
       accounts: [],
       selectedAccount: null,
       currentViewMode: true,
@@ -96,6 +139,9 @@ export default {
     },
     getDate(date) {
       return moment(date).format("L");
+    },
+    gotoDetail(accountId) {
+      this.$router.push(`/account/${accountId}`);
     }
   }
 };
@@ -179,12 +225,17 @@ export default {
 #btn-add-account {
   position: fixed;
   right: 3rem;
-  bottom: 2rem;
+  bottom: 0.5rem;
   /* background-color: var(--primary-color); */
   /* padding: 13px;
   color: white;
   border-radius: 5px; */
   z-index: 1;
+}
+.pageNa {
+  position: fixed;
+  left: 17rem;
+  bottom: 0.5rem;
 }
 
 #btn-add-account:hover {
@@ -244,7 +295,7 @@ export default {
   color: var(--primary-color);
 }
 
-.btn-view-mode-left:disabled{
+.btn-view-mode-left:disabled {
   background-color: #26a69a;
   color: white;
   cursor: pointer;
@@ -261,7 +312,7 @@ export default {
   font-size: 15px;
   /* line-height: 2rem; */
   color: var(--primary-color);
-  border-radius: 5px 0px 0px 5px ;
+  border-radius: 5px 0px 0px 5px;
   border: 1px solid #26a69a;
   z-index: 1;
   /* padding-right: 20px;
@@ -275,7 +326,7 @@ export default {
   font-size: 15px;
   /* line-height: 2rem; */
   color: var(--primary-color);
-  border-radius: 0px 5px 5px 0px  ;
+  border-radius: 0px 5px 5px 0px;
   border: 1px solid #26a69a;
   z-index: 1;
   /* padding-right: 20px;
@@ -283,4 +334,62 @@ export default {
   margin-right: 5px;
 }
 /* /test */
+
+th {
+  text-align: left;
+  background-color: #cfd8dc;
+  height: 30px;
+  line-height: 30px;
+  padding: 0.5rem !important;
+}
+
+td {
+  vertical-align: middle;
+  height: 40px;
+  line-height: 25px;
+  padding: 0.5rem;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+  color: #263238;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+  color: #263238;
+}
+
+#th1:curve {
+  text-align: justify;
+
+  background-color: #b0bec5;
+}
+
+tr:hover {
+  background-color: #eceff1;
+}
+td:hover {
+  cursor: pointer;
+}
+
+.txtText {
+  text-align: left;
+
+  /*margin: 0.3rem;*/
+
+  padding: 0.5rem;
+
+  background-color: #cfd8dc;
+}
+
+table {
+  /* border: 1px solid black; */
+
+  width: 100%;
+
+  font-size: 15px;
+
+  /* text-align: right; */
+}
 </style>
