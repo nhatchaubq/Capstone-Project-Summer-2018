@@ -63,8 +63,7 @@ import menu from "./models/menu";
 
 let router = new Router({
   mode: "history",
-  routes: [
-    {
+  routes: [{
       path: "/",
       component: DashboardComponent,
       beforeEnter: (to, from, next) => {
@@ -149,7 +148,7 @@ let router = new Router({
       path: "/calendar",
       component: CalendarComponent,
       beforeEnter: (to, from, next) => {
-        store.set("title", menu.Calendar);
+        store.set("title", menu.Schedule);
         next();
       },
       meta: {

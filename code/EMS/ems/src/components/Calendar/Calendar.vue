@@ -234,6 +234,49 @@ export default {
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             }
           }
+          if (this.orders[i].WorkOrderStatus == "Approved") {
+            // alert(this.orders[i].Name);
+            if (
+              ExpectingCloseDate < this.endMonth &&
+              ExpectingStartDate < this.startMonth
+            ) {
+              var timeDiffDuration = Math.abs(
+                ExpectingCloseDate - ExpectingStartDate
+              );
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            } else if (
+              ExpectingCloseDate < this.endMonth &&
+              ExpectingStartDate > this.startMonth
+            ) {
+              var timeDiffDuration = Math.abs(
+                ExpectingCloseDate - ExpectingStartDate
+              );
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            } else if (
+              ExpectingCloseDate > this.endMonth &&
+              ExpectingStartDate < this.startMonth
+            ) {
+              var timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            } else if (
+              ExpectingCloseDate > this.endMonth &&
+              ExpectingStartDate > this.startMonth &&
+              ExpectingStartDate < this.endMonth
+            ) {
+              var timeDiffDuration = Math.abs(
+                this.endMonth - ExpectingStartDate
+              );
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            } else if (
+              ExpectingCloseDate > this.endMonth &&
+              ExpectingStartDate > this.endMonth
+            ) {
+              var timeDiffDuration = Math.abs(
+                ExpectingCloseDate - ExpectingStartDate
+              );
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            }
+          }
 
           if (this.orders[i].ClosedDate != null) {
             this.orders[i].ClosedDate = moment(
