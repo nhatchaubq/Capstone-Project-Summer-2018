@@ -155,8 +155,8 @@
                   </tr>
               </thead>  
               <tbody>
-                  <tr v-bind:key="item.ID" v-for="(item, index) in Items" v-on:click="setSelectedItem(item.ID)">
-                      <td>{{ index + 1 }}</td>   
+                  <tr v-bind:key="item.ID" v-for="(item, index) in toDisplayEquipmentItem" v-on:click="setSelectedItem(item.ID)">
+                      <td>{{ 10*(currentPageEquipmentItem -1) + (index + 1) }}</td>   
                       <td>{{item.SerialNumber}}</td>
                       <td>{{item.ImportDate}}</td>
                       <td>{{item.WarrantyDuration}}</td>
@@ -168,6 +168,19 @@
                   </tr>
               </tbody>
           </table>
+           <!-- dien-start -->
+            <div v-if="Eitem.length > 9" class="pageNa">
+    <Page :current="currentPageEquipmentItem" :total="Eitem.length" show-elevator 
+      @on-change="(newPageNumber) => {
+        currentPage = newPageNumber;
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayEquipmentItem = Eitem.slice(start, end);
+      }">
+    </Page>
+  </div>  
+<!-- dien-end -->
         </div>
         <modal v-model="addPopUp" :maskClosable="false">
           <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert>
@@ -414,6 +427,8 @@
                             </tr>
                           </tbody>
                       </table>
+       
+
                     </div>
                   </div>
                 </div>
@@ -729,6 +744,8 @@ export default {
       .get("http://localhost:3000/api/equipmentItem/" + this.equipmentId)
       .then(response => {
         let data = response.data;
+        this.Eitem = data;
+        this.toDisplayEquipmentItem = this.Eitem.slice(0, 10);
         data.forEach(element => {
           this.Items.push(element);
           this.totalRuntime = element.RuntimeDays + this.totalRuntime;
@@ -839,7 +856,7 @@ export default {
       .catch(error => {
         alert(error);
       });
-      this.axios
+    this.axios
       .get("http://localhost:3000/api/equipmentItem/allserialnumber")
       .then(response => {
         let data = response.data;
@@ -876,6 +893,9 @@ export default {
   // },
   data() {
     return {
+      currentPageEquipmentItem: 1,
+      toDisplayEquipmentItem: [],
+      Eitem: [],
       CreateItemErrors: {
         NoQuantity: "",
         NoPrice: "",
@@ -1134,13 +1154,13 @@ export default {
         });
         await Utils.sleep(600);
         if (result) {
-         let obj = {
-              message: "Create new "+ this.quantity+ " item(s) successfully",
-              type: "success",
-              hideAllButton: true,
-              showXclose: false,
-            };
-            this.$refs.simplert.openSimplert(obj);
+          let obj = {
+            message: "Create new " + this.quantity + " item(s) successfully",
+            type: "success",
+            hideAllButton: true,
+            showXclose: false
+          };
+          this.$refs.simplert.openSimplert(obj);
           await Utils.sleep(1500);
           location.reload();
         } else {
@@ -1185,19 +1205,18 @@ export default {
           } else {
             number = this.EquimentByID.CategoryId;
           }
-          var exist = 0
+          var exist = 0;
           number = number + Math.floor(Math.random() * 900000000 + 100000000);
-          for(var j = 0; j<this.serialNumbers.length; j++){
-            if (number == this.serialNumbers[i]){
+          for (var j = 0; j < this.serialNumbers.length; j++) {
+            if (number == this.serialNumbers[i]) {
               exist = exist + 1;
             }
           }
-          if(exist == 0){
+          if (exist == 0) {
             this.randomNumbers.push(number);
-          }else{
-            i = i-1;
+          } else {
+            i = i - 1;
           }
-          
         }
         this.showingBarcode = true;
       }
@@ -1371,24 +1390,27 @@ export default {
       this.files = this.$refs.fileInput.files;
     },
     async updateEquipment() {
-      if (this.EquimentByID.Name.trim().length < 5 || this.EquimentByID.Name.trim().length >250) {
+      if (
+        this.EquimentByID.Name.trim().length < 5 ||
+        this.EquimentByID.Name.trim().length > 250
+      ) {
         let obj = {
           message: "Equipment Name can be contained from 5 to 250 characters",
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
-      }else if (this.EquimentByID.MadeIn.trim().length >50) {
+      } else if (this.EquimentByID.MadeIn.trim().length > 50) {
         let obj = {
           message: "MadeIn can be contained 50 characters",
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
-      // }else if (this.EquimentByID.Description.trim().length >250) {
-      //   let obj = {
-      //     message: "Description can be contained 250 characters",
-      //     type: "warning"
-      //   };
-      //   this.$refs.simplert.openSimplert(obj);
+        // }else if (this.EquimentByID.Description.trim().length >250) {
+        //   let obj = {
+        //     message: "Description can be contained 250 characters",
+        //     type: "warning"
+        //   };
+        //   this.$refs.simplert.openSimplert(obj);
       } else {
         this.imageUrl = this.EquimentByID.Image;
         if (this.files[0] && this.files[0].name) {
@@ -1427,7 +1449,7 @@ export default {
               message: "Update successfully",
               type: "success",
               hideAllButton: true,
-              showXclose: false,
+              showXclose: false
             };
             context.$refs.simplert.openSimplert(obj);
             await Utils.sleep(1500);
@@ -1440,7 +1462,7 @@ export default {
       }
     },
     async updatePositionItem() {
-      if (this.selectedItem.Item.TileID == null ) {
+      if (this.selectedItem.Item.TileID == null) {
         let obj = {
           message: "Please choose position for this item",
           type: "warning"
@@ -1466,10 +1488,10 @@ export default {
         await Utils.sleep(200);
         if (result) {
           let obj = {
-              message: "Update successfully",
-              type: "success",
-              showXclose: false,
-            };
+            message: "Update successfully",
+            type: "success",
+            showXclose: false
+          };
           this.$refs.simplert.openSimplert(obj);
           this.updateNumber = this.updateNumber + 1;
           this.editItemMode = !this.editItemMode;
@@ -1529,10 +1551,10 @@ export default {
           }
           await Utils.sleep(50);
           if (updateSttBool) {
-             let obj = {
+            let obj = {
               message: "Update status successfully",
-              type: "success",  
-              showXclose: false,
+              type: "success",
+              showXclose: false
             };
             this.$refs.simplert.openSimplert(obj);
             this.changePositonLost = false;
@@ -1564,9 +1586,9 @@ export default {
         };
         this.$refs.simplert.openSimplert(obj);
       } else {
-        if (this.currentsttName.toUpperCase() == "LOST") {         
+        if (this.currentsttName.toUpperCase() == "LOST") {
           this.changePositonLost = true;
-        } else {          
+        } else {
           var result = false;
           try {
             let res = await this.axios.put(
@@ -1589,8 +1611,8 @@ export default {
           if (result) {
             let obj = {
               message: "Update status successfully",
-              type: "success",  
-              showXclose: false,
+              type: "success",
+              showXclose: false
             };
             this.$refs.simplert.openSimplert(obj);
             this.oldstt = this.selectedItem.Item.StatusID;
@@ -1618,7 +1640,7 @@ export default {
         this.selectedItem.Item.Price === "" ||
         this.selectedItem.Item.Price < 50000
       ) {
-         let obj = {
+        let obj = {
           message: "Price must be bigger than 50000!",
           type: "warning"
         };
@@ -1633,7 +1655,7 @@ export default {
         };
         this.$refs.simplert.openSimplert(obj);
       } else if (nextmaintaindate < currentdate) {
-         let obj = {
+        let obj = {
           message: "Next maintain date must be BIGGER than current date",
           type: "warning"
         };
