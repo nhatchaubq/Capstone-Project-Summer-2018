@@ -11,8 +11,9 @@ router.get("/", (request, response) => {
       "SELECT e.Id as 'Equipment.Id', e.Name as 'Equipment.Name', " +
       "e.Image  as 'Equipment.Image', e.MadeIn as 'Equipment.MadeIn', " +
       "e.Description as 'Equipment.Description', e.VendorID as 'Equipment.VendorId', " +
-      "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId', duration.Months as 'Equipment.MaintenanceDuration.Months', " +
-      "u.[Name] as [Equipment.Unit], " +
+      "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId', " +
+      "u.[Name] as [Equipment.Unit.Name], e.UnitID as 'Equipment.UnitId', " +
+      "md.[Months] as [Equipment.MaintenanceDuration.Month], e.MaintenanceDurationID as 'Equipment.MaintenanceDurationId', " +
       "ec.Name as 'Equipment.Category.Name', (select count(Id)  from EquipmentItem where EquipmentID = e.Id) as [Equipment.Quantity], " +
       "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = (select Id from EquipmentStatus where [Name] = N'Available')) as [Equipment.AvailableQuantity], " +
       "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = (select Id from EquipmentStatus where [Name] = N'Working Approved')) as [Equipment.WorkingApprovedQuantity] " +
@@ -20,7 +21,7 @@ router.get("/", (request, response) => {
       "JOIN [Vendor] as v ON e.VendorID = v.Id " +
       "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
       "JOIN [Unit] as u on e.UnitID = u.Id " +
-      "JOIN [MaintenanceDuration] as duration ON e.MaintenanceDurationID = duration.Id " +
+      "JOIN [MaintenanceDuration] as md on e.MaintenanceDurationID = md.Id " +
       "for json path"
     )
     .into(response);

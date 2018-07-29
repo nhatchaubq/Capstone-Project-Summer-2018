@@ -5,8 +5,14 @@
               <div class="col-8" style="padding-left:0Rem !important">
                 <!-- line chart -->
                 <div  class="Chart col-12">
-                  <strong>Number of Work Order Completed</strong>
-                    <bar-chart :data="lineChartData" styles="height: 40vh"></bar-chart>
+                  <div class="select">
+                    <select v-model="linechartOption" class="select">
+                      <!-- <option disabled :value="null">Hello?</option> -->
+                      <option value="order">Work aaa</option> 
+                      <option value="eqt">Equipment</option>
+                    </select>
+                  </div>                
+                    <bar-chart :chartData="lineChartData" styles="height: 50vh"  ></bar-chart>                    
                 </div>
                 <!-- line chart- end -->
               </div>
@@ -123,13 +129,14 @@
                   <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Maintain</strong></div>
                   <div class="divrow3 columns " style="margin-right:0rem !important">
                     <div class="col-6" style="padding: 0 1rem 0 0.7rem  !important; margin-right: 0rem ">
-                              <div class=" material-shadow-animate1" style="margin-bottom: 1rem">                            
+                              <div class=" material-shadow-animate1" style="margin-bottom: 1rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
                                       <div class="column is-9">
-                                          <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong>
+                                          <!-- <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong> -->
+                                          <strong>Today: {{Dashboard.ReturnCountTodayQItem}} equipment items to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{Dashboard.ReturnCountTodayQItem}}</strong> items
+                                          <strong>{{Dashboard.ReturnCountToday}}</strong> orders 
                                       </div>
                                   </div>
                                   <div class="contentstatus" style="padding: 0.2rem;" >
@@ -148,13 +155,14 @@
                                           <!-- chow-end -->
                                   </div>  
                               </div>
-                              <div class=" material-shadow-animate1" style="margin-bottom: 1rem">                            
+                              <div class=" material-shadow-animate1" style="margin-bottom: 1rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
                                       <div class=" column is-9">
-                                          <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong>
+                                          <!-- <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong> -->
+                                          <strong>Tomorrow: {{Dashboard.ReturnCountTomorrowQItem}} equipment items to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{Dashboard.ReturnCountTomorrowQItem}}</strong> items
+                                          <strong>{{Dashboard.ReturnCountTomorrow}}</strong> orders 
                                       </div>
                                   </div>
                                   
@@ -206,13 +214,14 @@
                               <!-- <div style="font-size:17px; margin:0.8rem 0rem">
                                   <strong>Maintain</strong>
                               </div> -->
-                              <div class=" material-shadow-animate1 " style="margin-bottom: 1rem; margin-right: 0.9rem">                            
+                              <div class=" material-shadow-animate1 " style="margin-bottom: 1rem; margin-right: 0.9rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
                                       <div class="column is-9">
-                                          <strong>Today: {{Dashboard.MaintainCountToday}} order to be returned</strong>
+                                          <!-- <strong>Today: {{Dashboard.MaintainCountToday}} order to be returned</strong> -->
+                                          <strong>Today: {{Dashboard.MaintainCountTodayQItem}} equipment items to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{Dashboard.MaintainCountTodayQItem}}</strong> items
+                                          <strong>{{Dashboard.MaintainCountToday}}</strong> orders 
                                       </div>
                                   </div>
                                   
@@ -254,13 +263,14 @@
                                           <!-- chow-end -->
                                   </div>    
                               </div>
-                              <div class=" material-shadow-animate1" style="margin-bottom: 1rem; margin-right: 0.9rem">                            
+                              <div class=" material-shadow-animate1" style="margin-bottom: 1rem; margin-right: 0.9rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
                                       <div class="column is-9">
-                                          <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} order to be returned</strong>
+                                          <!-- <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} order to be returned</strong> -->
+                                          <strong>Tomorrow: {{Dashboard.MaintainCountTomorrowQItem}} equipment items to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{Dashboard.MaintainCountTomorrowQItem}}</strong> items
+                                          <strong>{{Dashboard.MaintainCountTomorrow}}</strong> orders
                                       </div>
                                   </div>
                                   
@@ -336,6 +346,7 @@ export default {
   },
   data() {
     return {
+      linechartOption: null,
       Dashboard: null,
       pieChartData: {
         labels: [],
@@ -346,14 +357,17 @@ export default {
         TodayData: []
       },
       lineChartData: {
-        workingLabel: "",
-        maintainLabel: "",
+        // workingLabel: "",
+        // maintainLabel: "",
+        labels: [],
         monthLabels: [],
-        monthData: {
-          working: [],
-          maintain: []
-        }
+        monthData: []
       },
+
+      workWoMonths: [],
+      mainWoMonths: [],
+      damaEqtMonths: [],
+      lostEqtMonths: [],
 
       //cate start
 
@@ -398,8 +412,8 @@ export default {
         this.pieChartData.values.push(data.PieChartData.Archived.Quantity);
 
         // line chart data - start
-        this.lineChartData.workingLabel = data.LineChart.WorkingName;
-        this.lineChartData.maintainLabel = data.LineChart.MaintainName;
+        this.lineChartData.labels.push(data.LineChart.WorkingName);
+        this.lineChartData.labels.push(data.LineChart.MaintainName);
 
         // months labels
         this.lineChartData.monthLabels.push(data.LineChart.Month.Last11Month);
@@ -415,79 +429,102 @@ export default {
         this.lineChartData.monthLabels.push(data.LineChart.Month.LastMonth);
         this.lineChartData.monthLabels.push(data.LineChart.Month.ThisMonth);
 
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last11Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last10Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last9Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last8Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last7Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last6Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last5Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last4Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last3Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.Last2Month
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.LastMonth
-        );
-        this.lineChartData.monthData.maintain.push(
-          data.LineChart.Maintain.ThisMonth
-        );
+        this.lineChartData.monthData = [[], []];
+        this.mainWoMonths.push(data.LineChart.Maintain.Last11Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.Last10Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.Last9Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.Last8Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.Last7Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.Last6Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.Last5Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.Last4Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.Last3Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.Last2Month);
+        this.mainWoMonths.push(data.LineChart.Maintain.LastMonth);
+        this.mainWoMonths.push(data.LineChart.Maintain.ThisMonth);
 
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last11Month
+        this.workWoMonths.push(data.LineChart.Working.Last11Month);
+        this.workWoMonths.push(data.LineChart.Working.Last10Month);
+        this.workWoMonths.push(data.LineChart.Working.Last9Month);
+        this.workWoMonths.push(data.LineChart.Working.Last8Month);
+        this.workWoMonths.push(data.LineChart.Working.Last7Month);
+        this.workWoMonths.push(data.LineChart.Working.Last6Month);
+        this.workWoMonths.push(data.LineChart.Working.Last5Month);
+        this.workWoMonths.push(data.LineChart.Working.Last4Month);
+        this.workWoMonths.push(data.LineChart.Working.Last3Month);
+        this.workWoMonths.push(data.LineChart.Working.Last2Month);
+        this.workWoMonths.push(data.LineChart.Working.LastMonth);
+        this.workWoMonths.push(data.LineChart.Working.ThisMonth);
+
+        this.damaEqtMonths.push(data.LC.Damaged.Last11Month);
+        this.damaEqtMonths.push(data.LC.Damaged.Last10Month);
+        this.damaEqtMonths.push(data.LC.Damaged.Last9Month);
+        this.damaEqtMonths.push(data.LC.Damaged.Last8Month);
+        this.damaEqtMonths.push(data.LC.Damaged.Last7Month);
+        this.damaEqtMonths.push(data.LC.Damaged.Last6Month);
+        this.damaEqtMonths.push(data.LC.Damaged.Last5Month);
+        this.damaEqtMonths.push(data.LC.Damaged.Last4Month);
+        this.damaEqtMonths.push(data.LC.Damaged.Last3Month);
+        this.damaEqtMonths.push(data.LC.Damaged.Last2Month);
+        this.damaEqtMonths.push(data.LC.Damaged.LastMonth);
+        this.damaEqtMonths.push(data.LC.Damaged.ThisMonth);
+
+        this.lostEqtMonths.push(data.LC.Damaged.Last11Month);
+        this.lostEqtMonths.push(data.LC.Damaged.Last10Month);
+        this.lostEqtMonths.push(data.LC.Damaged.Last9Month);
+        this.lostEqtMonths.push(data.LC.Damaged.Last8Month);
+        this.lostEqtMonths.push(data.LC.Damaged.Last7Month);
+        this.lostEqtMonths.push(data.LC.Damaged.Last6Month);
+        this.lostEqtMonths.push(data.LC.Damaged.Last5Month);
+        this.lostEqtMonths.push(data.LC.Damaged.Last4Month);
+        this.lostEqtMonths.push(data.LC.Damaged.Last3Month);
+        this.lostEqtMonths.push(data.LC.Damaged.Last2Month);
+        this.lostEqtMonths.push(data.LC.Damaged.LastMonth);
+        this.lostEqtMonths.push(data.LC.Damaged.ThisMonth);
+
+        this.workWoMonths.forEach(quanWo =>
+          this.lineChartData.monthData[0].push(quanWo)
         );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last10Month
+        this.mainWoMonths.forEach(quanMa =>
+          this.lineChartData.monthData[1].push(quanMa)
         );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last9Month
-        );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last8Month
-        );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last7Month
-        );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last6Month
-        );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last5Month
-        );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last4Month
-        );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last3Month
-        );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.Last2Month
-        );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.LastMonth
-        );
-        this.lineChartData.monthData.working.push(
-          data.LineChart.Working.ThisMonth
-        );
+        //push(damaged)
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last11Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last10Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last9Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last8Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last7Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last6Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last5Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last4Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last3Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.Last2Month
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.LastMonth
+        // );
+        // this.lineChartData.monthData.damagedItem.push(
+        //   data.LC.Damaged.ThisMonth
+        // );
         // line chart data - end
         // doughnut chart data - start
         this.doughnutChartData.TodayLabels.push(data.Doughnut.Available.Name);
@@ -538,6 +575,43 @@ export default {
           this.tmpEquipments = this.equipments.filter(
             equipment => equipment.CategoryID == this.tmpCategory.Id
           );
+        }
+      });
+    },
+    linechartOption: function() {
+      Vue.nextTick(() => {
+        if (this.linechartOption == "order") {
+          this.lineChartData.labels = [];
+          this.lineChartData.monthData = [];
+
+          this.lineChartData.labels.push("Working");
+          this.lineChartData.labels.push("Maintain");
+
+          this.lineChartData.monthData = [[], []];
+          this.workWoMonths.forEach(quanWo =>
+            this.lineChartData.monthData[0].push(quanWo)
+          );
+          this.mainWoMonths.forEach(quanMa =>
+            this.lineChartData.monthData[1].push(quanMa)
+          );
+
+          alert(this.lineChartData.labels[0]);
+        } else if (this.linechartOption == "eqt") {
+          this.lineChartData.labels = [];
+          this.lineChartData.monthData = [];
+
+          this.lineChartData.labels.push("Damaged");
+          this.lineChartData.labels.push("Lost");
+
+          this.lineChartData.monthData = [[], []];
+
+          this.damaEqtMonths.forEach(quanDa =>
+            this.lineChartData.monthData[0].push(quanDa)
+          );
+          this.mainWoMonths.forEach(quanLo =>
+            this.lineChartData.monthData[1].push(quanLo)
+          );
+        } else {
         }
       });
     }
@@ -593,7 +667,7 @@ export default {
 }
 .headerstatus1 {
   border-bottom: 1px #cfd8dc solid;
-  background-color: #f5f5f5;
+  background-color: #eeeeee;
 }
 p {
   text-align: center;

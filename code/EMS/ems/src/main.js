@@ -17,8 +17,13 @@ import iView from "iview";
 import "iview/dist/styles/iview.css";
 import VueSocketio from 'vue-socket.io';
 import VPopover from 'vue-js-popover';
+import locale from 'iview/dist/locale/en-US';
+import VueTruncate from "vue-truncate-filter";
 
-Vue.use(VPopover, { tooltip: true })
+Vue.use(VueTruncate);
+Vue.use(VPopover, {
+  tooltip: true
+})
 Vue.use(VueSocketio, 'http://localhost:3000');
 Vue.use(VueGoogleMaps, {
   load: {
@@ -28,7 +33,9 @@ Vue.use(VueGoogleMaps, {
 });
 Vue.use(VueAxios, axios);
 Vue.use(Vuetify);
-Vue.use(iView);
+Vue.use(iView, {
+  locale
+});
 Vue.use(CroudGantt);
 Vue.use(VueWaypoint);
 Vue.component("v-bar", VueBar);
@@ -57,9 +64,9 @@ router.beforeEach((to, from, next) => {
       authUser.Role != "Equipment Staff"
     ) {
       next("/");
-    } else if (to.name == 'edit_order' 
-              && (authUser.Role != 'Staff' && authUser.Role != 'Maintainer')
-              && !to.params.edit_order) {
+    } else if (to.name == 'edit_order' &&
+      (authUser.Role != 'Staff' && authUser.Role != 'Maintainer') &&
+      !to.params.edit_order) {
       next('/work_order');
     } else {
       next();

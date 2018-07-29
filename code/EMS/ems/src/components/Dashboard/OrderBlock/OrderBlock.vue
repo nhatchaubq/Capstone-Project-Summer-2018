@@ -1,5 +1,5 @@
 <template>
-    <div class="material-box  odbl">
+    <div class="material-box  odbl" style="border-color: #BDBDBD">
     <!-- <div class="material-box material-shadow-animate odbl"> -->
         <div class="row">
             <div class="col-9" style="  font-size: 25px; font-weight: 500; margin-bottom: 5px;">{{ order.Name }}</div>
@@ -10,12 +10,14 @@
             <i class="fa" :class="makeStatusIcon(order)"></i>            
         </div> -->
         <div class="order-block-info col-12">
+          <div class="row">
             <div style="color: white" :style="`background-color: ${order.PriorityColor}`" class="tag">{{ order.Priority }}</div>
             <div >#{{ order.Id }}</div>
             <div>
                 <i class="fa fa-user"></i>
                 {{ order.RequestUsername }}
             </div>
+          </div>
             <!-- <div>
                 <i class="fa fa-calendar"></i>
                 {{ order.CreateDate }}

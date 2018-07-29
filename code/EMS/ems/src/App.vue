@@ -21,7 +21,7 @@ import Login from "./components/Login/Login";
 import Sidebar from "./components/Sidebar/Sidebar.vue";
 import HeaderBar from "./components/HeaderBar/HeaderBar";
 
-import Server from '@/config/config';
+import Server from "@/config/config";
 
 export default {
   name: "app",
@@ -33,7 +33,7 @@ export default {
   computed: {
     isLoggedIn: sync("isLoggedIn"),
     authUser() {
-      return JSON.parse(window.localStorage.getItem('user'));
+      return JSON.parse(window.localStorage.getItem("user"));
     }
   },
   created() {
@@ -55,8 +55,9 @@ export default {
   methods: {
     getNotifications() {
       let url = `${Server.NOTIFICATION_API_PATH}/top50/${this.authUser.Id}`;
-      this.axios.get(url)
-        .then((res) => {
+      this.axios
+        .get(url)
+        .then(res => {
           if (res.status == 200) {
             let notifications = [];
             res.data.forEach(value => {
@@ -67,14 +68,15 @@ export default {
                 TimeString: null,
                 Status: value.Status,
                 Metadata: value.Metadata
-              }
+              };
               notifications.push(noti);
             });
             this.$store.state.notifications = notifications;
           }
-        }).catch((error) => {
-          console.log(error);
         })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };
@@ -90,7 +92,7 @@ export default {
   --dark-background: #263238;
   --success-color: #00c853;
   --danger-color: #ef5350;
-  --cancel-color: #FFAB91;
+  --cancel-color: #ffab91;
 
   --warning-color: #ffc107;
   --strong-warning-color: #ff7b07;
@@ -122,7 +124,7 @@ body {
   width: 100%;
   height: 100%;
   font-size: 1rem !important;
-  background-color: #616161 !important;  
+  background-color: #616161 !important;
 }
 
 a {
@@ -133,6 +135,13 @@ a:hover {
 }
 a:active {
   color: hsl(217, 71%, 30%) !important;
+}
+
+.ivu-page-item-active a {
+  color: white !important;
+}
+.ivu-page-item-active {
+  background-color: var(--primary-color) !important;
 }
 
 #app {
