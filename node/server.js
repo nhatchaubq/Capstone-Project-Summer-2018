@@ -42,6 +42,20 @@ var server = app.listen(3000, () => {
 });
 
 var io = require("socket.io")(server);
+io.on('connection', function(socket) {
+  socket.on('NEW_WORK_ORDER_CREATED', function(data) {
+    socket.broadcast.emit('NEW_WORK_ORDER_CREATED', data);
+  });
+  socket.on('NEW_NOTIFICATION', function(data) {
+    socket.broadcast.emit('NEW_NOTIFICATION', data);
+  });
+  socket.on('ORDER_STATUS_CHANGED', function(data) {
+    socket.broadcast.emit('ORDER_STATUS_CHANGED', data);
+  });
+  socket.on('CLOSE_WORK_ORDER_DETAIL', function(data) {
+    socket.broadcast.emit('ORDER_STATUS_CHANGED', {data});
+  });
+});
 
 // server.use(bodyParser.text());
 app.use(bodyParser.json());
@@ -75,6 +89,7 @@ app.use("/api/tile", require("./routes/tile"));
 app.use("/api/unit", require("./routes/unit"));
 app.use("/api/maintenanceDuration", require("./routes/maintenanceDuration"));
 app.use("/api/notification", require("./routes/notification")(io));
+app.use("/api/map", require("./routes/map"));
 
 // app.use('/api/account/edit/id', require('./routes/account'));
 // app.use('/api/account', require('./routes/account'));

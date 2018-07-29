@@ -41,10 +41,10 @@ module.exports = function(io) {
         .param('notificationContent', req.body.notificationContent, TYPES.NVarChar)
         .param('userRole', req.body.userRole, TYPES.NVarChar)
         .param('metaData', req.body.metaData, TYPES.NVarChar)
-        .done((fn) => {
-            io.sockets.emit('NEW_NOTIFICATION', {needToUpdateNotification: req.body.needToUpdateNotification});
-            res.end();
-        })
+        // .done((fn) => {
+        //     io.sockets.emit('NEW_NOTIFICATION', {needToUpdateNotification: req.body.needToUpdateNotification});
+        //     res.end();
+        // })
         .exec(res);
     });
 
@@ -56,10 +56,10 @@ module.exports = function(io) {
         .param('userId', req.params.userId, TYPES.Int)
         .param('notificationContent', req.body.notificationContent, TYPES.NVarChar)
         .param('metaData', req.body.metaData, TYPES.NVarChar)
-        .done((fn) => {
-            io.sockets.emit('NEW_NOTIFICATION', {message: 'New notification'});
-            res.end();
-        })
+        // .done((fn) => {
+        //     io.sockets.emit('NEW_NOTIFICATION', {message: 'New notification'});
+        //     res.end();
+        // })
         .exec(res);
     });
 

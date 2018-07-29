@@ -18,7 +18,7 @@
 
                 </div>
                 <!-- start button -->
-                <div style="padding-top: .2rem">
+                <!-- <div style="padding-top: .2rem">
                     <div class="headerbar-button" style="margin-right: .3rem;" 
                         v-on:click="() => {
                             axios.post('http://localhost:3000/api/notification/accounts', {
@@ -26,9 +26,9 @@
                                 userRole: 'Equipment Staff',
                             })
                         }">
-                        <i class="material-icons">star</i>
-                    </div> <!-- start button -->
-                </div>
+                        <i class="material-icons">star</i> -->
+                    <!-- </div> 
+                </div> -->
                 <!-- noti button -->
                 <div style="padding-right: .5rem; padding-top: .2rem; margin-right: 2.5rem">
                         <v-badge style="margin-top: .2rem;" color="red" v-popover:notificationPanel>
@@ -223,7 +223,7 @@ export default {
                         notiObj.TimeString = `Just now`
                     }
                 } else {
-                    const days = duration.days() + 1;
+                    const days = duration.asDays() + 1;
                     if (days == 0) {
                         notiObj.TimeString = `Today at ${moment(notiObj.CreatedDate).format('hh:mm a')}`;
                     } else if (days == 1) {
