@@ -34,7 +34,9 @@ Vue.use(VCalendar, {
     data: ["L", "YYYY-MM-DD", "YYYY/MM/DD"]
   }
 });
-Vue.use(VPopover, { tooltip: true });
+Vue.use(VPopover, {
+  tooltip: true
+});
 Vue.use(VueSocketio, "http://localhost:3000");
 
 Vue.use(VueGoogleMaps, {
@@ -45,9 +47,7 @@ Vue.use(VueGoogleMaps, {
 });
 Vue.use(VueAxios, axios);
 Vue.use(Vuetify);
-Vue.use(iView, {
-  locale
-});
+
 Vue.use(CroudGantt);
 Vue.use(VueWaypoint);
 Vue.component("v-bar", VueBar);
