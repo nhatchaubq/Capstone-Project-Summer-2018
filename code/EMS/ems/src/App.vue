@@ -23,6 +23,11 @@ import HeaderBar from "./components/HeaderBar/HeaderBar";
 
 import Server from "@/config/config";
 
+import Vue from "vue";
+
+var VueTruncate = require("vue-truncate-filter");
+Vue.use(VueTruncate);
+
 export default {
   name: "app",
   components: {
@@ -135,13 +140,6 @@ a:hover {
 }
 a:active {
   color: hsl(217, 71%, 30%) !important;
-}
-
-.ivu-page-item-active a {
-  color: white !important;
-}
-.ivu-page-item-active {
-  background-color: var(--primary-color) !important;
 }
 
 #app {
