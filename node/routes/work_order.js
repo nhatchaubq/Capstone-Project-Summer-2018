@@ -42,7 +42,11 @@ module.exports = function(io) {
               + "                                                                                 from EquipmentItem as ei join WorkOrderDetail as wod on ei.Id = wod.EquipmentItemID "
               + "                                                                                 where wod.WorkOrderID = @orderId and ei.EquipmentID = e.Id "
               + "                                                                                 for json path)) as [EquipmentItems], "
-              + "                                                                         json_query((select ei.*, es.[Name] as [Status], " 
+              + "                                                                         json_query((select ei.*, es.[Name] as [Status], "
+              + "                                                                                       json_query((select * "
+              + "                                                                                             from [Location] "
+              + "                                                                                             where Id = ei.WarehouseID "               
+              + "                                                                                             for json path, without_array_wrapper)) as Warehouse, "
               + "                                                                                                 json_query((select wo3.*, acc.[Username] as [RequestUsername], wos.[Name] as [Status], pri.[Name] as [Priority], pri.TagHexColor as [PriorityTagColor], "
               + "                                                                                                                     json_query((select wod.* "
               + "                                                                                                                                 from WorkOrderDetail as wod "
@@ -69,12 +73,12 @@ module.exports = function(io) {
             //   + "                                                                                             join Equipment as e4 on ei.EquipmentID = e4.Id "
               + "                                                                                             join EquipmentStatus as es on ei.StatusId = es.Id "
               + "                                                                                     where ei.EquipmentID = e.Id "
-              + "                                                                                     order by (select count(wo4.Id) "
-              + "                                                                                               from WorkOrder as wo4 join WorkOrderDetail as wod on wo4.Id = wod.WorkOrderID "
-              + "                                                                                               where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id "
-              + "                                                                                                                                                     from WorkOrderStatus "
-              + "                                                                                                                                                     where [Name] != N'Cancelled' and [Name] != N'Closed')) asc, ei.RuntimeDays asc, ei.LastMaintainDate desc, ei.NextMaintainDate desc "
-              + "                                                                                                                                                     for json path)) as [Table] "
+            //   + "                                                                                     order by (select count(wo4.Id) "
+            //   + "                                                                                               from WorkOrder as wo4 join WorkOrderDetail as wod on wo4.Id = wod.WorkOrderID "
+            //   + "                                                                                               where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id "
+            //   + "                                                                                                                                                     from WorkOrderStatus "
+            //   + "                                                                                                                                                     where [Name] != N'Cancelled' and [Name] != N'Closed')) asc, ei.RuntimeDays asc, ei.LastMaintainDate desc, ei.NextMaintainDate desc "
+              + "                                                                                     for json path)) as [Table] "
               + "                                         from Equipment as e "
               + "                                         where e.Id in (select distinct e.Id "
               + "                                                        from Equipment as e join EquipmentItem as ei on e.Id = ei.EquipmentID "
@@ -139,7 +143,7 @@ module.exports = function(io) {
       router.get("/:id/equipments", (request, response) => {
         request
           .sql(
-            "select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei2.*, json_query((select lo.[Name] as [Location.Name], lo.[Address] as [Location.Address], " +
+            "select e.Id, e.[Name], e.[Image], u.[Name] as [Unit], (select ei2.*, es.[Name] as [Status], json_query((select lo.[Name] as [Location.Name], lo.[Address] as [Location.Address], " +
               "                                                                                                                                           bl.[Name] as [BlockName], fl.[Name] as [FloorName], ti.[Name] as [TileName] " +
               "                                                                                                                                   from [Location] as lo join [Block] as bl on lo.Id = bl.LocationID " +
               "                                                                                                                                               join [Floor] as fl on bl.Id = fl.BlockID " +
@@ -152,6 +156,7 @@ module.exports = function(io) {
               "                                                                                                                                                       for json path, without_array_wrapper)) as [DetailReturn] " +
               "                                                     from WorkOrder as wo2 join WorkOrderDetail as wod2 on wo2.Id = wod2.WorkOrderID " +
               "                                                                         join EquipmentItem as ei2 on wod2.EquipmentItemID = ei2.Id " +
+              "                                                                         join EquipmentStatus as es on ei2.StatusID = es.Id " +
               "                                                     where wo2.Id = @workOrderId and ei2.EquipmentID = e.Id for json path) as [EquipmentItems] " +
               " from Equipment as e join [Unit] as u on e.UnitID = u.Id " +
               " where e.Id in (select distinct e.Id " +
@@ -188,6 +193,10 @@ module.exports = function(io) {
     // get equipment items for displaying in create work order
     router.get('/get_equipment_detail/:id', (req, res) => {
         req.sql("select ei.*, es.[Name] as [Status], " +
+                " json_query((select * " +
+                "       from [Location] " +
+                "       where Id = ei.WarehouseID " +                
+                "       for json path, without_array_wrapper)) as Warehouse, " +
                 " json_query((select wo.*, acc.[Username] as [RequestUsername], wos.[Name] as [Status], pri.[Name] as [Priority], pri.TagHexColor as [PriorityTagColor] " +
                 "             from WorkOrder as wo join Account as acc on wo.RequestUserID = acc.Id  " +
                 "                                 join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
@@ -210,11 +219,11 @@ module.exports = function(io) {
                 // "        join Equipment as e on ei.EquipmentID = e.Id " +
                 "        join EquipmentStatus as es on ei.StatusId = es.Id " +
                 " where ei.EquipmentID = @equipmentId and ei.StatusID in (select Id from EquipmentStatus where [Name] != N'Damaged' and [Name] != N'Lost' and [Name] != N'Archived') " +
-                " order by (select count(wo.Id) " +
-                "           from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID " +
-                "           where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id " +
-                "                                                                 from WorkOrderStatus " +
-                "                                                                 where [Name] != N'Cancelled' and [Name] != N'Closed' and [Name] != N'Rejected')) asc, ei.RuntimeDays asc, ei.LastMaintainDate desc, ei.NextMaintainDate desc " +
+                // " order by (select count(wo.Id) " +
+                // "           from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID " +
+                // "           where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id " +
+                // "                                                                 from WorkOrderStatus " +
+                // "                                                                 where [Name] != N'Cancelled' and [Name] != N'Closed' and [Name] != N'Rejected')) asc, ei.RuntimeDays asc, ei.LastMaintainDate desc, ei.NextMaintainDate desc " +
                 " for json path")
             .param('equipmentId', req.params.id, TYPES.Int)
             .into(res);
@@ -244,10 +253,10 @@ module.exports = function(io) {
             .param('teamLocationId', req.body.teamLocationId, TYPES.Int)
             .param('expectingStartDate', req.body.expectingStartDate, TYPES.NVarChar)
             .param('expectingCloseDate', req.body.expectingCloseDate, TYPES.NVarChar)
-            .done((data) => {
-                io.sockets.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
-                res.end();
-            })
+            // .done((data) => {
+            //     io.sockets.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
+            //     res.end();
+            // })
             .fail(function(exception, response) { 
                 response.statusCode = 500;   
                 response.write(exception.message);
@@ -307,7 +316,7 @@ module.exports = function(io) {
             + "     update [WorkOrder] set StatusID = @newWorkOrderStatusId, ClosedDate = getdate() where Id = @workOrderId; "
             + "     insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) "
             + "         values(@workOrderId, @userId, getdate(), @oldWorkOrderStatusId, @newWorkOrderStatusId, @description); "
-            + "     select * from WorkOrder where Id = @workOrderId; "
+            // + "     select * from WorkOrder where Id = @workOrderId; "
             + " end ")
             .param('workOrderDetailId', req.params.workOrderDetailId, TYPES.Int)
             .param('userId', req.body.userId, TYPES.Int)
@@ -344,10 +353,10 @@ module.exports = function(io) {
           .param("userId", req.body.userId, TYPES.Int)
           .param("newWorkOrderStatusName", req.body.newStatusName, TYPES.NVarChar)
           .param("description", req.body.description, TYPES.NVarChar)
-          .done((fn) => {
-              io.sockets.emit('ORDER_STATUS_CHANGED', {noNeedToRefreshWorkOrderUserId: req.body.noNeedToRefreshWorkOrderUserId});
-              res.end();
-          })
+        //   .done((fn) => {
+        //       io.sockets.emit('ORDER_STATUS_CHANGED', {noNeedToRefreshWorkOrderUserId: req.body.noNeedToRefreshWorkOrderUserId});
+        //       res.end();
+        //   })
           .exec(res);
     });
     
@@ -359,10 +368,10 @@ module.exports = function(io) {
             .param('teamLocationId', req.body.teamLocationId, TYPES.Int)
             .param('expectingStartDate', req.body.expectingStartDate, TYPES.NVarChar)
             .param('expectingCloseDate', req.body.expectingCloseDate, TYPES.NVarChar)
-            .done((data) => {
-                io.sockets.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
-                res.end();
-            })
+            // .done((data) => {
+            //     io.sockets.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
+            //     res.end();
+            // })
             .exec(res);
     });
     

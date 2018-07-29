@@ -1,9 +1,10 @@
 <template>
-    <div class="row" style="margin: 0; padding: 0; height: 100% important" v-if="locations && medianLatitude && medianLongitude">
-        <GmapMap          
-            :center="google && new google.maps.LatLng(selectedLocation ? selectedLocation.Latitude : medianLatitude, 
-                        selectedLocation ? selectedLocation.Longitude : medianLongitude)"
-            :zoom="selectedLocation ? 16 : zoomfactor"
+    <div class="row" style="margin: 0; padding: 0; height: 100% important" v-if="locations">
+        <GmapMap 
+            ref="googlemap"
+            :center="{lat: selectedLocation ? selectedLocation.Latitude : 0, 
+                        lng: selectedLocation ? selectedLocation.Longitude : 0}"
+            :zoom="selectedLocation ? 16 : 1"
             map-type-id="terrain"
             class="material-box material-shadow"
             style="width: 100%; height: 80vh; padding: 0; transition: all .25s ease-in-out;"
@@ -176,26 +177,31 @@ export default {
                 this.imageCache.push(cache);
             }
             
-            let minLongitude = this.locations[0].Longitude;
-            let maxLongitude = this.locations[0].Longitude;
-            let minLatitude = this.locations[0].Latitude;
-            let maxLatitude = this.locations[0].Latitude;
-            this.locations.forEach(location => {        
-                if (location.Longitude <= minLongitude) {
-                    minLongitude = location.Longitude;
-                }
-                if (location.Longitude > maxLongitude) {
-                    maxLongitude = location.Longitude;
-                }
-                if (location.Latitude <= minLatitude) {
-                    minLatitude = location.Latitude;
-                }
-                if (location.Latitude > maxLatitude) {
-                    maxLatitude = location.Latitude;
-                }
+            // let minLongitude = this.locations[0].Longitude;
+            // let maxLongitude = this.locations[0].Longitude;
+            // let minLatitude = this.locations[0].Latitude;
+            // let maxLatitude = this.locations[0].Latitude;
+            const bounds = new this.google.maps.LatLngBounds();
+            this.locations.forEach(location => {
+                alert(`lat: ${location.Latitude}, lng: ${location.Longitude}`)
+                bounds.extend({lat: location.Latitude, lng: location.Longitude});
+                // if (location.Longitude <= minLongitude) {
+                //     minLongitude = location.Longitude;
+                // }
+                // if (location.Longitude > maxLongitude) {
+                //     maxLongitude = location.Longitude;
+                // }
+                // if (location.Latitude <= minLatitude) {
+                //     minLatitude = location.Latitude;
+                // }
+                // if (location.Latitude > maxLatitude) {
+                //     maxLatitude = location.Latitude;
+                // }
             });
-            this.medianLongitude = (minLongitude + maxLongitude) / 2;
-            this.medianLatitude = (minLatitude + maxLatitude) / 2;
+            console.log(bounds);
+            this.$refs.googlemap.fitBounds(bounds);
+            // this.medianLongitude = (minLongitude + maxLongitude) / 2;
+            // this.medianLatitude = (minLatitude + maxLatitude) / 2;
         } 
     },
     computed: {
@@ -206,9 +212,10 @@ export default {
     },
     data() {
         return {            
-            medianLatitude: null,
-            medianLongitude: null,
-            zoomfactor: 11,
+            // medianLatitude: null,
+            // medianLongitude: null,
+            // zoomfactor: 11,
+            bounds: null,
             mapViewSelectedLocation: null,
             selectedLocation: null,
             selectedLocationIndex: -1,
@@ -249,6 +256,16 @@ export default {
         }
     },
     watch: {
+        'locations': function() {
+            if (this.locations) {
+                const bounds = new this.google.maps.LatLngBounds();
+                this.locations.forEach(location => {
+                    bounds.extend(new this.google.maps.LatLng(location.Latitude, location.Longitude));
+                });
+                this.bounds = bounds;
+                this.$refs.map.fitBounds(bounds);
+            }
+        },
         'selectedLocation': function() {
             this.mapViewSelectedLocation = null;
             this.curentBlockIndex = -1;
@@ -301,6 +318,8 @@ export default {
                     .catch((error) => {
                         console.log(error);
                     })
+            } else {
+                this.$refs.googlemap.fitBounds(this.bounds);
             }
         }
     }

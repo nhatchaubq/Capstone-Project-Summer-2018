@@ -23,7 +23,7 @@ Vue.use(VueSocketio, 'http://localhost:3000');
 Vue.use(VueGoogleMaps, {
   load: {
     key: "AIzaSyDNEXkpy7Eb76G8TciF6DzydzD4y4tZg4c",
-    libraries: "places"
+    libraries: "places",
   }
 });
 Vue.use(VueAxios, axios);
