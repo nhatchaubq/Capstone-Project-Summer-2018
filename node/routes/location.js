@@ -126,19 +126,19 @@ router.get("/editLocation/:id", (request, response) => {
   request
     .sql(
       "select l.*,(select tl.Id as 'TeamLocationId',t.Id,t.Name " +
-        " from TeamLocation as tl join Location as l on tl.LocationID = l.Id " +
-        " join Team as t on t.Id = tl.TeamID " +
-        " where tl.LocationID = @locationId for json path) as 'Team', (select distinct tl.Id, tl.TeamID " +
-        " from TeamLocation as tl join WorkOrder as wo on tl.Id = wo.TeamLocationID " +
-        " join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
-        " where tl.LocationID = @locationId and ws.Name != 'Closed' and ws.Name != 'Cancelled' and ws.Name != 'Rejected'  for json path) as 'TeamWithWorkOrdering', " +
-        " (select ei.Id " +
-        "   from EquipmentItem as ei join Tile as t on ei.TileID = t.Id " +
-        "   join[Floor] as f on f.Id = t.FloorID " +
-        "   join[Block] as b on f.BlockID = b.Id " +
-        "   where b.LocationID = @locationId	for json path) as 'Items' " +
-        "   from[Location] as l " +
-        " where l.Id = @locationId for json path"
+      " from TeamLocation as tl join Location as l on tl.LocationID = l.Id " +
+      " join Team as t on t.Id = tl.TeamID " +
+      " where tl.LocationID = @locationId for json path) as 'Team', (select distinct tl.Id, tl.TeamID " +
+      " from TeamLocation as tl join WorkOrder as wo on tl.Id = wo.TeamLocationID " +
+      " join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
+      " where tl.LocationID = @locationId and ws.Name != 'Closed' and ws.Name != 'Cancelled' and ws.Name != 'Rejected'  for json path) as 'TeamWithWorkOrdering', " +
+      " (select ei.Id " +
+      "   from EquipmentItem as ei join Tile as t on ei.TileID = t.Id " +
+      "   join[Floor] as f on f.Id = t.FloorID " +
+      "   join[Block] as b on f.BlockID = b.Id " +
+      "   where b.LocationID = @locationId	for json path) as 'Items' " +
+      "   from[Location] as l " +
+      " where l.Id = @locationId for json path"
     )
     // "exec Get1LocationById @locationId"
     .param("locationId", request.params.id, TYPES.Int)
