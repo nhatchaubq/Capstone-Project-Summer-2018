@@ -638,12 +638,12 @@ export default {
           let quantity = parseInt(element.Equipment.Quantity);
           let option = {
             text: `${element.Equipment.Name}, quantity: ${quantity} ${
-              quantity > 0 ? element.Equipment.Unit : ""
+              quantity > 0 ? element.Equipment.Unit.Name : ""
             }`,
             value: element.Equipment.Id,
             image: element.Equipment.Image,
             totalQuantity: quantity,
-            maintenancePeriodInMonths: element.Equipment.MaintenanceDuration.Months
+            maintenancePeriodInMonths: element.Equipment.MaintenanceDuration.Month
           };
           this.equipmentOptions.push(option);
         });

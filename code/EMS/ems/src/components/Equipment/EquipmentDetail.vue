@@ -156,8 +156,8 @@
                   </tr>
               </thead>  
               <tbody>
-                  <tr v-bind:key="item.ID" v-for="(item, index) in Items" v-on:click="setSelectedItem(item.ID)">
-                      <td>{{ index + 1 }}</td>   
+                  <tr v-bind:key="item.ID" v-for="(item, index) in toDisplayEquipmentItem" v-on:click="setSelectedItem(item.ID)">
+                      <td>{{ 10*(currentPageEquipmentItem -1) + (index + 1) }}</td>   
                       <td>{{item.SerialNumber}}</td>
                       <td>{{item.ImportDate}}</td>
                       <td>{{item.WarrantyDuration}}</td>
@@ -169,6 +169,19 @@
                   </tr>
               </tbody>
           </table>
+           <!-- dien-start -->
+            <div v-if="Eitem.length > 9" class="pageNa">
+    <Page :current="currentPageEquipmentItem" :total="Eitem.length" show-elevator 
+      @on-change="(newPageNumber) => {
+        currentPage = newPageNumber;
+        let start = 10 * (newPageNumber - 1);
+        let end = start + 10;
+        
+        toDisplayEquipmentItem = Eitem.slice(start, end);
+      }">
+    </Page>
+  </div>  
+<!-- dien-end -->
         </div>
         <modal v-model="addPopUp" >
           <!-- <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert> -->
@@ -424,6 +437,8 @@
                             </tr>
                           </tbody>
                       </table>
+       
+
                     </div>
                     <div class="" v-else style="padding-top: 0,75rem;font-style: italic">
                       This item has been not change status by someone!
@@ -743,6 +758,8 @@ export default {
       .get("http://localhost:3000/api/equipmentItem/" + this.equipmentId)
       .then(response => {
         let data = response.data;
+        this.Eitem = data;
+        this.toDisplayEquipmentItem = this.Eitem.slice(0, 10);
         data.forEach(element => {
           this.Items.push(element);
           // this.totalRuntime = element.RuntimeDays + this.totalRuntime;
@@ -887,6 +904,9 @@ export default {
   // },
   data() {
     return {
+      currentPageEquipmentItem: 1,
+      toDisplayEquipmentItem: [],
+      Eitem: [],
       CreateItemErrors: {
         NoQuantity: "",
         NoPrice: "",
@@ -1385,7 +1405,9 @@ export default {
       this.files = this.$refs.fileInput.files;
     },
     async updateEquipment() {
+
       if (this.EquimentByID.Name.trim().length < 5) {
+
         let obj = {
           message: "Equipment Name can be contained from 5 to 250 characters",
           type: "warning"
