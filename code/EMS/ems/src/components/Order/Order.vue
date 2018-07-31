@@ -55,8 +55,8 @@
             <!-- </div>             -->
         </div>
         <!-- order block -->
-        <div class="order-blocks" :style="{'max-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '65.5%' : '70.5%',
-                                            'height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '65.5%' : '70.5%',}">
+        <div class="order-blocks" :style="{'max-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '72.5%' : '79.5%',
+                                            'min-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '72.5%' : '79.5%',}">
             <div class="emtpy-text" v-if="toDisplayWorkOrders.length == 0">
                 There is no orders to display.
             </div>
