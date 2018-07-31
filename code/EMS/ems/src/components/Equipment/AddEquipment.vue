@@ -56,7 +56,7 @@
             <div class="field" style="margin-left: 3rem; margin-top: 0.9rem; margin-right: 2rem; display: grid; grid-template-columns: 50% 50%">
                 <div class="">
                     <div class="form-field-title" >
-                       <span><strong> Category (required) </strong></span>
+                      <span><strong> Category (required) </strong></span>
                       <span v-if="CreateEquipmentErrors.NoCategory != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoCategory }}</span></span>
                     </div>
                     <div class="field is-horizontal" style="">
@@ -65,7 +65,7 @@
                     </div>
                     <div class="" v-show = "showingAddCategory" style="margin-right:2rem">
                         <div class="form-field-title">
-                        <span><strong> Name (required) </strong></span> 
+                          <span><strong> Name (required) </strong></span> 
                         </div>
                         <div class="field is-horizontal" >
                             <input type="text" class="input" placeholder="Name" v-model="newCategory">
@@ -84,19 +84,17 @@
                         <button class="btn-new" style="margin: 0rem 0.3rem" v-on:click= "showingAddVendor = true"><i class="fa fa-plus"></i></button>
                     </div> 
                     <div class="" v-show = "showingAddVendor" >
-                    <div class="">
-                       <span><strong> Name (required) </strong></span>
+                      <div class="">
+                        <span><strong> Name (required) </strong></span>
+                      </div>
+                      <div class="field is-horizontal" >
+                          <input type="text" class="input" placeholder="Name" v-model="newVendor">
+                          <button class="button is-rounded is-primary" style="margin-left: .6rem" v-on:click ="createNewVendor">Add</button>
+                          <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddVendor = false">Cancel</button>
+                      </div>
                     </div>
-                    <div class="field is-horizontal" >
-                        <input type="text" class="input" placeholder="Name" v-model="newVendor">
-                        <button class="button is-rounded is-primary" style="margin-left: .6rem" v-on:click ="createNewVendor">Add</button>
-                        <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddVendor = false">Cancel</button>
-                    </div>
-                    </div>
-                </div>
-                </div>                  
+                </div>                 
             </div>   
-
             <div class="field" style="margin-left: 3rem; margin-top: 0.9rem; margin-right: 2rem; display: grid; grid-template-columns: 50% 50%">
                 <div class="">
                     <div class="form-field-title" >
@@ -139,7 +137,6 @@
                     </div>
                 </div>                  
             </div>  
-
             <div class="form-field">
                 <div class="form-field-title">
                   <span><strong>  Made In </strong></span>
@@ -158,77 +155,7 @@
                     <input type="text" class="input" placeholder="Description" v-model="form.Description">
                 </div>
             </div>
-            
-            <!-- <div class="form-field">
-              <label class="checkbox">
-                <input type="checkbox" id="checkbox" v-model="checked">
-                Do you want to add item(s) for this equipment?
-              </label>
-            </div> -->
-            <div class="hr" v-if="checked"  >
-              <div class="form-field" style="margin: 1rem -3rem;">
-                <div class="form-field-title">
-                    Quantity
-                </div>
-                <div class="field is-horizontal">
-                    <input type="number" min="1" class="input" style="margin-right: 1rem" v-model="quantity" >
-                    <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">CreateSerialNumber</button>
-                </div>
-                <div v-show="showingBarcode">
-                    <ul>
-                        <li v-for="(i,index) in randomNumbers" :key="i">{{index+1}}. {{i}}</li>
-                    </ul>
-                </div>
-              <div class="field" style="display: grid; grid-template-columns: 50% 50%">
-                <div>
-                    <div class="form-field-title" >
-                      Price
-                    </div>
-                    <div class="field is-horizontal" style="margin-right:6rem">
-                      <input type="number" value="50000" min="50000" class="input" placeholder="Price" step="10000" v-model="form.Price">
-                    </div>
-                </div>
-                <div class="" >
-                    <div class="form-field-title">
-                      Warranty
-                    </div>
-                    <div class="field is-horizontal" >
-                      <input type="number" min="1" class="input" placeholder="Warranty Months" v-model="form.Warranty">
-                    </div> 
-                </div> 
-          </div>
-             <div class="form-field-title">
-              Location
-          </div>
-          <div>
-          <model-select style="width: 100% !important" :options="locationOptions" v-model="selectedLocation"  placeholder="Select a location"></model-select>  
-          </div>
-          <div class="form-field-title">
-              Block
-          </div>
-           <div>
-          <model-select style="width: 100% !important" :options="blockOptions" v-model="selectedBlock" placeholder="Select a block  "></model-select>  
-          </div>
-           <div class="form-field-title">
-              Floor
-          </div>
-           <div>
-          <model-select style="width: 100% !important" :options="floorOptions" v-model="selectedFloor" placeholder="Select a floor  "></model-select>  
-          </div>
-
-           <div class="form-field-title">
-              Tile
-          </div>
-           <div>
-          <model-select style="width: 100% !important" :options="tileOptions" v-model="selectedTile" placeholder="Select a tile  "></model-select>  
-          </div>
-            </div>
-            <div class="" style="align-items: center; display: flex; justify-content: center;">
-              <button id="" class="button is-rounded is-primary" v-on:click="createNewEquipentItem">Create New Items</button>  
-            </div>
-        </div>
-        </div>
-    </div>        
+        </div>               
     </div>
 </template>
 
@@ -628,20 +555,23 @@ export default {
         this.CreateEquipmentErrors.NoUnit === "" &&
         this.CreateEquipmentErrors.NoMaintenanceDuration === ""
       ) {
-         
-          for(var i = 0 ; i <context.equipments.length; i++){
-            if(context.form.EquipmentName.toUpperCase() === context.equipments[i].Name.toUpperCase() &&
-              context.selectedVendor.value == context.equipments[i].VendorId &&
-              context.form.Category == context.equipments[i].CategoryId &&
-              context.form.Unit == context.equipments[i].UnitId &&
-              context.form.MaintenanceDuration == context.equipments[i].MaintenanceDurationId &&
-              context.form.MadeIn.toUpperCase() === context.equipments[i].MadeIn.toUpperCase()
-            ){
-              exist = exist + 1;
-            }
+        for (var i = 0; i < context.equipments.length; i++) {
+          if (
+            context.form.EquipmentName.toUpperCase() ===
+              context.equipments[i].Name.toUpperCase() &&
+            context.selectedVendor.value == context.equipments[i].VendorId &&
+            context.form.Category == context.equipments[i].CategoryId &&
+            context.form.Unit == context.equipments[i].UnitId &&
+            context.form.MaintenanceDuration ==
+              context.equipments[i].MaintenanceDurationId &&
+            context.form.MadeIn.toUpperCase() ===
+              context.equipments[i].MadeIn.toUpperCase()
+          ) {
+            exist = exist + 1;
           }
-        alert(exist)
-        if(exist == 0){
+        }
+        alert(exist);
+        if (exist == 0) {
           context.axios
             .post("http://localhost:3000/api/equipment", {
               name: context.form.EquipmentName,
@@ -669,8 +599,8 @@ export default {
             })
             .catch(function(error) {
               console.log(error);
-            }); 
-        }else{
+            });
+        } else {
           let obj = {
             message: "This equipment is existed!!!",
             type: "warning",
@@ -1014,8 +944,11 @@ export default {
   /* position: fixed;
   max-height: 100%;
   width: 85%;
-  overflow-y: scroll; */
-  margin-bottom: 2rem;
+  overflow-y: scroll;*/
+  max-height: 82.5%;
+  width: 85%;
+  position: fixed;
+  overflow-y: auto;
 }
 .hr {
   border-top: 0.5px solid #616161;

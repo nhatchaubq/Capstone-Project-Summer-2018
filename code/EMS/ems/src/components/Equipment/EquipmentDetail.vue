@@ -1243,9 +1243,13 @@ export default {
                 this.lastWorkedDate = "";
                 this.downtime = 0;
                 this.percentRuntime = 0;
-                this.totalExistDays = Math.abs(moment().valueOf()-moment(this.selectedItem.Item.ImportDate).valueOf());
-                this.totalExistDays = Math.floor(this.totalExistDays / (1000 * 3600 * 24))
-                alert(this.totalExistDays)
+                this.totalExistDays = Math.abs(
+                  moment().valueOf() -
+                    moment(this.selectedItem.Item.ImportDate).valueOf()
+                );
+                this.totalExistDays = Math.floor(
+                  this.totalExistDays / (1000 * 3600 * 24)
+                );
                 this.percentRuntime = (
                   this.selectedItem.Item.RuntimeDays /
                   this.totalExistDays *
@@ -1296,7 +1300,6 @@ export default {
                         moment().valueOf() - this.lastWorkedDate
                       );
                       this.downtime = Math.floor(timeDiff / (1000 * 3600 * 24));
-                      
                     });
                   })
                   .catch(error => {
