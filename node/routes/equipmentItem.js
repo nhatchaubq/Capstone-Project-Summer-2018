@@ -125,7 +125,7 @@ router.get("/closedate/:id", (req, res) => {
         .sql(
             "select wod.ClosedDate " +
             "from WorkOrderDetail as wod " +
-            "where wod.EquipmentItemID = @id " +
+            "where wod.EquipmentItemID = @id order by wod.ClosedDate asc " +
             "for json path"
         )
         .param("id", req.params.id, TYPES.Int)

@@ -23,6 +23,10 @@ import HeaderBar from "./components/HeaderBar/HeaderBar";
 
 import Server from "@/config/config";
 
+import Vue from "vue";
+var VueTruncate = require("vue-truncate-filter");
+Vue.use(VueTruncate);
+
 export default {
   name: "app",
   components: {
@@ -42,8 +46,12 @@ export default {
   sockets: {
     NEW_NOTIFICATION: function(data) {
       if (data.needToUpdateNotification) {
-        if ((data.needToUpdateNotification.roles && data.needToUpdateNotification.roles.includes(this.authUser.Role))
-            || (data.needToUpdateNotification.userIds && data.needToUpdateNotification.userIds.includes(this.authUser.Id))) {
+        if (
+          (data.needToUpdateNotification.roles &&
+            data.needToUpdateNotification.roles.includes(this.authUser.Role)) ||
+          (data.needToUpdateNotification.userIds &&
+            data.needToUpdateNotification.userIds.includes(this.authUser.Id))
+        ) {
           this.getNotifications();
         }
       }
@@ -135,13 +143,6 @@ a:hover {
 }
 a:active {
   color: hsl(217, 71%, 30%) !important;
-}
-
-.ivu-page-item-active a {
-  color: white !important;
-}
-.ivu-page-item-active {
-  background-color: var(--primary-color) !important;
 }
 
 #app {
@@ -407,5 +408,13 @@ td {
 
 .row-even {
   background: #eeeeee;
+}
+.ivu-page-item-active {
+  /* background-color: #26a69a; */
+  background-color: #26a69a !important;
+}
+.ivu-page-item-active a {
+  /* background-color: #26a69a; */
+  color: white !important;
 }
 </style>

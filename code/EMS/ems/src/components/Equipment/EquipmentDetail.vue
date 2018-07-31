@@ -8,7 +8,7 @@
     <div>
         <!-- <h1>{{this.EquimentByID.Name}}</h1> -->
         <div class="field" style=" display: grid; grid-template-columns: 45% 55%; width: 100;">
-           <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
+           
             <div class="left" style="padding-top:0.5rem; padding-left:1rem ">
                 <img :src= "this.EquimentByID.Image" style="width: 400px; height: 350px; ">
             </div>
@@ -134,8 +134,9 @@
                 </div>
               </div>
               <div class=" is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editMode" >
+                <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
                 <button class="btn-Cancel" v-on:click="cancelUpdateEquipment">Cancel</button>
-                <button  class="btn-Update" v-on:click="updateEquipment">Update</button>
+                <button  class="btn-Update" v-on:click="updateEquipment">Save changes</button>
               </div>
             </div>       
         </div>
@@ -169,8 +170,8 @@
               </tbody>
           </table>
         </div>
-        <modal v-model="addPopUp" :maskClosable="false">
-          <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert>
+        <modal v-model="addPopUp" >
+          <!-- <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert> -->
           <div slot="header">
             <h3 style="paddingbtn- Add-top:0.5rem; text-transform: uppercase;  font-size: 20px; color: #26a69a">Add Items</h3>
           </div>
@@ -184,6 +185,7 @@
                 <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">Create Serial Number</button>
             </div>
             <div class="field is-horizontal">
+              <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert>
               <span v-if="CreateItemErrors.NoQuantity != ''">. <span class="error-text">{{ CreateItemErrors.NoQuantity }}</span></span>
               <span v-if="CreateItemErrors.NoBarcode != ''">. <span class="error-text">{{ CreateItemErrors.NoBarcode }}</span></span>
             </div>
@@ -295,15 +297,29 @@
                     <div class="" style="margin-top:0.5rem" >
                         Price:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
                     </div>
-                      <input v-if="!editItemMode" v-model="selectedItem.Item.Price" class="input col-7 " type="text" disabled="disabled"> 
-                      <input v-else v-model="selectedItem.Item.Price" class="input col-7 " type="number" min="50000" step="10000"> 
+                    <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" >  
+                      <div class="">
+                        <input v-if="!editItemMode" v-model="selectedItem.Item.Price" class="input col-7 " type="text" disabled="disabled"> 
+                        <input v-else v-model="selectedItem.Item.Price" class="input col-7 " type="number" min="50000" step="10000"> 
+                      </div>
+                      <div class="">
+                        <label style=" margin-top: 0.75rem;margin-left: 0.4rem;">VNĐ</label>
+                      </div>
+                    </div>
                   </div>
                   <div class="rowpu" style="height: 36px" >
                     <div class="" style="margin-top:0.5rem" >
                         Warranty:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
                     </div>
-                      <input v-if="!editItemMode" v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="text" disabled="disabled"> 
-                      <input v-else v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="number" min="1"> 
+                    <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" > 
+                      <div class="">
+                        <input v-if="!editItemMode" v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="text" disabled="disabled"> 
+                        <input v-else v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="number" min="1"> 
+                      </div>
+                      <div class="">
+                        <label style=" margin-top: 0.75rem;margin-left: 0.4rem;">Months</label>
+                      </div>
+                    </div>
                   </div>
                   <div class="rowpu" style="height: 36px" >
                     <div class="" style="margin-top:0.5rem" >
@@ -317,12 +333,6 @@
                                     v-bind:value="warehouse.Id">{{warehouse.Name}}</option>
                         </select>
                       </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
-                        Run-times:  
-                    </div>
-                      <input  v-model="selectedItem.Item.RuntimeDays" class="input col-7 " type="text" disabled="disabled"> 
                   </div>
                   <div class="rowpu" style="height: 36px" >
                     <div class="" style="margin-top:0.5rem" >
@@ -343,16 +353,16 @@
                       <input v-if="!editItemMode" v-model="selectedItem.Item.NextMaintainDate" class="input col-7 " type="text" disabled="disabled"> 
                       <input v-else v-model="selectedItem.Item.NextMaintainDate" class="input col-7 " type="date">
                   </div>
-                  <div class="rowpu" style="margin-left: 0.5rem;margin-top: 0.75rem;margin-right: 1rem; display: grid; grid-template-columns: 42% 58%; width: 100; height:50px" >
+                  <div class="rowpu" style="margin-left: 0.5rem;margin-top: 0.75rem;margin-right: 1rem; display: grid; grid-template-columns: 40% 60%; width: 100; height:50px" >
                     <div class="" style="margin-top:0.5rem" >
                         Description:  
                     </div>
-                      <textarea v-if="!editItemMode" v-model="selectedItem.Item.Description" cols="7" rows="3" disabled="disabled"> </textarea>
-                      <textarea v-else v-model="selectedItem.Item.Description" cols="7" rows="10" style="border-style:solid; border-color:#b0bec5;"> </textarea>
+                      <textarea v-if="!editItemMode" v-model="selectedItem.Item.Description" cols="7" rows="3" disabled="disabled" style="border-style:solid; border-color:#b0bec5; padding-left:0.5rem"> </textarea>
+                      <textarea v-else v-model="selectedItem.Item.Description" cols="7" rows="10" style="border-style:solid; border-color:#b0bec5;padding-left:0.5rem"> </textarea>
                   </div>
                     <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
                     <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
-                    <button class="btn-UpdateItem" v-on:click="updateItem">Update Item</button>
+                    <button class="btn-UpdateItem" v-on:click="updateItem">Save changes</button>
                     </div>
                   </div>
                 </div>
@@ -388,9 +398,9 @@
                     </div>
                     <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
                       <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
-                      <button class="btn-UpdateItem" v-on:click="changeItemStatus">Update Status</button>
+                      <button class="btn-UpdateItem" v-on:click="changeItemStatus">Save changes</button>
                     </div>
-                    <div class="wrap-table" style="max-height: 310px; overflow-y: auto; padding-top:0,5rem">
+                    <div class="wrap-table" style="max-height: 310px; overflow-y: auto; padding-top:0,5rem" v-if="statusHistories && statusHistories.length != 0">
                       <div><h4 style="font-style: italic">Table: Equipment status history</h4></div>
                     <table class="mytable">
                         <thead>
@@ -414,6 +424,9 @@
                             </tr>
                           </tbody>
                       </table>
+                    </div>
+                    <div class="" v-else style="padding-top: 0,75rem;font-style: italic">
+                      This item has been not change status by someone!
                     </div>
                   </div>
                 </div>
@@ -556,13 +569,13 @@
                     </div>
                     <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
                       <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
-                      <button  class="btn-UpdateItem" v-on:click="updatePositionItem">Update Item</button>
+                      <button  class="btn-UpdateItem" v-on:click="updatePositionItem">Save changes</button>
                     </div>
                   </div>
                 </div>
                 <div v-if="currentViewMode ==  viewModes.WorkOrder">
                   <div class="wrap-table"  style="max-height: 300px; overflow-y: auto">
-                    <div class="" v-if="allworkorder != null">
+                    <div class="" v-if="allworkorder && allworkorder.length != 0">
                       <div><h4 style="font-style: italic">Table: Equipment work order history</h4></div>
                       <table class="mytable">
                         <thead>
@@ -587,8 +600,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="" v-else >
-                      <h3>This item has not been in any work order</h3>
+                    <div class="" v-else style="font-style: italic;">
+                      <h3>This item has no work order</h3>
                     </div> 
                   </div>  
                 </div>
@@ -598,7 +611,7 @@
                       <div class="" style="margin-top:0.5rem" >
                           Import-Date:  
                       </div>
-                      <div class="">  
+                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
                         <input  v-model="selectedItem.Item.ImportDate" class="input col-7 " type="text" disabled="disabled"> 
                       </div>
                     </div>
@@ -606,29 +619,30 @@
                       <div class="" style="margin-top:0.5rem" >
                           Run-times:  
                       </div>
-                      <div class=""style="margin-right:1rem; display: grid;grid-template-columns: 40% auto;">  
+                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;" >  
                         <input  v-model="selectedItem.Item.RuntimeDays" class="input col-7 " type="text" disabled="disabled"> 
                         <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label> 
                       </div>
                     </div>
                     <div class="rowpu" style="height: 36px" >
                       <div class="" style="margin-top:0.5rem" >
-                          Downtime:  
+                          Performance:  
                       </div>
-                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 40% auto;">  
-                        <input  v-model="downtime" class="input col-7 " type="text" disabled="disabled">
-                        <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label>  
-                      </div>
-                    </div>
-                     <div class="rowpu" style="height: 36px" >
-                      <div class="" style="margin-top:0.5rem" >
-                          Percent:  
-                      </div>
-                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 40% auto;">  
+                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
                         <input  v-model="percentRuntime" class="input col-7 " type="text" disabled="disabled">
                         <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">%</label> 
                       </div>
                     </div>
+                    <div class="rowpu" style="height: 36px" >
+                      <div class="" style="margin-top:0.5rem" >
+                          Downtime:  
+                      </div>
+                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
+                        <input  v-model="downtime" class="input col-7 " type="text" disabled="disabled">
+                        <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label>  
+                      </div>
+                    </div>
+                     
                   </div>
                 </div>
               </div>  
@@ -675,7 +689,7 @@
           </div> 
         <div slot="footer" style="display: relative; align-items: right; justify-content: right;">
           <button class="btn-CancelItem" v-on:click="cancelPositionEQTLost">Cancel</button>
-          <button  class="btn-UpdateItem" v-on:click="updatePositionEQTLost">Update Item</button>
+          <button  class="btn-UpdateItem" v-on:click="updatePositionEQTLost">Save changes</button>
         </div>
       </modal>
       </div>
@@ -731,7 +745,7 @@ export default {
         let data = response.data;
         data.forEach(element => {
           this.Items.push(element);
-          this.totalRuntime = element.RuntimeDays + this.totalRuntime;
+          // this.totalRuntime = element.RuntimeDays + this.totalRuntime;
         });
       })
       .catch(error => {
@@ -833,19 +847,17 @@ export default {
         let data = response.data;
         data.forEach(status => {
           this.statusOptions.push(status);
-          // alert(this.statusOptions.length);
         });
       })
       .catch(error => {
         alert(error);
       });
-      this.axios
+    this.axios
       .get("http://localhost:3000/api/equipmentItem/allserialnumber")
       .then(response => {
         let data = response.data;
         data.forEach(serialnumber => {
           this.serialNumbers.push(serialnumber);
-          // alert(this.statusOptions.length);
         });
       })
       .catch(error => {
@@ -862,7 +874,6 @@ export default {
             value: location.Id
           };
           this.locationModalSelect.push(option);
-          // alert(this.locationModalSelect[0].value);
         });
       })
       .catch(error => {
@@ -916,7 +927,7 @@ export default {
       quality: 0,
       updateNumber: 0,
       downtime: 0,
-      totalRuntime: 0,
+      totalExistDays: 0,
       percentRuntime: 0,
       lastWorkedDate: "",
       Items: [],
@@ -1132,15 +1143,15 @@ export default {
             result = false;
           }
         });
-        await Utils.sleep(600);
+        await Utils.sleep(1300);
         if (result) {
-         let obj = {
-              message: "Create new "+ this.quantity+ " item(s) successfully",
-              type: "success",
-              hideAllButton: true,
-              showXclose: false,
-            };
-            this.$refs.simplert.openSimplert(obj);
+          let obj = {
+            message: "Create new " + this.quantity + " item(s) successfully",
+            type: "success",
+            hideAllButton: true,
+            showXclose: false
+          };
+          this.$refs.simplert.openSimplert(obj);
           await Utils.sleep(1500);
           location.reload();
         } else {
@@ -1185,19 +1196,18 @@ export default {
           } else {
             number = this.EquimentByID.CategoryId;
           }
-          var exist = 0
+          var exist = 0;
           number = number + Math.floor(Math.random() * 900000000 + 100000000);
-          for(var j = 0; j<this.serialNumbers.length; j++){
-            if (number == this.serialNumbers[i]){
+          for (var j = 0; j < this.serialNumbers.length; j++) {
+            if (number == this.serialNumbers[i]) {
               exist = exist + 1;
             }
           }
-          if(exist == 0){
+          if (exist == 0) {
             this.randomNumbers.push(number);
-          }else{
-            i = i-1;
+          } else {
+            i = i - 1;
           }
-          
         }
         this.showingBarcode = true;
       }
@@ -1232,13 +1242,20 @@ export default {
                 this.allworkorder = [];
                 this.lastWorkedDate = "";
                 this.downtime = 0;
-                // this.totalRuntime = 0;
                 this.percentRuntime = 0;
+                this.totalExistDays = Math.abs(
+                  moment().valueOf() -
+                    moment(this.selectedItem.Item.ImportDate).valueOf()
+                );
+                this.totalExistDays = Math.floor(
+                  this.totalExistDays / (1000 * 3600 * 24)
+                );
                 this.percentRuntime = (
                   this.selectedItem.Item.RuntimeDays /
-                  this.totalRuntime *
+                  this.totalExistDays *
                   100
                 ).toFixed(3);
+                this.downtime = this.totalExistDays;
                 this.axios
                   .get(
                     "http://localhost:3000/api/equipmentItemHistory/" + itemId
@@ -1279,9 +1296,6 @@ export default {
                       this.lastWorkedDate = moment(
                         this.lastWorkedDate
                       ).valueOf();
-                      // this.downtime =  moment().valueOf() - this.lastWorkedDate;
-                      // var today = moment().format("DD/MM/YYYY");
-                      // alert(today.valueOf());
                       let timeDiff = Math.abs(
                         moment().valueOf() - this.lastWorkedDate
                       );
@@ -1371,24 +1385,24 @@ export default {
       this.files = this.$refs.fileInput.files;
     },
     async updateEquipment() {
-      if (this.EquimentByID.Name.trim().length < 5 || this.EquimentByID.Name.trim().length >250) {
+      if (this.EquimentByID.Name.trim().length < 5) {
         let obj = {
           message: "Equipment Name can be contained from 5 to 250 characters",
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
-      }else if (this.EquimentByID.MadeIn.trim().length >50) {
+      } else if (this.EquimentByID.MadeIn.trim().length > 50) {
         let obj = {
           message: "MadeIn can be contained 50 characters",
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
-      // }else if (this.EquimentByID.Description.trim().length >250) {
-      //   let obj = {
-      //     message: "Description can be contained 250 characters",
-      //     type: "warning"
-      //   };
-      //   this.$refs.simplert.openSimplert(obj);
+        // }else if (this.EquimentByID.Description.trim().length >250) {
+        //   let obj = {
+        //     message: "Description can be contained 250 characters",
+        //     type: "warning"
+        //   };
+        //   this.$refs.simplert.openSimplert(obj);
       } else {
         this.imageUrl = this.EquimentByID.Image;
         if (this.files[0] && this.files[0].name) {
@@ -1427,10 +1441,10 @@ export default {
               message: "Update successfully",
               type: "success",
               hideAllButton: true,
-              showXclose: false,
+              showXclose: false
             };
             context.$refs.simplert.openSimplert(obj);
-            await Utils.sleep(1500);
+            await Utils.sleep(1000);
             location.reload();
             context.editMode = !context.editMode;
           })
@@ -1440,7 +1454,7 @@ export default {
       }
     },
     async updatePositionItem() {
-      if (this.selectedItem.Item.TileID == null ) {
+      if (this.selectedItem.Item.TileID == null) {
         let obj = {
           message: "Please choose position for this item",
           type: "warning"
@@ -1466,10 +1480,10 @@ export default {
         await Utils.sleep(200);
         if (result) {
           let obj = {
-              message: "Update successfully",
-              type: "success",
-              showXclose: false,
-            };
+            message: "Update successfully",
+            type: "success",
+            showXclose: false
+          };
           this.$refs.simplert.openSimplert(obj);
           this.updateNumber = this.updateNumber + 1;
           this.editItemMode = !this.editItemMode;
@@ -1529,10 +1543,10 @@ export default {
           }
           await Utils.sleep(50);
           if (updateSttBool) {
-             let obj = {
+            let obj = {
               message: "Update status successfully",
-              type: "success",  
-              showXclose: false,
+              type: "success",
+              showXclose: false
             };
             this.$refs.simplert.openSimplert(obj);
             this.changePositonLost = false;
@@ -1547,26 +1561,60 @@ export default {
       }
     },
     async changeItemStatus() {
+      let workingApproved = "Working Approved";
+      let working = "Working";
+      let maintainanceApproved = "Maintainance Approved";
+      let maintaining = "Maintaining";
+      let statusName = "";
+      for (var i = 0; i < this.statusOptions.length; i++) {
+        if (this.selectedItem.Item.StatusID == this.statusOptions[i].Id) {
+          statusName = this.statusOptions[i].Name;
+        }
+      }
       let authUser = JSON.parse(window.localStorage.getItem("user"));
-      if (
+      if (this.oldstt == this.selectedItem.Item.StatusID) {
+        let obj = {
+          message: "Please choose new status to update !!!",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      } else if (
+        statusName.toUpperCase() == workingApproved.toUpperCase() ||
+        statusName.toUpperCase() == working.toUpperCase() ||
+        statusName.toUpperCase() == maintainanceApproved.toUpperCase() ||
+        statusName.toUpperCase() == maintaining.toUpperCase()
+      ) {
+        let obj = {
+          message: "Cannot change to " + statusName + " !!!",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      } else if (
+        this.currentsttName.toUpperCase() == workingApproved.toUpperCase() ||
+        this.currentsttName.toUpperCase() == working.toUpperCase() ||
+        this.currentsttName.toUpperCase() ==
+          maintainanceApproved.toUpperCase() ||
+        this.currentsttName.toUpperCase() == maintaining.toUpperCase()
+      ) {
+        let obj = {
+          message:
+            "Cannot change from " + this.currentsttName + " to other status!!!",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      } else if (
         this.changeItemSttDescription.trim().length > 250 ||
         this.changeItemSttDescription.trim().length < 5
       ) {
         let obj = {
-          message: "Please enter note from 5 to 250 characters",
-          type: "warning"
-        };
-        this.$refs.simplert.openSimplert(obj);
-      } else if (this.oldstt == this.selectedItem.Item.StatusID) {
-        let obj = {
-          message: "Please choose new status to update",
+          message: "Please enter note from 5 to 250 characters !!!",
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
       } else {
-        if (this.currentsttName.toUpperCase() == "LOST") {         
+        if (this.currentsttName.toUpperCase() == "LOST") {
           this.changePositonLost = true;
-        } else {          
+        } else {
           var result = false;
           try {
             let res = await this.axios.put(
@@ -1589,8 +1637,8 @@ export default {
           if (result) {
             let obj = {
               message: "Update status successfully",
-              type: "success",  
-              showXclose: false,
+              type: "success",
+              showXclose: false
             };
             this.$refs.simplert.openSimplert(obj);
             this.oldstt = this.selectedItem.Item.StatusID;
@@ -1618,7 +1666,7 @@ export default {
         this.selectedItem.Item.Price === "" ||
         this.selectedItem.Item.Price < 50000
       ) {
-         let obj = {
+        let obj = {
           message: "Price must be bigger than 50000!",
           type: "warning"
         };
@@ -1633,7 +1681,7 @@ export default {
         };
         this.$refs.simplert.openSimplert(obj);
       } else if (nextmaintaindate < currentdate) {
-         let obj = {
+        let obj = {
           message: "Next maintain date must be BIGGER than current date",
           type: "warning"
         };
@@ -1735,7 +1783,6 @@ export default {
                 value: location.Id
               };
               this.locationModalSelect.push(option);
-              // alert(this.locationModalSelect[0].value);
             });
           })
           .catch(error => {
@@ -1775,6 +1822,7 @@ export default {
         this.CreateItemErrors.NoBarcode = "";
       }
       if (this.addPopUp == true) {
+        this.locationModalSelect = [];
         this.axios
           .get("http://localhost:3000/api/location")
           .then(response => {
@@ -1785,7 +1833,6 @@ export default {
                 value: location.Id
               };
               this.locationModalSelect.push(option);
-              // alert(this.locationModalSelect[0].value);
             });
           })
           .catch(error => {
@@ -2133,7 +2180,7 @@ export default {
   border-radius: 8px;
   /* margin-left: 0.25rem; */
   height: 36px;
-  width: 100px;
+  width: 130px;
 }
 .btn-changeStt {
   position: relative;

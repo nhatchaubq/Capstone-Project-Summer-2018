@@ -15,16 +15,30 @@ import "./styles/style.scss";
 import * as VueGoogleMaps from "vue2-google-maps";
 import iView from "iview";
 import "iview/dist/styles/iview.css";
-import VueSocketio from 'vue-socket.io';
-import VPopover from 'vue-js-popover';
-import locale from 'iview/dist/locale/en-US';
+
+import VueSocketio from "vue-socket.io";
+import VPopover from "vue-js-popover";
+//calendar
+import VCalendar from "v-calendar";
+import "v-calendar/lib/v-calendar.min.css";
 import VueTruncate from "vue-truncate-filter";
 
 Vue.use(VueTruncate);
+Vue.use(VCalendar, {
+  formats: {
+    title: "MMMM YYYY",
+    weekdays: "W",
+    navMonths: "MMM",
+    input: ["L", "YYYY-MM-DD", "YYYY/MM/DD"],
+    dayPopover: "L",
+    data: ["L", "YYYY-MM-DD", "YYYY/MM/DD"]
+  }
+});
 Vue.use(VPopover, {
   tooltip: true
-})
-Vue.use(VueSocketio, 'http://localhost:3000');
+});
+Vue.use(VueSocketio, "http://localhost:3000");
+
 Vue.use(VueGoogleMaps, {
   load: {
     key: "AIzaSyDNEXkpy7Eb76G8TciF6DzydzD4y4tZg4c",
@@ -33,9 +47,7 @@ Vue.use(VueGoogleMaps, {
 });
 Vue.use(VueAxios, axios);
 Vue.use(Vuetify);
-Vue.use(iView, {
-  locale
-});
+
 Vue.use(CroudGantt);
 Vue.use(VueWaypoint);
 Vue.component("v-bar", VueBar);
@@ -64,10 +76,12 @@ router.beforeEach((to, from, next) => {
       authUser.Role != "Equipment Staff"
     ) {
       next("/");
+
     } else if (to.name == 'edit_order' &&
       (authUser.Role != 'Staff' && authUser.Role != 'Maintainer') &&
       !to.params.edit_order) {
       next('/work_order');
+
     } else {
       next();
     }
