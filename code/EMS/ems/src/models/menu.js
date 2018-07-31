@@ -1,7 +1,7 @@
 let menu = {
     Dashboard: 'Dashboard',
     WorkOrder: 'Work Orders',
-    Calendar: 'Calendar',
+    Schedule: 'Schedule',
     Report: 'Report',
     Equipment: 'Equipment',
     EquipmentDetail: 'Equipment Detail',

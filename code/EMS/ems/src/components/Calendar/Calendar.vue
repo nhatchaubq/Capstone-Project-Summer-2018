@@ -46,7 +46,7 @@ export default {
   components: {
     VueFullCalendar
   },
-  created() {   
+  created() {
     this.today = moment().format("DD-MM-YYYY");
     this.startPeriod = moment().startOf("month");
     this.endPeriod = moment().endOf("month");
@@ -234,6 +234,49 @@ export default {
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             }
           }
+          if (this.orders[i].WorkOrderStatus == "Approved") {
+            // alert(this.orders[i].Name);
+            if (
+              ExpectingCloseDate < this.endMonth &&
+              ExpectingStartDate < this.startMonth
+            ) {
+              var timeDiffDuration = Math.abs(
+                ExpectingCloseDate - ExpectingStartDate
+              );
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            } else if (
+              ExpectingCloseDate < this.endMonth &&
+              ExpectingStartDate > this.startMonth
+            ) {
+              var timeDiffDuration = Math.abs(
+                ExpectingCloseDate - ExpectingStartDate
+              );
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            } else if (
+              ExpectingCloseDate > this.endMonth &&
+              ExpectingStartDate < this.startMonth
+            ) {
+              var timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            } else if (
+              ExpectingCloseDate > this.endMonth &&
+              ExpectingStartDate > this.startMonth &&
+              ExpectingStartDate < this.endMonth
+            ) {
+              var timeDiffDuration = Math.abs(
+                this.endMonth - ExpectingStartDate
+              );
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            } else if (
+              ExpectingCloseDate > this.endMonth &&
+              ExpectingStartDate > this.endMonth
+            ) {
+              var timeDiffDuration = Math.abs(
+                ExpectingCloseDate - ExpectingStartDate
+              );
+              duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+            }
+          }
 
           if (this.orders[i].ClosedDate != null) {
             this.orders[i].ClosedDate = moment(
@@ -292,15 +335,32 @@ export default {
       today: "",
       index: 0,
       year: "",
-      Months:["January","Febuary","March","April","May","June", "July", "August", "September", "October","November","December" ]
+      Months: [
+        "January",
+        "Febuary",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ]
     };
   },
   methods: {
     previousMonth() {
       this.events = [];
-      var date = moment(this.startPeriod).year() + "-0" + moment(this.startPeriod).month() + "-01";
-      if(moment(this.startPeriod).month() == 0){
-        date = moment(this.startPeriod).year() - 1 + "-12" + "-01"
+      var date =
+        moment(this.startPeriod).year() +
+        "-0" +
+        moment(this.startPeriod).month() +
+        "-01";
+      if (moment(this.startPeriod).month() == 0) {
+        date = moment(this.startPeriod).year() - 1 + "-12" + "-01";
         this.year = this.year - 1;
       }
       // alert(date);
@@ -360,21 +420,19 @@ export default {
                 ClosedDate < this.endMonth &&
                 StartDate > this.startMonth
               ) {
-                var timeDiffDuration = Math.abs(ClosedDate - StartDate);
+                timeDiffDuration = Math.abs(ClosedDate - StartDate);
                 duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
               } else if (
                 ClosedDate > this.endMonth &&
                 StartDate < this.startMonth
               ) {
-                var timeDiffDuration = Math.abs(
-                  this.endMonth - this.startMonth
-                );
+                timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
                 duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
               } else if (
                 ClosedDate > this.endMonth &&
                 StartDate > this.startMonth
               ) {
-                var timeDiffDuration = Math.abs(this.endMonth - StartDate);
+                timeDiffDuration = Math.abs(this.endMonth - StartDate);
                 duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
               }
             }
@@ -464,7 +522,50 @@ export default {
                   ExpectingCloseDate - this.startMonth
                 );
                 duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
-                alert(duration);
+              } else if (
+                ExpectingCloseDate < this.endMonth &&
+                ExpectingStartDate > this.startMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  ExpectingCloseDate - ExpectingStartDate
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+              } else if (
+                ExpectingCloseDate > this.endMonth &&
+                ExpectingStartDate < this.startMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  this.endMonth - this.startMonth
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+              } else if (
+                ExpectingCloseDate > this.endMonth &&
+                ExpectingStartDate > this.startMonth &&
+                ExpectingStartDate < this.endMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  this.endMonth - ExpectingStartDate
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+              } else if (
+                ExpectingCloseDate > this.endMonth &&
+                ExpectingStartDate > this.endMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  ExpectingCloseDate - ExpectingStartDate
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+              }
+            }
+            if (this.orders[i].WorkOrderStatus == "Approved") {
+              if (
+                ExpectingCloseDate < this.endMonth &&
+                ExpectingStartDate < this.startMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  ExpectingCloseDate - this.startMonth
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
               } else if (
                 ExpectingCloseDate < this.endMonth &&
                 ExpectingStartDate > this.startMonth
@@ -582,9 +683,9 @@ export default {
     nextMonth() {
       this.events = [];
       var nextMonth = moment(this.startPeriod).month() + 2;
-      var date = moment(this.startPeriod).year() +"-0" + nextMonth + "-01";
-      if(moment(this.startPeriod).month() == 11){
-        date = moment(this.startPeriod).year() + 1 + "-01" + "-01"
+      var date = moment(this.startPeriod).year() + "-0" + nextMonth + "-01";
+      if (moment(this.startPeriod).month() == 11) {
+        date = moment(this.startPeriod).year() + 1 + "-01" + "-01";
         this.year = this.year + 1;
       }
       this.startPeriod = moment(date).startOf("month");
@@ -741,6 +842,51 @@ export default {
             }
             if (this.orders[i].WorkOrderStatus == "Requested") {
               // alert(this.orders[i].Name);
+              if (
+                ExpectingCloseDate < this.endMonth &&
+                ExpectingStartDate < this.startMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  ExpectingCloseDate - this.startMonth
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+                // alert(duration);
+              } else if (
+                ExpectingCloseDate < this.endMonth &&
+                ExpectingStartDate > this.startMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  ExpectingCloseDate - ExpectingStartDate
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+              } else if (
+                ExpectingCloseDate > this.endMonth &&
+                ExpectingStartDate < this.startMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  this.endMonth - this.startMonth
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+              } else if (
+                ExpectingCloseDate > this.endMonth &&
+                ExpectingStartDate > this.startMonth &&
+                ExpectingStartDate < this.endMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  this.endMonth - ExpectingStartDate
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+              } else if (
+                ExpectingCloseDate > this.endMonth &&
+                ExpectingStartDate > this.endMonth
+              ) {
+                var timeDiffDuration = Math.abs(
+                  ExpectingCloseDate - ExpectingStartDate
+                );
+                duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
+              }
+            }
+            if (this.orders[i].WorkOrderStatus == "Approved") {
               if (
                 ExpectingCloseDate < this.endMonth &&
                 ExpectingStartDate < this.startMonth

@@ -24,7 +24,6 @@ import HeaderBar from "./components/HeaderBar/HeaderBar";
 import Server from "@/config/config";
 
 import Vue from "vue";
-
 var VueTruncate = require("vue-truncate-filter");
 Vue.use(VueTruncate);
 

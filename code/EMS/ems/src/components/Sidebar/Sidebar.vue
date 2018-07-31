@@ -27,7 +27,7 @@
           <router-link to='/calendar'>
             <div class="sidebar-list-content" :class="isActive(menu.Calendar)">
             <i class="material-icons">event</i>            
-            {{ menu.Calendar }}
+            {{ menu.Schedule }}
           </div>
           </router-link>
         </li>
