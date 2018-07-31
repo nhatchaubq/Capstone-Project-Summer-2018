@@ -2,7 +2,7 @@
 
   <div v-if="account">
     <router-link to="/account">
-      <a><span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Accounts</a>
+      <a><span class="material-icons" style="position: relative; top: .4rem;">keyboard_arrow_left</span> Back to Accounts</a>
     </router-link>
 
 <div class="grid-wrapper1">
@@ -12,7 +12,7 @@
   right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
   <div>
 
-<img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; ">
+<img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem ">
 
 
 <!-- test -->
@@ -60,17 +60,17 @@
       <thead>
         <tr>
           <!-- <th><strong>ID</strong></th> -->
-          <th style="width:3% !important"><strong>#</strong></th>
-          <th style="width:47% !important"><strong>Team name </strong></th>
-          <th style="width:15% !important"><strong>Team role </strong></th>
+          <th ><strong>#</strong></th>
+          <th ><strong>Team name </strong></th>
+          <th><strong>Team role </strong></th>
         </tr>
       </thead>  
       <tbody>
           <tr  :key="team.Id" v-for="(team, index) in toDisplayData" v-on:click="gotoDetail(team.Id)" >
-            <td >{{ 10*(currentPage -1) + (index + 1)}}</td>
-            <td >{{team.Name? team.Name: "N/A" }}</td>
-            <td v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
-            <td v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">♟Member</span> </strong> </td> 
+            <td width=7%>{{ 5*(currentPage -1) + (index + 1)}}</td>
+            <td width=40%>{{team.Name? team.Name: "N/A" }}</td>
+            <td width=15% v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
+            <td width=15% v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">♟Member</span> </strong> </td> 
             <!-- <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td> -->
 
           </tr>
@@ -81,12 +81,12 @@
       {{ team.Name }}
     </span>
   </div> -->
-  <div v-if="teamAccount.length >9">
+  <div v-if="teamAccount.length >4">
     <Page :current="currentPage" :total="teamAccount.length" show-elevator  
       @on-change="(newPageNumber) => {
         currentPage = newPageNumber
-        let start = 10 * (currentPage - 1);
-        let end = start + 10;
+        let start = 5 * (currentPage - 1);
+        let end = start + 5;
         
         toDisplayData = teamAccount.slice(start, end);
       }">
@@ -379,7 +379,7 @@ export default {
       this.axios.get(URL).then(response => {
         let data2 = response.data.Teams;
         this.teamAccount = data2;
-        this.toDisplayData = this.teamAccount.slice(0, 10);
+        this.toDisplayData = this.teamAccount.slice(0, 5);
       });
     },
     getDate(date) {

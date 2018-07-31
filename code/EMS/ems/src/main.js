@@ -15,7 +15,7 @@ import "./styles/style.scss";
 import * as VueGoogleMaps from "vue2-google-maps";
 import iView from "iview";
 import "iview/dist/styles/iview.css";
-
+import locale from 'iview/src/locale/lang/en-US';
 import VueSocketio from "vue-socket.io";
 import VPopover from "vue-js-popover";
 //calendar
@@ -47,7 +47,10 @@ Vue.use(VueGoogleMaps, {
 });
 Vue.use(VueAxios, axios);
 Vue.use(Vuetify);
-
+// import locale from 'iview/src/locale/lang/en-US';
+Vue.use(iView, {
+  locale
+});
 Vue.use(CroudGantt);
 Vue.use(VueWaypoint);
 Vue.component("v-bar", VueBar);
