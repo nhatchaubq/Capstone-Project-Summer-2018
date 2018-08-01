@@ -9,7 +9,9 @@
     <div class="material-box" >
       <div class="row" style="margin: 0 !important; height:36px ">
         <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a" >{{Vendor.BusinessName}}  <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> </strong> </h2>
-      <button  v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate col-1" v-on:click="editMode = !editMode">Edit</button>
+      <div style="padding: 0rem !important" class="col-1"  v-if="authUser.Role =='Equipment Staff'">
+        <button  v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate " v-on:click="editMode = !editMode">Edit</button>
+      </div>
       </div>
 
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
@@ -172,7 +174,7 @@
       </table>
 
 <!-- test1 -->
-  <div v-if="vendorItem.length >9" class="pageNa">
+  <div v-if="vendorItem.length >9" class="">
     <Page :current="1" :total="vendorItem.length" show-elevator 
       @on-change="(newPageNumber) => {
         let start = 10 * (newPageNumber - 1);
@@ -380,6 +382,11 @@
 
 <script>
 export default {
+  computed: {
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    },
+  },
   created() {
     let URL = `http://localhost:3000/api/vendor/${this.$route.params.id}`;
     this.axios.get(URL).then(response => {
