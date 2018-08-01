@@ -59,7 +59,7 @@ module.exports = function (io) {
             + "                                                                                                                                                                        where [Name] != N'Cancelled' and [Name] != N'Closed') as [status],  "
             + "                                                                                                                                                                                 (select wod.* "
             + "                                                                                                                                                                                  from WorkOrderDetail as wod "
-            + "                                                                                                                                                                                  where wod.EquipmentItemID = ei.Id) as [workorderdetail] "
+            + "                                                                                                                                                                                  where wod.EquipmentItemID = ei.Id and wod.ClosedDate is NULL) as [workorderdetail] "
             + "                                                                                                             where wo3.StatusId = [status].Id and wo3.Id = [workorderdetail].WorkOrderID "
             + "                                                                                                             order by wo3.StatusID desc, wo3.PriorityID desc "
             + "                                                                                                             for json path)) as [WorkOrders], "
@@ -99,8 +99,6 @@ module.exports = function (io) {
         request
             .sql(
                 "select (select wo.*, wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], " +
-                "        json_query((select * from [Location] where tl.LocationID = Id for json path, without_array_wrapper)) as [Location], " +
-                "        t.Id as [Team.Id], t.[Name] as [Team.Name], " +
                 "       (json_query((select wod.*, json_query((select ei.*, e.Name as [Name], e.Image as [Image] " +
                 "                                               from EquipmentItem as ei join Equipment as e on ei.EquipmentId = e.Id " +
                 "                                               where ei.Id = wod.EquipmentItemId for json path, without_array_wrapper)) as [EquipmentItem] " +
@@ -121,12 +119,14 @@ module.exports = function (io) {
                 "                                                    from WorkOrderRecord as wor " +
                 "                                                    where wor.WorkOrderID = wo.Id " +
                 "                                                    order by wor.ModifiedByDateTime desc " +
-                "                                                    for json path) as [WorkOrderRecord] " +
+                "                                                    for json path) as [WorkOrderRecord], json_query((select tl.*, json_query((select * from [Location] where tl.LocationID = Id for json path, without_array_wrapper)) as [Location], t.Id as [Team.Id], t.[Name] as [Team.Name] " +
+                "                                                                                                     from TeamLocation as tl " +
+                "                                                                                                               join Team as t on tl.TeamID = t.Id " +
+                "                                                                                                     where wo.TeamLocationID = tl.Id " +
+                "                                                                                                     for json path, without_array_wrapper)) as [TeamLocation]  " +
                 " from WorkOrder as wo join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
                 " join Account as acc on wo.RequestUserID = acc.Id " +
                 " join [Priority] as p on wo.PriorityID = p.Id " +
-                " join TeamLocation as tl on wo.TeamLocationID = tl.Id " +
-                " join Team as t on tl.TeamID = t.Id " +
                 " order by wo.CreateDate desc " +
                 " for json path) as [WorkOrders] for json path, without_array_wrapper"
             )
@@ -209,7 +209,7 @@ module.exports = function (io) {
                 "                                                                                    where [Name] != N'Cancelled' and [Name] != N'Closed' and [Name] != N'Rejected') as [status],  " +
                 "                                                                                            (select wod.* " +
                 "                                                                                            from WorkOrderDetail as wod " +
-                "                                                                                            where wod.EquipmentItemID = ei.Id) as [workorderdetail] " +
+                "                                                                                            where wod.EquipmentItemID = ei.Id and wod.ClosedDate is NULL) as [workorderdetail] " +
                 "            where wo.StatusID = [status].Id and wo.Id = [workorderdetail].WorkOrderID " +
                 "            order by wo.StatusID desc, wo.PriorityID desc " +
                 "            for json path)) as [WorkOrders], " +
