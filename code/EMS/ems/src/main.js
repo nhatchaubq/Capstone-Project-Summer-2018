@@ -23,6 +23,7 @@ import VCalendar from "v-calendar";
 import "v-calendar/lib/v-calendar.min.css";
 import VueTruncate from "vue-truncate-filter";
 
+Vue.use(iView);
 Vue.use(VueTruncate);
 Vue.use(VCalendar, {
   formats: {

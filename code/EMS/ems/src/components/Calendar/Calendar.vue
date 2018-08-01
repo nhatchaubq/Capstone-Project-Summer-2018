@@ -120,7 +120,7 @@ export default {
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             }
           }
-          if (this.orders[i].WorkOrderStatus == "In_Progress") {
+          if (this.orders[i].WorkOrderStatus == "In Progress") {
             if (
               ExpectingCloseDate < this.endMonth &&
               StartDate < this.startMonth

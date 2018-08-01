@@ -34,7 +34,7 @@
                             </div>
                         </div>
                   </div>
-                  <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer'" style="width: 60%; user-select: none">
+                  <div v-if="authUser.Role == 'Manager' || authUser.Role == 'Equipment Staff'" style="width: 60%; user-select: none">
                       <div class="row" style="margin: 0 !important; margin-bottom: 1rem">
                           <div class="view-mode col-4" 
                                 :class="{'view-mode-active': $store.state.workOrderPage.myOrderViewMode}"
@@ -100,7 +100,7 @@
                   </div>
                   <div style="">                        
                         <div class="detail-contents" style="margin-top: 1rem;">
-                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :statusList="options.status.filter(status => status.name != 'Cancelled')"></step-progress>
+                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :lastOrderStatus="selectedOrder.WorkOrderRecord[0].OldStatus.Name" :statusList="options.status.filter(status => status.name != 'Cancelled')"></step-progress>
                         </div>          
                           <!-- manager approve / reject -->
                         <div v-if="authUser.Role == 'Manager' && selectedOrder.WorkOrderStatus == 'Checked'" class="" style="margin-top: 1.5rem; margin-bottom: .5rem; display: flex; justify-content: center; align-content: center">
@@ -116,11 +116,15 @@
                             </div>
                         </div> <!-- manager approve / reject -->   
                         <div class="detail-contents">
-                            <div style="width: 100%; text-align: right" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Requested'">
-                                <button class="button btn-primary material-shadow-animate" v-on:click="() => {
+                            <div style="width: 100%; display: flex; justify-content: center; align-content: center" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Requested'" >
+                                <button class="button btn-primary material-shadow-animate" style="margin-right: .5rem; width: 5rem;" v-on:click="() => {
                                     newStatusName = 'Checked';
                                     showChangeStatusDialog = true;
-                                }">Change status to Checked</button>
+                                }">Checked</button>
+                                <button class="button btn-danger material-shadow-animate" style="width: 5rem;" v-on:click="() => {
+                                    showApproveRejectDialog = true;
+                                    approveWorkOrder = false;    
+                                }">Reject</button>
                             </div>
                             <div style="width: 100%; text-align: right" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Approved'">
                                 <button class="button btn-primary material-shadow-animate" v-on:click="() => {
@@ -251,24 +255,24 @@
                                     </v-expansion-panel>
                                 </v-flex>
                             </div>                            
-                            <div class="detail-contents">
-                                    <span class="detail-label">Location: </span><span>{{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
+                            <div class="detail-contents" v-if="selectedOrder.TeamLocation">
+                                    <span class="detail-label">Location: </span><span>{{ selectedOrder.TeamLocation.Location.Name }} - {{ selectedOrder.TeamLocation.Location.Address }}</span>
                                     <!-- <img src="http://images.indianexpress.com/2016/11/hazaribagh-759.jpg" /> -->
                                     <GmapMap
-                                        :center="{lat:selectedOrder.Location.Latitude, lng:selectedOrder.Location.Longitude}"
+                                        :center="{lat:selectedOrder.TeamLocation.Location.Latitude, lng:selectedOrder.TeamLocation.Location.Longitude}"
                                         :zoom="16"
                                         map-type-id="terrain"
                                         style="width: 100%; height:25rem"
                                         :options="{gestureHandling: 'cooperative'}"
                                     >
                                     <GmapMarker
-                                        :position="google && new google.maps.LatLng(selectedOrder.Location.Latitude, selectedOrder.Location.Longitude)"
+                                        :position="google && new google.maps.LatLng(selectedOrder.TeamLocation.Location.Latitude, selectedOrder.TeamLocation.Location.Longitude)"
                                         :clickable="true"
                                     >
                                         <GmapInfoWindow v-if="(selectedOrder)"
-                                                    :position="google && new google.maps.LatLng(selectedOrder.Location.Latitude, 
-                                                                selectedOrder.Location.Longitude)">
-                                        {{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}
+                                                    :position="google && new google.maps.LatLng(selectedOrder.TeamLocation.Location.Latitude, 
+                                                                selectedOrder.TeamLocation.Location.Longitude)">
+                                        {{ selectedOrder.TeamLocation.Location.Name }} - {{ selectedOrder.TeamLocation.Location.Address }}
                                         </GmapInfoWindow>
                                     </GmapMarker>
                                     </GmapMap>
@@ -323,7 +327,7 @@
                 </div>
             </div>
             <div slot="footer">
-                <button class="button" @click="showApproveRejectDialog = false">No</button>
+                <button style="width: 5rem" class="button" @click="showApproveRejectDialog = false">No</button>
                 <button class="button btn-primary" style="width: 5rem"
                         @click="approveRejectWorkOrder(selectedOrder.Id)">Yes</button>
             </div>
@@ -1027,7 +1031,7 @@ export default {
         return result > 0
           ? 1
           : result < 0 ? -1 : order2.PriorityID - order1.PriorityID;
-      });
+      });      
     },
     addFilter(filter, event) {
       if (event.target.checked) {
@@ -1280,7 +1284,7 @@ export default {
                         var tileId = null;
                         if (value.status != 'Lost') {
                             tileId = parseInt(value.tileOption.value);
-                        }                                         
+                        }
                     } else {
                         check = false;
                     }
@@ -1384,7 +1388,9 @@ export default {
             if (toSelectOrder) {
                 this.selectedOrder = toSelectOrder;
                 this.getEquipmentsOfWorkOrder(toSelectOrder);
-                this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == toSelectOrder.Location.Id)[0];
+                if (this.authUser.Role == 'Staff') {
+                    this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == toSelectOrder.TeamLocation.Location.Id)[0];
+                }
             }
             // }
         }
