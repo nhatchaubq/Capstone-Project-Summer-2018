@@ -67,7 +67,7 @@
             </tr>
         </tbody>
     </table>
-  <div v-if="teams.length >9" class="pageNa">
+  <div v-if="teams.length >9" class="">
     <Page :current="currentPage" :total="teams.length" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage = newPageNumber
@@ -83,7 +83,7 @@
 
 
 
-    <button v-on:click="$router.push('/team/add')" id="btn-add-account" class=" button btn-primary material-shadow-animate">Add Team</button>
+    <button v-on:click="$router.push('/team/add')" id="btn-add-account" class=" button btn-primary material-shadow-animate" v-if="authUser.Role =='Admin'">Add Team</button>
 
 
 </div>
@@ -97,6 +97,9 @@ export default {
   },
   name: "team",
   created() {
+    // if (this.authUser.Role == "Staff") {
+    // authUser.Id
+    // } else if (manager) {
     let URL = "http://localhost:3000/api/team";
     this.axios.get(URL).then(res => {
       // alert("alao alo");
@@ -107,6 +110,7 @@ export default {
         this.toDisplayData = this.teams.slice(0, 10);
       });
     });
+    // }
   },
   data() {
     return {
@@ -114,6 +118,11 @@ export default {
       teams: [],
       toDisplayData: []
     };
+  },
+  computed: {
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    }
   },
   methods: {
     gotoDetail(teamId) {
@@ -182,7 +191,7 @@ td:hover {
 #btn-add-account {
   position: fixed;
   right: 3rem;
-  bottom: 2rem;
+  bottom: 0.5rem;
   /* background-color: var(--primary-color);
   padding: 13px;
   color: white;

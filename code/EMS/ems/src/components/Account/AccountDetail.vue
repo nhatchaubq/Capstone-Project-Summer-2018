@@ -151,7 +151,7 @@
 <div class="row" style="margin: 0 !important">
   <h2 class="col-9" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
   <div class="col-3" v-if ="!editMode">
-    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode">Edit</button>
+    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin'">Edit</button>
   </div>
 </div>
 <!-- <form @submit.prevent="editAccount()"> -->
@@ -268,7 +268,10 @@ export default {
         array.push(i);
       }
       return array;
-    }
+    },
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    },
   },
   components: {
     moment

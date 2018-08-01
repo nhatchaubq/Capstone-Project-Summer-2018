@@ -20,7 +20,7 @@
           <button class="btn-view-mode-left" style="margin-right:0rem" disabled="disabled">Account view</button>
         </router-link>
         <router-link to='/team/'>  
-          <button class="btn-view-mode-right" >Team view</button>
+          <button class="btn-view-mode-right" v-if="authUser.Role !='Equipment Staff'" >Team view</button>
         </router-link>
       </div>
     </div>
@@ -32,7 +32,7 @@
 
       <!-- <account-table :accounts="accounts" v-if="isTableMode"></account-table>
       <account-card :accounts="accounts" v-else></account-card> -->
-    <table class="mytable">
+    <table class="mytable" style="margin-bottom:0.5rem !important">
       <thead>
         <tr style="height:28px !important">
           <!-- <th><strong>ID</strong></th> -->
@@ -66,7 +66,7 @@
       </tbody>
     </table>  
 
-  <div v-if="accounts.length >9" class="pageNa">
+  <div v-if="accounts.length >9" class="">
     <Page :current="currentPage" :total="accounts.length" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage = newPageNumber
@@ -81,7 +81,7 @@
     </div>
 
     <router-link to='/account/add/'>
-      <button id="btn-add-account" class="button btn-primary material-shadow-animate">Add Account</button>
+      <button id="btn-add-account" class="button btn-primary material-shadow-animate" v-if="authUser.Role =='Admin'">Add Account</button>
     </router-link>
 
     </div>
@@ -101,6 +101,12 @@ export default {
     AccountTable,
     moment
   },
+  computed: {
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    },
+    isTableMode: sync("accountPage.isTableMode")
+  },
   created() {
     let url = Server.ACCOUNT_API_PATH;
     this.axios
@@ -117,9 +123,9 @@ export default {
         alert(error);
       });
   },
-  computed: {
-    isTableMode: sync("accountPage.isTableMode")
-  },
+  // computed: {
+  //   isTableMode: sync("accountPage.isTableMode")
+  // },
   data() {
     return {
       currentPage: 1,
