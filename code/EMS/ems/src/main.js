@@ -9,13 +9,15 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import VueBar from "vuebar";
 import router from "./router";
 import store from "./store";
-import CroudGantt from 'croud-vue-gantt'
-import VueWaypoint from 'vue-waypoint'
+import CroudGantt from "croud-vue-gantt";
+import VueWaypoint from "vue-waypoint";
 import "./styles/style.scss";
 import * as VueGoogleMaps from "vue2-google-maps";
 import iView from "iview";
 import "iview/dist/styles/iview.css";
+
 import locale from 'iview/src/locale/lang/en-US';
+
 import VueSocketio from "vue-socket.io";
 import VPopover from "vue-js-popover";
 //calendar
@@ -79,12 +81,12 @@ router.beforeEach((to, from, next) => {
       authUser.Role != "Equipment Staff"
     ) {
       next("/");
-
-    } else if (to.name == 'edit_order' &&
-      (authUser.Role != 'Staff' && authUser.Role != 'Maintainer') &&
-      !to.params.edit_order) {
-      next('/work_order');
-
+    } else if (
+      to.name == "edit_order" &&
+      (authUser.Role != "Staff" && authUser.Role != "Maintainer") &&
+      !to.params.edit_order
+    ) {
+      next("/work_order");
     } else {
       next();
     }

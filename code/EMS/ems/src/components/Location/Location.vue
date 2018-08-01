@@ -1,6 +1,13 @@
-<template>    
+<template>  
+<div>
+  <div v-if="authUser.Role == 'Admin'">
+    <div style="font-weight:bold; color:red">
+      Sorry, You can't access this page!!!
+    </div>  
+  </div>
+  <div v-else>
     <div class="location-page" v-if="locations">
-      <div class="field is-grouped view-mode">
+      <div class="field is-grouped view-mode" v-if="authUser.Role == 'Manager'">
         <button class="btn-view-mode-left" :class='{"is-active": isListViewMode}' v-on:click="isListViewMode = true">List view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isListViewMode}' v-on:click="isListViewMode = false">Map view</button>
       </div>
@@ -277,7 +284,10 @@
           </div>                     
         <div slot="footer"><button class="button" v-on:click="addPopUp = false" style="background-color:var(--primary-color);color:white">OK</button></div>
       </modal>
+    </div>
   </div>
+</div>  
+    
 </template>
 
 <script>
@@ -303,8 +313,22 @@ export default {
     }
   },
   created() {
+    // alert(JSON.parse(window.localStorage.getItem("user")).Id);
+    // alert(JSON.parse(window.localStorage.getItem("user")).Role);
+    let url = "";
+    if (
+      JSON.parse(window.localStorage.getItem("user")).Role == "Manager" ||
+      JSON.parse(window.localStorage.getItem("user")).Role == "Equipment Staff"
+    ) {
+      url = "http://localhost:3000/api/location/";
+    } else {
+      url = `http://localhost:3000/api/location/getLocation/${
+        JSON.parse(window.localStorage.getItem("user")).Id
+      }`;
+    }
+    // alert(url);
     this.axios
-      .get(Server.LOCATION_API_PATH)
+      .get(url)
       .then(response => {
         let data = response.data;
         data.forEach(location => {
