@@ -33,7 +33,7 @@
     </table>
 
 <!-- test1 -->
-  <div v-if="vendors.length >9" class="pageNa">
+  <div v-if="vendors.length >9" class="">
     <Page :current="currentPage" :total="vendors.length" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage =newPageNumber
@@ -49,7 +49,7 @@
 
 
     <router-link to='/vendor1/add/'>
-      <button id="btn-add-vendor" class="button btn-primary material-shadow-animate">Add Vendor</button>
+      <button v-if="authUser.Role =='Equipment Staff'" id="btn-add-vendor" class="button btn-primary material-shadow-animate">Add Vendor</button>
     </router-link>
   </div>
 </template>
@@ -57,6 +57,11 @@
 <script>
 import Server from "@/config/config.js";
 export default {
+  computed: {
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    },
+  },
   created() {
     let url = Server.VENDOR_API_PATH;
     this.axios.get(url).then(res => {
