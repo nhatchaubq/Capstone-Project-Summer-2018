@@ -18,7 +18,7 @@
 
                 </div>
                 <!-- start button -->
-                <div style="padding-top: .2rem">
+                <!-- <div style="padding-top: .2rem">
                     <div class="headerbar-button" style="margin-right: .3rem;" 
                         v-on:click="() => {
                             axios.post('http://localhost:3000/api/notification/accounts', {
@@ -26,9 +26,9 @@
                                 userRole: 'Equipment Staff',
                             })
                         }">
-                        <i class="material-icons">star</i>
-                    </div> <!-- start button -->
-                </div>
+                        <i class="material-icons">star</i> -->
+                    <!-- </div> 
+                </div> -->
                 <!-- noti button -->
                 <div style="padding-right: .5rem; padding-top: .2rem; margin-right: 2.5rem">
                         <v-badge style="margin-top: .2rem;" color="red" v-popover:notificationPanel>
@@ -212,25 +212,24 @@ export default {
             setInterval(() => {
                 const milis = moment().valueOf() - moment(notiObj.CreatedDate).valueOf();
                 const duration = moment.duration(milis);
-                const hours = duration.hours();
-                if (hours > 0 && hours <= 5) {
-                    notiObj.TimeString = `About ${hours} ${hours > 1 ? 'hours' : 'hour'} ago`
-                } else if (hours == 0) {
-                    const minutes = duration.minutes();
-                    if (minutes > 0) {
-                        notiObj.TimeString = `About ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} ago`;
-                    } else if (minutes == 0) {
-                        notiObj.TimeString = `Just now`
-                    }
-                } else {
-                    const days = duration.days() + 1;
-                    if (days == 0) {
-                        notiObj.TimeString = `Today at ${moment(notiObj.CreatedDate).format('hh:mm a')}`;
-                    } else if (days == 1) {
-                        notiObj.TimeString = `Yesterday at ${moment(notiObj.CreatedDate).format('hh:mm a')}`;
+                const days = duration.days();
+                // alert(`asDays ${days}`)
+                if (days == 0) {
+                    const hours = duration.hours();
+                    if (hours == 0) {
+                        const minutes = duration.minutes();
+                        if (minutes > 0) {
+                            notiObj.TimeString = `About ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} ago`;
+                        } else if (minutes == 0) {
+                            notiObj.TimeString = `Just now`;
+                        }
                     } else {
-                        notiObj.TimeString = `${moment(notiObj.CreatedDate).format('LLL')}`;
+                        notiObj.TimeString = `About ${hours} ${hours > 1 ? 'hours' : 'hour'} ago`;
                     }
+                } else if (days == 1) {
+                    notiObj.TimeString = `Yesterday at ${moment(notiObj.CreatedDate).format('hh:mm a')}`;
+                } else {
+                    notiObj.TimeString = `${moment(notiObj.CreatedDate).format('LLL')}`;
                 }
             }, 1000);
         }

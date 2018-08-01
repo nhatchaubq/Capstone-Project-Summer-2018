@@ -68,9 +68,9 @@
                 <span style="position: relative; top: .5rem;" v-if="CreateWorkOrderErrors.NoEquipmentSelected != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoEquipmentSelected }}</span></span>
               </div>
             </div>
-            <div class="form-field">
+            <div class="">
               <!-- header -->
-              <div class="" style="display: grid; grid-template-columns: 40% 10% 10%;; grid-column-gap: 1%; margin-bottom: .5rem">
+              <div class="form-field" style="display: grid; grid-template-columns: 40% 10% 10%;; grid-column-gap: 1%; margin-bottom: .5rem; padding-top: 0; padding-bottom: 0;">
                 <div>Equipment</div>
                 <div style="width: 100%; text-align: center">Quantity</div>
                 <div></div>
@@ -78,14 +78,14 @@
               <!-- display selected equipment items -->
               <div :key="'selectedEquipment' + selectedEquipment.id" v-for="selectedEquipment in selectedEquipments">
                 <!-- display errors -->
-                <div style="display: grid; grid-template-columns: 40% 10% 10%;; grid-column-gap: 1%; margin-bottom: 1rem;">
+                <div class="form-field" style="display: grid; grid-template-columns: 40% 10% 10%; grid-column-gap: 1%; margin-bottom: 1rem; padding-top: 0; padding-bottom: 0;">
                   <div></div>
                   <div></div>
                   <div></div>
                 </div><!-- display errors -->
                 <!-- display equipments -->
-                <div style="display: grid; grid-template-columns: 40% 10% 10%;; grid-column-gap: 1%; margin-bottom: 1rem;">
-                  <div style="padding-left: 1rem; display: grid; grid-template-columns: 5rem auto; grid-column-gap: 1rem;">
+                <div class="form-field" style="display: grid; grid-template-columns: 40% 10% 10%;; grid-column-gap: 1%; margin-bottom: 1rem;">
+                  <div style="display: grid; grid-template-columns: 5rem auto; grid-column-gap: 1rem;">
                     <img style="width: 100%; height: 5rem;" :src="selectedEquipment.image" alt="">
                     <div style="">
                         {{ selectedEquipment.name }}
@@ -98,15 +98,16 @@
                             type="number" min="0" :max="selectedEquipment.totalQuantity" 
                             v-model.trim="selectedEquipment.quantity" 
                             v-on:input="() => {
-                              if (selectedEquipment.quantity === '') {
-                                  selectedEquipment.quantity = 0;
-                                  selectedEquipment.equipmentItemIds = [];
-                                  selectedEquipment.conflictItems = [];
-                                  selectedEquipment.indeterminate = false;
-                                  selectedEquipment.checkAllItems = false;
+                                if (selectedEquipment.quantity === '') {
+                                    selectedEquipment.quantity = 0;
+                                    selectedEquipment.equipmentItemIds = [];
+                                    selectedEquipment.conflictItems = [];
+                                    selectedEquipment.unableSelectItems = [];
+                                    selectedEquipment.indeterminate = false;
+                                    selectedEquipment.checkAllItems = false;
 
-                                  selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                                  selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = ErrorStrings.SelectedEquipmentQuantityIsZero;
+                                    selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                                    selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = ErrorStrings.SelectedEquipmentQuantityIsZero;
                                 } else {
                                   //if (this.selectedEquipment.value != '' && this.selectedEquipment.totalQuantity > 0) {
                                     let equipmentTotalQuantity = parseInt(selectedEquipment.totalQuantity);
@@ -122,6 +123,12 @@
                                       selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
                                       selectedEquipment.equipmentItemIds = [];
                                       selectedEquipment.conflictItems = [];
+                                      selectedEquipment.unableSelectItems = [];
+                                      selectedEquipment.itemIdConflictNextMaintenanceDate = [];
+                                      checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList, 
+                                                                selectedEquipment.conflictItems, selectedEquipment.unableSelectItems,
+                                                                selectedEquipment.itemIdConflictNextMaintenanceDate, 
+                                                                selectedEquipment.addEquipmentWarnings);
                                       selectedEquipment.indeterminate = false;
                                       selectedEquipment.checkAllItems = false;
                                     } else {
@@ -153,8 +160,10 @@
                                       }
                                       selectedEquipment.conflictItems = [];
                                       selectedEquipment.unableSelectItems = [];
+                                      selectedEquipment.itemIdConflictNextMaintenanceDate = [];
                                       checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList, 
                                                                 selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
+                                                                selectedEquipment.itemIdConflictNextMaintenanceDate, 
                                                                 selectedEquipment.addEquipmentWarnings);
                                     }          
                                   //}
@@ -168,19 +177,20 @@
                   </div>
                 </div>
                 <!-- display warning -->
-                <div v-if="selectedEquipment.editMode" style="padding: 0 !important">
-                  <span v-if="selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != ''" 
-                        class="error-text">
-                    {{ selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero }}
-                  </span>
-                  <span v-if="selectedEquipment.addEquipmentWarnings.UnableToSelectItem != ''" class="error-text">
-                    {{ selectedEquipment.addEquipmentWarnings.UnableToSelectItem }}
-                  </span>
-                  <pre style="padding: 0; font-family: roboto; background: transparent;" 
-                        v-if="selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders != ''" 
-                        class="warning-text">
-{{ selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders }}
-                  </pre>
+                <div class="form-field" v-if="selectedEquipment.editMode" style="padding-top: 0; padding-bottom: 0">
+                    <div v-if="selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != ''" 
+                            class="error-text">
+                        {{ selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero }}
+                    </div>
+                    <div v-if="selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders != ''" 
+                            class="warning-text" v-html="selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders">
+                    </div>
+                    <div v-if="selectedEquipment.addEquipmentWarnings.UnableToSelectItem != ''" class="error-text">
+                        {{ selectedEquipment.addEquipmentWarnings.UnableToSelectItem }}
+                    </div>
+                    <div v-if="selectedEquipment.addEquipmentWarnings.ConflictMaintenanceDate != ''" 
+                            class="error-text" v-html="selectedEquipment.addEquipmentWarnings.ConflictMaintenanceDate">
+                    </div>
                 </div> <!-- display warning -->
                 <!-- display equipment item table for editing -->
                 <div v-if="selectedEquipment.editMode" style="margin-bottom: 2rem">
@@ -189,47 +199,39 @@
                       <tr>
                         <th style="padding-left: 2rem !important">
                           <Checkbox :indeterminate="selectedEquipment.indeterminate" :value="selectedEquipment.checkAllItems" @click.prevent.native="() => {
-                              if (selectedEquipment.indeterminate) {
-                                selectedEquipment.checkAllItems = false;
-                              } else {
-                                selectedEquipment.checkAllItems = !selectedEquipment.checkAllItems;
-                              }
-
-                              selectedEquipment.indeterminate = false;
-                              if (selectedEquipment.checkAllItems) {
-                                selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
-                                selectedEquipment.equipmentItemIds = [];
-                                selectedEquipment.equipmentItemList.forEach(item => selectedEquipment.equipmentItemIds.push(item.Id));
-                                selectedEquipment.quantity = selectedEquipment.equipmentItemList.length;
-
-                                selectedEquipment.conflictItems = [];
-                                selectedEquipment.unableSelectItems = [];
-                                // check if from date conflicts any item in work orders
-                                let tempItems = [];
-                                // get the selected items in equipmentTable to tempItems
-                                selectedEquipment.equipmentItemIds.forEach(itemId => {
-                                  tempItems = tempItems.concat(selectedEquipment.equipmentItemList.filter(item => item.Id == itemId));
-                                })
-                                // get the selected items in equipmentTable to tempItems
-                                checkSelectedItemDateConflict(tempItems, selectedEquipment.conflictItems, selectedEquipment.unableSelectItems,
-                                              getMilis(selectedEquipment.fromDate), getMilis(selectedEquipment.toDate));
-                                if (selectedEquipment.conflictItems.length == 0) {
-                                  selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                                if (selectedEquipment.indeterminate) {
+                                    selectedEquipment.checkAllItems = false;
                                 } else {
-                                  selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = ErrorStrings.SelectedDateConflictWorkOrders;
+                                    selectedEquipment.checkAllItems = !selectedEquipment.checkAllItems;
                                 }
-                                if (selectedEquipment.unableSelectItems.length == 0) {
-                                  selectedEquipment.addEquipmentWarnings.UnableToSelectItem = '';
+
+                                selectedEquipment.indeterminate = false;
+                                if (selectedEquipment.checkAllItems) {
+                                    selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
+                                    selectedEquipment.equipmentItemIds = [];
+                                    selectedEquipment.equipmentItemList.forEach(item => selectedEquipment.equipmentItemIds.push(item.Id));
+                                    selectedEquipment.quantity = selectedEquipment.equipmentItemList.length;
+
+                                    selectedEquipment.conflictItems = [];
+                                    selectedEquipment.unableSelectItems = [];
+                                    selectedEquipment.itemIdConflictNextMaintenanceDate = [];
+                                    checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList, 
+                                                            selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
+                                                            selectedEquipment.itemIdConflictNextMaintenanceDate, 
+                                                            selectedEquipment.addEquipmentWarnings);
                                 } else {
-                                  selectedEquipment.addEquipmentWarnings.UnableToSelectItem = ErrorStrings.UnableToSelectItem;
-                                }
-                              } else {
-                                selectedEquipment.conflictItems = [];
-                                selectedEquipment.equipmentItemIds = [];
-                                selectedEquipment.quantity = 0;
-                                selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
-                                selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = ErrorStrings.SelectedEquipmentQuantityIsZero;
-                              }                            
+                                    selectedEquipment.equipmentItemIds = [];
+                                    selectedEquipment.conflictItems = [];
+                                    selectedEquipment.unableSelectItems = [];
+                                    selectedEquipment.itemIdConflictNextMaintenanceDate = [];
+                                    checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList, 
+                                                            selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
+                                                            selectedEquipment.itemIdConflictNextMaintenanceDate, 
+                                                            selectedEquipment.addEquipmentWarnings);
+                                    selectedEquipment.quantity = 0;
+                                    //selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                                    selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = ErrorStrings.SelectedEquipmentQuantityIsZero;
+                                }                           
                             }"></Checkbox>
                         </th>
                         <th>Serial #</th>
@@ -238,9 +240,9 @@
                         <th>From</th>
                         <th>To</th>
                         <th>Runtime Days</th>
-                        <th>Last Maintaince</th>
                         <th>Next Maintaince</th>
-                        <th style="max-width: 10rem; min-width: 10rem">Current In</th>
+                        <th>Distance</th>
+                        <th>Warehouse</th>
                       </tr>
                     </thead>
                     <tbody v-on:click="() => {
@@ -249,27 +251,29 @@
                                 selectedEquipment.checkAllItems = false;
                                 // if selectedEquipmentItemIds already has equipmentItemId, we decrease the selectedEquipmentQuantity, then remove the equipmentItemId from the selectedEquipmentItemIds
                                 if (selectedEquipment.equipmentItemIds.includes(equipmentItem.Id)) {
-                                  selectedEquipment.quantity = parseInt(selectedEquipment.quantity) - 1;
-                                  selectedEquipment.equipmentItemIds = selectedEquipment.equipmentItemIds.filter(itemId => itemId != equipmentItem.Id);
-                                  if (selectedEquipment.equipmentItemIds.length == 0) {
-                                    selectedEquipment.indeterminate = false;
-                                    selectedEquipment.checkAllItems = false;
-                                    selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = ErrorStrings.SelectedEquipmentQuantityIsZero;
-                                  }
+                                    selectedEquipment.quantity = parseInt(selectedEquipment.quantity) - 1;
+                                    selectedEquipment.equipmentItemIds = selectedEquipment.equipmentItemIds.filter(itemId => itemId != equipmentItem.Id);
+                                    if (selectedEquipment.equipmentItemIds.length == 0) {
+                                        selectedEquipment.indeterminate = false;
+                                        selectedEquipment.checkAllItems = false;
+                                        selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = ErrorStrings.SelectedEquipmentQuantityIsZero;
+                                    }
                                 } 
                                 else {
-                                  selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
-                                  selectedEquipment.quantity = parseInt(selectedEquipment.quantity) + 1;
-                                  selectedEquipment.equipmentItemIds.push(equipmentItem.Id);
-                                  if (selectedEquipment.equipmentItemIds.length == selectedEquipment.equipmentItemList.length) {
-                                      selectedEquipment.indeterminate = false;
-                                      selectedEquipment.checkAllItems = true;
-                                  }
+                                    selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
+                                    selectedEquipment.quantity = parseInt(selectedEquipment.quantity) + 1;
+                                    selectedEquipment.equipmentItemIds.push(equipmentItem.Id);
+                                    if (selectedEquipment.equipmentItemIds.length == selectedEquipment.equipmentItemList.length) {
+                                        selectedEquipment.indeterminate = false;
+                                        selectedEquipment.checkAllItems = true;
+                                    }
                                 }
                                 selectedEquipment.conflictItems = [];
                                 selectedEquipment.unableSelectItems = [];
+                                selectedEquipment.itemIdConflictNextMaintenanceDate = [];
                                 checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList,
                                                             selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
+                                                            selectedEquipment.itemIdConflictNextMaintenanceDate, 
                                                             selectedEquipment.addEquipmentWarnings);
                               //}
                             }" :class="{'row-even': (itemIndex + 1) % 2 == 0,
@@ -291,7 +295,8 @@
                       <tr :style="{cursor: ((equipmentItem.Status != 'Working Requested' && equipmentItem.Status != 'Maintain Requested') ?
                                       'pointer !important' : 'not-allowed !important')}" 
                               :key="'dataworkorder' + workOrder.Id" v-for="(workOrder, workOrderIndex) in equipmentItem.WorkOrders" v-if="equipmentItem.WorkOrders != null">
-                        <td :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
+                        <td :style="workOrder.Id == editWorkOrder.Id ? 'font-weight: bold; font-style: italic' : ''"
+                            :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
                                  'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
                                  'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems)),
                                  'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems))}"> <!-- work order name -->
@@ -308,19 +313,21 @@
                                     'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems))}">{{ getDate(workOrder.ExpectingCloseDate) }}</td> <!-- work order detail to date -->
                         <!-- equipment item runtime days -->
                         <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                          {{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}
-                        </td>
-                        <!-- equipment item last maintaince date -->
-                        <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                          {{ equipmentItem.LastMaintainDate ? getDate(equipmentItem.LastMaintainDate) : 'n/a' }}
+                          {{ equipmentItem.RuntimeDays }}
                         </td>
                         <!-- equipment item next maintaince date -->
-                        <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
+                        <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"
+                            :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate)),
+                                    'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate))}"> 
                           {{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}
                         </td>
-                        <!-- equipment item locatoin -->
+                        <!-- distance -->
                         <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                          {{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}
+                            {{ equipmentItem.Distance.value ? equipmentItem.Distance.text : 'n/a' }}
+                        </td>
+                        <!-- warehouse -->
+                        <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
+                            {{ equipmentItem.Warehouse.Name }}
                         </td>
                       </tr> <!-- work order detail --> <!-- if equipment item is in some work order -->
                       <!-- else -->
@@ -333,10 +340,13 @@
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
-                        <td>{{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}</td>
-                        <td>{{ equipmentItem.LastMaintainDate ? getDate(equipmentItem.LastMaintainDate) : 'n/a' }}</td>
-                        <td>{{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}</td>
-                        <td>{{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}</td>
+                        <td>{{ equipmentItem.RuntimeDays }}</td>
+                        <td :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate)),
+                                'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate))}">
+                            {{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}
+                        </td>
+                        <td>{{ equipmentItem.Distance.value ? equipmentItem.Distance.text : 'n/a' }}</td>
+                        <td>{{ equipmentItem.Warehouse.Name }}</td>
                       </tr> <!-- else -->
                     </tbody>
                   </table>
@@ -370,8 +380,7 @@
                         type="number" :disabled="selectedEquipment.totalQuantity == 0" min="0" :max="selectedEquipment.totalQuantity" class="input" v-model.trim="selectedEquipmentQuantity">
                 </div>
                 <div>
-                  <!-- <a v-on:click="addEquipment()" style="position: relative; top: .5rem;" class="btn-plus"><i class="fa fa-plus"></i></a> -->
-                  <button v-on:click="addEquipment()" style="margin-left: .5rem; border-radius: 50% !important;" class="button btn-primary material-shadow-animate"><i class="fa fa-plus"></i></button>
+                  <button v-on:click="addEquipment(false, selectedEquipment, selectedEquipmentQuantity, selectedEquipmentItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, AddEquipmentWarnings)" style="margin-left: .5rem; border-radius: 50% !important;" class="button btn-primary material-shadow-animate"><i class="fa fa-plus"></i></button>
                   <button v-on:click="() => {
                       selectedEquipment = {
                         text: '',
@@ -395,21 +404,22 @@
               </div>
             </div> <!-- add equipment panel -->
             <!-- select equipments - end -->            
-            <div style="padding-top: 0; padding-bottom: 0" class="form-field">
-              <span v-if="AddEquipmentWarnings.SelectedEquipmentQuantityIsZero != ''" class="strong-warning-text">{{ AddEquipmentWarnings.SelectedEquipmentQuantityIsZero }}</span>
-              <span v-if="AddEquipmentWarnings.UnableToSelectItem != ''" class="error-text">
-                    {{ AddEquipmentWarnings.UnableToSelectItem }}
-                  </span>
-              <pre style="padding: 0; font-family: roboto; background: transparent;" 
-                    v-if="AddEquipmentWarnings.SelectedDateConflictWorkOrders != ''" 
-                    class="warning-text">
-{{ AddEquipmentWarnings.SelectedDateConflictWorkOrders }}
-              </pre>
+            <div style="padding-top: 0; padding-bottom: 0; background: #eee;" class="form-field">
+              <div v-if="AddEquipmentWarnings.SelectedEquipmentQuantityIsZero != ''" class="strong-warning-text">{{ AddEquipmentWarnings.SelectedEquipmentQuantityIsZero }}</div>
+              <div v-if="AddEquipmentWarnings.SelectedDateConflictWorkOrders != ''" 
+                  class="warning-text" v-html="AddEquipmentWarnings.SelectedDateConflictWorkOrders">
+              </div>
+              <div v-if="AddEquipmentWarnings.UnableToSelectItem != ''" class="error-text">
+                  {{ AddEquipmentWarnings.UnableToSelectItem }}
+              </div>
+              <div v-if="AddEquipmentWarnings.ConflictMaintenanceDate != ''" 
+                  class="error-text" v-html="AddEquipmentWarnings.ConflictMaintenanceDate">
+              </div>
             </div>
 
             <!-- display equipment items table to let user pick the desire item -->
-            <div class="form-field" v-if="equipmentTable && equipmentTable.length > 0">
-              {{ selectedEquipmentItemIds }}
+            <div class="" v-if="equipmentTable && equipmentTable.length > 0">
+                {{ itemIdConflictNextMaintenanceDate }}
               <table :style="{width: '100%'}">
                 <thead>
                   <tr>
@@ -422,9 +432,9 @@
                     <th>From</th>
                     <th>To</th>
                     <th>Runtime Days</th>
-                    <th>Last Maintaince</th>
                     <th>Next Maintaince</th>
-                    <th style="max-width: 10rem; min-width: 10rem">Current In</th>
+                    <th>Distance</th>
+                    <th>Warehouse</th>
                   </tr>
                 </thead>
                 <tbody v-on:click="() => {
@@ -450,11 +460,12 @@
                   <tr :style="{cursor: ((equipmentItem.Status != 'Working Requested' && equipmentItem.Status != 'Maintain Requested') ?
                                    'pointer !important' : 'not-allowed !important')}" 
                           :key="'dataworkorder' + workOrder.Id" v-for="(workOrder, workOrderIndex) in equipmentItem.WorkOrders" v-if="equipmentItem.WorkOrders != null">
-                    <td :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
+                    <td :style="workOrder.Id == editWorkOrder.Id ? 'font-weight: bold; font-style: italic' : ''"
+                        :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
                                  'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
                                  'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems)),
                                  'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems))}"> <!-- work order name -->
-                      {{ workOrder.Name }}
+                      {{ editWorkOrder.Id == workOrder.Id ? 'This work order' : workOrder.Name }}
                       <span>[{{ workOrder.Status }}]</span>
                     </td>
                     <td :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
@@ -467,19 +478,21 @@
                                  'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems))}">{{ getDate(workOrder.ExpectingCloseDate) }}</td> <!-- work order detail to date -->
                     <!-- equipment item runtime days -->
                     <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                      {{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}
-                    </td>
-                    <!-- equipment item last maintaince date -->
-                    <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                      {{ equipmentItem.LastMaintainDate ? getDate(equipmentItem.LastMaintainDate) : 'n/a' }}
+                      {{ equipmentItem.RuntimeDays }}
                     </td>
                     <!-- equipment item next maintaince date -->
-                    <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
+                    <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"
+                      :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate)),
+                                'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate))}">                      
                       {{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}
                     </td>
-                    <!-- equipment item locatoin -->
+                    <!-- distance -->
                     <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
-                      {{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}
+                      {{ equipmentItem.Distance.value ? equipmentItem.Distance.text : 'n/a' }}
+                    </td>
+                    <!-- warehouse -->
+                    <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"> 
+                      {{ equipmentItem.Warehouse.Name }}
                     </td>
                   </tr> <!-- work order detail --> <!-- if equipment item is in some work order -->
                   <!-- else -->
@@ -492,13 +505,21 @@
                     <td>-</td>
                     <td>-</td>
                     <td>-</td>
-                    <td>{{ equipmentItem.RuntimeDays ? equipmentItem.RuntimeDays : 'n/a' }}</td>
-                    <td>{{ equipmentItem.LastMaintainDate ? getDate(equipmentItem.LastMaintainDate) : 'n/a' }}</td>
-                    <td>{{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}</td>
-                    <td>{{ equipmentItem.Location ? `${equipmentItem.Location.Name} - ${equipmentItem.Location.Address}` : 'n/a' }}</td>
+                    <td>{{ equipmentItem.RuntimeDays }}</td>
+                    <td :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate)),
+                                'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate))}">
+                            {{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}
+                    </td>
+                    <td>{{ equipmentItem.Distance.value ? equipmentItem.Distance.text : 'n/a' }}</td>
+                    <td>{{ equipmentItem.Warehouse.Name }}</td>
                   </tr> <!-- else -->
                 </tbody>
               </table>
+              <!-- </div> -->
+                <div v-if="itemsLoading" style="margin-top: 1rem; text-align: center;">
+                    <div style="font-size: 1.2rem"><i class="fa fa-circle-o-notch fa-spin"></i></div>
+                    <div>Getting equipment info...</div>
+                </div> 
             </div> <!-- display equipment items table to let user pick the desire item -->
             <!-- describe work order -->
             <div class="form-field">
@@ -543,7 +564,9 @@ export default {
                                                     + '\nPlease reconsider choosing another date or the managers may reject your order.',
                 FromDateIsFromThePast: 'From date can not be in the past',
                 UnableToSelectItem: "You can not select items that are in work orders with status 'Approved' or 'In Progress' between your from date and to date",
-                NoWorkOrderDateRange: 'You must select expecting start date and expecting end date of this work order'
+                NoWorkOrderDateRange: 'You must select expecting start date and expecting end date of this work order',
+                ConflictMaintenanceDate: 'You can not select equipments whose maintenance date has conflict with the start date and end date of this work order. '
+                                  + 'If you really want to use those equipments please contact the equipment staff to change the maintenance date.',
             },
             AddEquipmentWarnings: {
                 MustSelectEquipment: '',
@@ -551,6 +574,7 @@ export default {
                 SelectedEquipmentQuantityIsZero: '',
                 SelectedDateConflictWorkOrders: '',
                 UnableToSelectItem: '',
+                ConflictMaintenanceDate: '',
             },
             CreateWorkOrderErrors: {
                 NoTitle: '',
@@ -592,6 +616,11 @@ export default {
             conflictItems: [],
             unableSelectItems: [],
             description: '',
+
+            itemIdConflictNextMaintenanceDate: [],
+
+            itemsLoading: false,
+            distancesCache: [],
         };
     },
     computed: {
@@ -606,99 +635,131 @@ export default {
             }
         },
     },
-    created() {
+    async created() {
         //get work order to edit
         let context = this;
-        context.axios(`${Server.WORKORDER_API_PATH}/id/${context.$route.params.orderId}`)
-            .then((res) => {
+       await context.axios(`${Server.WORKORDER_API_PATH}/id/${context.$route.params.orderId}`)
+            .then(async (res) => {
                 if (res.status == 200) {
                     context.editWorkOrder = res.data;
                     context.workOrderDateRange[0] = context.editWorkOrder.ExpectingStartDate;
                     context.workOrderDateRange[1] = context.editWorkOrder.ExpectingCloseDate;
                     // get work order priorities
-                    context.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(res => {
+                    await context.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(async res => {
                         if (res.data) {
                             context.priorities = res.data;
                             context.workOrderPriority = context.editWorkOrder.PriorityID;
-                        }
-                    });
-                    // get locations
-                    context.axios.get(Server.LOCATION_API_PATH).then(res => {
-                        if (res.data) {
-                            let data = res.data;
-                            data.forEach(location => {
-                                let option = {
-                                    value: location.Id,
-                                    text: `${location.Name} - ${location.Address}`
-                                };
-                                context.locationOptions.push(option);
-                            });
-                            context.selectedLocation = context.locationOptions.filter(op => parseInt(op.value) == context.editWorkOrder.Location.Id)[0];
-                            //get team in selected location
-                            context.teamOptions = [];
-                            let url = `${Server.LOCATION_API_PATH}/${
-                            context.selectedLocation.value
-                            }/team/${context.authUser.Id}`;
-                            context.axios.get(url).then(res => {
+                            // get locations
+                            await context.axios.get(Server.LOCATION_API_PATH).then(async res => {
                                 if (res.data) {
                                     let data = res.data;
-                                    data.forEach(element => {
+                                    for (const location of data) {
                                         let option = {
-                                            value: element.Team.Id,
-                                            text: element.Team.Name
+                                            value: location.Id,
+                                            text: `${location.Name} - ${location.Address}`,
+                                            latitude: location.Latitude,
+                                            longitude: location.Longitude,
                                         };
-                                        context.teamOptions.push(option);
+                                        context.locationOptions.push(option);
+                                    }
+                                    context.selectedLocation = context.locationOptions.filter(op => parseInt(op.value) == context.editWorkOrder.Location.Id)[0];
+                                    //get team in selected location
+                                    context.teamOptions = [];
+                                    let url = `${Server.LOCATION_API_PATH}/${
+                                        context.selectedLocation.value
+                                        }/team/${context.authUser.Id}`;
+                                    await context.axios.get(url).then(async res => {
+                                        if (res.data) {
+                                            let data = res.data;
+                                            for (const element of data) {
+                                                let option = {
+                                                    value: element.Team.Id,
+                                                    text: element.Team.Name
+                                                };
+                                                context.teamOptions.push(option);
+                                            }
+                                            context.loadEditOrder = false;
+                                            context.selectedTeam = context.teamOptions.filter(op => parseInt(op.value) == parseInt(context.editWorkOrder.Team.Id))[0];
+                                            
+                                            // get all equipments to display options
+                                            await context.axios.get(Server.EQUIPMENT_API_PATH).then(async res => {
+                                                if (res.data) {
+                                                    let data = res.data;
+                                                    for (const element of data) {
+                                                        let quantity = parseInt(element.Equipment.Quantity);
+                                                        let option = {
+                                                            text: `${element.Equipment.Name}, quantity: ${quantity} ${quantity > 0 ? element.Equipment.Unit.Name : 'unit'}`,
+                                                            value: element.Equipment.Id,
+                                                            image: element.Equipment.Image,
+                                                            totalQuantity: quantity,
+                                                            maintenancePeriodInMonths: element.Equipment.MaintenanceDuration.Month
+                                                        };
+                                                        context.equipmentOptions.push(option);
+                                                    }
+                                                    context.toDisplayEquipmentOptions = context.equipmentOptions;
+                                                    
+                                                    for (const eq of context.editWorkOrder.Equipments) {
+                                                        let equipmentOption = context.equipmentOptions.filter(op => parseInt(op.value) == parseInt(eq.Id))[0];
+                                                        let itemQuantity = eq.EquipmentItems.length;
+                                                        let selectedItemIds = [];
+                                                        for (const item of eq.EquipmentItems) {
+                                                            selectedItemIds.push(item.Id);
+                                                        }
+                                                        let equipmentTable = [];
+                                                        for (const eqi of eq.Table) {
+                                                            // alert(`Warehouse ${JSON.stringify(eqi.Warehouse)}, ${JSON.stringify(context.selectedLocation)}`)
+                                                            let distance = {text: 'n/a', value: 1};
+                                                            if (equipmentOption && equipmentOption.value != '') {
+                                                                distance = await context.getDistance(eqi.Warehouse, context.selectedLocation);
+                                                                let item = {
+                                                                    "Id": eqi.Id,
+                                                                    "EquipmentID": eqi.EquipmentID,
+                                                                    "SerialNumber": eqi.SerialNumber,
+                                                                    "WarrantyDuration": eqi.WarrantyDuration,
+                                                                    "RuntimeDays": eqi.RuntimeDays,
+                                                                    "TileID": eqi.TileID,
+                                                                    "Price": eqi.Price,
+                                                                    "ImportDate": eqi.ImportDate,
+                                                                    "NextMaintainDate": eqi.NextMaintainDate,
+                                                                    "StatusId": eqi.StatusId,
+                                                                    "Description": eqi.Description,
+                                                                    "Status": eqi.Status,
+                                                                    "Warehouse": eqi.Warehouse,
+                                                                    "WorkOrders": eqi.WorkOrders,
+                                                                    "Distance": distance,
+                                                                    'Location': eqi.Location,
+                                                                };
+                                                                equipmentTable.push(item);
+                                                            }
+                                                            // alert(JSON.stringify(distance))
+                                                        }
+                                                        context.sortItems(equipmentTable);
+                                                        let indeterminate = selectedItemIds.length > 0 && selectedItemIds.length < equipmentTable.length;
+                                                        let checkAllItems = selectedItemIds.length == equipmentTable.length;
+                                                        let addEquipmentWarnings = {
+                                                            MustSelectEquipment: '',
+                                                            AvailableQuantityIsZero: '',
+                                                            SelectedEquipmentQuantityIsZero: '',
+                                                            SelectedDateConflictWorkOrders: '',
+                                                            UnableToSelectItem: '',
+                                                            ConflictMaintenanceDate: '',
+                                                        };
+                                                        // check if from date conflicts any item in work orders - start
+                                                        let conflictItems = [];
+                                                        let unableSelectItems = [];
+                                                        let itemIdConflictNextMaintenanceDate = [];
+                                                        context.checkItemsIsSafeToSelect(selectedItemIds, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                                        
+                                                        context.addEquipment(true, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                                    }
+                                                }
+                                            });// get all equipments to display options
+                                        }
                                     });
-                                    context.loadEditOrder = false;
-                                    context.selectedTeam = context.teamOptions.filter(op => parseInt(op.value) == parseInt(context.editWorkOrder.Team.Id))[0];
                                 }
                             });
                         }
                     });
-                    // get all equipments to display options
-                    context.axios.get(Server.EQUIPMENT_API_PATH).then(res => {
-                        if (res.data) {
-                            let data = res.data;
-                            data.forEach(element => {
-                                let quantity = parseInt(element.Equipment.Quantity);
-                                let option = {
-                                    text: `${element.Equipment.Name}, quantity: ${quantity} ${quantity > 0 ? element.Equipment.Unit : ''}`,
-                                    value: element.Equipment.Id,
-                                    image: element.Equipment.Image,
-                                    totalQuantity: quantity
-                                };
-                                context.equipmentOptions.push(option);
-                            });
-                            context.toDisplayEquipmentOptions = context.equipmentOptions;
-                            
-                            context.editWorkOrder.Equipments.forEach(eq => {
-                                let equipmentOption = context.equipmentOptions.filter(op => parseInt(op.value) == parseInt(eq.Id))[0];
-                                let itemQuantity = eq.EquipmentItems.length;
-                                let selectedItemIds = [];
-                                eq.EquipmentItems.forEach(item => {
-                                    selectedItemIds.push(item.Id);
-                                });
-                                let equipmentTable = eq.Table;
-                                let indeterminate = selectedItemIds.length > 0 && selectedItemIds.length < equipmentTable.length;
-                                let checkAllItems = selectedItemIds.length == equipmentTable.length;
-                                let addEquipmentWarnings = {
-                                    MustSelectEquipment: '',
-                                    FromDateIsLargerThanToDate: '',
-                                    AvailableQuantityIsZero: '',
-                                    SelectedEquipmentQuantityIsZero: '',
-                                    SelectedDateConflictWorkOrders: '',
-                                    FromDateIsFromThePast: '',
-                                    UnableToSelectItem: '',
-                                };
-                                // check if from date conflicts any item in work orders - start
-                                let conflictItems = [];
-                                let unableSelectItems = [];
-                                context.checkItemsIsSafeToSelect(selectedItemIds, equipmentTable, conflictItems, unableSelectItems, addEquipmentWarnings)
-                                
-                                context.addEquipment(true, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, addEquipmentWarnings);
-                            })
-                        }
-                    });// get all equipments to display options
                 }
             });               
     },
@@ -706,7 +767,7 @@ export default {
         cancel() {
             this.$router.push("/work_order");
         },
-        addEquipment(editOrder, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, addEquipmentWarnings) {
+        addEquipment(editOrder, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings) {
             if (equipmentOption.value == "") {
                 this.AddEquipmentWarnings.MustSelectEquipment = this.ErrorStrings.MustSelectEquipment;
             } 
@@ -733,9 +794,11 @@ export default {
                             indeterminate: indeterminate,
                             checkAllItems: checkAllItems,
                             equipmentItemList: equipmentTable,
-                            conflictItems: conflictItems,
+                            conflictItems: conflictItems,                            
                             unableSelectItems: unableSelectItems,
+                            itemIdConflictNextMaintenanceDate: itemIdConflictNextMaintenanceDate,
                             addEquipmentWarnings: warningOb,
+                            maintenancePeriodInMonths: equipmentOption.maintenancePeriodInMonths,
                         };
                         this.selectedEquipments.push(equipment);
                     } else { // this equipment is already added to the list, so modified the quantity
@@ -766,7 +829,7 @@ export default {
         getToday() {
             return moment().format("YYYY-MM-DD");
         },
-        updateWorkOrder() {
+        async updateWorkOrder() {
             if (this.selectedEquipments.length == 0) {
                 this.CreateWorkOrderErrors.NoEquipmentSelected = this.ErrorStrings.NoEquipmentSelected;
             }
@@ -782,7 +845,7 @@ export default {
                 // first, delete all work order details
                 let deleteDetailApi = `${Server.WORKORDER_API_PATH}/detail/${context.editWorkOrder.Id}`;
                 context.axios.delete(deleteDetailApi)
-                    .then((res) => {
+                    .then(async (res) => {
                         if (res.status == 200) {
                             let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${this.selectedLocation.value}/${this.selectedTeam.value}`;
                             this.axios.get(teamLocationApi)
@@ -792,8 +855,8 @@ export default {
                                         // update team location
                                         context.axios.put(`http://localhost:3000/api/work_order/${context.editWorkOrder.Id}`, {
                                             teamLocationId: result,
-                                            expectingStartDate: context.workOrderDateRange[0],
-                                            expectingCloseDate: context.workOrderDateRange[1],
+                                            expectingStartDate: moment(context.workOrderDateRange[0]).format('MM-DD-YYYY'),
+                                            expectingCloseDate: moment(context.workOrderDateRange[1]).format('MM-DD-YYYY'), 
                                         });
                                         let url = `${Server.WORKORDER_API_PATH}/status/${context.editWorkOrder.Id}`;
                                         context.axios
@@ -805,8 +868,8 @@ export default {
 
                                         // add updated work order details
                                         var check = true;
-                                        context.selectedEquipments.forEach(equipment => {
-                                            equipment.equipmentItemIds.forEach(async itemId => {
+                                        for (const equipment of context.selectedEquipments) {
+                                            for (const itemId of equipment.equipmentItemIds) {
                                                 try {
                                                     const response = await context.axios
                                                                             .post(Server.WORKORDER_DETAIL_API_PATH, {
@@ -824,8 +887,8 @@ export default {
                                                     console.log(error);
                                                     check = false;
                                                 }
-                                            })
-                                        })
+                                            }
+                                        }
                                         context.sending = false;
                                         if (check) {
                                             const notificationContent = `<strong>${context.authUser.Username}</strong> updated work order <strong>${context.editWorkOrder.Name}</strong>`;
@@ -833,22 +896,27 @@ export default {
                                                 page: 'work_order',
                                                 elementId: context.editWorkOrder.Id,
                                             };
-                                            context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                                                    notificationContent: notificationContent,
-                                                    userRole: 'Equipment Staff',
-                                                    metaData: metaData,
-                                                    needToUpdateNotification: {
-                                                        roles: ['Equipment Staff'],
-                                                    },
-                                                })
-                                            context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                                                    notificationContent: notificationContent,
-                                                    userRole: 'Manager',
-                                                    metaData: metaData,
-                                                    needToUpdateNotification: {
-                                                        roles: ['Manager'],
-                                                    },
-                                                })
+                                            await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                                                notificationContent: notificationContent,
+                                                userRole: 'Equipment Staff',
+                                                metaData: metaData,
+                                            }).then(async (res) => {
+                                                if (res.status == 200) {
+                                                    context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Equipment Staff'],}});
+                                                }
+                                            });
+                                            await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                                                notificationContent: notificationContent,
+                                                userRole: 'Manager',
+                                                metaData: metaData,
+                                            }).then(async (res) => {
+                                                if (res.status == 200) {
+                                                    context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Manager'],}});
+                                                }
+                                            });
+
+                                            context.$socket.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
+
                                             let obj = {
                                                 message: "Work Order updated successfully",
                                                 type: "success",
@@ -856,7 +924,7 @@ export default {
                                                 showXclose: false,
                                             };
                                             context.$refs.simplert.openSimplert(obj);
-                                            await Utils.sleep(1200);
+                                            await Utils.sleep(500);
                                             context.$router.push(`/work_order/${context.editWorkOrder.Id}`);
                                         } else {
                                             alert('Error');
@@ -884,7 +952,8 @@ export default {
             for (var i = 0; i < this.selectedEquipments.length; i++) {
                 let selectedEquipment = this.selectedEquipments[i];
                 if (selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != ''
-                    || selectedEquipment.addEquipmentWarnings.UnableToSelectItem != '') {
+                        || selectedEquipment.addEquipmentWarnings.UnableToSelectItem != ''
+                        || selectedEquipment.addEquipmentWarnings.ConflictMaintenanceDate != '') {
                 checkSelectedItems = false;
                 selectedEquipment.editMode = true;
                 }
@@ -902,9 +971,10 @@ export default {
         },
         checkItemFromTable(equipmentItemId) {
             this.indeterminate = true;
-        this.checkAllItems = false;
-        // if selectedEquipmentItemIds already has equipmentItemId, we decrease the selectedEquipmentQuantity, then remove the equipmentItemId from the selectedEquipmentItemIds
-        if (this.selectedEquipmentItemIds.includes(equipmentItemId)) {
+            this.checkAllItems = false;
+      
+            // if selectedEquipmentItemIds already has equipmentItemId, we decrease the selectedEquipmentQuantity, then remove the equipmentItemId from the selectedEquipmentItemIds
+            if (this.selectedEquipmentItemIds.includes(equipmentItemId)) {
                 this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) - 1;
                 this.selectedEquipmentItemIds = this.selectedEquipmentItemIds.filter(itemId => itemId != equipmentItemId);
                 if (this.selectedEquipmentItemIds.length == 0) {
@@ -914,7 +984,8 @@ export default {
                 }
             } else {
                 this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = "";
-                this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity) + 1;
+                this.selectedEquipmentQuantity =
+                parseInt(this.selectedEquipmentQuantity) + 1;
                 this.selectedEquipmentItemIds.push(equipmentItemId);
                 if (this.selectedEquipmentItemIds.length == this.equipmentTable.length) {
                     this.indeterminate = false;
@@ -928,23 +999,21 @@ export default {
             } else {
                 this.checkAllItems = !this.checkAllItems;
             }
-
+            this.conflictItems = [];
+            this.unableSelectItems = [];
             this.indeterminate = false;
             if (this.checkAllItems) {
                 this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
                 this.selectedEquipmentItemIds = [];
                 this.equipmentTable.forEach(item =>
-                    this.selectedEquipmentItemIds.push(item.Id)
+                this.selectedEquipmentItemIds.push(item.Id)
                 );
                 this.selectedEquipmentQuantity = this.equipmentTable.length;
-
-                this.conflictItems = [];
-                this.unableSelectItems = [];
-            } else {
-                this.conflictItems = [];
+            } else {        
                 this.selectedEquipmentItemIds = [];
                 this.selectedEquipmentQuantity = 0;
                 this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
+                this.AddEquipmentWarnings.UnableToSelectItem = '';
                 this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
             }
         },
@@ -959,12 +1028,14 @@ export default {
             this.selectedEquipmentToDate = this.getToday();
 
             this.conflictItems = [];
+            this.unableSelectItems = [];
             this.AddEquipmentWarnings.MustSelectEquipment = '';
             this.AddEquipmentWarnings.NoEquipmentSelected = '';
             this.AddEquipmentWarnings.AvailableQuantityIsZero = '';
             this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = '';
             this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = '';
             this.AddEquipmentWarnings.UnableToSelectItem = '';
+            this.AddEquipmentWarnings.ConflictMaintenanceDate = '';
         },
         isItemConflicted(itemId, workOrderId, conflictItems) {
             for (var i = 0; i < conflictItems.length; i++) {
@@ -986,18 +1057,31 @@ export default {
             }
             return false;
         },
-        checkSelectedItemDateConflict(items, conflictItems, unableSelectItems) {
+        isItemConflictNextMaintenanceDate(itemId, itemIdConflictNextMaintenanceDate) {
+            for (const id of itemIdConflictNextMaintenanceDate) {
+                if (id == itemId) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        checkSelectedItemDateConflict(items, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate) {
             if (items.length > 0 && (this.workOrderDateRange[0] && this.workOrderDateRange[1])) {
-                let workOrderStartDate = this.getMilis(this.workOrderDateRange[0]);
-                let workOrderCloseDate = this.getMilis(this.workOrderDateRange[1]);
+                let workOrderStartDate = moment(this.workOrderDateRange[0]).format('YYYY-MM-DD').valueOf();
+                let workOrderCloseDate = moment(this.workOrderDateRange[1]).format('YYYY-MM-DD').valueOf();
                 items.forEach(item => {
+                    if (moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() >= workOrderStartDate 
+                        && moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() <= workOrderCloseDate) {
+                        itemIdConflictNextMaintenanceDate.push(item.Id);
+                    }
                     if (item.WorkOrders) {
                         item.WorkOrders.forEach(order => {
-                            let itemFromDate = this.getMilis(order.ExpectingStartDate);
-                            let itemToDate = this.getMilis(order.ExpectingCloseDate);
-                            if (order.Id != this.editWorkOrder.Id && ((workOrderStartDate >= itemFromDate && workOrderStartDate <= itemToDate)  
-                                || (workOrderCloseDate >= itemFromDate && workOrderCloseDate <= itemToDate)
-                                || (workOrderStartDate < itemFromDate && workOrderCloseDate > itemToDate))) {
+                            let itemFromDate = moment(order.ExpectingStartDate).format('YYYY-MM-DD').valueOf();
+                            let itemToDate = moment(order.ExpectingCloseDate).format('YYYY-MM-DD').valueOf();
+                            if ((order.Id != this.editWorkOrder.Id) 
+                                && ((workOrderStartDate >= itemFromDate && workOrderStartDate <= itemToDate)  
+                                    || (workOrderCloseDate >= itemFromDate && workOrderCloseDate <= itemToDate)
+                                    || (workOrderStartDate < itemFromDate && workOrderCloseDate > itemToDate))) {
                                 if (order.Status == 'Approved' || order.Status == 'In Progress') {
                                     unableSelectItems.push({itemId: item.Id, workOrderId: order.Id});
                                 } else {
@@ -1009,7 +1093,7 @@ export default {
                 });
             }
         },
-        checkItemsIsSafeToSelect(itemIds, itemTable, conflictItems, unableSelectItems, addEquipmentWarnings) {
+        checkItemsIsSafeToSelect(itemIds, itemTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings) {
             // check if from date conflicts any item in work orders
             let tempItems = [];
             // get the selected items in equipmentTable to tempItems
@@ -1019,7 +1103,7 @@ export default {
                 );
             });
             // get the selected items in equipmentTable to tempItems          
-            this.checkSelectedItemDateConflict(tempItems, conflictItems, unableSelectItems);
+            this.checkSelectedItemDateConflict(tempItems, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate);
             if (conflictItems.length == 0) {
                 addEquipmentWarnings.SelectedDateConflictWorkOrders = "";
             } else {
@@ -1030,33 +1114,183 @@ export default {
             } else {
                 addEquipmentWarnings.UnableToSelectItem = this.ErrorStrings.UnableToSelectItem;
             }
-        }
+            if (itemIdConflictNextMaintenanceDate.length == 0) {
+                addEquipmentWarnings.ConflictMaintenanceDate = '';
+            } else {
+                addEquipmentWarnings.ConflictMaintenanceDate = this.ErrorStrings.ConflictMaintenanceDate;
+            }
+        },
+        sortItems(items) {
+            let context = this;
+            // let maintenancePeriodInDays = maintenancePeriodInMonths * 30;
+            let workOrderDuration = moment(this.workOrderDateRange[1]).diff(moment(this.workOrderDateRange[0]), 'days');
+            var factorA = 0.3;
+            var factorB = 0.5;
+            var factorC = 0.2;
+            if (workOrderDuration > 30) {
+                factorA = 0.5;
+                factorB = 0.3;
+                factorC = 0.2;
+            } else if (workOrderDuration <= 3) {
+                factorA = 0.2;
+                factorB = 0.3;
+                factorC = 0.5;
+            }
+            return items.sort(function(item1, item2) {
+                var notAllowFactor_Item1 = 1;
+                var notAllowFactor_Item2 = 1;
+
+                if ((context.getMilis(item1.NextMaintainDate) >= context.getMilis(context.workOrderDateRange[0]) 
+                    && context.getMilis(item1.NextMaintainDate) <= context.getMilis(context.workOrderDateRange[1]))) {
+                    notAllowFactor_Item1 = 0.0000001;
+                }
+                if (context.getMilis(item2.NextMaintainDate) >= context.getMilis(context.workOrderDateRange[0]) 
+                    && context.getMilis(item2.NextMaintainDate) <= context.getMilis(context.workOrderDateRange[1])) {
+                    notAllowFactor_Item2 = 0.0000001;
+                }
+
+                let B0_Item1 = moment().diff(moment(item1.ImportDate), 'days');
+                let B_Item1 = item1.RuntimeDays;
+                let C_Item1 = item1.Distance.value / 1000;
+
+                let B0_Item2 = moment().diff(moment(item2.ImportDate), 'days');
+                let B_Item2 = item2.RuntimeDays;
+                let C_Item2 = item2.Distance.value / 1000;
+
+                var D_Item1 = 0;
+                if (item1.WorkOrders) {
+                    for (const order of item1.WorkOrders) {
+                        if (context.editWorkOrder.Id != order.Id
+                            && ((context.getMilis(context.workOrderDateRange[0]) >= context.getMilis(order.ExpectingStartDate) 
+                                    && context.getMilis(context.workOrderDateRange[0]) <= context.getMilis(order.ExpectingCloseDate))
+                                || (context.getMilis(context.workOrderDateRange[1]) >= context.getMilis(order.ExpectingStartDate)
+                                    && context.getMilis(context.workOrderDateRange[1]) <= context.getMilis(order.ExpectingCloseDate))
+                                || (context.getMilis(context.workOrderDateRange[0]) < context.getMilis(order.ExpectingStartDate)
+                                    && context.getMilis(context.workOrderDateRange[1]) > context.getMilis(order.ExpectingCloseDate)))) {
+                            ++D_Item1;
+                            if (order.Status == 'Requested' || order.Status == 'Checked') {
+                                notAllowFactor_Item1 = 0.000002;
+                            } else if (order.Status == 'Approved' || order.Status == 'In Progress') {
+                                notAllowFactor_Item1 = 0.0000001;
+                            }
+                        }
+                    }
+                }
+                var D_Item2 = 0;
+                if (item2.WorkOrders) {
+                    for (const order of item2.WorkOrders) {
+                        if (context.editWorkOrder.Id != order.Id
+                            && ((context.getMilis(context.workOrderDateRange[0]) >= context.getMilis(order.ExpectingStartDate) 
+                                    && context.getMilis(context.workOrderDateRange[0]) <= context.getMilis(order.ExpectingCloseDate))
+                                || (context.getMilis(context.workOrderDateRange[1]) >= context.getMilis(order.ExpectingStartDate)
+                                    && context.getMilis(context.workOrderDateRange[1]) <= context.getMilis(order.ExpectingCloseDate))
+                                || (context.getMilis(context.workOrderDateRange[0]) < context.getMilis(order.ExpectingStartDate)
+                                    && context.getMilis(context.workOrderDateRange[1]) > context.getMilis(order.ExpectingCloseDate)))) {
+                            ++D_Item1;
+                            if (order.Status == 'Requested' || order.Status == 'Checked') {
+                                notAllowFactor_Item2 = 0.0000002;
+                            } else if (order.Status == 'Approved' || order.Status == 'In Progress') {
+                                notAllowFactor_Item2 = 0.0000001;
+                            }
+                        }
+                    }
+                }
+                let result1 = notAllowFactor_Item1 * (factorA*0 + factorB*((B0_Item1 - B_Item1)/B0_Item1) + factorC*(Math.abs(Math.sin(Math.sqrt(C_Item1)/2.5) / (Math.sqrt(C_Item1 + 0.1)/2.5)))) * (1 / (D_Item1 + 1));
+                let result2 = notAllowFactor_Item2 * (factorA*0 + factorB*((B0_Item2 - B_Item2)/B0_Item2) + factorC*(Math.abs(Math.sin(Math.sqrt(C_Item2)/2.5) / (Math.sqrt(C_Item2 + 0.1)/2.5)))) * (1 / (D_Item2 + 1));
+
+                var result = result2 - result1;
+                return result;
+            });
+        },
+        getDistance(warehouseLocation, workOrderLocationOption) {
+            let context = this;
+            return new Promise(async (resolve, reject) => {
+                let distance = null;
+                for (const value of context.distancesCache) {
+                    if (value.warehouseId == warehouseLocation.Id && value.locationId == parseInt(workOrderLocationOption.value)) {
+                        distance = value.distance;
+                        break;
+                    }
+                }
+                if (!distance) {
+                    await context.axios.post(`${Server.SERVER_DEFAULT}/map/distancematrix`, {
+                        origins: [`${workOrderLocationOption.latitude}, ${workOrderLocationOption.longitude}`,],
+                        destinations: [`${warehouseLocation.Latitude}, ${warehouseLocation.Longitude}`,],
+                        travelMode: '',
+                        }).then((res) => {
+                            if (res.data) {
+                                distance = res.data[0].elements[0].distance;
+                                context.distancesCache.push({
+                                    warehouseId: warehouseLocation.Id,
+                                    locationId: parseInt(workOrderLocationOption.value),
+                                    distance: distance,
+                                });
+                            }
+                        }).catch((error) => {
+                            console.log(error);
+                            reject(error);
+                        })
+                }
+                resolve(distance);
+            });
+        },
     },
     watch: {
-        'selectedEquipment': function() {
-        // selecte another equipment
-            if (this.selectedEquipment.value != '') {
-                this.resetEquipmentSelection(); // reset after selected another equipment 
-                if (this.AddEquipmentWarnings.MustSelectEquipment != '') { // error 'Must select equipment' displaying
-                    this.AddEquipmentWarnings.MustSelectEquipment = '';
+        'selectedEquipment': async function() {
+            // selecte another equipment
+            if (this.selectedEquipment.value != "") {
+                this.resetEquipmentSelection(); // reset after selected another equipment
+                if (this.AddEquipmentWarnings.MustSelectEquipment != "") {
+                    // error 'Must select equipment' displaying
+                    this.AddEquipmentWarnings.MustSelectEquipment = "";
                 }
                 // check if selected equipment has equipment item(s)
                 if (this.selectedEquipment.totalQuantity == 0) {
                     this.AddEquipmentWarnings.AvailableQuantityIsZero = this.ErrorStrings.AvailableQuantityIsZero;
                 } else {
-                this.AddEquipmentWarnings.AvailableQuantityIsZero = ''; // set warning to empty text         
+                    this.itemsLoading = true;
+                    this.AddEquipmentWarnings.AvailableQuantityIsZero = ""; // set warning to empty text
 
-                // get all the equipment items with work order detail info (if available)
-                let url = `${Server.WORKORDER_API_PATH}/get_equipment_detail/${this.selectedEquipment.value}`;
-                this.axios.get(url)
-                    .then((res) => {
+                    // get all the equipment items with work order detail info (if available)
+                    let url = `${Server.WORKORDER_API_PATH}/get_equipment_detail/${
+                        this.selectedEquipment.value
+                    }`;
+                    this.axios.get(url).then(async (res) => {
                         if (res.status == 200 && res.data) {
-                            this.equipmentTable = res.data;
-                            this.selectedEquipmentItemIds.push(res.data[0].Id);
+                            this.equipmentTable = [];
+                            let tempItems = [];
+                            for (const eqi of res.data) {
+                                let distance = {text: 'n/a', value: 1};
+                                if (this.selectedLocation && this.selectedLocation.value != '') {
+                                    distance = await this.getDistance(eqi.Warehouse, this.selectedLocation);
+                                }
+                                let item = {
+                                    "Id": eqi.Id,
+                                    "EquipmentID": eqi.EquipmentID,
+                                    "SerialNumber": eqi.SerialNumber,
+                                    "WarrantyDuration": eqi.WarrantyDuration,
+                                    "RuntimeDays": eqi.RuntimeDays,
+                                    "TileID": eqi.TileID,
+                                    "Price": eqi.Price,
+                                    "ImportDate": eqi.ImportDate,
+                                    "NextMaintainDate": eqi.NextMaintainDate,
+                                    "StatusId": eqi.StatusId,
+                                    "Description": eqi.Description,
+                                    "Status": eqi.Status,
+                                    "Warehouse": eqi.Warehouse,
+                                    "WorkOrders": eqi.WorkOrders,
+                                    "Distance": distance,
+                                    'Location': eqi.Location,
+                                };
+                                tempItems.push(item);
+                            }
+                            this.equipmentTable = this.sortItems(tempItems);
+                            this.itemsLoading = false;
+                            this.selectedEquipmentItemIds.push(this.equipmentTable[0].Id);
                             this.selectedEquipmentQuantity = 1;
                             this.indeterminate = true;
                         }
-                    })
+                    });
                 }
             }
         },
@@ -1065,55 +1299,73 @@ export default {
                 this.CreateWorkOrderErrors.NoEquipmentSelected = '';
             }
         },
-        'selectedLocation': function() {
-            if (!this.loadEditOrder) {
-                this.teamOptions = [];
-                this.selectedTeam = {
-                    text: "",
-                    value: ""
-                };
-                if (this.selectedLocation.value != '') {
-                    if (this.CreateWorkOrderErrors.NoLocation != '') {
-                        this.CreateWorkOrderErrors.NoLocation = '';
+        'selectedLocation': async function() {
+            this.teamOptions = [];
+            this.selectedTeam = {
+                text: "",
+                value: ""
+            };
+            if (this.selectedLocation.value != "") {
+                if (this.CreateWorkOrderErrors.NoLocation != "") {
+                    this.CreateWorkOrderErrors.NoLocation = "";
+                }
+                // change distance of equipment
+                for (const equipment of this.selectedEquipments) {
+                    for (const item of equipment.equipmentItemList) {
+                        item.Distance = await this.getDistance(item.Warehouse, this.selectedLocation);
                     }
-                    // alert('in 2')
-                    let url = `${Server.LOCATION_API_PATH}/${
-                    this.selectedLocation.value
-                    }/team/${this.authUser.Id}`;
-                    this.axios.get(url).then(res => {
-                        if (res.data) {
-                            let data = res.data;
-                            data.forEach(element => {
+                    equipment.equipmentItemList = this.sortItems(equipment.equipmentItemList);
+                }
+                if (this.equipmentTable && this.equipmentTable.length) {
+                    for (const item of this.equipmentTable) {
+                        item.Distance = await this.getDistance(item.Warehouse, this.selectedLocation);
+                    } 
+                    this.equipmentTable = this.sortItems(this.equipmentTable);
+                }
+
+                // alert('in 2')
+                let url = `${Server.LOCATION_API_PATH}/${
+                this.selectedLocation.value
+                }/team/${this.authUser.Id}`;
+                await this.axios.get(url).then(res => {
+                    if (res.data) {
+                        let data = res.data;
+                        data.forEach(element => {
                             let option = {
                                 value: element.Team.Id,
                                 text: element.Team.Name
                             };
                             this.teamOptions.push(option);
-                            });
-                        }
-                    });
-                }
+                        });
+                    }
+                });
             }
         },
         'workOrderDateRange': function() {
             if (this.workOrderDateRange[0] && this.workOrderDateRange[1]) {
-                this.CreateWorkOrderErrors.NoWorkOrderDateRange = '';
+                this.CreateWorkOrderErrors.NoWorkOrderDateRange = '';        
+                this.equipmentTable = this.sortItems(this.equipmentTable);
                 if (this.selectedEquipmentItemIds.length > 0) {
                     this.conflictItems = [];
                     this.unableSelectItems = [];
+                    this.itemIdConflictNextMaintenanceDate = [];
                     this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, 
-                                    this.conflictItems, this.unableSelectItems, this.AddEquipmentWarnings);
+                                        this.conflictItems, this.unableSelectItems, this.itemIdConflictNextMaintenanceDate, 
+                                        this.AddEquipmentWarnings);
                 }
                 if (this.selectedEquipments.length > 0) {
-                    this.selectedEquipments.forEach(eq => {
+                    for (const eq of this.selectedEquipments) {
+                        eq.equipmentItemList = this.sortItems(eq.equipmentItemList);
                         eq.conflictItems = [];
                         eq.unableSelectItems = [];
+                        eq.itemIdConflictNextMaintenanceDate = [];
                         this.checkItemsIsSafeToSelect(eq.equipmentItemIds, eq.equipmentItemList, 
-                                        eq.conflictItems, eq.unableSelectItems, eq.addEquipmentWarnings);
-                        if (eq.conflictItems.length > 0 || eq.unableSelectItems.length > 0) {
+                                        eq.conflictItems, eq.unableSelectItems, eq.itemIdConflictNextMaintenanceDate, 
+                                        eq.addEquipmentWarnings);
+                        if (eq.conflictItems.length > 0 || eq.unableSelectItems.length > 0 || eq.itemIdConflictNextMaintenanceDate.length > 0) {
                             eq.editMode = true;
                         }
-                    })
+                    }
                 }
             }
         },
@@ -1127,20 +1379,21 @@ export default {
                 this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
                 this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
             } else {
-                if (this.selectedEquipment.value != "" &&
-                    this.selectedEquipment.totalQuantity > 0) {
-                    let equipmentTotalQuantity = parseInt(this.selectedEquipment.totalQuantity);
+                if (this.selectedEquipment.value != "" && this.selectedEquipment.totalQuantity > 0) {
+                        this.selectedEquipmentQuantity = parseInt(this.selectedEquipmentQuantity);
+                        let equipmentTotalQuantity = parseInt(this.selectedEquipment.totalQuantity);
                     if (parseInt(this.selectedEquipmentQuantity) < 0) {
                         this.selectedEquipmentQuantity = 0;
                     } else if (parseInt(this.selectedEquipmentQuantity) > equipmentTotalQuantity) {
                         this.selectedEquipmentQuantity = equipmentTotalQuantity;
                     }
+
                     // if the selectedEquipmentQuantity = 0, we should display a warning to user
                     if (parseInt(this.selectedEquipmentQuantity) == 0) {
                         this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
                         this.AddEquipmentWarnings.SelectedDateConflictWorkOrders = "";
                         this.selectedEquipmentItemIds = [];
-                        this.conflictItems = [];
+                        // this.conflictItems = [];
                         this.indeterminate = false;
                         this.checkAllItems = false;
                     } else {
@@ -1152,7 +1405,7 @@ export default {
                             while (this.selectedEquipmentItemIds.length != parseInt(this.selectedEquipmentQuantity)) {
                                 let tempItems = this.equipmentTable;
                                 this.selectedEquipmentItemIds.forEach(itemId => {
-                                    tempItems = tempItems.filter(item => item.Id != itemId);
+                                tempItems = tempItems.filter(item => item.Id != itemId);
                                 });
                                 this.selectedEquipmentItemIds.push(tempItems[0].Id);
                             }
@@ -1170,10 +1423,10 @@ export default {
                                 this.selectedEquipmentItemIds.pop();
                             }
                         }
-                        this.conflictItems = [];
-                        this.unableSelectItems = [];
-                        this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, this.conflictItems, this.unableSelectItems, this.AddEquipmentWarnings);
-                    }
+                        // this.conflictItems = [];
+                        // this.unableSelectItems = [];
+                        // this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, this.conflictItems, this.unableSelectItems, this.AddEquipmentWarnings);
+                    }        
                 }
             }
         },
@@ -1183,10 +1436,13 @@ export default {
             }
         },
         'selectedEquipmentItemIds': function() {
-            if (this.selectedEquipmentItemIds.length > 0 && (this.workOrderDateRange[0] && this.workOrderDateRange[1])) {
+            if (this.selectedEquipmentItemIds.length >= 0 && (this.workOrderDateRange[0] && this.workOrderDateRange[1])) {
                 this.conflictItems = [];
                 this.unableSelectItems = [];
-                this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, this.conflictItems, this.unableSelectItems, this.AddEquipmentWarnings);
+                this.itemIdConflictNextMaintenanceDate = [];
+                this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, 
+                                            this.conflictItems, this.unableSelectItems, this.itemIdConflictNextMaintenanceDate,
+                                            this.AddEquipmentWarnings);
             }
         }
     }

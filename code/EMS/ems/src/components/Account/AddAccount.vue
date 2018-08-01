@@ -17,6 +17,32 @@
             </div>
             
             <div class="form-content">
+            <div class="form-field-picture">
+              <div class="form-field-title">
+                  <span><strong>  Picture (required) </strong></span><span v-if="CreateAccountErrors.NoImage != ''">. <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span>
+
+              </div>
+              <div class="input_picture">                    
+                  <label class="file-label" style="width: 100% !important"> 
+                  <span class="file-cta">
+                      <input class="file-input" type="file" accept="image/*" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
+                      <span class="file-icon">
+
+                          <i class="fa fa-upload"></i>
+                      </span>
+                      <span class="file-label">
+                          Choose images...
+                      </span>
+                  </span>
+                      <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
+                          {{ file.name }}
+                      <div>
+                          <img class="file-upload" v-bind:src="getFilePath(file)" width="300px" height="450px"/>
+                      </div>
+                      </div>
+                  </label>
+              </div> 
+            </div>
             <div >
                 <div class="form-field">
                     <div class="form-field-title">
@@ -211,6 +237,7 @@
 <script>
 import VueBase64FileUpload from "vue-base64-file-upload";
 import { ModelSelect } from "vue-search-select";
+import moment from "moment";
 export default {
   components: {
     VueBase64FileUpload,
@@ -236,6 +263,7 @@ export default {
 
   data() {
     return {
+      files: [],
       sending: false,
       ErrorStrings: {
         // NoUsername: "You must provide username for this account",
@@ -261,7 +289,8 @@ export default {
         PhoneMax: " Use from 9 to 13 characters for your phonenumber",
         // phone-end
         NoEmail: " Enter email",
-        NoRole: " Select role"
+        NoRole: " Select role",
+        NoImage: "You must choose an image"
       },
       CreateAccountErrors: {
         // NoUsername: "",
@@ -278,10 +307,12 @@ export default {
         PhoneMax: "",
         // NoPhone: "",
         NoEmail: "",
-        NoRole: ""
+        NoRole: "",
+        NoImage: ""
       },
       account: {
         username: "",
+        imageUrl: "",
         password: "",
         fullname: "",
         phone: "",
@@ -293,10 +324,13 @@ export default {
     };
   },
   methods: {
-    createAccount1() {
+    async createAccount1() {
       //   if (this.account.username === "") {
       //     this.CreateAccountErrors.NoUsername = this.ErrorStrings.NoUsername;
       //   }
+      if (!this.files[0]) {
+        this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
+      }
       if (this.account.username.length < 6) {
         this.CreateAccountErrors.UsernameMin = this.ErrorStrings.UsernameMin;
       }
@@ -340,16 +374,57 @@ export default {
       if (!this.account.roleid || this.account.roleid == "") {
         this.CreateAccountErrors.NoRole = this.ErrorStrings.NoRole;
       }
+
       if (this.validateAccount()) {
-        this.axios
-          .post("http://localhost:3000/api/account", {
-            account: this.account
+        this.CreateAccountErrors.NoImage = "";
+        let formData = new FormData();
+        formData.append("api_key", "982394881563116");
+        formData.append("file", this.files[0]);
+        formData.append("public_id", this.files[0].name);
+        formData.append("timestamp", moment().valueOf());
+        formData.append("upload_preset", "ursbvd4a");
+
+        let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+        await this.axios
+          .post(url, formData)
+          .then(response => {
+            if (response.status == 200) {
+              this.imageUrl = response.data.url;
+              this.axios
+                .post("http://localhost:3000/api/account", {
+                  account: this.account,
+                  avatarimage: response.data.url
+                })
+                .then(res => {
+                  alert("Add account successful");
+                  this.$router.push("/account");
+                });
+            }
           })
-          .then(res => {
-            alert("Add account successful");
-            this.$router.push("/account");
+          .catch(error => {
+            console.log(error);
           });
       }
+    },
+    inputFileChange() {
+      this.files = this.$refs.fileInput.files;
+    },
+
+    onFileChanged() {
+      this.selectedFile = this.$refs.file.files[0];
+    },
+    getFilePath(file) {
+      return window.URL.createObjectURL(file);
+    },
+    onUpload() {
+      let formData = new FormData();
+      formData.append("file", this.file);
+      alert("in");
+      this.axios.post(
+        "https://api.cloudinary.com/v1_1/deanwflps/image/upload",
+        formData
+      );
+      alert(this.selectedFile.name);
     },
     validateAccount() {
       return (
@@ -367,7 +442,8 @@ export default {
         this.CreateAccountErrors.PhoneMax === "" &&
         this.CreateAccountErrors.PhoneMin === "" &&
         this.CreateAccountErrors.NoEmail === "" &&
-        this.CreateAccountErrors.NoRole === ""
+        this.CreateAccountErrors.NoRole === "" &&
+        this.CreateAccountErrors.NoImage == ""
       );
     }
   },
@@ -419,6 +495,15 @@ export default {
     "account.email": function() {
       if (this.account.email != "") {
         this.CreateAccountErrors.NoEmail = "";
+      }
+    },
+    files: function() {
+      if (
+        !this.files[0] &&
+        !this.files[0].name &&
+        this.CreateAccountErrors.NoImage != ""
+      ) {
+        this.CreateAccountErrors.Image = "";
       }
     },
     "account.roleid": function() {
@@ -502,5 +587,23 @@ export default {
   cursor: pointer;
   background-color: #009688;
   color: white;
+}
+.form-field-picture {
+  padding: 1rem 3rem;
+  border: none;
+}
+.file-upload {
+  padding-left: 2rem;
+}
+.input_picture {
+  padding: 1rem 3rem 1rem 3rem;
+  outline: 1px dashed #a8a8a8fb;
+  background-color: #f0efeffb;
+  display: flex;
+}
+.file-cta {
+  border: none;
+  background-color: #a8a8a8fb;
+  margin: auto;
 }
 </style>

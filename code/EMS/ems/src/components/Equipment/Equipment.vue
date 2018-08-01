@@ -13,7 +13,7 @@
       <!-- <equipment-table :equipments="toDisplayData" v-if="isTableMode"></equipment-table> -->
       <!-- <equipment-card :equipments="equipments" v-else></equipment-card> -->
  <div v-if="equipments">
-        <table class="table">
+        <table class="table" >
             <thead>
                 <tr>
                     <th ><strong>Order #</strong></th>
@@ -47,7 +47,7 @@
 
 
       <!-- test1 -->
-  <div v-if="equipments.length >9" class="pageNa">
+  <div v-if="equipments.length >9" class="">
     <Page :current="currentPage" :total="equipments.length" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage = newPageNumber

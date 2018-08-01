@@ -20,7 +20,9 @@
 
           </div>
           <div class="col-1" style="display: flex; justify-content: flex-end; padding:0rem" >
-            <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
+            <div v-if="authUser.Role =='Admin'  ">
+              <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode" >Edit</button>
+            </div>
           </div>
         </div>
       <div class="row" >
@@ -60,7 +62,8 @@
   <div class="row" > 
     <div class="col-6">   
       <div v-if="!editMode">
-        <div v-if="!teamOnly">
+        <!-- <div v-if="!teamOnly || teamOnly.length == 0"> -->
+        <div v-if="(!team.MemberAccounts ||team.MemberAccounts.length ==0) && (!team.LeaderAccount  || team.LeaderAccount.length ==0)">
           There is no team member yet.
         </div>
         <!-- <div v-if="!team.LeaderAccount ">
@@ -107,7 +110,7 @@
                     </tr>
                 </tbody>
               </table>
-                  <div v-if="teamOnly.length > 4" class="pageNa">
+                  <div v-if="teamOnly.length > 4" class="">
     <Page :current="currentPageMember" :total="teamOnly.length" show-elevator 
       @on-change="(newPageNumber) => {
         currentPageMember = newPageNumber;
@@ -130,7 +133,7 @@
         </div>
         <div v-else>
           <!-- page-navi -->
-    <!-- <div v-if="location.length > 9" class="pageNa">
+    <!-- <div v-if="location.length > 9" class="">
       <Page :current="currentPageLoca" :total="location.length" show-elevator 
         @on-change="(newPageNumber) => {
           currentPageLoca = newPageNumber;
@@ -160,7 +163,7 @@
                 </tr>
             </tbody>
           </table>
-    <div v-if="location1.length > 4" class="pageNa">
+    <div v-if="location1.length > 4" class="">
       <Page :current="currentPageLoca" :total="location1.length" show-elevator 
         @on-change="(newPageNumber) => {
           currentPageLoca = newPageNumber;
@@ -182,8 +185,8 @@
       <!-- <div v-if="!team.LeaderAccount ">
         There is no team leader yet.
       </div> -->
-      <div v-if="!team.MemberAccounts && !team.LeaderAccount">
-        There is no  member yet
+      <div v-if="!team.MemberAccounts && !team.LeaderAccount && team.MemberAccounts.length ==0 && team.LeaderAccount.length ==0">
+        There is no member yet
       </div>
       <div v-else>
         
@@ -322,7 +325,7 @@
             </tbody>
         </table>
 
-    <div v-if="items1.length > 9" class="pageNa">
+    <div v-if="items1.length > 9" class="">
     <Page :current="currentPage" :total="items1.length" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage = newPageNumber;
@@ -605,7 +608,10 @@ export default {
     };
   },
   computed: {
-    editMode: sync("teamPage.detailPage.editMode")
+    editMode: sync("teamPage.detailPage.editMode"),
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    }
   },
   methods: {
     createAccount1() {
