@@ -522,7 +522,7 @@ export default {
     dayClicked(day) {
       this.selectedDay = day;
       if (this.selectedDay.attributes.length > 0) {
-        alert(JSON.stringify(this.selectedDay));
+        // alert(JSON.stringify(this.selectedDay));
         // alert(
         //   JSON.stringify(
         //     this.selectedDay.attributes[0].popover.label.MaintainDate
