@@ -2,8 +2,11 @@
 <div>
   <div class="row" style="margin-bottom:1rem">
     <div class="col-4">
-      <router-link to="/team">
+      <router-link to="/team" v-if="authUser.Role =='Admin' || authUser.Role == 'Manager'">
         <span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams
+      </router-link>
+      <router-link :to="`/account/${authUser.Id}`" v-if="authUser.Role =='Staff' || authUser.Role == 'Equipment Staff' || authUser.Role == 'Maintainer'">
+        <a><span class="material-icons" style="position: relative; top: .4rem;">keyboard_arrow_left</span> Back to profile</a>
       </router-link>
     </div>
     <!-- <div class="col-8">

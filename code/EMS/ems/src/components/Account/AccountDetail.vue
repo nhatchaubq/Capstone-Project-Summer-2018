@@ -1,9 +1,12 @@
 <template>
 
-  <div v-if="account">
-    <router-link to="/account">
+  <div v-if="account" >
+    <router-link to="/account" v-if="authUser.Role =='Admin' || authUser.Role == 'Manager'">
       <a><span class="material-icons" style="position: relative; top: .4rem;">keyboard_arrow_left</span> Back to Accounts</a>
     </router-link>
+    <!-- <router-link :to="`/account/${authUser.Id}`" v-if="authUser.Role =='Staff' || authUser.Role == 'Equipment Staff' || authUser.Role == 'Maintainer'">
+      <a><span class="material-icons" style="position: relative; top: .4rem;">keyboard_arrow_left</span> Back to profile</a>
+    </router-link> -->
 
 <div class="grid-wrapper1">
 
@@ -90,7 +93,8 @@
     This account has no team.
   </div>
   <div v-else>
-    <table class="mytable">
+    <table class="mytable" >
+    <!-- <table class="mytable"> -->
       <thead>
         <tr>
           <!-- <th><strong>ID</strong></th> -->
@@ -271,7 +275,7 @@ export default {
     },
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
-    },
+    }
   },
   components: {
     moment
