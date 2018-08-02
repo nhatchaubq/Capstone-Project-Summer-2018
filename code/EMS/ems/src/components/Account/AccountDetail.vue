@@ -155,7 +155,7 @@
 <div class="row" style="margin: 0 !important">
   <h2 class="col-9" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
   <div class="col-3" v-if ="!editMode">
-    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin'">Edit</button>
+    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
   </div>
 </div>
 <!-- <form @submit.prevent="editAccount()"> -->
@@ -178,14 +178,14 @@
 
   </div> -->
 
-  <div class="row" style="margin-top:0.5rem; height: 36px">
+  <div class="row" style="margin-top:0.5rem; height: 36px" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' ">
     <div class=" col-12" style="margin-top:0.5rem">
       <strong>
         Status 
       </strong>
     </div>
   </div >
-  <div class="col-7" style="padding-left: 0 !important">
+  <div class="col-7" style="padding-left: 0 !important" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' ">
       <div style="margin-top:0.5rem" >
         <label style="margin-right: 1rem;" class="radio"  >
           <input type="radio" name="active" v-on:change="account.IsActive = true" :checked="account.IsActive" :disabled="!editMode">
