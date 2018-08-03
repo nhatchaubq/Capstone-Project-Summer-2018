@@ -429,18 +429,26 @@ export default {
           location.Id
         }`;
       }
+
       this.axios
         .get(url)
         .then(response => {
           let data = response.data;
           data.forEach(eqtItem => {
-            eqtItem.OfTeam.forEach(mem => {
-              if (
-                JSON.parse(window.localStorage.getItem("user")).Id == mem.Id
-              ) {
-                this.equipments.push(eqtItem);
-              }
-            });
+            if (
+              JSON.parse(window.localStorage.getItem("user")).Role ==
+              ("Staff" || "Maintainer")
+            ) {
+              eqtItem.OfTeam.forEach(mem => {
+                if (
+                  JSON.parse(window.localStorage.getItem("user")).Id == mem.Id
+                ) {
+                  this.equipments.push(eqtItem);
+                }
+              });
+            } else {
+              this.equipments.push(eqtItem);
+            }
           });
         })
         .catch(error => {

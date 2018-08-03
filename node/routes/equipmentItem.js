@@ -123,17 +123,7 @@ router.get("/sttItem/:id", (request, response) => {
 });
 /* GET CloseDate in last work order detail of an item  */
 router.get("/closedate/:id", (req, res) => {
-<<<<<<< HEAD
-  req
-    .sql(
-      "select wod.ClosedDate " +
-        "from WorkOrderDetail as wod " +
-        "where wod.EquipmentItemID = @id " +
-        "for json path"
-    )
-    .param("id", req.params.id, TYPES.Int)
-    .into(res);
-=======
+
     req
         .sql(
             "select wod.ClosedDate " +
@@ -143,7 +133,7 @@ router.get("/closedate/:id", (req, res) => {
         )
         .param("id", req.params.id, TYPES.Int)
         .into(res);
->>>>>>> f5ebf60f7d62319442b68f8a258139daaacabd94
+
 });
 
 /* POST request, for insert */
