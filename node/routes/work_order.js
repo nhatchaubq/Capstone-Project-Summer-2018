@@ -24,8 +24,6 @@ module.exports = function(io) {
           " where tl.LocationID = @locationId and(ws.Name = 'In Progress' or ws.Name = 'Closed') " +
           " order by ws.Name desc " +
           "  for json path "
-
-<<<<<<< HEAD
         // "exec [GetWorkOrderByLocationId] @locationId"
       )
       .param("locationId", request.params.id, TYPES.Int)
@@ -172,7 +170,6 @@ module.exports = function(io) {
       )
       .param("workOrderId", request.params.id, TYPES.Int)
       .into(response);
-=======
                 // "exec [GetWorkOrderByLocationId] @locationId"
             )
             .param("locationId", request.params.id, TYPES.Int)
@@ -325,7 +322,7 @@ module.exports = function(io) {
       
   router.get("/status", (request, response) => {
     request.sql("select * from WorkOrderStatus for json path").into(response);
->>>>>>> f5ebf60f7d62319442b68f8a258139daaacabd94
+
   });
 
   router.get("/status", (request, response) => {
@@ -347,7 +344,6 @@ module.exports = function(io) {
     req.sql("select * from WorkOrderCategory for json path").into(res);
   });
 
-<<<<<<< HEAD
   /* ChauBQN */
   // get equipment items for displaying in create work order
   router.get("/get_equipment_detail/:id", (req, res) => {
@@ -427,7 +423,7 @@ module.exports = function(io) {
       })
       .into(res);
   });
-=======
+
     /* ChauBQN */
     // get equipment items for displaying in create work order
     router.get('/get_equipment_detail/:id', (req, res) => {
@@ -503,8 +499,6 @@ module.exports = function(io) {
             })
             .into(res);
     });
->>>>>>> f5ebf60f7d62319442b68f8a258139daaacabd94
-
   /* ChauBQN */
   router.post("/detail", (req, res) => {
     req
@@ -524,7 +518,6 @@ module.exports = function(io) {
   /* first insert new record to WorkOrderDetailReturn, and update ReturnDate of WorkOrderDetail */
   /* and if all the work order detail has been returned, 
         the query will update the work order status to 'Closed' and insert new record to WorkOrderRecord */
-<<<<<<< HEAD
   /* last, update Status of EquipmentItem and insert new record to EquipmentItemHistory */
   router.post("/close_detail/:workOrderDetailId", (req, res) => {
     req
@@ -629,101 +622,6 @@ module.exports = function(io) {
       })
       .exec(res);
   });
-=======
-    /* last, update Status of EquipmentItem and insert new record to EquipmentItemHistory */
-    router.post('/close_detail/:workOrderDetailId', (req, res) => {
-        req.sql("declare @workOrderId int; "
-            + "  declare @currentItemStatusId int; "
-            + "  declare @newStatusId int; "
-            + "  set @workOrderId = (select WorkOrderId from WorkOrderDetail where Id = @workOrderDetailId); "
-            + "  set @currentItemStatusId = (select StatusId from EquipmentItem where Id = @itemId); "
-            + "  set @newStatusId = (select Id from EquipmentStatus where [Name] = @newItemStatus); "
-            + "  insert into WorkOrderDetailReturn(WorkOrderDetailId, ByUserId, [DateTime], ReturnedStatusId) values(@workOrderDetailId, @userId, getdate(), @newStatusId); "
-            + "  update WorkOrderDetail set ClosedDate = getdate() where Id = @workOrderDetailId; "
-            + "  declare @currentRuntimeDays int; "
-            + "  declare @orderStartDate datetime; "
-            + "  set @orderStartDate = (select StartDate from WorkOrder where Id = @workOrderId); "
-            + "  set @currentRuntimeDays = (select RuntimeDays from EquipmentItem where Id = @itemId); "
-            + "  update EquipmentItem set RuntimeDays = (DATEDIFF(day, @orderStartDate, getdate()) + @currentRuntimeDays) where Id = @itemId; "
-            + "  declare @totalOrderDetail int; "
-            + "  declare @totalOrderDetailReturned int; "
-            + "  set @totalOrderDetail = (select count(*) from WorkOrderDetail where WorkOrderID = @workOrderId); "
-            + "  set @totalOrderDetailReturned = (select count(*)  "
-            + "                                   from WorkOrderDetail as wod  "
-            + "                                             join WorkOrderDetailReturn as wodr on wod.Id = wodr.WorkOrderDetailId  "
-            + "                                   where wod.WorkOrderID = @workOrderId) "
-            + "  update EquipmentItem set StatusId = @newStatusId where Id = @itemId; "
-            + "  insert into EquipmentItemHistory(EquipmentItemID, ByUserID, OldStatusID, NewStatusID, [Date], [Description]) "
-            + "     values(@itemId, @userId, @currentItemStatusId, @newStatusId, getdate(), @description) "
-            + "  if @totalOrderDetail = @totalOrderDetailReturned "
-            + "  begin "
-            + "     declare @oldWorkOrderStatusId int; "
-            + "     declare @newWorkOrderStatusId int; "
-            + "     set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); "
-            + "     set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = N'Closed'); "
-            + "     update WorkOrderDetail set ClosedDate = getdate() where Id = @workOrderDetailId "
-            + "     update [WorkOrder] set StatusID = @newWorkOrderStatusId, ClosedDate = getdate() where Id = @workOrderId; "
-            + "     insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) "
-            + "         values(@workOrderId, @userId, getdate(), @oldWorkOrderStatusId, @newWorkOrderStatusId, @description); "
-            // + "     select * from WorkOrder where Id = @workOrderId; "
-            + " end ")
-            .param('workOrderDetailId', req.params.workOrderDetailId, TYPES.Int)
-            .param('userId', req.body.userId, TYPES.Int)
-            .param('itemId', req.body.itemId, TYPES.Int)
-            .param('newItemStatus', req.body.newItemStatus, TYPES.NVarChar)
-            .param('description', req.body.description, TYPES.NVarChar)
-            // .done((fn) => {
-            //     io.sockets.emit('ORDER_STATUS_CHANGED', {});
-            //     res.end();
-            // })
-            .into(res);
-    });
-
-    // ChauBQN
-    // update status of work order
-    router.put("/status/:orderId", (req, res) => {
-      req
-        .sql(
-          "declare @currentDate datetime; " +
-              " declare @oldWorkOrderStatusId int; " +
-              " declare @newWorkOrderStatusId int; " +
-              " set @oldWorkOrderStatusId = (select StatusID from WorkOrder where Id = @workOrderId); " +
-              " set @newWorkOrderStatusId = (select Id from WorkOrderStatus where [Name] = @newWorkOrderStatusName); " +
-              " set @currentDate = getdate(); " +
-              " update [WorkOrder] set StatusID = @newWorkOrderStatusId where Id = @workOrderId; " +
-              " if @newWorkOrderStatusName = N'In Progress' " +
-              " begin " +
-              "   update WorkOrder set StartDate = @currentDate where Id = @workOrderId; " +
-              " end " +
-              " insert into [WorkOrderRecord](WorkOrderID, ModifiedByUserID, ModifiedByDateTime, OldStatusID, NewStatusID, [Description]) " +
-              "   values(@workOrderId, @userId, @currentDate, @oldWorkOrderStatusId, @newWorkOrderStatusId, @description);"
-          )
-          .param("workOrderId", req.params.orderId, TYPES.Int)
-          .param("userId", req.body.userId, TYPES.Int)
-          .param("newWorkOrderStatusName", req.body.newStatusName, TYPES.NVarChar)
-          .param("description", req.body.description, TYPES.NVarChar)
-        //   .done((fn) => {
-        //       io.sockets.emit('ORDER_STATUS_CHANGED', {noNeedToRefreshWorkOrderUserId: req.body.noNeedToRefreshWorkOrderUserId});
-        //       res.end();
-        //   })
-          .exec(res);
-    });
-
-    // ChauBQN
-    // update work order
-    router.put('/:workOrderId', (req, res) => {
-        req.sql('update WorkOrder set TeamLocationID = @teamLocationId, ExpectingStartDate = @expectingStartDate, ExpectingCloseDate = @expectingCloseDate where Id = @workOrderId')
-            .param('workOrderId', req.params.workOrderId, TYPES.Int)
-            .param('teamLocationId', req.body.teamLocationId, TYPES.Int)
-            .param('expectingStartDate', req.body.expectingStartDate, TYPES.NVarChar)
-            .param('expectingCloseDate', req.body.expectingCloseDate, TYPES.NVarChar)
-            // .done((data) => {
-            //     io.sockets.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
-            //     res.end();
-            // })
-            .exec(res);
-    });
->>>>>>> f5ebf60f7d62319442b68f8a258139daaacabd94
 
   // ChauBQN
   // delete work order detail
