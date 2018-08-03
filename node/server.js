@@ -16,7 +16,7 @@ app.use(cors());
 var connection = {
   server: "localhost",
   userName: "sa",
-  password: "123456",
+  password: "cCS94@bcnq836894",
   port: "1433",
   options: {
     // instanceName : "SQLEXPRESS",
@@ -28,7 +28,7 @@ var connection = {
 
 app.use(bodyParser.json());
 
-app.use(function(request, respones, next) {
+app.use(function (request, respones, next) {
   request.sql = tediousExpress(connection);
   // respones.header('Access-Control-Allow-Origin', '*');
   // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -40,6 +40,22 @@ var server = app.listen(3000, () => {
 });
 
 var io = require("socket.io")(server);
+io.on('connection', function (socket) {
+  socket.on('NEW_WORK_ORDER_CREATED', function (data) {
+    socket.broadcast.emit('NEW_WORK_ORDER_CREATED', data);
+  });
+  socket.on('NEW_NOTIFICATION', function (data) {
+    socket.broadcast.emit('NEW_NOTIFICATION', data);
+  });
+  socket.on('ORDER_STATUS_CHANGED', function (data) {
+    socket.broadcast.emit('ORDER_STATUS_CHANGED', data);
+  });
+  socket.on('CLOSE_WORK_ORDER_DETAIL', function (data) {
+    socket.broadcast.emit('ORDER_STATUS_CHANGED', {
+      data
+    });
+  });
+});
 
 // server.use(bodyParser.text());
 app.use(bodyParser.json());
@@ -73,13 +89,14 @@ app.use("/api/tile", require("./routes/tile"));
 app.use("/api/unit", require("./routes/unit"));
 app.use("/api/maintenanceDuration", require("./routes/maintenanceDuration"));
 app.use("/api/notification", require("./routes/notification")(io));
+app.use("/api/map", require("./routes/map"));
 
 // app.use('/api/account/edit/id', require('./routes/account'));
 // app.use('/api/account', require('./routes/account'));
 // app.use('/api/account/delete/id', require('./routes/'));
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error("Not Found: " + req.method + ":" + req.originalUrl);
   err.status = 404;
   next(err);

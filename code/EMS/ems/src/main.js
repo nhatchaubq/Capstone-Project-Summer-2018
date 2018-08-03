@@ -15,7 +15,9 @@ import "./styles/style.scss";
 import * as VueGoogleMaps from "vue2-google-maps";
 import iView from "iview";
 import "iview/dist/styles/iview.css";
-import locale from "iview/src/locale/lang/en-US";
+
+import locale from 'iview/src/locale/lang/en-US';
+
 import VueSocketio from "vue-socket.io";
 import VPopover from "vue-js-popover";
 //calendar
@@ -42,7 +44,7 @@ Vue.use(VueSocketio, "http://localhost:3000");
 Vue.use(VueGoogleMaps, {
   load: {
     key: "AIzaSyDNEXkpy7Eb76G8TciF6DzydzD4y4tZg4c",
-    libraries: "places"
+    libraries: "places",
   }
 });
 Vue.use(VueAxios, axios);

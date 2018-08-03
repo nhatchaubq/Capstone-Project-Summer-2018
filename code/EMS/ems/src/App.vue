@@ -23,7 +23,6 @@ import HeaderBar from "./components/HeaderBar/HeaderBar";
 
 import Server from "@/config/config";
 import Vue from "vue";
-
 var VueTruncate = require("vue-truncate-filter");
 Vue.use(VueTruncate);
 
@@ -415,5 +414,13 @@ td {
 
 .row-even {
   background: #eeeeee;
+}
+.ivu-page-item-active {
+  /* background-color: #26a69a; */
+  background-color: #26a69a !important;
+}
+.ivu-page-item-active a {
+  /* background-color: #26a69a; */
+  color: white !important;
 }
 </style>

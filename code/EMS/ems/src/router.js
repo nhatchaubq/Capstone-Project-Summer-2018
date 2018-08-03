@@ -150,7 +150,7 @@ let router = new Router({
       path: "/calendar",
       component: CalendarComponent,
       beforeEnter: (to, from, next) => {
-        store.set("title", menu.Calendar);
+        store.set("title", menu.Schedule);
         next();
       },
       meta: {
