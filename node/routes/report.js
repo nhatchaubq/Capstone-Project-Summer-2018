@@ -104,15 +104,15 @@ router.get("/getAvailableEquipment", (req, res) => {
 router.get("/getMaintenanceCalendar", (req, res) => {
   req
     .sql(
-      // "select ei.*,e.[Name],l.[Name] as 'Location',es.[Name] as 'Status',b.[Name] as 'Block',f.[Name] as 'Floor',t.[Name] as 'Tile' " +
-      //   "  from EquipmentItem as ei join Equipment as e on ei.EquipmentID = e.Id " +
-      //   " 					 join Tile as t on ei.TileID = t.Id " +
-      //   " 				 join[Floor] as f on f.Id = t.FloorID " +
-      //   " 			 join[Block] as b on b.Id = f.BlockID " +
-      //   " 		 join[Location] as l on l.Id = b.LocationID " +
-      //   " 	 join EquipmentStatus as es on es.Id = ei.StatusId " +
-      //   " for json path	"
-      "exec GetMaintainCalendarEquipmentForReport "
+      "select ei.*,e.[Name],l.[Name] as 'Location',es.[Name] as 'Status',b.[Name] as 'Block',f.[Name] as 'Floor',t.[Name] as 'Tile' " +
+        "  from EquipmentItem as ei join Equipment as e on ei.EquipmentID = e.Id " +
+        " 					 join Tile as t on ei.TileID = t.Id " +
+        " 				 join[Floor] as f on f.Id = t.FloorID " +
+        " 			 join[Block] as b on b.Id = f.BlockID " +
+        " 		 join[Location] as l on l.Id = b.LocationID " +
+        " 	 join EquipmentStatus as es on es.Id = ei.StatusId " +
+        " for json path	"
+      // "exec GetMaintainCalendarEquipmentForReport "
     )
     .into(res);
 });
