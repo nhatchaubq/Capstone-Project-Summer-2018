@@ -303,7 +303,7 @@ export default {
         monthLabels: [],
         monthData: []
       },
-
+      equipmentItems: [],
       workWoMonths: [],
       mainWoMonths: [],
       damaEqtMonths: [],
@@ -334,6 +334,25 @@ export default {
       .then(res => {
         if (res.status == 200) {
           let data = res.data;
+          let today = {
+            key: `today`,
+            // highlight: {
+            //   backgroundColor: "#26a69a"
+            //   // Other properties are available too, like `height` & `borderRadius`
+            // },
+            contentStyle: {
+              color: "#fafafa"
+            },
+            dot: {
+              backgroundColor: "#26a69a",
+              
+            },
+            // popover: {
+            //   label: ""
+            // },
+            dates: [new Date(moment(moment()).format("L"))]
+          };
+          this.attrs.push(today);
           data.forEach(item => {
             let attr = {
               key: `today ${item.Id}`,
@@ -344,9 +363,9 @@ export default {
               contentStyle: {
                 color: "#fafafa"
               },
-              popover: {
-                label: item
-              },
+              // popover: {
+              //   label: item
+              // },
               dates: [
                 new Date(
                   moment(item.MaintainDate).year(),
@@ -355,30 +374,9 @@ export default {
                 )
               ]
             };
-
             this.attrs.push(attr);
+            this.equipmentItems.push(item);
           });
-          let today = {
-            key: `today`,
-            highlight: {
-              backgroundColor: "#26a69a"
-              // Other properties are available too, like `height` & `borderRadius`
-            },
-            contentStyle: {
-              color: "#fafafa"
-            },
-            popover: {
-              label: ""
-            },
-            // bar({ isHovered }) {
-            //   return {
-            //     backgroundColor: "#26a69a",
-            //     opacity: (isHovered && 0.5) || 1
-            //   };
-            // },
-            dates: [new Date(moment(moment()).format("L"))]
-          };
-          this.attrs.push(today);
         }
       })
       .catch(error => {
@@ -521,21 +519,40 @@ export default {
   methods: {
     dayClicked(day) {
       this.selectedDay = day;
-      if (this.selectedDay.attributes.length > 0) {
-        // alert(JSON.stringify(this.selectedDay));
-        // alert(
-        //   JSON.stringify(
-        //     this.selectedDay.attributes[0].popover.label.MaintainDate
-        //   )
-        // );
-        this.maintainItems = [];
-        this.selectedDay.attributes.forEach(tmp => {
-          this.maintainItems.push(tmp.popover.label);
-        });
+      // alert(JSON.stringify(this.selectedDay));
+      // alert(day.day);
+      this.maintainItems = [];
+      this.equipmentItems.forEach(item => {
+        if (
+          moment(item.MaintainDate).date() == this.selectedDay.day &&
+          moment(item.MaintainDate).month() + 1 == this.selectedDay.month &&
+          moment(item.MaintainDate).year() == this.selectedDay.year
+        ) {
+          this.maintainItems.push(item);
+          this.addPopUp = true;
+        }
+        // else {
+        //   alert(moment(item.MaintainDate).date());
+        //   alert(moment(item.MaintainDate).month());
+        //   alert(moment(item.MaintainDate).year());
+        // }
+      });
 
-        // alert(this.maintainItems[0].Name);
-        this.addPopUp = true;
-      }
+      // if (this.selectedDay.attributes.length > 0) {
+      //   // alert(JSON.stringify(this.selectedDay));
+      //   // alert(
+      //   //   JSON.stringify(
+      //   //     this.selectedDay.attributes[0].popover.label.MaintainDate
+      //   //   )
+      //   // );
+      //   this.maintainItems = [];
+      //   this.selectedDay.attributes.forEach(tmp => {
+      //     this.maintainItems.push(tmp.popover.label);
+      //   });
+
+      //   // alert(this.maintainItems[0].Name);
+
+      // }
     },
     setShowDate(d) {
       this.showDate = d;

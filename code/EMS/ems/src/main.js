@@ -66,6 +66,8 @@ router.beforeEach((to, from, next) => {
   if (authUser) {
     if (to.name == "login") {
       next("/");
+    } else if (to.name == 'work_order' && authUser.Role == 'Admin') {
+      next('/');
     } else if (
       to.name == "create_work_order" &&
       authUser.Role != "Staff" &&

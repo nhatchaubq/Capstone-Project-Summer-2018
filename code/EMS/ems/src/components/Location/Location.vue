@@ -95,8 +95,7 @@
                                         <div>
                                             {{ equipment.Name }}
                                         </div>                                            
-                                        <div style="font-size: .9rem">
-                                            <!-- Quantity: {{ equipment.EquipmentItems.length }} -->
+                                        <div style="font-size: .9rem">                                            
                                             Quantity: {{ equipment.EquipmentItems.length }}
                                         </div>
                                     </div>
@@ -232,12 +231,15 @@
           </div>
           
           <div class="info-field">
-            <div></div><div></div>
+            
             <div class="info-title">
              <i class="fa fa-calendar" style="color:gray;"></i>  Closed Date:
             </div>
             <div class="info-content" v-if="selectedWorkorder.ClosedDate">
                {{getFormatDate(selectedWorkorder.ClosedDate)}}
+            </div>
+            <div class="info-content"  v-else>
+              N/A
             </div>
           </div>                                        
         </div>
@@ -260,10 +262,10 @@
                 </tr>
                 <tr :key="item.Id" v-for="item in workorderDetail.EquipmentItems">                  
                   <td >{{item.SerialNumber}}</td>
-                  <td v-if="selectedWorkorder.Status == 'In Progress' || selectedWorkorder.Status == 'Closed'" :style="{color: item.ClosedDate? 'var(--status-closed)' : 'var(--status-in-progress)'}">{{item.ClosedDate? "Returned" : "Working" }}</td>
-                  <td v-if="selectedWorkorder.Status == 'Requested'" style="color: var(--status-requested)" >Requested</td>
+                  <td v-if="selectedWorkorder.Status == 'In Progress' || selectedWorkorder.Status == 'Closed'" :style="{color: item.ClosedDate? 'var(--blue)' : 'var(--success-color)'}">{{item.ClosedDate? "Returned" : "Working" }}</td>
+                  <!-- <td v-if="selectedWorkorder.Status == 'Requested'" style="color: var(--status-requested)" >Requested</td>
                   <td v-if="selectedWorkorder.Status == 'Checked'" style="color: var(--status-checked)" >Checked</td>
-                  <td v-if="selectedWorkorder.Status == 'Approved'" style="color: var(--status-approved)" >Approved</td>
+                  <td v-if="selectedWorkorder.Status == 'Approved'" style="color: var(--status-approved)" >Approved</td> -->
                   
                 </tr>
               </tbody>
@@ -419,12 +421,34 @@ export default {
       let url = `${
         Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH
       }/getByEquipmentId/${location.Id}`;
+      if (
+        JSON.parse(window.localStorage.getItem("user")).Role ==
+        ("Staff" || "Maintainer")
+      ) {
+        url = `http://localhost:3000/api/equipmentItem/getItemByMem/${
+          location.Id
+        }`;
+      }
+
       this.axios
         .get(url)
         .then(response => {
           let data = response.data;
           data.forEach(eqtItem => {
-            this.equipments.push(eqtItem);
+            if (
+              JSON.parse(window.localStorage.getItem("user")).Role ==
+              ("Staff" || "Maintainer")
+            ) {
+              eqtItem.OfTeam.forEach(mem => {
+                if (
+                  JSON.parse(window.localStorage.getItem("user")).Id == mem.Id
+                ) {
+                  this.equipments.push(eqtItem);
+                }
+              });
+            } else {
+              this.equipments.push(eqtItem);
+            }
           });
         })
         .catch(error => {
@@ -436,9 +460,24 @@ export default {
       let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
       this.axios.get(url).then(response => {
         let data = response.data;
-        data.forEach(workorder => {
-          this.workorders.push(workorder);
-        });
+        if (
+          JSON.parse(window.localStorage.getItem("user")).Role ==
+          ("Staff" || "Maintainer")
+        ) {
+          data.forEach(workorder => {
+            workorder.OfTeam.forEach(mem => {
+              if (
+                JSON.parse(window.localStorage.getItem("user")).Id == mem.Id
+              ) {
+                this.workorders.push(workorder);
+              }
+            });
+          });
+        } else {
+          data.forEach(workorder => {
+            this.workorders.push(workorder);
+          });
+        }
       });
     },
     getFormatDate(date) {
