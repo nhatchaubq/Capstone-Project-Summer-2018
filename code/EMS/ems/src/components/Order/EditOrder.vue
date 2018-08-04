@@ -21,7 +21,7 @@
                 </label>
             </div>
             <!-- select location -->
-            <div class="form-field">
+            <div class="form-field" v-if="authUser.Role == 'Staff'">
                 <div class="form-field-title">
                     Choose a location for this work order (required)
                     <span v-if="CreateWorkOrderErrors.NoLocation != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoLocation }}</span></span>
@@ -32,7 +32,7 @@
                 </div>
             </div> <!-- select location -->
             <!-- select team from selected location -->
-            <div class="form-field" v-if="selectedLocation.value != ''">
+            <div class="form-field" v-if="selectedLocation.value != '' && authUser.Role == 'Staff'">
                 <div v-if="teamOptions.length > 0">
                     <div class="form-field-title">
                         Pick a team from the selected location (required)
@@ -74,6 +74,9 @@
                 <div>Equipment</div>
                 <div style="width: 100%; text-align: center">Quantity</div>
                 <div></div>
+              </div> <!-- header -->
+              <div v-if="loadEditOrder" class="form-field" style="width: 60%; text-align: center; font-size: 1.1rem">
+                <i class="fa fa-circle-o-notch fa-spin"></i>
               </div> <!-- header -->
               <!-- display selected equipment items -->
               <div :key="'selectedEquipment' + selectedEquipment.id" v-for="selectedEquipment in selectedEquipments">
@@ -317,8 +320,8 @@
                         </td>
                         <!-- equipment item next maintaince date -->
                         <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"
-                            :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate)),
-                                    'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate))}"> 
+                            :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, selectedEquipment.itemIdConflictNextMaintenanceDate)),
+                                    'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, selectedEquipment.itemIdConflictNextMaintenanceDate))}"> 
                           {{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}
                         </td>
                         <!-- distance -->
@@ -341,8 +344,8 @@
                         <td>-</td>
                         <td>-</td>
                         <td>{{ equipmentItem.RuntimeDays }}</td>
-                        <td :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate)),
-                                'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate))}">
+                        <td :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, selectedEquipment.itemIdConflictNextMaintenanceDate)),
+                                'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, selectedEquipment.itemIdConflictNextMaintenanceDate))}">
                             {{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}
                         </td>
                         <td>{{ equipmentItem.Distance.value ? equipmentItem.Distance.text : 'n/a' }}</td>
@@ -419,7 +422,6 @@
 
             <!-- display equipment items table to let user pick the desire item -->
             <div class="" v-if="equipmentTable && equipmentTable.length > 0">
-                {{ itemIdConflictNextMaintenanceDate }}
               <table :style="{width: '100%'}">
                 <thead>
                   <tr>
@@ -517,7 +519,7 @@
               </table>
               <!-- </div> -->
                 <div v-if="itemsLoading" style="margin-top: 1rem; text-align: center;">
-                    <div style="font-size: 1.2rem"><i class="fa fa-circle-o-notch fa-spin"></i></div>
+                    <div style="font-size: 1.1rem"><i class="fa fa-circle-o-notch fa-spin"></i></div>
                     <div>Getting equipment info...</div>
                 </div> 
             </div> <!-- display equipment items table to let user pick the desire item -->
@@ -560,13 +562,10 @@ export default {
                 NoLocation: 'You must select a location',
                 NoTeam: 'You must select a team in the selected location',
                 SelectedEquipmentQuantityIsZero: 'You must choose at least 1 equipment item from the table below',
-                SelectedDateConflictWorkOrders: 'From date or to date has conflict with some work orders. '
-                                                    + '\nPlease reconsider choosing another date or the managers may reject your order.',
-                FromDateIsFromThePast: 'From date can not be in the past',
-                UnableToSelectItem: "You can not select items that are in work orders with status 'Approved' or 'In Progress' between your from date and to date",
+                SelectedDateConflictWorkOrders: 'Start date or end date has conflict with some work orders.',
+                UnableToSelectItem: "You can not select items that are in work orders with status 'Approved' or 'In Progress' between your from date and to date.",
                 NoWorkOrderDateRange: 'You must select expecting start date and expecting end date of this work order',
-                ConflictMaintenanceDate: 'You can not select equipments whose maintenance date has conflict with the start date and end date of this work order. '
-                                  + 'If you really want to use those equipments please contact the equipment staff to change the maintenance date.',
+                ConflictMaintenanceDate: 'You can not select equipments whose maintenance date has conflict with the start date and end date of this work order.',
             },
             AddEquipmentWarnings: {
                 MustSelectEquipment: '',
@@ -650,114 +649,116 @@ export default {
                             context.priorities = res.data;
                             context.workOrderPriority = context.editWorkOrder.PriorityID;
                             // get locations
-                            await context.axios.get(Server.LOCATION_API_PATH).then(async res => {
+                            if (context.authUser.Role == 'Staff') {
+                                await context.axios.get(Server.LOCATION_API_PATH).then(async res => {
+                                    if (res.data) {
+                                        let data = res.data;
+                                        for (const location of data) {
+                                            let option = {
+                                                value: location.Id,
+                                                text: `${location.Name} - ${location.Address}`,
+                                                latitude: location.Latitude,
+                                                longitude: location.Longitude,
+                                            };
+                                            context.locationOptions.push(option);
+                                        }
+                                        context.selectedLocation = context.locationOptions.filter(op => parseInt(op.value) == context.editWorkOrder.Location.Id)[0];
+                                        //get team in selected location
+                                        context.teamOptions = [];
+                                        let url = `${Server.LOCATION_API_PATH}/${
+                                            context.selectedLocation.value
+                                            }/team/${context.authUser.Id}`;
+                                        await context.axios.get(url).then(async res => {
+                                            if (res.data) {
+                                                let data = res.data;
+                                                for (const element of data) {
+                                                    let option = {
+                                                        value: element.Team.Id,
+                                                        text: element.Team.Name
+                                                    };
+                                                    context.teamOptions.push(option);
+                                                }
+                                                context.selectedTeam = context.teamOptions.filter(op => parseInt(op.value) == parseInt(context.editWorkOrder.Team.Id))[0];
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+
+                            // get all equipments to display options
+                            await context.axios.get(Server.EQUIPMENT_API_PATH).then(async res => {
                                 if (res.data) {
                                     let data = res.data;
-                                    for (const location of data) {
+                                    for (const element of data) {
+                                        let quantity = parseInt(element.Equipment.Quantity);
                                         let option = {
-                                            value: location.Id,
-                                            text: `${location.Name} - ${location.Address}`,
-                                            latitude: location.Latitude,
-                                            longitude: location.Longitude,
+                                            text: `${element.Equipment.Name}, quantity: ${quantity} ${quantity > 0 ? element.Equipment.Unit.Name : 'unit'}`,
+                                            value: element.Equipment.Id,
+                                            image: element.Equipment.Image,
+                                            totalQuantity: quantity,
+                                            maintenancePeriodInMonths: element.Equipment.MaintenanceDuration.Month
                                         };
-                                        context.locationOptions.push(option);
+                                        context.equipmentOptions.push(option);
                                     }
-                                    context.selectedLocation = context.locationOptions.filter(op => parseInt(op.value) == context.editWorkOrder.Location.Id)[0];
-                                    //get team in selected location
-                                    context.teamOptions = [];
-                                    let url = `${Server.LOCATION_API_PATH}/${
-                                        context.selectedLocation.value
-                                        }/team/${context.authUser.Id}`;
-                                    await context.axios.get(url).then(async res => {
-                                        if (res.data) {
-                                            let data = res.data;
-                                            for (const element of data) {
-                                                let option = {
-                                                    value: element.Team.Id,
-                                                    text: element.Team.Name
-                                                };
-                                                context.teamOptions.push(option);
-                                            }
-                                            context.loadEditOrder = false;
-                                            context.selectedTeam = context.teamOptions.filter(op => parseInt(op.value) == parseInt(context.editWorkOrder.Team.Id))[0];
-                                            
-                                            // get all equipments to display options
-                                            await context.axios.get(Server.EQUIPMENT_API_PATH).then(async res => {
-                                                if (res.data) {
-                                                    let data = res.data;
-                                                    for (const element of data) {
-                                                        let quantity = parseInt(element.Equipment.Quantity);
-                                                        let option = {
-                                                            text: `${element.Equipment.Name}, quantity: ${quantity} ${quantity > 0 ? element.Equipment.Unit.Name : 'unit'}`,
-                                                            value: element.Equipment.Id,
-                                                            image: element.Equipment.Image,
-                                                            totalQuantity: quantity,
-                                                            maintenancePeriodInMonths: element.Equipment.MaintenanceDuration.Month
-                                                        };
-                                                        context.equipmentOptions.push(option);
-                                                    }
-                                                    context.toDisplayEquipmentOptions = context.equipmentOptions;
-                                                    
-                                                    for (const eq of context.editWorkOrder.Equipments) {
-                                                        let equipmentOption = context.equipmentOptions.filter(op => parseInt(op.value) == parseInt(eq.Id))[0];
-                                                        let itemQuantity = eq.EquipmentItems.length;
-                                                        let selectedItemIds = [];
-                                                        for (const item of eq.EquipmentItems) {
-                                                            selectedItemIds.push(item.Id);
-                                                        }
-                                                        let equipmentTable = [];
-                                                        for (const eqi of eq.Table) {
-                                                            // alert(`Warehouse ${JSON.stringify(eqi.Warehouse)}, ${JSON.stringify(context.selectedLocation)}`)
-                                                            let distance = {text: 'n/a', value: 1};
-                                                            if (equipmentOption && equipmentOption.value != '') {
-                                                                distance = await context.getDistance(eqi.Warehouse, context.selectedLocation);
-                                                                let item = {
-                                                                    "Id": eqi.Id,
-                                                                    "EquipmentID": eqi.EquipmentID,
-                                                                    "SerialNumber": eqi.SerialNumber,
-                                                                    "WarrantyDuration": eqi.WarrantyDuration,
-                                                                    "RuntimeDays": eqi.RuntimeDays,
-                                                                    "TileID": eqi.TileID,
-                                                                    "Price": eqi.Price,
-                                                                    "ImportDate": eqi.ImportDate,
-                                                                    "NextMaintainDate": eqi.NextMaintainDate,
-                                                                    "StatusId": eqi.StatusId,
-                                                                    "Description": eqi.Description,
-                                                                    "Status": eqi.Status,
-                                                                    "Warehouse": eqi.Warehouse,
-                                                                    "WorkOrders": eqi.WorkOrders,
-                                                                    "Distance": distance,
-                                                                    'Location': eqi.Location,
-                                                                };
-                                                                equipmentTable.push(item);
-                                                            }
-                                                            // alert(JSON.stringify(distance))
-                                                        }
-                                                        context.sortItems(equipmentTable);
-                                                        let indeterminate = selectedItemIds.length > 0 && selectedItemIds.length < equipmentTable.length;
-                                                        let checkAllItems = selectedItemIds.length == equipmentTable.length;
-                                                        let addEquipmentWarnings = {
-                                                            MustSelectEquipment: '',
-                                                            AvailableQuantityIsZero: '',
-                                                            SelectedEquipmentQuantityIsZero: '',
-                                                            SelectedDateConflictWorkOrders: '',
-                                                            UnableToSelectItem: '',
-                                                            ConflictMaintenanceDate: '',
-                                                        };
-                                                        // check if from date conflicts any item in work orders - start
-                                                        let conflictItems = [];
-                                                        let unableSelectItems = [];
-                                                        let itemIdConflictNextMaintenanceDate = [];
-                                                        context.checkItemsIsSafeToSelect(selectedItemIds, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
-                                                        
-                                                        context.addEquipment(true, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
-                                                    }
-                                                }
-                                            });// get all equipments to display options
+                                    context.toDisplayEquipmentOptions = context.equipmentOptions;
+                                    
+                                    for (const eq of context.editWorkOrder.Equipments) {
+                                        let equipmentOption = context.equipmentOptions.filter(op => parseInt(op.value) == parseInt(eq.Id))[0];
+                                        let itemQuantity = eq.EquipmentItems.length;
+                                        let selectedItemIds = [];
+                                        for (const item of eq.EquipmentItems) {
+                                            selectedItemIds.push(item.Id);
                                         }
-                                    });
+                                        let equipmentTable = [];
+                                        for (const eqi of eq.Table) {
+                                            // alert(`Warehouse ${JSON.stringify(eqi.Warehouse)}, ${JSON.stringify(context.selectedLocation)}`)
+                                            let distance = {text: 'n/a', value: 1};
+                                            if (equipmentOption && equipmentOption.value != '') {
+                                                distance = await context.getDistance(eqi.Warehouse, context.selectedLocation);
+                                                let item = {
+                                                    "Id": eqi.Id,
+                                                    "EquipmentID": eqi.EquipmentID,
+                                                    "SerialNumber": eqi.SerialNumber,
+                                                    "WarrantyDuration": eqi.WarrantyDuration,
+                                                    "RuntimeDays": eqi.RuntimeDays,
+                                                    "TileID": eqi.TileID,
+                                                    "Price": eqi.Price,
+                                                    "ImportDate": eqi.ImportDate,
+                                                    "NextMaintainDate": eqi.NextMaintainDate,
+                                                    "StatusId": eqi.StatusId,
+                                                    "Description": eqi.Description,
+                                                    "Status": eqi.Status,
+                                                    "Warehouse": eqi.Warehouse,
+                                                    "WorkOrders": eqi.WorkOrders,
+                                                    "Distance": distance,
+                                                    'Location': eqi.Location,
+                                                };
+                                                equipmentTable.push(item);
+                                            }
+                                            // alert(JSON.stringify(distance))
+                                        }
+                                        context.sortItems(equipmentTable);
+                                        let indeterminate = selectedItemIds.length > 0 && selectedItemIds.length < equipmentTable.length;
+                                        let checkAllItems = selectedItemIds.length == equipmentTable.length;
+                                        let addEquipmentWarnings = {
+                                            MustSelectEquipment: '',
+                                            AvailableQuantityIsZero: '',
+                                            SelectedEquipmentQuantityIsZero: '',
+                                            SelectedDateConflictWorkOrders: '',
+                                            UnableToSelectItem: '',
+                                            ConflictMaintenanceDate: '',
+                                        };
+                                        // check if from date conflicts any item in work orders - start
+                                        let conflictItems = [];
+                                        let unableSelectItems = [];
+                                        let itemIdConflictNextMaintenanceDate = [];
+                                        context.checkItemsIsSafeToSelect(selectedItemIds, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                        
+                                        context.addEquipment(true, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                    }
+                                    context.loadEditOrder = false;
                                 }
-                            });
+                            });// get all equipments to display options
                         }
                     });
                 }
@@ -833,10 +834,10 @@ export default {
             if (this.selectedEquipments.length == 0) {
                 this.CreateWorkOrderErrors.NoEquipmentSelected = this.ErrorStrings.NoEquipmentSelected;
             }
-            if (this.selectedLocation.value === '') {
+            if (this.selectedLocation.value === '' && this.authUser.Role == 'Staff') {
                 this.CreateWorkOrderErrors.NoLocation = this.ErrorStrings.NoLocation;
             }
-            if (this.selectedTeam.value === '') {
+            if (this.selectedTeam.value === '' && this.authUser.Role == 'Staff') {
                 this.CreateWorkOrderErrors.NoTeam = this.ErrorStrings.NoTeam;
             }
             if (this.validateUpdateOrder()) {
@@ -847,95 +848,102 @@ export default {
                 context.axios.delete(deleteDetailApi)
                     .then(async (res) => {
                         if (res.status == 200) {
-                            let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${this.selectedLocation.value}/${this.selectedTeam.value}`;
-                            this.axios.get(teamLocationApi)
-                                .then(async function(res) {
-                                    if (res.data.Id) {
-                                        let result = res.data.Id;
-                                        // update team location
-                                        context.axios.put(`http://localhost:3000/api/work_order/${context.editWorkOrder.Id}`, {
-                                            teamLocationId: result,
-                                            expectingStartDate: moment(context.workOrderDateRange[0]).format('MM-DD-YYYY'),
-                                            expectingCloseDate: moment(context.workOrderDateRange[1]).format('MM-DD-YYYY'), 
-                                        });
-                                        let url = `${Server.WORKORDER_API_PATH}/status/${context.editWorkOrder.Id}`;
-                                        context.axios
-                                            .put(url, {
-                                                userId: context.authUser.Id,
-                                                newStatusName: 'Requested',
-                                                description: context.description.trim() == '' ? null : context.description.trim(),
-                                            });
-
-                                        // add updated work order details
-                                        var check = true;
-                                        for (const equipment of context.selectedEquipments) {
-                                            for (const itemId of equipment.equipmentItemIds) {
-                                                try {
-                                                    const response = await context.axios
-                                                                            .post(Server.WORKORDER_DETAIL_API_PATH, {
-                                                                                workOrderId: context.editWorkOrder.Id,
-                                                                                equipmentItemId: itemId,
-                                                                                startDate: equipment.fromDate,
-                                                                                dueDate: equipment.toDate,
-                                                                                maintainceCost: null,
-                                                                                description: null
-                                                                            });
-                                                    if (response.status == 200) {
-                                                        check = true;
-                                                    }
-                                                } catch(error) {
-                                                    console.log(error);
-                                                    check = false;
-                                                }
-                                            }
+                            let teamLocationId = null;
+                            if (this.authUser.Role == 'Staff') {
+                                let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${this.selectedLocation.value}/${this.selectedTeam.value}`;
+                                await this.axios.get(teamLocationApi)
+                                    .then(async function(res) {
+                                        if (res.data.Id) {
+                                            teamLocationId = res.data.Id;
+                                            // update team location                                            
                                         }
-                                        context.sending = false;
-                                        if (check) {
-                                            const notificationContent = `<strong>${context.authUser.Username}</strong> updated work order <strong>${context.editWorkOrder.Name}</strong>`;
-                                            let metaData = {
-                                                page: 'work_order',
-                                                elementId: context.editWorkOrder.Id,
-                                            };
-                                            await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                                                notificationContent: notificationContent,
-                                                userRole: 'Equipment Staff',
-                                                metaData: metaData,
-                                            }).then(async (res) => {
-                                                if (res.status == 200) {
-                                                    context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Equipment Staff'],}});
-                                                }
-                                            });
-                                            await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                                                notificationContent: notificationContent,
-                                                userRole: 'Manager',
-                                                metaData: metaData,
-                                            }).then(async (res) => {
-                                                if (res.status == 200) {
-                                                    context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Manager'],}});
-                                                }
-                                            });
+                                })
+                                .catch(error => {
+                                    alert(
+                                    "Create work order: " + error
+                                    );
+                                });
+                            }
 
-                                            context.$socket.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
+                            if (this.authUser.Role == 'Maintainer' || (this.authUser.Role == 'Staff' && teamLocationId)) {
+                                context.axios.put(`http://localhost:3000/api/work_order/${context.editWorkOrder.Id}`, {
+                                                teamLocationId: teamLocationId,
+                                                expectingStartDate: moment(context.workOrderDateRange[0]).format('MM-DD-YYYY'),
+                                                expectingCloseDate: moment(context.workOrderDateRange[1]).format('MM-DD-YYYY'), 
+                                            });
+                                let url = `${Server.WORKORDER_API_PATH}/status/${context.editWorkOrder.Id}`;
+                                context.axios
+                                    .put(url, {
+                                        userId: context.authUser.Id,
+                                        newStatusName: 'Requested',
+                                        description: context.description.trim() == '' ? null : context.description.trim(),
+                                    });
 
-                                            let obj = {
-                                                message: "Work Order updated successfully",
-                                                type: "success",
-                                                hideAllButton: true,
-                                                showXclose: false,
-                                            };
-                                            context.$refs.simplert.openSimplert(obj);
-                                            await Utils.sleep(500);
-                                            context.$router.push(`/work_order/${context.editWorkOrder.Id}`);
-                                        } else {
-                                            alert('Error');
-                                        }    
+                                // add updated work order details
+                                var check = true;
+                                for (const equipment of context.selectedEquipments) {
+                                    for (const itemId of equipment.equipmentItemIds) {
+                                        try {
+                                            const response = await context.axios
+                                                                    .post(Server.WORKORDER_DETAIL_API_PATH, {
+                                                                        workOrderId: context.editWorkOrder.Id,
+                                                                        equipmentItemId: itemId,
+                                                                        startDate: equipment.fromDate,
+                                                                        dueDate: equipment.toDate,
+                                                                        maintainceCost: null,
+                                                                        description: null
+                                                                    });
+                                            if (response.status == 200) {
+                                                check = true;
+                                            }
+                                        } catch(error) {
+                                            console.log(error);
+                                            check = false;
+                                        }
                                     }
-                            })
-                            .catch(error => {
-                                alert(
-                                "Create work order: " + error
-                                );
-                            });
+                                }
+                                context.sending = false;
+                                if (check) {
+                                    const notificationContent = `<strong>${context.authUser.Username}</strong> updated work order <strong>${context.editWorkOrder.Name}</strong>`;
+                                    let metaData = {
+                                        page: 'work_order',
+                                        elementId: context.editWorkOrder.Id,
+                                    };
+                                    await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                                        notificationContent: notificationContent,
+                                        userRole: 'Equipment Staff',
+                                        metaData: metaData,
+                                    }).then(async (res) => {
+                                        if (res.status == 200) {
+                                            context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Equipment Staff'],}});
+                                        }
+                                    });
+                                    await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                                        notificationContent: notificationContent,
+                                        userRole: 'Manager',
+                                        metaData: metaData,
+                                    }).then(async (res) => {
+                                        if (res.status == 200) {
+                                            context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Manager'],}});
+                                        }
+                                    });
+
+                                    context.$socket.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
+
+                                    let obj = {
+                                        message: "Work Order updated successfully",
+                                        type: "success",
+                                        hideAllButton: true,
+                                        showXclose: false,
+                                    };
+                                    context.$refs.simplert.openSimplert(obj);
+                                    await Utils.sleep(500);
+                                    context.$router.push(`/work_order/${context.editWorkOrder.Id}`);
+                                } else {
+                                    alert('Error');
+                                }    
+                                
+                            }
                         }
                     })
                     .catch((error) => {
@@ -1186,9 +1194,9 @@ export default {
                                     && context.getMilis(context.workOrderDateRange[1]) <= context.getMilis(order.ExpectingCloseDate))
                                 || (context.getMilis(context.workOrderDateRange[0]) < context.getMilis(order.ExpectingStartDate)
                                     && context.getMilis(context.workOrderDateRange[1]) > context.getMilis(order.ExpectingCloseDate)))) {
-                            ++D_Item1;
+                            ++D_Item2;
                             if (order.Status == 'Requested' || order.Status == 'Checked') {
-                                notAllowFactor_Item2 = 0.0000002;
+                                notAllowFactor_Item2 = 0.000002;
                             } else if (order.Status == 'Approved' || order.Status == 'In Progress') {
                                 notAllowFactor_Item2 = 0.0000001;
                             }
@@ -1568,14 +1576,23 @@ td {
   background: white;
 }
 
-.row-warning-light {
-  background: #FFF1B5 !important;
-}
-
 .row-even {
   background: #eeeeee;
 }
+
+.row-warning-light {
+  background: #fff1b5 !important;
+}
+
 .row-warning-dark {
-  background: #FFE99E !important;
+  background: #ffe99e !important;
+}
+
+.row-danger-light {
+  background: #FF7D7D !important;
+}
+
+.row-danger-dark {
+  background: #EF6565 !important;
 }
 </style>
