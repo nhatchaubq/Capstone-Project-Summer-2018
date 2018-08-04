@@ -14,9 +14,7 @@ const state = {
   notifications: [],
   searchValue: '',
   workOrderPage: {
-    orders: [],
-    searchValues: [],
-    myOrderViewMode: true,
+    workingOrderViewMode: true,
   },
   equipmentPage: {
     isTableMode: true
