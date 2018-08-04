@@ -714,7 +714,9 @@ export default {
                                             // alert(`Warehouse ${JSON.stringify(eqi.Warehouse)}, ${JSON.stringify(context.selectedLocation)}`)
                                             let distance = {text: 'n/a', value: 1};
                                             if (equipmentOption && equipmentOption.value != '') {
-                                                distance = await context.getDistance(eqi.Warehouse, context.selectedLocation);
+                                                if (context.selectedLocation && context.selectedLocation.value != '') {
+                                                    distance = await context.getDistance(eqi.Warehouse, context.selectedLocation)
+                                                }
                                                 let item = {
                                                     "Id": eqi.Id,
                                                     "EquipmentID": eqi.EquipmentID,
@@ -731,13 +733,14 @@ export default {
                                                     "Warehouse": eqi.Warehouse,
                                                     "WorkOrders": eqi.WorkOrders,
                                                     "Distance": distance,
-                                                    'Location': eqi.Location,
                                                 };
                                                 equipmentTable.push(item);
                                             }
                                             // alert(JSON.stringify(distance))
                                         }
-                                        context.sortItems(equipmentTable);
+                                        if (context.authUser.Role == 'Staff' && context.selectedLocation.value != '') {
+                                            context.sortItems(equipmentTable);
+                                        }
                                         let indeterminate = selectedItemIds.length > 0 && selectedItemIds.length < equipmentTable.length;
                                         let checkAllItems = selectedItemIds.length == equipmentTable.length;
                                         let addEquipmentWarnings = {
@@ -772,6 +775,9 @@ export default {
             if (equipmentOption.value == "") {
                 this.AddEquipmentWarnings.MustSelectEquipment = this.ErrorStrings.MustSelectEquipment;
             } 
+            if (this.selectedEquipmentQuantity == 0) {
+                this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
+            }
             if (this.validateAddEquipment() || editOrder) {
                 if (equipmentOption.value != "" &&
                         equipmentOption.totalQuantity > 0) {
@@ -1078,8 +1084,9 @@ export default {
                 let workOrderStartDate = moment(this.workOrderDateRange[0]).format('YYYY-MM-DD').valueOf();
                 let workOrderCloseDate = moment(this.workOrderDateRange[1]).format('YYYY-MM-DD').valueOf();
                 items.forEach(item => {
-                    if (moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() >= workOrderStartDate 
-                        && moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() <= workOrderCloseDate) {
+                    if (this.authUser.Role == 'Staff' 
+                        && (moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() >= workOrderStartDate 
+                            && moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() <= workOrderCloseDate)) {
                         itemIdConflictNextMaintenanceDate.push(item.Id);
                     }
                     if (item.WorkOrders) {
@@ -1288,15 +1295,21 @@ export default {
                                     "Warehouse": eqi.Warehouse,
                                     "WorkOrders": eqi.WorkOrders,
                                     "Distance": distance,
-                                    'Location': eqi.Location,
                                 };
                                 tempItems.push(item);
                             }
-                            this.equipmentTable = this.sortItems(tempItems);
+                            if (this.authUser.Role == 'Staff') {
+                                this.equipmentTable = this.sortItems(tempItems);
+                            } else {
+                                this.equipmentTable = tempItems;
+                            }
                             this.itemsLoading = false;
-                            this.selectedEquipmentItemIds.push(this.equipmentTable[0].Id);
-                            this.selectedEquipmentQuantity = 1;
-                            this.indeterminate = true;
+                            // this.selectedEquipmentItemIds.push(this.equipmentTable[0].Id);
+                            this.selectedEquipmentQuantity = 0;
+                            // this.selectedEquipmentQuantity = 1;
+                            // this.indeterminate = true;
+                            this.indeterminate = false;
+                            this.checkAllItems = false;
                         }
                     });
                 }
@@ -1322,13 +1335,17 @@ export default {
                     for (const item of equipment.equipmentItemList) {
                         item.Distance = await this.getDistance(item.Warehouse, this.selectedLocation);
                     }
-                    equipment.equipmentItemList = this.sortItems(equipment.equipmentItemList);
+                    if (this.authUser.Role == 'Staff') {
+                        equipment.equipmentItemList = this.sortItems(equipment.equipmentItemList);
+                    }
                 }
                 if (this.equipmentTable && this.equipmentTable.length) {
                     for (const item of this.equipmentTable) {
                         item.Distance = await this.getDistance(item.Warehouse, this.selectedLocation);
-                    } 
-                    this.equipmentTable = this.sortItems(this.equipmentTable);
+                    }
+                    if (this.authUser.Role == 'Staff') {
+                        this.equipmentTable = this.sortItems(this.equipmentTable);
+                    }
                 }
 
                 // alert('in 2')
@@ -1351,8 +1368,10 @@ export default {
         },
         'workOrderDateRange': function() {
             if (this.workOrderDateRange[0] && this.workOrderDateRange[1]) {
-                this.CreateWorkOrderErrors.NoWorkOrderDateRange = '';        
-                this.equipmentTable = this.sortItems(this.equipmentTable);
+                this.CreateWorkOrderErrors.NoWorkOrderDateRange = '';
+                if (this.authUser.Role == 'Staff') {
+                    this.equipmentTable = this.sortItems(this.equipmentTable);
+                }
                 if (this.selectedEquipmentItemIds.length > 0) {
                     this.conflictItems = [];
                     this.unableSelectItems = [];
@@ -1363,7 +1382,9 @@ export default {
                 }
                 if (this.selectedEquipments.length > 0) {
                     for (const eq of this.selectedEquipments) {
-                        eq.equipmentItemList = this.sortItems(eq.equipmentItemList);
+                        if (this.authUser.Role == 'Staff') {
+                            eq.equipmentItemList = this.sortItems(eq.equipmentItemList);
+                        }
                         eq.conflictItems = [];
                         eq.unableSelectItems = [];
                         eq.itemIdConflictNextMaintenanceDate = [];

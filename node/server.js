@@ -50,10 +50,8 @@ io.on("connection", function(socket) {
   socket.on("ORDER_STATUS_CHANGED", function(data) {
     socket.broadcast.emit("ORDER_STATUS_CHANGED", data);
   });
-  socket.on("CLOSE_WORK_ORDER_DETAIL", function(data) {
-    socket.broadcast.emit("ORDER_STATUS_CHANGED", {
-      data
-    });
+  socket.on('CLOSE_WORK_ORDER_DETAIL', function (data) {
+    socket.broadcast.emit('ORDER_STATUS_CHANGED', data);
   });
 });
 
@@ -66,7 +64,7 @@ app.use("/api/equipment", require("./routes/equipment"));
 app.use("/api/EquipmentCategory", require("./routes/EquipmentCategory"));
 app.use("/api/equipmentItemHistory", require("./routes/equipmentItemHistory"));
 app.use("/api/Vendor", require("./routes/vendor"));
-app.use("/api/work_order", require("./routes/work_order")(io));
+app.use("/api/work_order", require("./routes/work_order"));
 app.use("/api/location", require("./routes/location"));
 app.use("/api/EquipmentStatus", require("./routes/EquipmentStatus"));
 app.use("/api/role", require("./routes/accountRole"));
@@ -88,7 +86,7 @@ app.use("/api/floor", require("./routes/floor"));
 app.use("/api/tile", require("./routes/tile"));
 app.use("/api/unit", require("./routes/unit"));
 app.use("/api/maintenanceDuration", require("./routes/maintenanceDuration"));
-app.use("/api/notification", require("./routes/notification")(io));
+app.use("/api/notification", require("./routes/notification"));
 app.use("/api/map", require("./routes/map"));
 
 // app.use('/api/account/edit/id', require('./routes/account'));

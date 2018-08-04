@@ -1,5 +1,5 @@
 <template>
-    <div class="material-box material-shadow-animate order-block">
+    <div v-if="order" class="material-box material-shadow-animate order-block">
         <div class="order-block-title">{{ order.Name }}</div>
         <div class="order-status-icon" style="display: grid; grid-template-row: auto auto; text-align: center">
             <!-- <i class="material-icons">lock_open</i> -->
@@ -60,13 +60,13 @@ export default {
                 case 'Approved': { // Approved
                     return 'fa-thumbs-up approved';
                 }
-                case 'Rejected': { // InProgress
+                case 'Rejected': { // 
                     return 'fa-thumbs-down rejected';
                 }
-                case 'In Progress': { // Closed
+                case 'In Progress': { // 
                     return 'fa-tasks in-progress';
                 }
-                case 'Closed': { // Rejected
+                case 'Closed': { // 
                     return 'fa-archive closed';
                 }
                 case 'Cancelled': { // Cancelled

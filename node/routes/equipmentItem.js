@@ -338,4 +338,23 @@ router.put("/position/tile/:itemId", (req, res) => {
     .exec(res);
 });
 
+//chau - update last and next maintenance date
+router.put('/maintenance/:itemId', (req, res) => {
+    req.sql('update EquipmentItem set LastMaintainDate = getdate(), NextMaintainDate = @nextMaintainDate where Id = @itemId')
+        .param('itemId', req.params.itemId, TYPES.Int)
+        .param('nextMaintainDate', req.body.nextMaintainDate, TYPES.NVarChar)
+        .exec(res);
+});
+
+router.put('/runtimedays/:itemId', (req, res) => {
+    req.sql("declare @currentRuntimeDays int; "
+        + " declare @orderStartDate datetime; "
+        + " set @orderStartDate = (select StartDate from WorkOrder where Id = @workOrderId); "
+        + " set @currentRuntimeDays = (select RuntimeDays from EquipmentItem where Id = @itemId); "
+        + " update EquipmentItem set RuntimeDays = (DATEDIFF(day, @orderStartDate, getdate()) + @currentRuntimeDays) where Id = @itemId; ")
+        .param('itemId', req.params.itemId, TYPES.Int)
+        .param('workOrderId', req.body.workOrderId, TYPES.Int)
+        .exec(res);
+});
+
 module.exports = router;

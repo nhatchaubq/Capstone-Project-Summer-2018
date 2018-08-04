@@ -15,7 +15,7 @@
         </li>
         <div class="divider"></div>
         
-        <li>
+        <li v-if="authUser.Role != 'Admin'">
           <router-link to='/work_order'>
             <div class="sidebar-list-content" :class="isActive(menu.WorkOrder)">
               <i class="material-icons">assignment</i>
@@ -23,7 +23,7 @@
             </div>
           </router-link>
         </li>
-        <li>
+        <li v-if="authUser.Role != 'Admin'">
           <router-link to='/calendar'>
             <div class="sidebar-list-content" :class="isActive(menu.Calendar)">
             <i class="material-icons">event</i>            
@@ -31,7 +31,7 @@
           </div>
           </router-link>
         </li>
-        <li>
+        <li v-if="false">
           <router-link to='/report'>
             <div class="sidebar-list-content" :class="isActive(menu.Report)">
               <i class="material-icons">poll</i>
@@ -39,12 +39,12 @@
             </div>
           </router-link>
         </li>
-        <div class="divider"></div>
+        <div class="divider" v-if="authUser.Role != 'Admin'"></div>
             
         <li>
           <router-link to='/equipment'>
             <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
-            <i class="material-icons">domain</i>
+            <i class="material-icons">build</i>
             {{ menu.Equipment }}
           </div>
           </router-link>
@@ -92,7 +92,10 @@ import { sync } from "vuex-pathify";
 export default {
   name: "sidebar",
   computed: {
-    currentSelected: sync("title")
+    currentSelected: sync("title"),
+    authUser() {
+      return JSON.parse(window.localStorage.getItem('user'));
+    }
   },
   data() {
     return {
