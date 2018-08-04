@@ -56,6 +56,7 @@ import DienComponent from "./components/chartTest/test1.vue";
 
 //Dien addEquipmentCategory-start
 import AddEquipmentCategoryComponent from "./components/Equipment/AddEquipmentCategory.vue";
+import Page404Component from "./components/page/404.vue"
 // import TestPageNaviComponent from "./components/Vendor/testPageNavi.vue";
 //Dien addEquipmentCategory-end
 
@@ -514,6 +515,7 @@ let router = new Router({
       }
     },
     {
+
       path: "/myEquipment",
       component: MyEquipmentComponent,
 
@@ -524,7 +526,20 @@ let router = new Router({
       meta: {
         showSearchBar: true
       }
-    }
+    },
+           {
+      path: "/404",
+      component: Page404Component,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", "Page 404");
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+
 
     //Dien addEquipmentCategory-end
   ]

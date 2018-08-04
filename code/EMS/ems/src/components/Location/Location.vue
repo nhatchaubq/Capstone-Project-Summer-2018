@@ -1,6 +1,13 @@
-<template>    
+<template>  
+<div>
+  <div v-if="authUser.Role == 'Admin'">
+    <div style="font-weight:bold; color:red">
+      Sorry, You can't access this page!!!
+    </div>  
+  </div>
+  <div v-else>
     <div class="location-page" v-if="locations">
-      <div class="field is-grouped view-mode">
+      <div class="field is-grouped view-mode" v-if="authUser.Role == 'Manager'">
         <button class="btn-view-mode-left" :class='{"is-active": isListViewMode}' v-on:click="isListViewMode = true">List view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isListViewMode}' v-on:click="isListViewMode = false">Map view</button>
       </div>
@@ -88,8 +95,7 @@
                                         <div>
                                             {{ equipment.Name }}
                                         </div>                                            
-                                        <div style="font-size: .9rem">
-                                            <!-- Quantity: {{ equipment.EquipmentItems.length }} -->
+                                        <div style="font-size: .9rem">                                            
                                             Quantity: {{ equipment.EquipmentItems.length }}
                                         </div>
                                     </div>
@@ -225,12 +231,15 @@
           </div>
           
           <div class="info-field">
-            <div></div><div></div>
+            
             <div class="info-title">
              <i class="fa fa-calendar" style="color:gray;"></i>  Closed Date:
             </div>
             <div class="info-content" v-if="selectedWorkorder.ClosedDate">
                {{getFormatDate(selectedWorkorder.ClosedDate)}}
+            </div>
+            <div class="info-content"  v-else>
+              N/A
             </div>
           </div>                                        
         </div>
@@ -253,10 +262,10 @@
                 </tr>
                 <tr :key="item.Id" v-for="item in workorderDetail.EquipmentItems">                  
                   <td >{{item.SerialNumber}}</td>
-                  <td v-if="selectedWorkorder.Status == 'In Progress' || selectedWorkorder.Status == 'Closed'" :style="{color: item.ClosedDate? 'var(--status-closed)' : 'var(--status-in-progress)'}">{{item.ClosedDate? "Returned" : "Working" }}</td>
-                  <td v-if="selectedWorkorder.Status == 'Requested'" style="color: var(--status-requested)" >Requested</td>
+                  <td v-if="selectedWorkorder.Status == 'In Progress' || selectedWorkorder.Status == 'Closed'" :style="{color: item.ClosedDate? 'var(--blue)' : 'var(--success-color)'}">{{item.ClosedDate? "Returned" : "Working" }}</td>
+                  <!-- <td v-if="selectedWorkorder.Status == 'Requested'" style="color: var(--status-requested)" >Requested</td>
                   <td v-if="selectedWorkorder.Status == 'Checked'" style="color: var(--status-checked)" >Checked</td>
-                  <td v-if="selectedWorkorder.Status == 'Approved'" style="color: var(--status-approved)" >Approved</td>    
+                  <td v-if="selectedWorkorder.Status == 'Approved'" style="color: var(--status-approved)" >Approved</td>              
                 </tr>
               </tbody>
             </table>            
@@ -276,7 +285,10 @@
           </div>                     
         <div slot="footer"><button class="button" v-on:click="addPopUp = false" style="background-color:var(--primary-color);color:white">OK</button></div>
       </modal>
+    </div>
   </div>
+</div>  
+    
 </template>
 
 <script>
@@ -302,8 +314,22 @@ export default {
     }
   },
   created() {
+    // alert(JSON.parse(window.localStorage.getItem("user")).Id);
+    // alert(JSON.parse(window.localStorage.getItem("user")).Role);
+    let url = "";
+    if (
+      JSON.parse(window.localStorage.getItem("user")).Role == "Manager" ||
+      JSON.parse(window.localStorage.getItem("user")).Role == "Equipment Staff"
+    ) {
+      url = "http://localhost:3000/api/location/";
+    } else {
+      url = `http://localhost:3000/api/location/getLocation/${
+        JSON.parse(window.localStorage.getItem("user")).Id
+      }`;
+    }
+    // alert(url);
     this.axios
-      .get(Server.LOCATION_API_PATH)
+      .get(url)
       .then(response => {
         let data = response.data;
         data.forEach(location => {
@@ -394,12 +420,34 @@ export default {
       let url = `${
         Server.EQUIPMENTITEM_BY_ID_LOCATION_API_PATH
       }/getByEquipmentId/${location.Id}`;
+      if (
+        JSON.parse(window.localStorage.getItem("user")).Role ==
+        ("Staff" || "Maintainer")
+      ) {
+        url = `http://localhost:3000/api/equipmentItem/getItemByMem/${
+          location.Id
+        }`;
+      }
+
       this.axios
         .get(url)
         .then(response => {
           let data = response.data;
           data.forEach(eqtItem => {
-            this.equipments.push(eqtItem);
+            if (
+              JSON.parse(window.localStorage.getItem("user")).Role ==
+              ("Staff" || "Maintainer")
+            ) {
+              eqtItem.OfTeam.forEach(mem => {
+                if (
+                  JSON.parse(window.localStorage.getItem("user")).Id == mem.Id
+                ) {
+                  this.equipments.push(eqtItem);
+                }
+              });
+            } else {
+              this.equipments.push(eqtItem);
+            }
           });
         })
         .catch(error => {
@@ -411,9 +459,24 @@ export default {
       let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
       this.axios.get(url).then(response => {
         let data = response.data;
-        data.forEach(workorder => {
-          this.workorders.push(workorder);
-        });
+        if (
+          JSON.parse(window.localStorage.getItem("user")).Role ==
+          ("Staff" || "Maintainer")
+        ) {
+          data.forEach(workorder => {
+            workorder.OfTeam.forEach(mem => {
+              if (
+                JSON.parse(window.localStorage.getItem("user")).Id == mem.Id
+              ) {
+                this.workorders.push(workorder);
+              }
+            });
+          });
+        } else {
+          data.forEach(workorder => {
+            this.workorders.push(workorder);
+          });
+        }
       });
     },
     getFormatDate(date) {

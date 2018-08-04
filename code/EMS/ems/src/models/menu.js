@@ -11,12 +11,13 @@ let menu = {
     Accounts: 'Accounts',
     AccountDetails: 'Account Detail',
     Teams: 'Teams',
-    TeamDetails: 'Teams ',
+    // TeamDetails: 'Teams ',
     AccountsTeams: 'Accounts & Teams',
     TeamDetails: 'Team Details',
     Project: 'Project',
     Department: 'Department',
-    Test: 'test'
+    Test: 'test',
+    MyProfile: 'My Profile'
 }
 
 export default menu;

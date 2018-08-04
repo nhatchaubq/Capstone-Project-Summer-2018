@@ -16,7 +16,7 @@ app.use(cors());
 var connection = {
   server: "localhost",
   userName: "sa",
-  password: "tien1005",
+  password: "123456",
   port: "1433",
   options: {
     // instanceName : "SQLEXPRESS",
@@ -28,7 +28,7 @@ var connection = {
 
 app.use(bodyParser.json());
 
-app.use(function (request, respones, next) {
+app.use(function(request, respones, next) {
   request.sql = tediousExpress(connection);
   // respones.header('Access-Control-Allow-Origin', '*');
   // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -40,20 +40,18 @@ var server = app.listen(3000, () => {
 });
 
 var io = require("socket.io")(server);
-io.on('connection', function (socket) {
-  socket.on('NEW_WORK_ORDER_CREATED', function (data) {
-    socket.broadcast.emit('NEW_WORK_ORDER_CREATED', data);
+io.on("connection", function(socket) {
+  socket.on("NEW_WORK_ORDER_CREATED", function(data) {
+    socket.broadcast.emit("NEW_WORK_ORDER_CREATED", data);
   });
-  socket.on('NEW_NOTIFICATION', function (data) {
-    socket.broadcast.emit('NEW_NOTIFICATION', data);
+  socket.on("NEW_NOTIFICATION", function(data) {
+    socket.broadcast.emit("NEW_NOTIFICATION", data);
   });
-  socket.on('ORDER_STATUS_CHANGED', function (data) {
-    socket.broadcast.emit('ORDER_STATUS_CHANGED', data);
+  socket.on("ORDER_STATUS_CHANGED", function(data) {
+    socket.broadcast.emit("ORDER_STATUS_CHANGED", data);
   });
   socket.on('CLOSE_WORK_ORDER_DETAIL', function (data) {
-    socket.broadcast.emit('ORDER_STATUS_CHANGED', {
-      data
-    });
+    socket.broadcast.emit('ORDER_STATUS_CHANGED', data);
   });
 });
 
@@ -66,7 +64,7 @@ app.use("/api/equipment", require("./routes/equipment"));
 app.use("/api/EquipmentCategory", require("./routes/EquipmentCategory"));
 app.use("/api/equipmentItemHistory", require("./routes/equipmentItemHistory"));
 app.use("/api/Vendor", require("./routes/vendor"));
-app.use("/api/work_order", require("./routes/work_order")(io));
+app.use("/api/work_order", require("./routes/work_order"));
 app.use("/api/location", require("./routes/location"));
 app.use("/api/EquipmentStatus", require("./routes/EquipmentStatus"));
 app.use("/api/role", require("./routes/accountRole"));
@@ -88,7 +86,7 @@ app.use("/api/floor", require("./routes/floor"));
 app.use("/api/tile", require("./routes/tile"));
 app.use("/api/unit", require("./routes/unit"));
 app.use("/api/maintenanceDuration", require("./routes/maintenanceDuration"));
-app.use("/api/notification", require("./routes/notification")(io));
+app.use("/api/notification", require("./routes/notification"));
 app.use("/api/map", require("./routes/map"));
 
 // app.use('/api/account/edit/id', require('./routes/account'));
@@ -96,7 +94,7 @@ app.use("/api/map", require("./routes/map"));
 // app.use('/api/account/delete/id', require('./routes/'));
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   var err = new Error("Not Found: " + req.method + ":" + req.originalUrl);
   err.status = 404;
   next(err);

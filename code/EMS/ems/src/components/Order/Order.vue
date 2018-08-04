@@ -3,9 +3,6 @@
         <div class="order-content">
             <!-- <div class="orders-view">                 -->
                 <div class="">
-                    <!-- <div style="width: 100%;">
-                        Filter:
-                    </div> -->
                   <div class="filter" style="width: 100%; display: grid; grid-template-columns: 6% auto">
                         <div style="font-weight: bold">
                             Filter:
@@ -34,17 +31,17 @@
                             </div>
                         </div>
                   </div>
-                  <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer'" style="width: 60%; user-select: none">
+                  <div v-if="authUser.Role == 'Manager' || authUser.Role == 'Equipment Staff'" style="width: 60%; user-select: none">
                       <div class="row" style="margin: 0 !important; margin-bottom: 1rem">
                           <div class="view-mode col-4" 
-                                :class="{'view-mode-active': $store.state.workOrderPage.myOrderViewMode}"
-                                v-on:click="() => {myWorkOrderViewMode = true}">
-                              My Work Orders
+                                :class="{'view-mode-active': workingOrderViewMode}"
+                                v-on:click="() => {$store.state.workOrderPage.workingOrderViewMode = true}">
+                              Working Orders
                           </div>
                           <div class="view-mode col-4" 
-                                :class="{'view-mode-active': !$store.state.workOrderPage.myOrderViewMode}"
-                                v-on:click="() => {myWorkOrderViewMode = false}">
-                              All
+                                :class="{'view-mode-active': !workingOrderViewMode}"
+                                v-on:click="() => {$store.state.workOrderPage.workingOrderViewMode = false}">
+                              Maintaining Orders
                           </div>
                       </div>
                   </div>
@@ -55,8 +52,8 @@
             <!-- </div>             -->
         </div>
         <!-- order block -->
-        <div class="order-blocks" :style="{'max-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '72.5%' : '79.5%',
-                                            'min-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '72.5%' : '79.5%',}">
+        <div class="order-blocks" :style="{'max-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '79.5%' : '73%',
+                                            'min-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '79.5%' : '73%',}">
             <div class="emtpy-text" v-if="toDisplayWorkOrders.length == 0">
                 There is no orders to display.
             </div>
@@ -68,8 +65,8 @@
         <div id="order-detail-view">
             <!-- <order-detail class="order-detail" :order="selectedOrder" :statusList="options.status"></order-detail> -->
             <div v-if="selectedOrder" class="order-detail material-box material-shadow"  
-                    :style="{'max-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '62%' : '68.5%',
-                            'height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '62%' : '68.5%',}">
+                    :style="{'max-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '76%' : '69.5%',
+                            'min-height': (authUser.Role == 'Staff' || authUser.Role == 'Maintainer') ? '76%' : '69.5%',}">
               <div class="detail">
                   <div class="detail-header" style="display: grid" :style="((selectedOrder.WorkOrderStatus == 'Requested'|| selectedOrder.WorkOrderStatus == 'Checked' || selectedOrder.WorkOrderStatus == 'Rejected') && authUser.Id == selectedOrder.RequestUserID) ? 
                                                             'grid-template-columns: 16% 63% 21%;' : 'grid-template-columns: 16% 84%'">
@@ -92,7 +89,7 @@
                                 newStatusName = 'Cancelled';
                             }">Cancel</a> <!-- cancel work order -->
                         <span v-if="selectedOrder.WorkOrderStatus == 'Requested' || selectedOrder.WorkOrderStatus == 'Rejected'">
-                            <span v-if="">&nbsp;|&nbsp;</span>
+                            <span>&nbsp;|&nbsp;</span>
                             <!-- cancel work order -->
                             <a v-on:click="$router.push(`/work_order/edit/${selectedOrder.Id}`)">Edit</a> <!-- cancel work order -->
                         </span>
@@ -100,7 +97,7 @@
                   </div>
                   <div style="">                        
                         <div class="detail-contents" style="margin-top: 1rem;">
-                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :statusList="options.status.filter(status => status.name != 'Cancelled')"></step-progress>
+                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :lastOrderStatus="selectedOrder.WorkOrderRecord[0].OldStatus" :statusList="options.status.filter(status => status.name != 'Cancelled')"></step-progress>
                         </div>          
                           <!-- manager approve / reject -->
                         <div v-if="authUser.Role == 'Manager' && selectedOrder.WorkOrderStatus == 'Checked'" class="" style="margin-top: 1.5rem; margin-bottom: .5rem; display: flex; justify-content: center; align-content: center">
@@ -116,11 +113,15 @@
                             </div>
                         </div> <!-- manager approve / reject -->   
                         <div class="detail-contents">
-                            <div style="width: 100%; text-align: right" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Requested'">
-                                <button class="button btn-primary material-shadow-animate" v-on:click="() => {
+                            <div style="width: 100%; display: flex; justify-content: center; align-content: center" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Requested'" >
+                                <button class="button btn-primary material-shadow-animate" style="margin-right: .5rem; width: 5rem;" v-on:click="() => {
                                     newStatusName = 'Checked';
                                     showChangeStatusDialog = true;
-                                }">Change status to Checked</button>
+                                }">Checked</button>
+                                <button class="button btn-danger material-shadow-animate" style="width: 5rem;" v-on:click="() => {
+                                    showApproveRejectDialog = true;
+                                    approveWorkOrder = false;    
+                                }">Reject</button>
                             </div>
                             <div style="width: 100%; text-align: right" v-if="authUser.Role === 'Equipment Staff' && selectedOrder.WorkOrderStatus == 'Approved'">
                                 <button class="button btn-primary material-shadow-animate" v-on:click="() => {
@@ -146,6 +147,8 @@
                                                     blockError: '',
                                                     floorError: '',
                                                     tileError: '',
+                                                    descriptionError: '',
+                                                    cost: 0,
                                                 });
                                             }
                                         })
@@ -177,7 +180,9 @@
                                 </div>
                             </div>
                             <div class="detail-contents" style="width: 100%;">
-                                <span class="detail-label">Equipments:</span> 
+                                <div>
+                                    <span class="detail-label">Equipments: </span><span v-if="authUser.Id == selectedOrder.RequestUserID && selectedOrder.WorkOrderStatus == 'In Progress' && selectedOrder.Category == 'Working'"><a v-on:click="showUpdateAllEquipmentPostionDialog = true">update equipments' position</a></span>
+                                </div>
                                 <v-flex>
                                     <v-expansion-panel popout v-model="equipmentPanelIndex">
                                         <v-expansion-panel-content v-for="equipment in equipments" :key="'equipment' + equipment.Id">
@@ -202,9 +207,11 @@
                                             <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'item' + item.Id">
                                                 <v-card-text style="font-size: .9rem">
                                                     <div>
-                                                        Serial #: <strong>{{ item.SerialNumber }}</strong><span v-if="selectedOrder.WorkOrderStatus != 'Closed' && selectedOrder.WorkOrderStatus != 'Cancelled'"> (status: <strong>{{ item.Status.toLowerCase() }}</strong>)</span>
-                                                        <span v-if="(authUser.Role == 'Staff' || authUser.Role == 'Maintainer')
-                                                                    && selectedOrder.WorkOrderStatus == 'In Progress' && !item.DetailReturn" >
+                                                        Serial #: <strong>{{ item.SerialNumber }}</strong><span v-if="!item.DetailReturn && selectedOrder.WorkOrderStatus != 'Cancelled'"> (status: <strong>{{ item.Status.toLowerCase() }}</strong>)</span>
+                                                        <span v-if="(authUser.Role == 'Staff')
+                                                                    && selectedOrder.WorkOrderStatus == 'In Progress' 
+                                                                    && !item.DetailReturn
+                                                                    && selectedOrder.Category == 'Working'" >
                                                              | 
                                                             <a v-on:click="() => {
                                                                 showUpdateItemPosition = true;
@@ -227,6 +234,11 @@
                                                                     blockOption: null,
                                                                     floorOption: null,
                                                                     tileOption: null,
+                                                                    blockError: '',
+                                                                    floorError: '',
+                                                                    tileError: '',
+                                                                    descriptionError: '',
+                                                                    cost: 0,
                                                                 });
 
                                                                 showCloseWorkOrderDetailDialog = true;
@@ -236,9 +248,10 @@
                                                     </div>
                                                     <div v-if="selectedOrder.WorkOrderStatus != 'Cancelled' 
                                                                 && selectedOrder.WorkOrderStatus != 'Closed'
-                                                                && !item.DetailReturn">
+                                                                && !item.DetailReturn
+                                                                && selectedOrder.Category == 'Working'">
                                                         Current in: 
-                                                        <span v-if="item.BlockFloorTile">
+                                                        <span v-if="item.BlockFloorTile && selectedOrder.Category == 'Working'">
                                                             {{ item.BlockFloorTile.Location.Name }}
                                                             - Block {{ item.BlockFloorTile.BlockName }} - Floor {{ item.BlockFloorTile.FloorName }}
                                                             - Tile {{ item.BlockFloorTile.TileName }}
@@ -251,24 +264,24 @@
                                     </v-expansion-panel>
                                 </v-flex>
                             </div>                            
-                            <div class="detail-contents">
-                                    <span class="detail-label">Location: </span><span>{{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}</span>
+                            <div class="detail-contents" v-if="selectedOrder.Category == 'Working' && selectedOrder.TeamLocation">
+                                    <span class="detail-label">Location: </span><span>{{ selectedOrder.TeamLocation.Location.Name }} - {{ selectedOrder.TeamLocation.Location.Address }}</span>
                                     <!-- <img src="http://images.indianexpress.com/2016/11/hazaribagh-759.jpg" /> -->
                                     <GmapMap
-                                        :center="{lat:selectedOrder.Location.Latitude, lng:selectedOrder.Location.Longitude}"
+                                        :center="{lat:selectedOrder.TeamLocation.Location.Latitude, lng:selectedOrder.TeamLocation.Location.Longitude}"
                                         :zoom="16"
                                         map-type-id="terrain"
                                         style="width: 100%; height:25rem"
                                         :options="{gestureHandling: 'cooperative'}"
                                     >
                                     <GmapMarker
-                                        :position="google && new google.maps.LatLng(selectedOrder.Location.Latitude, selectedOrder.Location.Longitude)"
+                                        :position="google && new google.maps.LatLng(selectedOrder.TeamLocation.Location.Latitude, selectedOrder.TeamLocation.Location.Longitude)"
                                         :clickable="true"
                                     >
                                         <GmapInfoWindow v-if="(selectedOrder)"
-                                                    :position="google && new google.maps.LatLng(selectedOrder.Location.Latitude, 
-                                                                selectedOrder.Location.Longitude)">
-                                        {{ selectedOrder.Location.Name }} - {{ selectedOrder.Location.Address }}
+                                                    :position="google && new google.maps.LatLng(selectedOrder.TeamLocation.Location.Latitude, 
+                                                                selectedOrder.TeamLocation.Location.Longitude)">
+                                        {{ selectedOrder.TeamLocation.Location.Name }} - {{ selectedOrder.TeamLocation.Location.Address }}
                                         </GmapInfoWindow>
                                     </GmapMarker>
                                     </GmapMap>
@@ -314,7 +327,7 @@
                 <span>Are you sure to <span style="font-weight: bold;" :style="{color: approveWorkOrder ? 'var(--primary-color)' : 'var(--danger-color)'}">{{ approveWorkOrder ? 'approve' : 'reject' }}</span> this order <strong>#{{ selectedOrder.Id }} - {{ selectedOrder.Name }}</strong>?</span>
                 <div style="font-size: .95rem; font-weight: 500; margin-top: 1.5rem; margin-bottom: .5rem">
                     <span v-if="approveWorkOrder">Description (optional)</span>
-                    <span v-else>Why do you reject this order (required)</span>
+                    <span v-else>Why do you reject this order? (required)</span>
                 </div>
                 <textarea v-model="changeStatusDescription" class="input" style="min-height: 7rem; max-height: 7rem; overflow-y: auto" cols="30" rows="10"></textarea>
                 <div class="error-text" style="font-weight: bold !importa3nt"
@@ -323,8 +336,9 @@
                 </div>
             </div>
             <div slot="footer">
-                <button class="button" @click="showApproveRejectDialog = false">No</button>
+                <button style="width: 5rem" class="button" @click="showApproveRejectDialog = false">No</button>
                 <button class="button btn-primary" style="width: 5rem"
+                        :style="Errors.RejectedDescriptionNotProvided != '' ? 'cursor: not-allowed' : ''"
                         @click="approveRejectWorkOrder(selectedOrder.Id)">Yes</button>
             </div>
       </modal> <!-- approve / reject dialog -->
@@ -354,8 +368,32 @@
             </div>
       </modal> <!-- change status dialog -->
 
+        <!-- change all equipments position -->
+        <modal v-model="showUpdateAllEquipmentPostionDialog" @on-cancel="showUpdateAllEquipmentPostionDialog = false" style="font-family: Roboto">
+            <div slot="header" style="font-weight: bold">
+                    Change equipments' position
+            </div>
+            <div v-if="selectedOrder && authUser.Role == 'Staff'" style="font-size: 1rem">
+                You are about to change all equipments of work order <strong>{{ selectedOrder.Name }}</strong> to location <strong>{{ selectedOrder.TeamLocation.Location.Name }}.</strong>
+            </div>
+            <div v-if="Errors.errorInvalidPosition != ''" class="error-text">
+                {{ Errors.errorInvalidPosition }}
+            </div>
+            <div slot="footer">
+                <button style="" class="button" v-on:click="showUpdateAllEquipmentPostionDialog = false">
+                    Cancel
+                </button>
+                <button style="width: 5rem"
+                        :style="{cursor: Errors.errorInvalidPosition != '' ? 'not-allowed' : ''}"
+                        class="button btn-primary"
+                        v-on:click="changeEquipmentPosition()">
+                    Confirm
+                </button>
+            </div>
+        </modal><!-- change all equipments position -->
+
       <!-- close work detail dialog -->
-      <modal width="900" v-model="showCloseWorkOrderDetailDialog" style="font-family: Roboto" :mask-closable="false">
+      <modal :width="selectedOrder && selectedOrder.Category == 'Working' ? 900 : 1000" v-model="showCloseWorkOrderDetailDialog" style="font-family: Roboto" :mask-closable="false">
           <div slot="header" style="font-weight: bold;">
               <span v-if="toCloseEquipments.length > 0 && selectedOrder">
                     {{ toCloseEquipments.length == selectedOrder.WorkOrderDetails.length ? 'Close Order' : 'Close Order Detail' }}
@@ -367,15 +405,18 @@
               'overflow-y': 'auto',
           }">
             <div v-if="closeOrderDetailStep == 0">
-                <div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 2rem; display: grid; grid-template-columns: 40% 10% 10% 10% 30%;">
-                    <div>Equipment Item</div>
+                <div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 2rem; display: grid;"
+                    :style="{'grid-template-columns': (selectedOrder && selectedOrder.Category == 'Working') ? '40% 10% 10% 10% 29%' : '30% 8% 8% 8% 16% 30%'}">
+                    <div>Equipments</div>
                     <div style="text-align: center">Good</div>
                     <div style="text-align: center">Damaged</div>
                     <div style="text-align: center">Lost</div>
+                    <div v-if="selectedOrder && selectedOrder.Category == 'Maintain'" style="text-align: center; margin-right: 1rem;">Cost (VND)</div>
                     <div>Description</div>
                 </div>
-                <div v-if="toCloseEquipments.length > 0" style="display: grid; grid-template-columns: 10% 30% 10% 10% 10% 30%; padding: .5rem;"
-                        :style="{'background': value.status == 'Damaged' ? '#fff1b5' : (value.status == 'Lost' ? '#FF9898' : '')}"
+                <div v-if="toCloseEquipments.length > 0" style="display: grid; padding: .5rem;"
+                        :style="{'background': (value.status == 'Damaged' ? '#fff1b5' : (value.status == 'Lost' ? '#FF9898' : '')),
+                                'grid-template-columns': (selectedOrder && selectedOrder.Category == 'Working') ? '10% 30% 10% 10% 10% 29%' : '7% 23% 8% 8% 8% 16% 30%'}"
                         :key="'toCloseItem' + index" v-for="(value, index) in toCloseEquipments">
                     <div style="display: flex">
                         <img v-show="value.equipment.Image" :src="value.equipment.Image" :alt="value.equipment.Name" style="width: 3rem; height: 3rem;">
@@ -392,7 +433,25 @@
                         <label class="radio">
                             <input type="radio" :checked="value.status == 'Available'"
                                     :name="`${value.equipment.Name}${value.item.Id}`"
-                                    v-on:click="value.status = 'Available'">
+                                    v-on:click="() => {
+                                        value.status = 'Available';
+                                        value.descriptionError = '';
+                                        let check = true;
+                                        for (let i = 0; i < toCloseEquipments.length; i++) {
+                                            let value =  toCloseEquipments[i];
+                                            if ((value.status == 'Damaged' || value.status == 'Lost') && value.description.length < 5) {
+                                                value.descriptionError = 'You must provide description for this equipment.';
+                                                check = false;
+                                            } else {
+                                                value.descriptionError = '';
+                                            }
+                                        }
+                                        if (check) {
+                                            Errors.closeOrderDamagedLostItemMustProvideDescription = '';
+                                        } else {
+                                            Errors.closeOrderDamagedLostItemMustProvideDescription = ErrorString.closeOrderDamagedLostItemMustProvideDescription;
+                                        }
+                                    }">
                         </label>
                     </div>
                     <div style="text-align: center">
@@ -409,10 +468,50 @@
                                 v-on:click="value.status = 'Lost'">
                         </label>
                     </div>
+                    <div style="margin-right: 1rem;" v-if="selectedOrder && selectedOrder.Category == 'Maintain'">
+                        <input style="text-align: right;" class="input" type="text" v-model.trim="value.cost" v-on:input="() => {
+                            if (value.cost < 0 || value.cost == '') {
+                                value.cost = 0;
+                            } else if (value.cost.length > 12) {
+                                value.cost = '9,999,999,999';
+                            }
+                            value.cost = getNumberFormattedThousand(value.cost);
+                        }">
+                    </div>
                     <div>
                         <textarea class="input" cols="30" rows="10" 
-                                v-model="value.description"
-                                style="width: 100%; min-height: 3rem; max-height: 3rem"></textarea>
+                                v-model.trim="value.description"
+                                :style="value.descriptionError != '' ? 'border: 1px solid var(--danger-color);' : ''"
+                                style="width: 100%; min-height: 3rem; max-height: 3rem"
+                                v-on:input="() => {
+                                    if (value.description.length >= 5) {
+                                        let checkDescriptionDamagedLost = true;
+                                        let checkDescriptionMaintain = true;
+                                        for (let i = 0; i < toCloseEquipments.length; i++) {
+                                            let value =  toCloseEquipments[i];
+                                            if ((value.status == 'Damaged' || value.status == 'Lost') && value.description.length < 5) {
+                                                value.descriptionError = 'You must provide description for this equipment.';
+                                                checkDescriptionDamagedLost = false;
+                                            } else if (selectedOrder && selectedOrder.Category == 'Maintain' && value.description.length < 5) {
+                                                value.descriptionError = 'You must provide description for this equipment.';
+                                                checkDescriptionMaintain = false;
+                                            }
+                                            else {
+                                                value.descriptionError = '';
+                                            }
+                                        }
+                                        if (checkDescriptionMaintain && checkDescriptionDamagedLost) {
+                                            Errors.closeOrderDamagedLostItemMustProvideDescription = '';
+                                            Errors.closeOrderMaintenanceMustProvideDescription = '';
+                                        }
+                                        if (!checkDescriptionDamagedLost) {
+                                            Errors.closeOrderDamagedLostItemMustProvideDescription = ErrorString.closeOrderDamagedLostItemMustProvideDescription;
+                                        }
+                                        if (!checkDescriptionMaintain) {
+                                            Errors.closeOrderMaintenanceMustProvideDescription = ErrorString.closeOrderMaintenanceMustProvideDescription;
+                                        }
+                                    }
+                                }"></textarea>
                     </div>
                 </div>
             </div>
@@ -530,15 +629,24 @@
           </div>
           <div slot="footer">
               <div class="row col-12" style="margin: 0; padding: 0; width: 100%">
+                <div v-if="closeOrderDetailStep == 0 && (Errors.closeOrderDamagedLostItemMustProvideDescription != '' || Errors.closeOrderMaintenanceMustProvideDescription != '')"
+                    class="row col-8" style="margin: 0; padding: 0; width: 60%">
+                    <div class="error-text" v-if="Errors.closeOrderDamagedLostItemMustProvideDescription != ''">{{ Errors.closeOrderDamagedLostItemMustProvideDescription }}</div>
+                    <div class="error-text" v-if="Errors.closeOrderMaintenanceMustProvideDescription != ''">{{ Errors.closeOrderMaintenanceMustProvideDescription }}</div>
+                </div>
+                <div v-else class="row col-8" style="margin: 0; padding: 0; width: 60%">
+                    <!-- this is dummy div for creating empty space --> 
+                </div>
                 <div v-if="closeOrderDetailStep == 1" class="row col-8" style="margin: 0; padding: 0; width: 60%">
                     <div style="margin: 0; padding: 0; text-align: left" class="col-2">
                         <span style="font-weight: bold; font-size: 0.95rem; margin-right: 1rem; position: relative; top: .5rem">Location: </span>
                     </div>
                     <div style="width: 100%; margin: 0; padding: 0;" class="col-8">
-                        <basic-select :options="locationOptions" 
+                        <basic-select :options="locationOptions"
                             :selected-option="selectedLocationOption"
                             :style="selectedLocationOptionError != '' ? 'border: 1px solid var(--danger-color)' : ''"
                             placeholder="Select a location" 
+                            :isDisabled="checkLostItemEqualItemToClose()"
                             @select="locationOption => {
                                 selectedLocationOptionError = '';
                                 selectedLocationOption = locationOption;
@@ -581,20 +689,53 @@
                 <div class="col-4" style="margin: 0; padding: 0; width: 100%">
                     <button v-if="closeOrderDetailStep == 1" v-on:click="closeOrderDetailStep = 0" 
                                 class="button">Back</button>
-                    <button class="button btn-primary" 
-                            v-on:click="() => {
+                    <button class="button btn-primary"
+                            :style="(Errors.closeOrderDamagedLostItemMustProvideDescription != '' || Errors.closeOrderMaintenanceMustProvideDescription != '') ? 
+                                        'cursor: not-allowed' : ''"
+                            @click="() => {
                                 if (closeOrderDetailStep == 0) {
-                                    closeOrderDetailStep = 1;
+                                    let checkDescriptionDamagedLost = true;
+                                    let checkDescriptionMaintain = true;
+                                    Errors.closeOrderDamagedLostItemMustProvideDescription = '';
+                                    Errors.closeOrderMaintenanceMustProvideDescription = '';
+                                    for (let i = 0; i < toCloseEquipments.length; i++) {
+                                        let value =  toCloseEquipments[i];
+                                        if ((value.status == 'Damaged' || value.status == 'Lost') && value.description.length < 5) {
+                                            value.descriptionError = 'You must provide description for this equipment.';
+                                            checkDescriptionDamagedLost = false;
+                                        } else if (selectedOrder && selectedOrder.Category == 'Maintain' && value.description.length < 5) {
+                                            value.descriptionError = 'You must provide description for this equipment.';
+                                            checkDescriptionMaintain = false;
+                                        }
+                                        else {
+                                            value.descriptionError = '';
+                                        }
+                                    }
+                                    if (checkDescriptionMaintain && checkDescriptionDamagedLost) {
+                                        if (selectedOrder && selectedOrder.Category == 'Working') {
+                                            closeOrderDetailStep = 1;
+                                        } else if (selectedOrder && selectedOrder.Category == 'Maintain') {
+                                            closeWorkOrderDetails();
+                                        }
+                                        Errors.closeOrderDamagedLostItemMustProvideDescription = '';
+                                        Errors.closeOrderMaintenanceMustProvideDescription = '';
+                                    }
+                                    if (!checkDescriptionDamagedLost) {
+                                        Errors.closeOrderDamagedLostItemMustProvideDescription = ErrorString.closeOrderDamagedLostItemMustProvideDescription;
+                                    }
+                                    if (!checkDescriptionMaintain) {
+                                        Errors.closeOrderMaintenanceMustProvideDescription = ErrorString.closeOrderMaintenanceMustProvideDescription;
+                                    }
                                 } else if (closeOrderDetailStep == 1) {
-                                    if (!selectedLocationOption.value) {
+                                    if (!selectedLocationOption.value && !checkLostItemEqualItemToClose()) {
                                         selectedLocationOptionError = 'You must select a location';
                                     } else {
                                         closeWorkOrderDetails();
                                     }
                                 }
                             }">
-                        {{ closeOrderDetailStep == 0 ? 
-                            'Next: Update Position' : ((toCloseEquipments.length == selectedOrder.WorkOrderDetails.length) ? 'Close Order' : 'Close Order Detail') }}
+                        {{ (closeOrderDetailStep == 0 && (selectedOrder && selectedOrder.Category == 'Working')) ? 
+                            'Next: Update Position' : ((selectedOrder && (toCloseEquipments.length == selectedOrder.WorkOrderDetails.length)) ? 'Close Order' : 'Close Order Detail') }}
                             <i v-show="closeOrderDetailStep == 1 && sending" class="fa fa-circle-o-notch fa-spin"></i>
                     </button>
                 </div>
@@ -646,8 +787,8 @@
                             </div>
                     </div>
                 </div>
-                <div v-if="errorUpdatePosition != ''" style="margin-top: 1rem;">
-                    <span class="error-text" style="font-weight: 500 !important">{{ errorUpdatePosition }}</span>
+                <div v-if="Errors.errorUpdatePosition != ''" style="margin-top: 1rem;">
+                    <span class="error-text" style="font-weight: 500 !important">{{ Errors.errorUpdatePosition }}</span>
                 </div>
             </div>
             <div slot="footer">
@@ -662,9 +803,9 @@
                     <button class="button btn-primary" 
                         v-on:click="() => {
                             if (!updateBlock || !updateFloor || !updateTile) {
-                                errorUpdatePosition = 'You must select block, floor and tile to update position.';
+                                Errors.errorUpdatePosition = ErrorString.errorUpdatePosition;
                             }
-                            if (errorUpdatePosition == '' && updateTile) {
+                            if (Errors.errorUpdatePosition == '' && updateTile) {
                                 updateItemPosition(toUpdatePositionItem.Id, updateTile.Id);
                             }
                     }">Save changes</button>
@@ -690,6 +831,8 @@ import { gmapApi } from "vue2-google-maps";
 import { BasicSelect } from "vue-search-select";
 import io from "socket.io-client";
 import Utils from "@/utils.js";
+import numeral from 'numeral';
+
 
 export default {
   components: {
@@ -701,20 +844,14 @@ export default {
     BasicSelect
   },
   sockets: {
-    NEW_WORK_ORDER_CREATED: function() {
-      this.getWorkOrders();
-      this.filterOrders();
-    },
-    ORDER_STATUS_CHANGED: function(data) {
-      if (
-        !data.noNeedToRefreshWorkOrderUserId ||
-        (data.noNeedToRefreshWorkOrderUserId &&
-          this.authUser.Id != data.noNeedToRefreshWorkOrderUserId)
-      ) {
-        this.getWorkOrders();
-        this.filterOrders();
-      }
-    }
+        NEW_WORK_ORDER_CREATED: function() {
+            this.getWorkOrders();
+            // this.filterOrders();
+        },
+        ORDER_STATUS_CHANGED: function() {
+            this.getWorkOrders();
+            // this.filterOrders();
+        }
   },
   async created() {
     await this.axios
@@ -763,51 +900,61 @@ export default {
   },
   data() {
     return {
-      socket: io(`http://localhost:3000`),
-      errorUpdatePosition: "",
-      tempValues: null, // to hold the original orders when apply filters
-      myWorkOrderViewMode: null,
-      toDisplayWorkOrders: [],
-      myWorkOrders: [],
-      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
-      selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
-      equipments: [], // to hold equipments in the selected work order
-      equipmentPanelIndex: [true],
-      selectedEquipmentPanelIndex: -1,
-      editMode: false, // edit work order detail
-      equipmentItem: null, // when select an item in the list of equipment of selected order
-      selectedFilter: null, // to hold the selected value when change in <select></select>
-      searchMode: false, // flag to display the "Clear search result"
-      options: {
-        priorities: [],
-        status: []
-      },
-      // filterValues: [],
-      filterOptionsValues: {
-        priorities: [],
-        status: []
-      },
-      optionTypes: {
-        STATUS: 0,
-        PRIORITY: 1
-      },
-      showCancelDialog: false,
-      showApproveRejectDialog: false,
-      showChangeStatusDialog: false,
-      showCloseWorkOrderDialog: false,
-      newStatusId: -1,
-      newStatusName: "",
-      approveWorkOrder: false,
-      changeStatusDescription: "",
-      viewDetailMode: true,
-      Errors: {
-        RejectedDescriptionNotProvided: ""
-      },
-      showUpdateItemPosition: false,
+        // socket: io(`http://localhost:3000`),
+        ErrorString: {
+            errorInvalidPosition: 'The location has invalid positions (missing blocks or floors or tiles).',
+            closeOrderDamagedLostItemMustProvideDescription: 'You must provide description for the damaged/lost equipments.',
+            errorUpdatePosition: 'You must select block, floor and tile to update position.',
+            closeOrderMaintenanceMustProvideDescription: 'You must provide description for maintained equipments.',
+        },
+        Errors: {
+            RejectedDescriptionNotProvided: '',
+            closeOrderDamagedLostItemMustProvideDescription: '',
+            errorUpdatePosition: '',
+            errorInvalidPosition: '',
+            closeOrderMaintenanceMustProvideDescription: '',
+        },
+        tempValues: null, // to hold the original orders when apply filters
+        toDisplayWorkOrders: [],
+        workingOrders: [],
+        maintainingOrders: [],
+        workOrders: [], // orders data to display in orderblocks <order-block></order-block>
+        selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
+        equipments: [], // to hold equipments in the selected work order
+        equipmentPanelIndex: [true, ],
+        selectedEquipmentPanelIndex: -1,
+        editMode: false, // edit work order detail
+        equipmentItem: null, // when select an item in the list of equipment of selected order
+        selectedFilter: null, // to hold the selected value when change in <select></select>
+        searchMode: false, // flag to display the "Clear search result"
+        options: { 
+            priorities: [],
+            status: []
+        },
+        // filterValues: [],
+        filterOptionsValues: {
+            priorities: [],
+            status: []
+        },
+        optionTypes: {
+            STATUS: 0,
+            PRIORITY: 1
+        },
+        showCancelDialog: false,
+        showApproveRejectDialog: false,
+        showChangeStatusDialog: false,
+        showCloseWorkOrderDialog: false,
+        newStatusId: -1,
+        newStatusName: '',
+        approveWorkOrder: false,
+        changeStatusDescription: '',
+        viewDetailMode: true,        
+        showUpdateItemPosition: false,
+        
+        blockFloorTiles: [],
+        toUpdateSelectedLocation: null,
+        locationOptions: [],        
 
-      blockFloorTiles: [],
-      toUpdateSelectedLocation: null,
-      locationOptions: [],
 
       toUpdatePositionItem: null,
       updateBlock: null,
@@ -823,60 +970,69 @@ export default {
       closeOrderDetailStep: 0,
       selectedLocationOptionError: "",
 
-      selectedLocationOption: {},
-      sending: false
+
+        showUpdateAllEquipmentPostionDialog: false,
+
+        selectedLocationOption: {},
+        sending: false,
     };
   },
   computed: {
-    searchValues: sync("workOrderPage.searchValues"),
+    workingOrderViewMode: sync("workOrderPage.workingOrderViewMode"),
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
     },
-    google: gmapApi
+    google: gmapApi,
   },
   methods: {
     getWorkOrders() {
-      this.myWorkOrderViewMode = null;
-      this.axios
-        .get(Server.WORKORDER_API_PATH)
-        .then(response => {
-          if (response.data.WorkOrders) {
-            let data = response.data.WorkOrders;
-            // this.$store.state.workOrderPage.orders = data;
-            this.workOrders = data;
-            if (
-              this.authUser.Role === "Staff" ||
-              this.authUser.Role === "Maintainer"
-            ) {
-              this.myWorkOrders = data.filter(
-                order => order.RequestUserID == this.authUser.Id
-              );
-              this.toDisplayWorkOrders = this.myWorkOrders;
-              this.myWorkOrderViewMode = true;
-            } else {
-              this.toDisplayWorkOrders = this.workOrders;
-              this.myWorkOrderViewMode = false;
+        this.axios.get(Server.WORKORDER_API_PATH).then((response) => {
+            if (response.data.WorkOrders) {
+                let data = response.data.WorkOrders;
+                this.tempValues = null;
+                this.workOrders = data;
+                if (this.authUser.Role == 'Manager' || this.authUser.Role == 'Equipment Staff') {
+                    this.workingOrders = data.filter(order => order.Category == 'Working');
+                    this.maintainingOrders = data.filter(order => order.Category == 'Maintain');
+                    if (this.workingOrderViewMode) {
+                        this.toDisplayWorkOrders = data.filter(order => order.Category == 'Working');
+                    } else {
+                        this.toDisplayWorkOrders = data.filter(order => order.Category == 'Maintain');
+                    }
+                } else {
+                    this.toDisplayWorkOrders = data.filter(order => order.RequestUserID == this.authUser.Id);
+                }
+                if (this.selectedOrder) {
+                    let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
+                    if (order) {
+                        this.selectedOrder = order;
+                        this.getEquipmentsOfWorkOrder(order);
+                        if (order.TeamLocation && order.Category == 'Working') {
+                            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
+                        }
+                    } else {
+                        this.selectedOrder = null;
+                        this.$router.replace('/work_order');
+                    }
+                } else if (this.$route.params && this.$route.params.orderId) {
+                    let order = this.toDisplayWorkOrders.filter(o => o.Id == this.$route.params.orderId)[0];
+                    if (order) {
+                        this.selectedOrder = order;
+                        this.getEquipmentsOfWorkOrder(order);
+                        if (order.TeamLocation && order.Category == 'Working') {
+                            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
+                        }
+                    } else {
+                        this.selectedOrder = null;
+                        this.$router.replace('/work_order');
+                    }
+                } 
+                this.filterOrders();
             }
-            if (this.selectedOrder) {
-              this.selectedOrder = data.filter(
-                order => order.Id == this.selectedOrder.Id
-              )[0];
-              this.getEquipmentsOfWorkOrder(this.selectedOrder);
-            } else if (this.$route.params && this.$route.params.orderId) {
-              this.selectedOrder = this.toDisplayWorkOrders.filter(
-                order => order.Id == this.$route.params.orderId
-              )[0];
-              if (this.selectedOrder) {
-                this.getEquipmentsOfWorkOrder(this.selectedOrder);
-              }
-            }
-            this.filterOrders();
-          }
-        })
-        .catch(error => {
-          if (error == "Request failed with status code 500") {
-            this.$router.push("/500");
-          }
+        }).catch(error => {
+            console.log(error);
+            this.$router.push('/500');
+
         });
     },
     getBlockFloorTile() {
@@ -933,19 +1089,19 @@ export default {
       });
     },
     setSelectedOrder(order) {
-      // this.equipmentPanelIndex = -1;
-      if (this.selectedOrder == order) {
-        this.selectedOrder = null;
-        this.$router.replace("/work_order");
-      } else {
-        // this.viewDetailMode = true;
-        this.$router.replace(`/work_order/${order.Id}`);
-        // this.selectedOrder = order;
-        // get equipments in the selected work order - start
-        // this.getEquipmentsOfWorkOrder(order);
-        // this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.Location.Id)[0];
-        // get equipments in the selected work order - end
-      }
+        // this.equipmentPanelIndex = -1;
+        if (this.$route.params && (this.$route.params.orderId == order.Id)) {
+            this.$router.replace('/work_order');
+            this.selectedOrder = null;
+        } else {
+            // this.viewDetailMode = true;
+            this.$router.replace(`/work_order/${order.Id}`)
+            // this.selectedOrder = order;
+            // get equipments in the selected work order - start
+            // this.getEquipmentsOfWorkOrder(order);
+            // this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.Location.Id)[0];
+            // get equipments in the selected work order - end
+        }
     },
     async getEquipmentsOfWorkOrder(workOrder) {
       this.equipments = [];
@@ -1005,7 +1161,8 @@ export default {
           this.tempValues = this.toDisplayWorkOrders;
         }
         this.toDisplayWorkOrders = []; // reset orders before applying new filters
-        this.selectedOrder = null;
+        // this.selectedOrder = null;
+        // this.$router.replace('/work_order');
         if (this.filterOptionsValues.status.length > 0) {
           this.filterOptionsValues.status.forEach(status => {
             this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(
@@ -1018,7 +1175,7 @@ export default {
           this.toDisplayWorkOrders = this.tempValues;
         }
         if (this.filterOptionsValues.priorities.length > 0) {
-          var tempValues = [];
+          let tempValues = [];
           this.filterOptionsValues.priorities.forEach(priority => {
             tempValues = tempValues.concat(
               this.toDisplayWorkOrders.filter(
@@ -1031,6 +1188,14 @@ export default {
         this.toDisplayWorkOrders = this.sortOrdersByDate(
           this.toDisplayWorkOrders
         );
+
+        if (this.selectedOrder) {
+            let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
+            if (!order) {
+                this.selectedOrder = null;
+                this.$router.replace('/work_order');
+            }
+        }
         //   this.selectedFilter = null;
         // for (var i = 0; i < this.filterValues.length; i++) {
         //     this.orders = this.sortOrdersByDate(this.orders);
@@ -1039,14 +1204,14 @@ export default {
     },
     sortOrdersByDate(orders) {
       return orders.sort((order1, order2) => {
-        var date1 = parseInt(new Date(order1.CreateDate).getTime());
-        var date2 = parseInt(new Date(order2.CreateDate).getTime());
+        let date1 = parseInt(new Date(order1.CreateDate).getTime());
+        let date2 = parseInt(new Date(order2.CreateDate).getTime());
         // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
-        var result = date2 - date1;
+        let result = date2 - date1;
         return result > 0
           ? 1
           : result < 0 ? -1 : order2.PriorityID - order1.PriorityID;
-      });
+      });      
     },
     addFilter(filter, event) {
       if (event.target.checked) {
@@ -1102,7 +1267,7 @@ export default {
     },
     async changeWorkOrderStatus(orderId, newOrderStatusName) {
       let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
-      await this.axios
+      this.axios
         .put(url, {
           userId: this.authUser.Id,
           newStatusName: newOrderStatusName,
@@ -1117,133 +1282,94 @@ export default {
             if (
               newOrderStatusName == "Approved" ||
               newOrderStatusName == "In Progress" ||
-              newOrderStatusName == "Closed"
-            ) {
-              let newItemStatusName = "";
-              if (newOrderStatusName == "Approved") {
-                newItemStatusName = "Working Approved";
-              } else if (newOrderStatusName == "In Progress") {
-                newItemStatusName = "Working";
-              }
-              for (const orderDetail of this.selectedOrder.WorkOrderDetails) {
-                let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/chau/${
-                  orderDetail.EquipmentItem.Id
-                }`;
-                await this.axios.put(equipmentStatusApi, {
-                  userId: this.authUser.Id,
-                  newStatusName: newItemStatusName,
-                  description: null
-                });
-              }
+              newOrderStatusName == "Closed") {
+                let newItemStatusName = "";
+                if (newOrderStatusName == "Approved") {
+                    if (this.selectedOrder.Category == 'Working') {
+                        newItemStatusName = "Working Approved";
+                    } else if (this.selectedOrder.Category == 'Maintain') {
+                        newItemStatusName = "Maintainance Approved";
+                    }
+                } else if (newOrderStatusName == "In Progress") {
+                    if (this.selectedOrder.Category == 'Working') {
+                        newItemStatusName = "Working";
+                    } else if (this.selectedOrder.Category == 'Maintain') {
+                        newItemStatusName = "Maintaining";
+                    }
+                }
+                for (const orderDetail of this.selectedOrder.WorkOrderDetails) {
+                    let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/chau/${orderDetail.EquipmentItem.Id}`;
+                    await this.axios.put(equipmentStatusApi, {
+                        userId: this.authUser.Id,
+                        newStatusName: newItemStatusName,
+                        description: null
+                    });
+                }
             }
             this.$socket.emit("ORDER_STATUS_CHANGED", {});
 
             // make new notification
-            var teamLeaderNotiContent = "";
-            var managerNotiContent = "";
+            let teamLeaderNotiContent = '';
+            let managerNotiContent = '';
             let metaData = {
               page: "work_order",
               elementId: this.selectedOrder.Id
             };
             // prepare notification content - start
-            if (
-              newOrderStatusName == "Checked" ||
-              newOrderStatusName == "Approved" ||
-              newOrderStatusName == "Rejected"
-            ) {
-              teamLeaderNotiContent = `${this.authUser.Role} <strong>${
-                this.authUser.Username
-              }</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> your work order <strong>${
-                this.selectedOrder.Name
-              }</strong>`;
-              if (
-                (newOrderStatusName == "Checked" ||
-                  newOrderStatusName == "Rejected") &&
-                this.authUser.Role == "Equipment Staff"
-              ) {
-                managerNotiContent = `${this.authUser.Role} <strong>${
-                  this.authUser.Username
-                }</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> work order <strong>${
-                  this.selectedOrder.Name
-                }</strong>`;
-              }
-            } else if (newOrderStatusName == "In Progress") {
-              teamLeaderNotiContent = `Your work order <strong>${
-                this.selectedOrder.Name
-              }</strong> has changed status to <strong>In Progress</strong>. Please remember to change new position for equipments.`;
+            if (newOrderStatusName == "Checked" 
+                || newOrderStatusName == 'Approved' 
+                || newOrderStatusName == 'Rejected') {
+                teamLeaderNotiContent = `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> your work order <strong>${this.selectedOrder.Name}</strong>`;
+                if ((newOrderStatusName == "Checked" || newOrderStatusName == 'Rejected') && this.authUser.Role == 'Equipment Staff') {
+                    managerNotiContent = `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> work order <strong>${this.selectedOrder.Name}</strong>`;
+                }
+            } else if (newOrderStatusName == 'In Progress' && this.selectedOrder.Category == 'Working') {
+                teamLeaderNotiContent = `Your work order <strong>${this.selectedOrder.Name}</strong> has changed status to <strong>In Progress</strong>. Please remember to change new position for equipments.`;
             } // prepare notification content - end
-
-            if (newOrderStatusName != "Closed") {
-              // notification for managers and equipment staff - start
-              if (
-                (newOrderStatusName == "Checked" ||
-                  newOrderStatusName == "Rejected") &&
-                this.authUser.Role == "Equipment Staff"
-              ) {
-                await this.axios
-                  .post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                    notificationContent: managerNotiContent,
-                    userRole: "Manager",
-                    metaData: JSON.stringify(metaData)
-                  })
-                  .then(res => {
-                    if (res.status == 200) {
-                      this.$socket.emit("NEW_NOTIFICATION", {
-                        needToUpdateNotification: { roles: ["Manager"] }
-                      });
-                    }
-                  });
-              } else if (newOrderStatusName == "Cancelled") {
-                await this.axios
-                  .post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                    notificationContent: `${this.authUser.Role} <strong>${
-                      this.authUser.Username
-                    }</strong> has cancelled work order <strong>${
-                      this.selectedOrder.Name
-                    }</strong>`,
-                    userRole: "Equipment Staff",
-                    metaData: JSON.stringify(metaData)
-                  })
-                  .then(res => {
-                    if (res.status == 200) {
-                      this.$socket.emit("NEW_NOTIFICATION", {
-                        needToUpdateNotification: { roles: ["Equipment Staff"] }
-                      });
-                    }
-                  });
-                await this.axios
-                  .post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                    notificationContent: `${this.authUser.Role} ${
-                      this.authUser.Username
-                    } has cancelled work order ${this.selectedOrder.Name}`,
-                    userRole: "Manager",
-                    metaData: JSON.stringify(metaData)
-                  })
-                  .then(res => {
-                    if (res.status == 200) {
-                      this.$socket.emit("NEW_NOTIFICATION", {
-                        needToUpdateNotification: { roles: ["Manager"] }
-                      });
-                    }
-                  });
-              } // notification for managers and equipment staff - end
-              // notification for teamleader and maintainer - start
-              if (newOrderStatusName != "Cancelled") {
-                await this.axios
-                  .post(
-                    `${Server.NOTIFICATION_API_PATH}/userid/${
-                      this.selectedOrder.RequestUserID
-                    }`,
-                    {
-                      notificationContent: teamLeaderNotiContent,
-                      metaData: JSON.stringify(metaData)
-                    }
-                  )
-                  .then(res => {
-                    if (res.status == 200) {
-                      this.$socket.emit("NEW_NOTIFICATION", {
-                        needToUpdateNotification: {
-                          userIds: [this.selectedOrder.RequestUserID]
+            
+            if (newOrderStatusName != 'Closed') {
+                // notification for managers and equipment staff - start
+                if ((newOrderStatusName == 'Checked' || newOrderStatusName == 'Rejected') && this.authUser.Role == 'Equipment Staff') {
+                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                        notificationContent: managerNotiContent,
+                        userRole: 'Manager',
+                        metaData: JSON.stringify(metaData),
+                    }).then((res) => {
+                        if (res.status == 200) {
+                            this.$socket.emit('NEW_NOTIFICATION', {});
+                        }
+                    });
+                } else if (newOrderStatusName == 'Cancelled') {
+                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                        notificationContent: `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has cancelled work order <strong>${this.selectedOrder.Name}</strong>`,
+                        userRole: 'Equipment Staff',
+                        metaData: JSON.stringify(metaData),
+                    }).then((res) => {
+                        if (res.status == 200) {
+                            this.$socket.emit('NEW_NOTIFICATION', {});
+                        }
+                    });
+                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                        notificationContent: `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has cancelled work order <strong>${this.selectedOrder.Name}</strong>`,
+                        userRole: 'Manager',
+                        metaData: JSON.stringify(metaData),
+                    }).then((res) => {
+                        if (res.status == 200) {
+                            this.$socket.emit('NEW_NOTIFICATION', {});
+                        }
+                    });
+                } // notification for managers and equipment staff - end
+                // notification for teamleader and maintainer - start
+                if (newOrderStatusName == 'Checked'
+                    || newOrderStatusName == 'Approved'
+                    || newOrderStatusName == 'Rejected'
+                    || (newOrderStatusName == 'In Progress' && this.selectedOrder.Category == 'Working')) {
+                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/userid/${this.selectedOrder.RequestUserID}`, {
+                        notificationContent: teamLeaderNotiContent,
+                        metaData: JSON.stringify(metaData),
+                    }).then((res) => {
+                        if (res.status == 200) {
+                            this.$socket.emit('NEW_NOTIFICATION', {});
                         }
                       });
                     }
@@ -1258,10 +1384,12 @@ export default {
             this.showChangeStatusDialog = false;
             this.newStatusName = null;
             this.getWorkOrders();
+            // this.$router.replace('/work_order');
           }
         })
         .catch(error => {
           console.log(error);
+          this.$router.push('/500');
         });
     },
     getStatusColorClass(statusName) {
@@ -1331,15 +1459,67 @@ export default {
         });
     },
     async closeWorkOrderDetails() {
-      if (this.validateCloseWorkOrder()) {
-        this.sending = true;
-        var check = false;
-        for (const value of this.toCloseEquipments) {
-          var workOrderDetail = null;
-          for (const detail of this.selectedOrder.WorkOrderDetails) {
-            if (detail.EquipmentItemID == value.item.Id) {
-              workOrderDetail = detail;
-              break;
+        if (this.validateCloseWorkOrder()) {
+            this.sending = true;
+            let check = true;
+            for (const value of this.toCloseEquipments) {
+                let workOrderDetail = null;
+                for (const detail of this.selectedOrder.WorkOrderDetails) {
+                    if (detail.EquipmentItemID == value.item.Id) {
+                        workOrderDetail = detail;
+                        break;
+                    }
+                }
+                let url = `${Server.WORKORDER_API_PATH}/close_detail/${workOrderDetail.Id}`;
+                await this.axios.post(url, {                
+                    userId: this.authUser.Id,
+                    itemId: value.item.Id,
+                    newItemStatus: value.status,
+                    description: value.description,
+                    cost: this.selectedOrder.Category == 'Maintain' ? value.cost : null,
+                }).then(async (response) => {
+                    if (response.status == 200) {
+                        let tileId = null;
+                        if (this.selectedOrder.Category == 'Working') {
+                            tileId = parseInt(value.tileOption.value);
+                        }
+                        if (this.selectedOrder.Category == 'Working') {
+                            let equipmentItemRuntimeDaysApi = `${Server.EQUIPMENTITEM_API_PATH}/runtimedays/${value.item.Id}`;
+                            await this.axios.put(equipmentItemRuntimeDaysApi, {
+                                workOrderId: this.selectedOrder.Id
+                            });
+                        }
+                        if (this.selectedOrder.Category == 'Working' || value.status == 'Lost') {
+                            let equipmentItemTileApi = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${value.item.Id}`;
+                            await this.axios.put(equipmentItemTileApi, {
+                                tileId: tileId,
+                            });
+                        }
+                        if (this.selectedOrder.Category == 'Maintain') {
+                            let equipmentItemMaintenanceApi = `${Server.EQUIPMENTITEM_API_PATH}/maintenance/${value.item.Id}`;
+                            await this.axios.put(equipmentItemMaintenanceApi, {
+                                nextMaintainDate: moment().add(value.item.MaintenanceDurationInMonths, 'M').format('MM-DD-YYYY'),
+                            });
+                        }
+                    } else {
+                        check = false;
+                    }
+                }).catch(error => {
+                    console.log(error);
+                    this.$router.push('/500');
+                    check = false;
+                })
+            }
+            // await Utils.sleep(500);
+            this.sending = false;
+            if (check) {
+                // awthis.updateItemPosition(parseInt(value.item.Id), tileId);   
+                this.$socket.emit('CLOSE_WORK_ORDER_DETAIL', {});
+                this.getWorkOrders();
+                // this.getEquipmentsOfWorkOrder(this.selectedOrder);
+                this.showCloseWorkOrderDetailDialog = false;
+            } else {
+                alert('Error occured!')
             }
           }
           let url = `${Server.WORKORDER_API_PATH}/close_detail/${
@@ -1384,25 +1564,65 @@ export default {
       }
     },
     validateCloseWorkOrder() {
-      var check = true;
-      this.toCloseEquipments.forEach(value => {
-        if (value.status != "Lost") {
-          if (!value.blockOption) {
-            value.blockError = "You must select a block";
-            check = false;
-          }
-          if (!value.floorOption) {
-            value.floorError = "You must select a floor";
-            check = false;
-          }
-          if (!value.tileOption) {
-            value.tileError = "You must select a tile";
-            check = false;
-          }
+        let check = true;
+        if (this.selectedOrder.Category == 'Working') {
+            this.toCloseEquipments.forEach(value => {
+                if (value.status != 'Lost') {
+                    if (!value.blockOption) {
+                        value.blockError = 'You must select a block';
+                        check = false;
+                    }
+                    if (!value.floorOption) {
+                        value.floorError = 'You must select a floor';
+                        check = false;
+                    }
+                    if (!value.tileOption) {
+                        value.tileError = 'You must select a tile';
+                        check = false;
+                    }
+                }
+            });
         }
-      });
-      return check;
-    }
+        return check;
+    },
+    async changeEquipmentPosition() {
+        let tileId = -1;
+        if (this.toUpdateSelectedLocation 
+            && (this.toUpdateSelectedLocation.Blocks && this.toUpdateSelectedLocation.Blocks.length > 0) 
+            && (this.toUpdateSelectedLocation.Blocks[0].Floors && this.toUpdateSelectedLocation.Blocks[0].Floors.length > 0)
+            && (this.toUpdateSelectedLocation.Blocks[0].Floors[this.toUpdateSelectedLocation.Blocks[0].TotalFloor - 1].Tiles 
+                && this.toUpdateSelectedLocation.Blocks[0].Floors[this.toUpdateSelectedLocation.Blocks[0].TotalFloor - 1].Tiles.length > 0)) {
+            tileId = this.toUpdateSelectedLocation.Blocks[0].Floors[this.toUpdateSelectedLocation.Blocks[0].TotalFloor - 1].Tiles[0].Id;
+        } else {                    
+            this.Errors.errorInvalidPosition = this.ErrorString.errorInvalidPosition;
+        }
+        // console.log(tileId)
+        if (tileId != -1) {
+            for (const equipment of this.equipments) {
+                for (const item of equipment.EquipmentItems) {
+                    let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${item.Id}`;
+                    await this.axios.put(url, {
+                        tileId: tileId,
+                    });
+                }
+            }
+            this.showUpdateAllEquipmentPostionDialog = false;
+            this.getWorkOrders();
+        }
+    },
+    checkLostItemEqualItemToClose() {
+        let count = 0;
+        for (const value of this.toCloseEquipments) {
+            if (value.status == 'Lost') {
+                ++count;
+            }
+        }
+        return count == this.toCloseEquipments.length;
+    },
+    getNumberFormattedThousand(str) {
+        let value = numeral(str).value();
+        return numeral(value).format('0,0');
+    },
   },
   watch: {
     showCloseWorkOrderDetailDialog: function() {
@@ -1425,19 +1645,31 @@ export default {
         this.Errors.RejectedDescriptionNotProvided = "";
       }
     },
-    myWorkOrderViewMode: function() {
-      this.$store.state.workOrderPage.myOrderViewMode = this.myWorkOrderViewMode;
-      this.selectedOrder = null;
-      this.$route.params.orderId = null;
-      this.toDisplayWorkOrders = [];
-      this.$router.replace("/work_order");
-      if (this.myWorkOrderViewMode) {
-        this.toDisplayWorkOrders = this.myWorkOrders;
-      } else {
-        this.toDisplayWorkOrders = this.workOrders;
-      }
-      this.tempValues = null;
-      this.filterOrders();
+    'workingOrderViewMode': function() {
+        this.selectedOrder = null;
+        this.$route.params.orderId = null;
+        this.toDisplayWorkOrders = [];
+        this.$router.replace('/work_order');
+        if (this.authUser.Role == 'Manager' || this.authUser.Role == 'Equipment Staff') {
+            if (this.workingOrderViewMode) {
+                this.toDisplayWorkOrders = this.workingOrders;
+            } else {
+                this.toDisplayWorkOrders = this.maintainingOrders;
+            }
+        } else {
+            this.toDisplayWorkOrders = this.workOrders.filter(order => order.RequestUserID == this.authUser.Id);
+        }
+        this.tempValues = null;
+        this.filterOrders();
+    },
+    'updateTile': function() {
+        Vue.nextTick(() => {
+            if (this.updateTile && this.updateTile.Id == this.toUpdatePositionItem.TileID) {
+                this.Errors.errorUpdatePosition = 'This item is already in this position';
+            } else if (this.updateTile) {
+                this.Errors.errorUpdatePosition = '';
+            }
+        })
     },
     updateTile: function() {
       Vue.nextTick(() => {
@@ -1451,31 +1683,23 @@ export default {
         }
       });
     },
-    showUpdateItemPosition: function() {
-      if (!this.showUpdateItemPosition) {
-        this.toUpdatePositionItem = null;
-        this.updateBlock = null;
-        this.updateFloor = null;
-        this.updateTile = null;
-      }
-    },
-    "$route.params": function() {
-      if (this.$route.params.orderId) {
-        // if (this.$route.params.orderId == 'create') {
-        //     this.$router.push({name: 'create_work_order'});
-        // } else {
-        let toSelectOrder = this.toDisplayWorkOrders.filter(
-          order => order.Id == this.$route.params.orderId
-        )[0];
-        if (toSelectOrder) {
-          this.selectedOrder = toSelectOrder;
-          this.getEquipmentsOfWorkOrder(toSelectOrder);
-          this.toUpdateSelectedLocation = this.blockFloorTiles.filter(
-            location => location.Id == toSelectOrder.Location.Id
-          )[0];
+    '$route.params': function() {
+        if (this.$route.params.orderId) {
+            let toSelectOrder = this.toDisplayWorkOrders.filter(order => order.Id == this.$route.params.orderId)[0];
+            if (toSelectOrder) {
+                this.selectedOrder = toSelectOrder;
+                this.getEquipmentsOfWorkOrder(toSelectOrder);
+                if (toSelectOrder.TeamLocation && toSelectOrder.Category == 'Working') {
+                    this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == toSelectOrder.TeamLocation.Location.Id)[0];
+                }
+            }
+            // }
         }
-        // }
-      }
+    },
+    'showUpdateAllEquipmentPostionDialog': function() {
+        if (!this.showUpdateAllEquipmentPostionDialog) {
+            this.Errors.errorInvalidPosition = '';
+        }
     }
   }
 };

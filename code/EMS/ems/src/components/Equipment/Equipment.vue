@@ -4,6 +4,7 @@
       There is no equipment yet.
     </div>
     <div v-else>
+
     <div v-if="equipments">
        <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer' " >
         <div class="field is-grouped view-mode" style="margin-bottom: 0.2rem !important; padding: 0rem!important">
@@ -51,6 +52,7 @@
         }">
       </Page>
     </div>  
+
     </div>
     <router-link to='/equipment/create/'>
       <button id="btn-add-equipment"  class="button btn-primary material-shadow-animate">Add Equipment</button>

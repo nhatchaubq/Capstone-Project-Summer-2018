@@ -1,5 +1,5 @@
 <template>
-    <div class="material-box material-shadow-animate order-block">
+    <div v-if="order" class="material-box material-shadow-animate order-block">
         <div class="order-block-title">{{ order.Name }}</div>
         <div class="order-status-icon" style="display: grid; grid-template-row: auto auto; text-align: center">
             <!-- <i class="material-icons">lock_open</i> -->
@@ -17,7 +17,7 @@
                 <div>#{{ order.Id }}</div>
                 <div>
                     <i class="fa fa-user"></i>
-                    {{ authUser.Id == order.RequestUserID ? 'You' : order.RequestUsername }} ({{ order.Team.Name }})
+                    {{ authUser.Id == order.RequestUserID ? 'You' : order.RequestUsername }}<span v-if="order.TeamLocation"> ({{ order.TeamLocation.Team.Name }})</span>
                 </div>
                 <div>
                     <i class="fa fa-calendar-plus-o"></i>
@@ -25,9 +25,9 @@
                 </div>
             </div>
         </div>
-        <div class="order-block-location">
+        <div class="order-block-location" v-if="order.TeamLocation">
             <i class="material-icons">location_on</i>
-            {{ order.Location.Name }} - {{ order.Location.Address }}
+            {{ order.TeamLocation.Location.Name }} - {{ order.TeamLocation.Location.Address }}
         </div>
     </div>
 </template>
@@ -60,13 +60,13 @@ export default {
                 case 'Approved': { // Approved
                     return 'fa-thumbs-up approved';
                 }
-                case 'Rejected': { // InProgress
+                case 'Rejected': { // 
                     return 'fa-thumbs-down rejected';
                 }
-                case 'In Progress': { // Closed
+                case 'In Progress': { // 
                     return 'fa-tasks in-progress';
                 }
-                case 'Closed': { // Rejected
+                case 'Closed': { // 
                     return 'fa-archive closed';
                 }
                 case 'Cancelled': { // Cancelled

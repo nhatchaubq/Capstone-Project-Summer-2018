@@ -170,7 +170,7 @@
               </tbody>
           </table>
            <!-- dien-start -->
-            <div v-if="Eitem.length > 9" class="pageNa">
+            <div v-if="Eitem.length > 9" class="">
     <Page :current="currentPageEquipmentItem" :total="Eitem.length" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage = newPageNumber;

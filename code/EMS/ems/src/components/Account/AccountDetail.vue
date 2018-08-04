@@ -1,9 +1,12 @@
 <template>
 
-  <div v-if="account">
-    <router-link to="/account">
+  <div v-if="account" >
+    <router-link to="/account" v-if="authUser.Role =='Admin' || authUser.Role == 'Manager'">
       <a><span class="material-icons" style="position: relative; top: .4rem;">keyboard_arrow_left</span> Back to Accounts</a>
     </router-link>
+    <!-- <router-link :to="`/account/${authUser.Id}`" v-if="authUser.Role =='Staff' || authUser.Role == 'Equipment Staff' || authUser.Role == 'Maintainer'">
+      <a><span class="material-icons" style="position: relative; top: .4rem;">keyboard_arrow_left</span> Back to profile</a>
+    </router-link> -->
 
 <div class="grid-wrapper1">
 
@@ -11,8 +14,42 @@
   top: 6rem;
   right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
   <div>
+<div v-if="!editMode">
+  <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem ">
+</div>
+<div v-if="editMode">
+ <div class="form-field-picture">
+              <div class="form-field-title">
+                  <span><strong>  Picture (required) </strong></span><span v-if="CreateAccountErrors.NoImage != ''">. <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span>
 
-<img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem ">
+              </div>
+              <div class="input_picture">
+                <div>
+                  <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
+                          {{ file.name }}
+                      <div>
+                          <img class="file-upload" v-bind:src="getFilePath(file)" width="300px" height="450px"/>
+                      </div>
+                      </div>
+                </div>
+                <div>                    
+                  <label class="file-label" style="width: 100% !important"> 
+                  <span class="file-cta">
+                      <input class="file-input" type="file" accept="image/*" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
+                      <span class="file-icon">
+
+                          <i class="fa fa-upload"></i>
+                      </span>
+                      <span class="file-label">
+                          Choose images...
+                      </span>
+                  </span>
+                      
+                  </label>
+              </div>
+              </div> 
+            </div>
+</div>
 
 
 <!-- test -->
@@ -56,7 +93,8 @@
     This account has no team.
   </div>
   <div v-else>
-    <table class="mytable">
+    <table class="mytable" >
+    <!-- <table class="mytable"> -->
       <thead>
         <tr>
           <!-- <th><strong>ID</strong></th> -->
@@ -117,7 +155,7 @@
 <div class="row" style="margin: 0 !important">
   <h2 class="col-9" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
   <div class="col-3" v-if ="!editMode">
-    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode">Edit</button>
+    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
   </div>
 </div>
 <!-- <form @submit.prevent="editAccount()"> -->
@@ -140,14 +178,14 @@
 
   </div> -->
 
-  <div class="row" style="margin-top:0.5rem; height: 36px">
+  <div class="row" style="margin-top:0.5rem; height: 36px" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' ">
     <div class=" col-12" style="margin-top:0.5rem">
       <strong>
         Status 
       </strong>
     </div>
   </div >
-  <div class="col-7" style="padding-left: 0 !important">
+  <div class="col-7" style="padding-left: 0 !important" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' ">
       <div style="margin-top:0.5rem" >
         <label style="margin-right: 1rem;" class="radio"  >
           <input type="radio" name="active" v-on:change="account.IsActive = true" :checked="account.IsActive" :disabled="!editMode">
@@ -234,6 +272,9 @@ export default {
         array.push(i);
       }
       return array;
+    },
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
     }
   },
   components: {
@@ -256,6 +297,7 @@ export default {
 
   data() {
     return {
+      files: [],
       currentPage: 1,
       teamAccount: [],
       toDisplayData: [],
@@ -274,7 +316,8 @@ export default {
         PhoneMin: " Use from 9 to 13 characters for your phone number",
         PhoneMax: " Use from 9 to 13 characters for your phone number",
 
-        NoEmail: " Enter email"
+        NoEmail: " Enter email",
+        NoImage: "You must choose an image"
         // NoRole: "You must provide role for this account"
       },
       CreateAccountErrors: {
@@ -291,22 +334,32 @@ export default {
         PhoneMin: "",
         PhoneMax: "",
 
-        NoEmail: ""
+        NoEmail: "",
+        NoImage: ""
         // NoRole: ""
       },
-      account: null,
+      account: {
+        fullname: "",
+        imageUrl: "",
+        password: "",
+        phone: "",
+        email: ""
+      },
       checkedActive: [],
       editMode: false
     };
   },
   methods: {
-    editAccount() {
+    async editAccount() {
       // if(this.account.username === ''){
       //     this.CreateAccountErrors.NoUsername = this.ErrorStrings.NoUsername;
       // }
       // if (this.account.Fullname === "") {
       //   this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
       // }
+      if (!this.files[0]) {
+        this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
+      }
       if (this.account.Fullname.length < 6) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
@@ -334,22 +387,64 @@ export default {
       if (this.account.Email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
-      // if (!this.account.roleid || this.account.roleid == "") {
-      //   this.CreateAccountErrors.NoRole = this.ErrorStrings.NoRole;
-      // }
-      if (this.validateAccount())
-        this.axios
-          .put(`http://localhost:3000/api/account/${this.$route.params.id}`, {
-            account: this.account
-          })
-          .then(res => {
-            // this.$router.push("/account");
-            if (res.status == 200) {
-              alert("Change successful");
-              this.editMode = false;
-              this.getAccountDetail(this.$route.params.id);
+
+      if (this.validateAccount()) {
+        this.CreateAccountErrors.NoImage = "";
+        let formData = new FormData();
+        formData.append("api_key", "982394881563116");
+        formData.append("file", this.files[0]);
+        formData.append("public_id", this.files[0].name);
+        formData.append("timestamp", moment().valueOf());
+        formData.append("upload_preset", "ursbvd4a");
+
+        let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+        await this.axios
+          .post(url, formData)
+          .then(response => {
+            if (response.status == 200) {
+              this.imageUrl = response.data.url;
+              this.axios
+                .put(
+                  `http://localhost:3000/api/account/${this.$route.params.id}`,
+                  {
+                    account: this.account,
+                    avatarimage: response.data.url
+                  }
+                )
+                .then(res => {
+                  // this.$router.push("/account");
+                  if (res.status == 200) {
+                    alert("Change successful");
+                    this.editMode = false;
+                    this.getAccountDetail(this.$route.params.id);
+                  }
+                });
             }
+          })
+          .catch(error => {
+            console.log(error);
           });
+      }
+    },
+    inputFileChange() {
+      this.files = this.$refs.fileInput.files;
+    },
+
+    onFileChanged() {
+      this.selectedFile = this.$refs.file.files[0];
+    },
+    getFilePath(file) {
+      return window.URL.createObjectURL(file);
+    },
+    onUpload() {
+      let formData = new FormData();
+      formData.append("file", this.file);
+      alert("in");
+      this.axios.post(
+        "https://api.cloudinary.com/v1_1/deanwflps/image/upload",
+        formData
+      );
+      alert(this.selectedFile.name);
     },
     validateAccount() {
       return (
@@ -363,7 +458,8 @@ export default {
         this.CreateAccountErrors.NoEmail === "" &&
         //&& this.CreateAccountErrors.NoRole === ""
         this.CreateAccountErrors.WeakAccount === "" &&
-        this.CreateAccountErrors.MaxPassword === ""
+        this.CreateAccountErrors.MaxPassword === "" &&
+        this.CreateAccountErrors.NoImage == ""
         //  && this.CreateAccountErrors.NoUsername === ''
       );
     },
@@ -426,6 +522,15 @@ export default {
       }
       if (this.account.Phone.length < 14) {
         this.CreateAccountErrors.PhoneMax = "";
+      }
+    },
+    files: function() {
+      if (
+        !this.files[0] &&
+        !this.files[0].name &&
+        this.CreateAccountErrors.NoImage != ""
+      ) {
+        this.CreateAccountErrors.Image = "";
       }
     },
     "account.Email": function() {
@@ -567,5 +672,24 @@ table {
   font-size: 15px;
 
   /* text-align: right; */
+}
+.form-field-picture {
+  padding: 1rem 3rem;
+  border: none;
+}
+.file-upload {
+  padding-left: 2rem;
+}
+.input_picture {
+  padding: 1rem 3rem 1rem 3rem;
+  outline: 1px dashed #a8a8a8fb;
+  background-color: #f0efeffb;
+}
+.file-cta {
+  border: none;
+  background-color: #a8a8a8fb;
+  margin: auto;
+}
+.file-label {
 }
 </style>

@@ -8,7 +8,7 @@
                 </li>
             </div> <!-- workOrderStatus rejected - 6 or cancelled - 1002 -->
             <div v-else>
-                <li class="tag" :class="status.id <= workOrderStatus.id ? getStatusColorClass(status.name) : ''" :key="'step' + status.id" v-for="status in statuses" :value="status.name">
+                <li class="tag" :class="status.id <= orderStatus.id ? getStatusColorClass(status.name) : ''" :key="'step' + status.id" v-for="status in statuses" :value="status.name">
                     {{ status.name }}
                 </li>
             </div>
@@ -21,14 +21,18 @@ export default {
   name: "step-progress",
   props: {
     workOrderStatus: null,
-    statusList: null
+    statusList: null,
+    lastOrderStatus: null,
   },
   data() {
     return {
+      orderStatus: null,
       statuses: []
     };
   },
-  created() {},
+  created() {
+    this.orderStatus = this.workOrderStatus;
+  },
   methods: {
     getStatusColorClass(statusName) {
       switch (statusName) {
@@ -50,16 +54,27 @@ export default {
     }
   },
   watch: {
+    workOrderStatus: function() {
+      this.orderStatus = this.workOrderStatus;
+    },
     statusList: function() {
       if (this.statusList) {
+        this.statuses = JSON.stringify(this.statusList);
+        this.statuses = JSON.parse(this.statuses);
         if (this.workOrderStatus && this.workOrderStatus.name == "Rejected") {
-          this.statuses = this.statusList.filter(
-            status => status.name != "Approved"
-          );
+          if (this.lastOrderStatus && this.lastOrderStatus.Name == 'Requested') {
+            this.statuses = this.statuses.filter(status => status.name != "Rejected");
+            this.orderStatus.id = 2;
+            // let checkedStatus = this.statuses.filter(s => s.name == 'Checked')[0];
+            // console.log(checkedStatus)
+            if (this.statuses.filter(s => s.name == 'Checked')[0]) {
+              this.statuses[1].name = 'Rejected';
+            }
+          } else if (this.lastOrderStatus && this.lastOrderStatus.Name == 'Checked') {
+            this.statuses = this.statuses.filter(status => status.name != "Approved");
+          }
         } else {
-          this.statuses = this.statusList.filter(
-            status => status.name != "Rejected"
-          );
+          this.statuses = this.statuses.filter(status => status.name != "Rejected");
         }
       }
     }
@@ -139,7 +154,7 @@ li.cancelled:after {
   background: var(--status-cancelled);
 }
 
-li.requested + li {
+li.requested + li.checked {
   border: 1px solid var(--status-checked) !important;
 }
 

@@ -31,7 +31,7 @@
                 </div>
             </div>
             <!-- select location -->
-            <div class="form-field">
+            <div class="form-field" v-if="authUser.Role == 'Staff'">
                 <div class="form-field-title">
                     Choose a location for this work order (required)
                     <span v-if="CreateWorkOrderErrors.NoLocation != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoLocation }}</span></span>
@@ -42,7 +42,7 @@
                 </div>
             </div> <!-- select location -->
             <!-- select team from selected location -->
-            <div class="form-field" v-if="selectedLocation.value != ''">
+            <div class="form-field" v-if="selectedLocation.value != '' && authUser.Role == 'Staff'">
                 <div v-if="teamOptions.length > 0">
                     <div class="form-field-title">
                         Pick a team from the selected location (required)
@@ -326,8 +326,8 @@
                         </td>
                         <!-- equipment item next maintaince date -->
                         <td v-if="workOrderIndex == 0" :rowspan="equipmentItem.WorkOrders.length + 1"
-                            :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate)),
-                                    'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate))}"> 
+                            :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, selectedEquipment.itemIdConflictNextMaintenanceDate)),
+                                    'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, selectedEquipment.itemIdConflictNextMaintenanceDate))}"> 
                           {{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}
                         </td>
                         <!-- distance -->
@@ -350,8 +350,8 @@
                         <td>-</td>
                         <td>-</td>
                         <td>{{ equipmentItem.RuntimeDays }}</td>
-                        <td :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate)),
-                                'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, itemIdConflictNextMaintenanceDate))}">
+                        <td :class="{'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, selectedEquipment.itemIdConflictNextMaintenanceDate)),
+                                'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemConflictNextMaintenanceDate(equipmentItem.Id, selectedEquipment.itemIdConflictNextMaintenanceDate))}">
                             {{ equipmentItem.NextMaintainDate ? getDate(equipmentItem.NextMaintainDate) : 'n/a' }}
                         </td>
                         <td>{{ equipmentItem.Distance.value ? equipmentItem.Distance.text : 'n/a' }}</td>
@@ -515,7 +515,7 @@
               </table>
             </div>
             <div v-if="itemsLoading" style="margin-top: 1rem; text-align: center;">
-              <div style="font-size: 1.2rem"><i class="fa fa-circle-o-notch fa-spin"></i></div>
+              <div style="font-size: 1.1rem"><i class="fa fa-circle-o-notch fa-spin"></i></div>
               <div>Getting equipment info...</div>
             </div> 
             <!-- display equipment items table to let user pick the desire item -->
@@ -556,12 +556,10 @@ export default {
         NoLocation: 'You must select a location',
         NoTeam: 'You must select a team in the selected location',
         SelectedEquipmentQuantityIsZero: 'You must choose at least 1 equipment item from the table below',
-        SelectedDateConflictWorkOrders: 'From date or to date has conflict with some work orders. '
-                                            + '<br>Please reconsider choosing another date or the managers may reject your order.',
-        UnableToSelectItem: "You can not select equipments that are in work orders with status 'Approved' or 'In Progress' between your from date and to date",
+        SelectedDateConflictWorkOrders: 'From date or to date has conflict with some work orders.',
+        UnableToSelectItem: "You can not select equipments that are in work orders with status 'Approved' or 'In Progress' between your from date and to date.",
         NoWorkOrderDateRange: 'You must select expecting start date and expecting end date of this work order',
-        ConflictMaintenanceDate: 'You can not select equipments whose maintenance date has conflict with the start date and end date of this work order. '
-                                  + 'If you really want to use those equipments please contact the equipment staff to change the maintenance date.',
+        ConflictMaintenanceDate: 'You can not select equipments whose maintenance date has conflict with the start date and end date of this work order.',
       },
       AddEquipmentWarnings: {
         MustSelectEquipment: '',
@@ -683,6 +681,9 @@ export default {
       if (this.selectedEquipment.value == "") {
         this.AddEquipmentWarnings.MustSelectEquipment = this.ErrorStrings.MustSelectEquipment;
       }
+      if (this.selectedEquipmentQuantity == 0) {
+        this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero = this.ErrorStrings.SelectedEquipmentQuantityIsZero;
+      }
       if (this.validateAddEquipment()) {
         if (
           this.selectedEquipment.value != "" &&
@@ -752,10 +753,10 @@ export default {
       if (this.selectedEquipments.length == 0) {
         this.CreateWorkOrderErrors.NoEquipmentSelected = this.ErrorStrings.NoEquipmentSelected;
       }
-      if (this.selectedLocation.value === "") {
+      if (this.selectedLocation.value === "" && this.authUser.Role == 'Staff') {
         this.CreateWorkOrderErrors.NoLocation = this.ErrorStrings.NoLocation;
       }
-      if (this.selectedTeam.value === "") {
+      if (this.selectedTeam.value === "" && this.authUser.Role == 'Staff') {
         this.CreateWorkOrderErrors.NoTeam = this.ErrorStrings.NoTeam;
       }
       if (!this.workOrderDateRange[0] && !this.workOrderDateRange[1]) {
@@ -768,103 +769,109 @@ export default {
           let teamLocationApi = `${Server.TEAM_LOCATION_API_PATH}/${
             this.selectedLocation.value
           }/${this.selectedTeam.value}`;
-          this.axios
-            .get(teamLocationApi)
-            .then(async function(res) {
-              if (res.data.Id) {
-                let result = res.data.Id;
-                let workOrderApi = Server.WORKORDER_API_PATH;
-                context.axios
-                  .post(workOrderApi, {
-                    name: context.workOrderTitle.trim(),
-                    description: context.workOrderDescription.trim(),
-                    requestUserId: context.authUser.Id,
-                    priorityId: context.workOrderPriority,
-                    categoryName: context.workOrderCategory,
-                    teamLocationId: result,
-                    expectingStartDate: moment(context.workOrderDateRange[0]).format('MM-DD-YYYY'),
-                    expectingCloseDate: moment(context.workOrderDateRange[1]).format('MM-DD-YYYY'), 
-                  })
-                  .then(async function(res) {
-                    if (res.data.NewWorkOrderId) {
-                      let newWorkOrderId = res.data.NewWorkOrderId;
-                      var check = false;
-                      for (const equipment of context.selectedEquipments) {
-                        for (const itemId of equipment.equipmentItemIds) {
-                            await context.axios
-                              .post(Server.WORKORDER_DETAIL_API_PATH, {
-                                workOrderId: newWorkOrderId,
-                                equipmentItemId: itemId,
-                                startDate: equipment.fromDate,
-                                dueDate: equipment.toDate,
-                                maintainceCost: null,
-                                description: null
-                              }).then((response) => {
-                                if (response.status == 200) {
-                                  check = true;
-                                }
-                              }).catch((error) => {
-                                console.log(error);
-                                check = false;
-                              });
-                        }
-                      }
-                      context.sending = false;
-                      if (check) {
-                        const notificationContent = `<strong>${context.authUser.Username}</strong> created a work order <strong>${context.workOrderTitle}</strong>`;
-                        let metaData = {
-                          page: 'work_order',
-                          elementId: newWorkOrderId,
-                        };
-                        await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                          notificationContent: notificationContent,
-                          userRole: 'Equipment Staff',
-                          metaData: JSON.stringify(metaData),
-                        }).then((res) => {
-                          if (res.status == 200) {
-                            context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Equipment Staff'],}});
-                          }
-                        });
-                        await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                          notificationContent: notificationContent,
-                          userRole: 'Manager',
-                          metaData: JSON.stringify(metaData),
-                        }).then((res) => {
-                          if (res.status == 200) {
-                            context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Manager'],}});
-                          }
-                        });
-
-                        context.$socket.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
-                        
-                        let obj = {
-                          message: "Work Order created successfully",
-                          type: "success",
-                          hideAllButton: true,
-                          showXclose: false,
-                        };
-                        context.$refs.simplert.openSimplert(obj);
-                        await Utils.sleep(1000);
-                        context.$router.push(`/work_order/${newWorkOrderId}`);
-                      } else {
-                        alert('Error');
-                      }                      
-                    } else {
-                      alert("No new work order id returned");
+          let teamLocationId = null;
+          if (this.authUser.Role == 'Staff') {
+            await this.axios
+              .get(teamLocationApi)
+              .then(async function(res) {
+                if (res.data.Id) {
+                  teamLocationId = res.data.Id;
+                }
+              })
+              .catch(error => {
+                alert(
+                  "Create work order: " + error
+                );
+              });
+          }            
+          if (this.authUser.Role == 'Maintainer' || (teamLocationId && this.authUser.Role == 'Staff')) {
+            let workOrderApi = Server.WORKORDER_API_PATH;
+            await context.axios
+              .post(workOrderApi, {
+                name: context.workOrderTitle.trim(),
+                description: context.workOrderDescription.trim(),
+                requestUserId: context.authUser.Id,
+                priorityId: context.workOrderPriority,
+                categoryName: context.workOrderCategory,
+                teamLocationId: teamLocationId,
+                expectingStartDate: moment(context.workOrderDateRange[0]).format('MM-DD-YYYY'),
+                expectingCloseDate: moment(context.workOrderDateRange[1]).format('MM-DD-YYYY'), 
+              })
+              .then(async function(res) {
+                if (res.data.NewWorkOrderId) {
+                  let newWorkOrderId = res.data.NewWorkOrderId;
+                  var check = false;
+                  for (const equipment of context.selectedEquipments) {
+                    for (const itemId of equipment.equipmentItemIds) {
+                        await context.axios
+                          .post(Server.WORKORDER_DETAIL_API_PATH, {
+                            workOrderId: newWorkOrderId,
+                            equipmentItemId: itemId,
+                            startDate: equipment.fromDate,
+                            dueDate: equipment.toDate,
+                            maintainceCost: null,
+                            description: null
+                          }).then((response) => {
+                            if (response.status == 200) {
+                              check = true;
+                            }
+                          }).catch((error) => {
+                            console.log(error);
+                            check = false;
+                          });
                     }
-                  })
-                  .catch(error => {
-                    alert(
-                      "Create work order detail: " + error
-                    );
-                  });
-              }
-            })
-            .catch(error => {
-              alert(
-                "Create work order: " + error
-              );
-            });          
+                  }
+                  context.sending = false;
+                  if (check) {
+                    const notificationContent = `<strong>${context.authUser.Username}</strong> created a work order <strong>${context.workOrderTitle}</strong>`;
+                    let metaData = {
+                      page: 'work_order',
+                      elementId: newWorkOrderId,
+                    };
+                    await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                      notificationContent: notificationContent,
+                      userRole: 'Equipment Staff',
+                      metaData: JSON.stringify(metaData),
+                    }).then((res) => {
+                      if (res.status == 200) {
+                        context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Equipment Staff'],}});
+                      }
+                    });
+                    await context.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                      notificationContent: notificationContent,
+                      userRole: 'Manager',
+                      metaData: JSON.stringify(metaData),
+                    }).then((res) => {
+                      if (res.status == 200) {
+                        context.$socket.emit('NEW_NOTIFICATION', {needToUpdateNotification: {roles: ['Manager'],}});
+                      }
+                    });
+
+                    context.$socket.emit('NEW_WORK_ORDER_CREATED', {message: 'Created Work Order'});
+                    
+                    let obj = {
+                      message: "Work Order created successfully",
+                      type: "success",
+                      hideAllButton: true,
+                      showXclose: false,
+                    };
+                    context.$refs.simplert.openSimplert(obj);
+                    await Utils.sleep(1000);
+                    context.$router.push(`/work_order/${newWorkOrderId}`);
+                  } else {
+                    alert('Error');
+                  }                      
+                } else {
+                  alert("No new work order id returned");
+                }
+              })
+              .catch(error => {
+                alert(
+                  "Create work order detail: " + error
+                );
+              });
+
+          }
         }
       }
     },
@@ -993,8 +1000,9 @@ export default {
         let workOrderStartDate = moment(this.workOrderDateRange[0]).format('YYYY-MM-DD').valueOf();
         let workOrderCloseDate = moment(this.workOrderDateRange[1]).format('YYYY-MM-DD').valueOf();
         items.forEach(item => {
-          if (moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() >= workOrderStartDate 
-              && moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() <= workOrderCloseDate) {
+          if (this.authUser.Role == 'Staff' 
+              && (moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() >= workOrderStartDate 
+                  && moment(item.NextMaintainDate).format('YYYY-MM-DD').valueOf() <= workOrderCloseDate)) {
             itemIdConflictNextMaintenanceDate.push(item.Id);
           }
           if (item.WorkOrders) {
@@ -1106,17 +1114,17 @@ export default {
                   && context.getMilis(context.workOrderDateRange[1]) <= context.getMilis(order.ExpectingCloseDate))
                 || (context.getMilis(context.workOrderDateRange[0]) < context.getMilis(order.ExpectingStartDate)
                   && context.getMilis(context.workOrderDateRange[1]) > context.getMilis(order.ExpectingCloseDate))) {
-              ++D_Item1;
+              ++D_Item2;
               if (order.Status == 'Requested' || order.Status == 'Checked') {
-                notAllowFactor_Item2 = 0.0000002;
+                notAllowFactor_Item2 = 0.000002;
               } else if (order.Status == 'Approved' || order.Status == 'In Progress') {
                 notAllowFactor_Item2 = 0.0000001;
               }
             }
           }
         }
-        let result1 = notAllowFactor_Item1 * (factorA*0 + factorB*((B0_Item1 - B_Item1)/B0_Item1) + factorC*(Math.abs(Math.sin(Math.sqrt(C_Item1)/2.5) / (Math.sqrt(C_Item1 + 0.1)/2.5)))) * (1 / (D_Item1 + 1));
-        let result2 = notAllowFactor_Item2 * (factorA*0 + factorB*((B0_Item2 - B_Item2)/B0_Item2) + factorC*(Math.abs(Math.sin(Math.sqrt(C_Item2)/2.5) / (Math.sqrt(C_Item2 + 0.1)/2.5)))) * (1 / (D_Item2 + 1));
+        let result1 = notAllowFactor_Item1 * (factorB*((B0_Item1 - B_Item1)/B0_Item1) + factorC*(Math.abs(Math.sin(Math.sqrt(C_Item1)/2.5) / (Math.sqrt(C_Item1 + 0.1)/2.5)))) * (1 / (D_Item1 + 1));
+        let result2 = notAllowFactor_Item2 * (factorB*((B0_Item2 - B_Item2)/B0_Item2) + factorC*(Math.abs(Math.sin(Math.sqrt(C_Item2)/2.5) / (Math.sqrt(C_Item2 + 0.1)/2.5)))) * (1 / (D_Item2 + 1));
 
         var result = result2 - result1;
         return result;
@@ -1207,11 +1215,18 @@ export default {
                 tempItems.push(item);
 
               }
-              this.equipmentTable = this.sortItems(tempItems);
+              if (this.authUser.Role == 'Staff') {
+                this.equipmentTable = this.sortItems(tempItems);
+              } else {
+                this.equipmentTable = tempItems;
+              }
               this.itemsLoading = false;
-              this.selectedEquipmentItemIds.push(this.equipmentTable[0].Id);
-              this.selectedEquipmentQuantity = 1;
-              this.indeterminate = true;
+              // this.selectedEquipmentItemIds.push(this.equipmentTable[0].Id);
+              this.selectedEquipmentQuantity = 0;
+              // this.selectedEquipmentQuantity = 1;
+              // this.indeterminate = true;
+              this.indeterminate = false;
+              this.checkAllItems = false;
             }
           });
         }
@@ -1237,13 +1252,17 @@ export default {
           for (const item of equipment.equipmentItemList) {
             item.Distance = await this.getDistance(item.Warehouse, this.selectedLocation);
           }
-          equipment.equipmentItemList = this.sortItems(equipment.equipmentItemList);
+          if (this.authUser.Role == 'Staff') {
+            equipment.equipmentItemList = this.sortItems(equipment.equipmentItemList);
+          }
         }
         if (this.equipmentTable && this.equipmentTable.length) {
           for (const item of this.equipmentTable) {
             item.Distance = await this.getDistance(item.Warehouse, this.selectedLocation);
-          } 
-          this.equipmentTable = this.sortItems(this.equipmentTable);
+          }
+          if (this.authUser.Role == 'Staff') {
+            this.equipmentTable = this.sortItems(this.equipmentTable);
+          }
         }
 
         // alert('in 2')
@@ -1266,8 +1285,10 @@ export default {
     },
     workOrderDateRange: function() {
       if (this.workOrderDateRange[0] && this.workOrderDateRange[1]) {
-        this.CreateWorkOrderErrors.NoWorkOrderDateRange = '';        
-        this.equipmentTable = this.sortItems(this.equipmentTable);
+        this.CreateWorkOrderErrors.NoWorkOrderDateRange = '';
+        if (this.authUser.Role == 'Staff') {
+          this.equipmentTable = this.sortItems(this.equipmentTable);
+        }
         if (this.selectedEquipmentItemIds.length > 0) {
           this.conflictItems = [];
           this.unableSelectItems = [];
@@ -1278,7 +1299,9 @@ export default {
         }
         if (this.selectedEquipments.length > 0) {
           for (const eq of this.selectedEquipments) {
-            eq.equipmentItemList = this.sortItems(eq.equipmentItemList);
+            if (this.authUser.Role == 'Staff') {
+              eq.equipmentItemList = this.sortItems(eq.equipmentItemList);
+            }
             eq.conflictItems = [];
             eq.unableSelectItems = [];
             eq.itemIdConflictNextMaintenanceDate = [];
