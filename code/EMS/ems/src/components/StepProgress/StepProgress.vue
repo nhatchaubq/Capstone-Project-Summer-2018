@@ -54,12 +54,15 @@ export default {
     }
   },
   watch: {
+    workOrderStatus: function() {
+      this.orderStatus = this.workOrderStatus;
+    },
     statusList: function() {
       if (this.statusList) {
         this.statuses = JSON.stringify(this.statusList);
         this.statuses = JSON.parse(this.statuses);
         if (this.workOrderStatus && this.workOrderStatus.name == "Rejected") {
-          if (this.lastOrderStatus == 'Requested') {
+          if (this.lastOrderStatus && this.lastOrderStatus.Name == 'Requested') {
             this.statuses = this.statuses.filter(status => status.name != "Rejected");
             this.orderStatus.id = 2;
             // let checkedStatus = this.statuses.filter(s => s.name == 'Checked')[0];
@@ -67,7 +70,7 @@ export default {
             if (this.statuses.filter(s => s.name == 'Checked')[0]) {
               this.statuses[1].name = 'Rejected';
             }
-          } else if (this.lastOrderStatus == 'Checked') {
+          } else if (this.lastOrderStatus && this.lastOrderStatus.Name == 'Checked') {
             this.statuses = this.statuses.filter(status => status.name != "Approved");
           }
         } else {
@@ -151,7 +154,7 @@ li.cancelled:after {
   background: var(--status-cancelled);
 }
 
-li.requested + li {
+li.requested + li.checked {
   border: 1px solid var(--status-checked) !important;
 }
 
