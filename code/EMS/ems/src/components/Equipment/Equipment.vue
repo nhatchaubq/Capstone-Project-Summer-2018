@@ -1,73 +1,60 @@
 <template>
   <div>
-    <!-- <div class="">
-      <div class="field is-grouped view-mode">
-        <button class="btn-view-mode" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
-        <button class="btn-view-mode" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button>
-      </div>
-    </div> -->
     <div v-if="!equipments">
       There is no equipment yet.
     </div>
     <div v-else>
-      <!-- <equipment-table :equipments="toDisplayData" v-if="isTableMode"></equipment-table> -->
-      <!-- <equipment-card :equipments="equipments" v-else></equipment-card> -->
- <div v-if="equipments">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th ><strong>Order #</strong></th>
-                    <th ><strong>Equipment name</strong></th>
-                    <th ><strong>Available</strong></th>
-                    <th ><strong>Vendor name</strong></th>
-                    <th ><strong>Made In</strong></th>
-                    <th ><strong>Description</strong></th>
-                    <th ><strong>Category</strong></th>
-                </tr>
-            </thead>  
-            <tbody>
-                <tr v-bind:key=" 'toDisplayData'+ index +''+ equipment.Id " v-for="(equipment, index) in toDisplayData" v-on:click="gotoDetail(equipment.Id)">
-                    <td width=5% >{{ 10*(currentPage -1) + (index + 1) }}</td>   
-                    <td width=30% >{{equipment.Name | truncate(50)}}</td>
-                    <td width=5% >{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
-                    <td width=20% >{{equipment.Vendor.Name | truncate(35)}}</td>
-                    <td width=10%>{{equipment.MadeIn| truncate(10)  }}</td>
-                    <!-- <td>{{equipment.Price ? equipment.Price : 'n/a'}}</td> -->
-                    <td width=15% >{{equipment.Description ? equipment.Description: 'N/A' }}</td>
-                    <td width=10% >{{equipment.Category.Name }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <!-- <vodal class="no-padding" height="500" :show="selectedEquipment != null" @hide="selectedEquipment = null" animation="slideUp">
-          <equipment-detail-popup :equipment="selectedEquipment" class="" v-show="selectedEquipment != null"></equipment-detail-popup>
-        </vodal> -->
+    <div v-if="equipments">
+       <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer' " >
+        <div class="field is-grouped view-mode" style="margin-bottom: 0.2rem !important; padding: 0rem!important">
+          <router-link to='/Equipment/'>  
+            <button class="btn-view-mode-left" style="margin-right:0rem" disabled="disabled"> All Equipments</button>
+          </router-link>
+          <router-link to='/myEquipment/'>  
+            <button class="btn-view-mode-right" >My Equipment Items</button>
+          </router-link>
+        </div>
+      </div>
+      <table class="table">
+          <thead>
+              <tr>
+                  <th ><strong>Order #</strong></th>
+                  <th ><strong>Equipment name</strong></th>
+                  <th ><strong>Available</strong></th>
+                  <th ><strong>Vendor name</strong></th>
+                  <th ><strong>Made In</strong></th>
+                  <th ><strong>Description</strong></th>
+                  <th ><strong>Category</strong></th>
+              </tr>
+          </thead>  
+          <tbody>
+              <tr v-bind:key=" 'toDisplayData'+ index +''+ equipment.Id " v-for="(equipment, index) in toDisplayData" v-on:click="gotoDetail(equipment.Id)">
+                  <td width=5% >{{ 10*(currentPage -1) + (index + 1) }}</td>   
+                  <td width=30% >{{equipment.Name | truncate(50)}}</td>
+                  <td width=5% >{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
+                  <td width=20% >{{equipment.Vendor.Name | truncate(35)}}</td>
+                  <td width=10%>{{equipment.MadeIn| truncate(10)  }}</td>
+                  <td width=15% >{{equipment.Description ? equipment.Description: 'N/A' }}</td>
+                  <td width=10% >{{equipment.Category.Name }}</td>
+              </tr>
+          </tbody>
+      </table>
     </div>
-
-
-
-
-      <!-- test1 -->
-  <div v-if="equipments.length >9" class="pageNa">
-    <Page :current="currentPage" :total="equipments.length" show-elevator 
-      @on-change="(newPageNumber) => {
-        currentPage = newPageNumber
-        let start = 10 * (newPageNumber - 1);
-        let end = start + 10;
-        showarlet(`${start } ${end} ${this.total}`)
-        //alert(start)
-      //  alert(end)
-        toDisplayData = equipments.slice(start, end);
-      }">
-    </Page>
-  </div>  
-<!-- test1-end -->
-
+    <div v-if="equipments.length >9" class="pageNa">
+      <Page :current="currentPage" :total="equipments.length" show-elevator 
+        @on-change="(newPageNumber) => {
+          currentPage = newPageNumber
+          let start = 10 * (newPageNumber - 1);
+          let end = start + 10;
+          showarlet(`${start } ${end} ${this.total}`)
+          toDisplayData = equipments.slice(start, end);
+        }">
+      </Page>
+    </div>  
     </div>
-
     <router-link to='/equipment/create/'>
       <button id="btn-add-equipment"  class="button btn-primary material-shadow-animate">Add Equipment</button>
     </router-link>
-
   </div>
 </template>
 
@@ -100,7 +87,10 @@ export default {
       });
   },
   computed: {
-    isTableMode: sync("equipmentPage.isTableMode")
+    isTableMode: sync("equipmentPage.isTableMode"),
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    }
   },
   data() {
     return {
@@ -153,7 +143,12 @@ export default {
   /* background-color: #009688;
   color: white; */
 }
-
+tr {
+  cursor: pointer;
+}
+tr:hover {
+  background-color: #fff !important;
+}
 .btn-view-mode {
   background-color: white;
   padding: 0.4rem 0.6rem;
@@ -195,5 +190,40 @@ export default {
   position: fixed;
   left: 17rem;
   bottom: 0.5rem;
+}
+.btn-view-mode-left {
+  background-color: white;
+  padding: 0.4rem 0.6rem;
+  font-size: 15px;
+  color: var(--primary-color);
+  border-radius: 5px 0 0 5px;
+  border: 1px solid #26a69a;
+  z-index: 1;
+}
+.btn-view-mode-left:disabled {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+}
+.btn-view-mode-left:hover {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
+}
+.btn-view-mode-right {
+  background-color: white;
+  padding: 0.4rem 0.6rem;
+  font-size: 15px;
+  color: var(--primary-color);
+  border-radius: 0 5px 5px 0;
+  border: 1px solid #26a69a;
+  z-index: 1;
+  margin-right: 5px;
+}
+
+.btn-view-mode-right:hover {
+  background-color: #26a69a;
+  color: white;
+  cursor: pointer;
 }
 </style>

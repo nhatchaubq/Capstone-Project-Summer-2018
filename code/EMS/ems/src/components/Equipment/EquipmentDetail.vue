@@ -148,7 +148,7 @@
                       <th><strong>Serial number</strong></th>
                       <th><strong>ImportDate</strong></th>
                       <th><strong>Warranty</strong></th>
-                      <th><strong>Runtime</strong></th>
+                      <th><strong>Runtime Days</strong></th>
                       <th><strong>Last-MaintainDate</strong></th>
                       <th><strong>Next-MaintainDate</strong></th>
                       <th><strong>Status</strong></th>
@@ -1405,9 +1405,7 @@ export default {
       this.files = this.$refs.fileInput.files;
     },
     async updateEquipment() {
-
       if (this.EquimentByID.Name.trim().length < 5) {
-
         let obj = {
           message: "Equipment Name can be contained from 5 to 250 characters",
           type: "warning"

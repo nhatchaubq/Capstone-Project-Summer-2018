@@ -42,7 +42,7 @@ router.get("/:id", (req, res) => {
 router.get("/Item/:id", (request, response) => {
     request
         .sql(
-            "select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.WarehouseID as [WarehouseID], location.Name as [Warehouse] ,ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
+            "select (json_query((select  ei.Id,e.Name as [EquipmentName] ,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.WarehouseID as [WarehouseID], location.Name as [Warehouse] ,ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
             "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, tile.Name as [Tile], tile.Id as [TileID] , floor.Name as [FLoor] , floor.Id as [FloorID], " +
             "block.Name as [Block], block.Id as [BlockID], loca.Name as [Location], loca.Id as [LocationID], loca.Address as [Address] ,(select wo.* " +
             "from WorkOrder as wo " +
@@ -59,6 +59,7 @@ router.get("/Item/:id", (request, response) => {
             "JOIN Block as block on block.Id = floor.BlockID " +
             "JOIN Location as loca on loca.Id = block.LocationID " +
             "JOIN Location as location on location.Id = ei.WarehouseID " +
+            "JOIN Equipment as e on e.Id = ei.EquipmentID " +
             "where ei.Id = @id for json path, without_array_wrapper)) " +
             ") as [Item] " +
             "for json path, without_array_wrapper"
