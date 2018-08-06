@@ -42,31 +42,32 @@ router.get("/:id", (req, res) => {
 });
 /* GET AN ITEM of an Equipment */
 router.get("/Item/:id", (request, response) => {
-  request
-    .sql(
-      "select (json_query((select  ei.Id,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.WarehouseID as [WarehouseID], location.Name as [Warehouse] ,ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
-        "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, tile.Name as [Tile], tile.Id as [TileID] , floor.Name as [FLoor] , floor.Id as [FloorID], " +
-        "block.Name as [Block], block.Id as [BlockID], loca.Name as [Location], loca.Id as [LocationID], loca.Address as [Address] ,(select wo.* " +
-        "from WorkOrder as wo " +
-        "where wo.StatusID < 5 and wo.Id in (select wod.WorkOrderID " +
-        "from WorkOrderDetail as wod " +
-        "where wod.EquipmentItemID = (select ei.Id as [EquipmentItemId] " +
-        "from EquipmentItem as ei " +
-        "where ei.Id = @id)) " +
-        "for json path) as [WorkOrders] " +
-        "from EquipmentItem as ei " +
-        "JOIN EquipmentStatus as es on es.Id = ei.StatusId " +
-        "JOIN Tile as tile on tile.Id = ei.TileID " +
-        "JOIN Floor as floor on floor.Id = tile.FloorID " +
-        "JOIN Block as block on block.Id = floor.BlockID " +
-        "JOIN Location as loca on loca.Id = block.LocationID " +
-        "JOIN Location as location on location.Id = ei.WarehouseID " +
-        "where ei.Id = @id for json path, without_array_wrapper)) " +
-        ") as [Item] " +
-        "for json path, without_array_wrapper"
-    )
-    .param("id", request.params.id, TYPES.Int)
-    .into(response);
+    request
+        .sql(
+            "select (json_query((select  ei.Id,e.Name as [EquipmentName] ,ei.SerialNumber, ei.Price, ei.WarrantyDuration, ei.WarehouseID as [WarehouseID], location.Name as [Warehouse] ,ei.RuntimeDays,CONVERT(date, ImportDate) as [ImportDate], es.Name as Status,es.Id as StatusID, " +
+            "CONVERT(date, LastMaintainDate) as [LastMaintainDate], CONVERT(date, NextMaintainDate) as NextMaintainDate, ei.Description, tile.Name as [Tile], tile.Id as [TileID] , floor.Name as [FLoor] , floor.Id as [FloorID], " +
+            "block.Name as [Block], block.Id as [BlockID], loca.Name as [Location], loca.Id as [LocationID], loca.Address as [Address] ,(select wo.* " +
+            "from WorkOrder as wo " +
+            "where wo.StatusID < 5 and wo.Id in (select wod.WorkOrderID " +
+            "from WorkOrderDetail as wod " +
+            "where wod.EquipmentItemID = (select ei.Id as [EquipmentItemId] " +
+            "from EquipmentItem as ei " +
+            "where ei.Id = @id)) " +
+            "for json path) as [WorkOrders] " +
+            "from EquipmentItem as ei " +
+            "JOIN EquipmentStatus as es on es.Id = ei.StatusId " +
+            "JOIN Tile as tile on tile.Id = ei.TileID " +
+            "JOIN Floor as floor on floor.Id = tile.FloorID " +
+            "JOIN Block as block on block.Id = floor.BlockID " +
+            "JOIN Location as loca on loca.Id = block.LocationID " +
+            "JOIN Location as location on location.Id = ei.WarehouseID " +
+            "JOIN Equipment as e on e.Id = ei.EquipmentID " +
+            "where ei.Id = @id for json path, without_array_wrapper)) " +
+            ") as [Item] " +
+            "for json path, without_array_wrapper"
+        )
+        .param("id", request.params.id, TYPES.Int)
+        .into(response);
 });
 
 /* GET AN ITEM of an Equipment with LOST STT */
@@ -123,17 +124,15 @@ router.get("/sttItem/:id", (request, response) => {
 });
 /* GET CloseDate in last work order detail of an item  */
 router.get("/closedate/:id", (req, res) => {
-
-    req
-        .sql(
-            "select wod.ClosedDate " +
-            "from WorkOrderDetail as wod " +
-            "where wod.EquipmentItemID = @id order by wod.ClosedDate asc " +
-            "for json path"
-        )
-        .param("id", req.params.id, TYPES.Int)
-        .into(res);
-
+  req
+    .sql(
+      "select wod.ClosedDate " +
+        "from WorkOrderDetail as wod " +
+        "where wod.EquipmentItemID = @id order by wod.ClosedDate asc " +
+        "for json path"
+    )
+    .param("id", req.params.id, TYPES.Int)
+    .into(res);
 });
 
 /* POST request, for insert */
@@ -283,7 +282,7 @@ router.get("/getByEquipmentId/:id", (request, response) => {
     .sql(
       "select distinct e.*, (select ei.Id,ei.EquipmentID,ei.SerialNumber,t.Name as 'Tile',f.Name as 'Floor',b.Name as 'Block' " +
         "                   from EquipmentItem as ei join Tile as t on ei.TileID = t.Id  " +
-        " 						                    join[Floor] as f on t.FloorID = f.Id " +
+        " 						                       join[Floor] as f on t.FloorID = f.Id " +
         " 							                join[Block] as b on f.BlockID = b.Id " +
         " 	                where b.LocationID = @locationId and ei.EquipmentId = [LocationEquipment].Id for JSON path) as[EquipmentItems] " +
         " from Equipment as e, (select eqt.Id as [Id] " +

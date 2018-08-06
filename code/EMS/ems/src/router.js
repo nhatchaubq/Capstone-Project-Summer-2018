@@ -14,6 +14,7 @@ import LocationComponent from "./components/Location/Location.vue";
 
 import EquipmentDetailComponent from "./components/Equipment/EquipmentDetail.vue";
 import AddEquipmentComponent from "./components/Equipment/AddEquipment.vue";
+import MyEquipmentComponent from "./components/Equipment/myEquipment.vue";
 import AccountComponent from "./components/Account/Account.vue";
 import AddAccountComponent from "./components/Account/AddAccount.vue";
 import AccountDetailComponent from "./components/Account/AccountDetail.vue";
@@ -55,6 +56,7 @@ import DienComponent from "./components/chartTest/test1.vue";
 
 //Dien addEquipmentCategory-start
 import AddEquipmentCategoryComponent from "./components/Equipment/AddEquipmentCategory.vue";
+import Page404Component from "./components/page/404.vue"
 // import TestPageNaviComponent from "./components/Vendor/testPageNavi.vue";
 //Dien addEquipmentCategory-end
 
@@ -511,7 +513,33 @@ let router = new Router({
       meta: {
         showSearchBar: false
       }
-    }
+    },
+    {
+
+      path: "/myEquipment",
+      component: MyEquipmentComponent,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Equipment);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+           {
+      path: "/404",
+      component: Page404Component,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", "Page 404");
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+
 
     //Dien addEquipmentCategory-end
   ]
