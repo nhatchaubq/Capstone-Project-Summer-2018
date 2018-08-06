@@ -843,11 +843,9 @@ export default {
   sockets: {
         NEW_WORK_ORDER_CREATED: function() {
             this.getWorkOrders();
-            // this.filterOrders();
         },
         ORDER_STATUS_CHANGED: function() {
             this.getWorkOrders();
-            // this.filterOrders();
         }
   },
   async created() {    
@@ -972,6 +970,7 @@ export default {
       return JSON.parse(window.localStorage.getItem("user"));
     },
     google: gmapApi,
+    searchValues: sync("workOrderPage.searchValues"),
   },
   methods: {
     getWorkOrders() {
@@ -1178,6 +1177,13 @@ export default {
         this.toDisplayWorkOrders = this.sortOrdersByDate(
           this.toDisplayWorkOrders
         );
+        if (this.searchMode) {
+            let tempOrders = [];
+            for (const order of this.searchValues) {
+                tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
+            }
+            this.toDisplayWorkOrders = tempOrders;
+        }
 
         if (this.selectedOrder) {
             let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
@@ -1223,14 +1229,15 @@ export default {
       }
     },
     reset() {
-      this.filterValues = [];
-      this.filterOptionsValues.status = [];
-      this.filterValues.priorities = [];
-      this.selectedOrder = null;
+        this.filterValues = [];
+        this.filterOptionsValues.status = [];
+        this.filterValues.priorities = [];
+        this.selectedOrder = null;
     },
     clearSearch() {
-      this.$store.state.searchValue = "";
-      this.$store.state.workOrderPage.searchValues = [];
+        this.$store.state.workOrderPage.searchText = '';
+        this.$store.state.workOrderPage.searchValues = [];
+        this.searchMode = false;
     },
     showDetailPopup(equipmentItemId) {
       let url = `${Server.EQUIPMENTITEM_API_PATH}/chau/${equipmentItemId}`;
@@ -1640,6 +1647,19 @@ export default {
     'showUpdateAllEquipmentPostionDialog': function() {
         if (!this.showUpdateAllEquipmentPostionDialog) {
             this.Errors.errorInvalidPosition = '';
+        }
+    },
+    'searchValues': function() {
+        this.getWorkOrders();
+        if (this.searchValues && this.searchValues.length > 0) {
+            let tempOrders = [];
+            for (const order of this.searchValues) {
+                tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
+            }
+            this.toDisplayWorkOrders = tempOrders;
+            this.searchMode = true;
+        } else {
+            this.searchMode = false;
         }
     }
   }

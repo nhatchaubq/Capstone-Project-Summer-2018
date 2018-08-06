@@ -14,23 +14,38 @@ const state = {
   notifications: [],
   searchValue: '',
   workOrderPage: {
+    searchText: '',
+    searchValues: [],
     workingOrderViewMode: true,
   },
+  locationPage: {
+    isListViewMode: true,
+    searchText: '',
+    searchValues: [],
+  },
   equipmentPage: {
-    isTableMode: true
+    isTableMode: true,
+    searchText: '',
+    searchValues: [],
   },
   accountPage: {
-    isTableMode: true
+    isTableMode: true,
+    searchText: '',
+    searchValues: [],
   },
   teamPage: {
     detailPage: {
-      editMode: false,
-    }
+      editMode: false,      
+    },
+    searchText: '',
+    searchValues: [],
   },
   vendorPage: {
     detailPage: {
       editMode: false,
-    }
+    },
+    searchText: '',
+    searchValues: [],
   }
 };
 

@@ -59,7 +59,7 @@
         </li>
         <div class="divider"></div>
         
-        <li>
+        <li v-if="authUser.Role =='Equipment Staff'">
           <router-link to='/vendor'>
             <div class="sidebar-list-content" :class="isActive(menu.Vendors)">
             <i class="material-icons">domain</i>
@@ -67,7 +67,7 @@
           </div>
           </router-link>
         </li>
-          <li>
+          <li v-if="authUser.Role =='Admin' || authUser.Role =='Manager'">
           <router-link to='/account'>
             <div class="sidebar-list-content" v-bind:class="isActive(menu.Accounts)">
             <i class="material-icons">people</i>
@@ -75,6 +75,7 @@
           </div>
           </router-link>
         </li>
+
 
       </ul>
     </div>
@@ -93,8 +94,10 @@ export default {
   name: "sidebar",
   computed: {
     currentSelected: sync("title"),
+
     authUser() {
       return JSON.parse(window.localStorage.getItem('user'));
+
     }
   },
   data() {
