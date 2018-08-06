@@ -8,14 +8,19 @@
         <div class="">
             <div class="headerbar-end">
                 <!-- search bar -->
-                <div style="padding-top: .2rem">
+                <div style="padding-top: .2rem; margin-right: 1rem;">
                     <div class="searchbar-wrapper" v-show="showSearchBar">
                         <form @submit.prevent="search()">
                             <i class="fa fa-search" v-on:click="search()" id="searchIcon"></i>
-                            <input v-model="searchValue" type="text" class="searchbar" placeholder="Search"/>
+                            <input v-model.trim="searchText" type="text" class="searchbar" placeholder="Search"
+                                v-on:input="() => {
+                                    if (searchText != '') {
+                                        makeTimeout(2);
+                                    }
+                                }"/>
+                            <i v-if="searchText != ''" class="fa fa-times" id="clearSearchBtn" @click="searchText = ''"></i>
                         </form>
                     </div> <!-- search bar -->
-
                 </div>
                 <!-- start button -->
                 <!-- <div style="padding-top: .2rem">
@@ -167,11 +172,12 @@ export default {
     data() {
         return {
             showMenu: false,
+            searchText: '',
+            searchFunction: null,
         }
     },
     computed: {
         title: sync('title'),
-        searchValue: sync('searchValue'),
         showSearchBar: sync('showSearchBar'),
         authUser() {
             return JSON.parse(window.localStorage.getItem("user"));
@@ -179,18 +185,35 @@ export default {
         notifications: sync('notifications'),
     },
     methods: {
+        makeTimeout(seconds) {
+            if (this.searchFunction) {
+                clearTimeout(this.searchFunction);
+            }
+            this.searchFunction = setTimeout(() => this.search(), seconds * 1000);
+        },
         search() {
-            switch(this.title) {
-                case menu.WorkOrder: {
-                    let url = `${Server.WORKORDER_SEARCH_API_PATH}/${this.searchValue}`;
-                    this.axios.get(url)
-                        .then((res) => {
-                            let result = res.data.WorkOrders;
-                            this.$store.state.workOrderPage.searchValues = result;
-                        });
-                    break;
+            if (this.searchText != '') {
+                if (this.searchFunction) {
+                    clearTimeout(this.searchFunction);
+                    this.searchFunction = null;
                 }
-
+                let searchApi;
+                switch(this.title) {
+                    case menu.WorkOrder: {
+                        searchApi = `${Server.WORKORDER_SEARCH_API_PATH}/${this.searchText}`;
+                        this.axios.get(searchApi)
+                            .then((res) => {
+                                if (res.status == 200) {
+                                    this.$store.state.workOrderPage.searchValues = res.data;
+                                    this.searchFunction = null;
+                                }
+                            }).catch((error) => {
+                                console.log(error);
+                                this.$router.push('/500');
+                            });
+                        break;
+                    }
+                }
             }
         },
         getUserAvatar() {
@@ -233,7 +256,76 @@ export default {
                 }
             }, 1000);
         }
-    }
+    },
+    watch: {
+        'title': function() {
+            switch (this.title) {
+                case menu.WorkOrder: {
+                    this.searchText = this.$store.state.workOrderPage.searchText;
+                    break;
+                }
+                case menu.Equipment: {
+                    this.searchText = this.$store.state.equipmentPage.searchText;
+                    break;
+                }
+                case menu.Location: {
+                    this.searchText = this.$store.state.locationPage.searchText;
+                    break;
+                }
+                case menu.Vendors: {
+                    this.searchText = this.$store.state.vendorPage.searchText;
+                    break;
+                }
+                case menu.Accounts: {
+                    this.searchText = this.$store.state.accountPage.searchText;
+                    break;
+                }
+                case menu.Teams: {
+                    this.searchText = this.$store.state.teamPage.searchText;
+                    break;
+                }                
+                default: {
+                    this.searchText = '';
+                    break;
+                }
+            }
+        },
+        'searchText': function() {
+            switch (this.title) {
+                case menu.WorkOrder: {
+                    this.$store.state.workOrderPage.searchText = this.searchText;
+                    if (this.searchText == '') {
+                        this.$store.state.workOrderPage.searchValues = [];
+                    }
+                    break;
+                }
+                case menu.Equipment: {
+                    this.$store.state.equipmentPage.searchText = this.searchText;
+                    break;
+                }
+                case menu.Location: {
+                    this.$store.state.locationPage.searchText = this.searchText;
+                    break;
+                }
+                case menu.Vendors: {
+                    this.$store.state.vendorPage.searchText = this.searchText;
+                    break;
+                }
+                case menu.Accounts: {
+                    this.$store.state.accountPage.searchText = this.searchText;
+                    break;
+                }
+                case menu.Teams: {
+                    this.$store.state.teamPage.searchText = this.searchText;
+                    break;
+                }
+            }
+        },
+        '$store.state.workOrderPage.searchText': function() {
+            this.searchText = this.$store.state.workOrderPage.searchText;
+        }
+    },
+    
 }
 </script>
 
@@ -275,20 +367,23 @@ export default {
     }
 
     .searchbar-wrapper {
-        /* margin-top: 0.7rem; */
-        margin-right: 20px;
+        margin-top: -.1rem;
+        width: 100%;
+        margin-right: 2rem;
+        transition: all 0.25s ease-in-out;
     }
 
     .searchbar {
         /* border: none !important; */
         /* display: flex; */
         margin-left: -40px;
+        margin-right: -40px;
         /* border: 1px solid #bdbdbd; */
         background-color: var(--light-background);
         /* border: 1px solid var(--light-background); */
         border: 1px solid #e0e0e0;
         border-radius: 5px;
-        padding: 5px 10px 5px 40px;
+        padding: 5px 40px 5px 40px;
         box-shadow: 1px 1px 2px #bdbdbd;
         transition: all 0.25s ease-in;
         font-style: italic;
@@ -310,6 +405,17 @@ export default {
 
     #searchIcon:hover {
         cursor: pointer;
+    }
+
+    #clearSearchBtn {
+        cursor: pointer;
+        transition: all .2s ease-in-out;
+    }
+    #clearSearchBtn:hover {
+        color: #bdbdbd;
+    }
+    #clearSearchBtn:active {
+        color: #757575;
     }
 
     .headerbar-button {

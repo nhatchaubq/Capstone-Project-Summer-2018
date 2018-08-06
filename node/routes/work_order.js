@@ -183,12 +183,23 @@ router.get("/priorities", (request, response) => {
     request.sql("select * from Priority for json path").into(response);
 });
 
-// router.get("/search/:value", (req, res) => {
-//     req
-//         .sql("exec [dbo].SearchWorkOrder @searchValue")
-//         .param("searchValue", req.params.value, TYPES.NVarChar)
-//         .into(res);
-// });
+router.get("/search/:value", (req, res) => {
+    req
+        .sql("  select distinct wo.Id, wo.CreateDate, wo.PriorityID "
+            + " from WorkOrder as wo join Account as acc on wo.RequestUserID = acc.Id "
+            + "     join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID "
+            + "     join EquipmentItem as ei on wod.EquipmentItemID = ei.Id "
+            + "     join Equipment as e on ei.EquipmentID = e.Id "
+            + "     join TeamLocation as tl on wo.TeamLocationID = tl.Id "
+            + "     join [Location] as lo on tl.LocationID = lo.Id "
+            + " where wo.[Name] like N'%' + @searchText + '%' or acc.[Username] like N'%' + @searchText + '%' or acc.[Fullname] like N'%' + @searchText + '%' "
+            + "     or convert(nvarchar(max), wo.Id) = @searchText or ei.SerialNumber like N'%' + @searchText + '%' or e.[Name] like N'%' + @searchText + '%' "
+            + "     or lo.[Name] like N'%' + @searchText + '%' "
+            + " order by wo.CreateDate desc, wo.PriorityID desc "
+            + " for json path")
+        .param("searchText", req.params.value, TYPES.NVarChar)
+        .into(res);
+});
 
 router.get("/categories", (req, res) => {
     req.sql("select * from WorkOrderCategory for json path").into(res);
