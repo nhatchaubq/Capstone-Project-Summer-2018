@@ -263,7 +263,7 @@
                 <tr :key="item.Id" v-for="item in workorderDetail.EquipmentItems">                  
                   <td >{{item.SerialNumber}}</td>
                   <td v-if="selectedWorkorder.Status == 'In Progress' || selectedWorkorder.Status == 'Closed'" :style="{color: item.ClosedDate? 'var(--blue)' : 'var(--success-color)'}">{{item.ClosedDate? "Returned" : "Working" }}</td>
-                  <!-- <td v-if="selectedWorkorder.Status == 'Requested'" style="color: var(--status-requested)" >Requested</td>
+                  <td v-if="selectedWorkorder.Status == 'Requested'" style="color: var(--status-requested)" >Requested</td>
                   <td v-if="selectedWorkorder.Status == 'Checked'" style="color: var(--status-checked)" >Checked</td>
                   <td v-if="selectedWorkorder.Status == 'Approved'" style="color: var(--status-approved)" >Approved</td>              
                 </tr>
