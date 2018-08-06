@@ -35,7 +35,7 @@
 
 
 <!-- test1 -->
-
+    <!-- <div style="color-red">{{JSON.parse(window.localStorage.getItem("user")).Id}}</div> -->
     <table class="mytable">
           <thead>
             <tr>
@@ -97,12 +97,21 @@ export default {
   },
   name: "team",
   created() {
-    // if (this.authUser.Role == "Staff") {
-    // authUser.Id
-    // } else if (manager) {
+    // let URL = "";
+    // if (JSON.parse(window.localStorage.getItem("user")).Role == "Admin") {
+    //   URL = "http://localhost:3000/api/team";
+    // }
+    // if (
+    //   JSON.parse(window.localStorage.getItem("user")).Role == "Staff" ||
+    //   JSON.parse(window.localStorage.getItem("user")).Role == "Equipment Staff"
+    // ) {
+    //   URL = `http://localhost:3000/api/team/getTeamOfThisAcc/${
+    //     JSON.parse(window.localStorage.getItem("user")).Id
+    //   }`;
+    // }
     let URL = "http://localhost:3000/api/team";
     this.axios.get(URL).then(res => {
-      // alert("alao alo");
+      // alert(JSON.parse(window.localStorage.getItem("user")).Id);
       let data = res.data;
       data.forEach(element => {
         let team = element.Team;
@@ -110,7 +119,6 @@ export default {
         this.toDisplayData = this.teams.slice(0, 10);
       });
     });
-    // }
   },
   data() {
     return {

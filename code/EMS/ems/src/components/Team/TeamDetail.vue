@@ -2,8 +2,11 @@
 <div>
   <div class="row" style="margin-bottom:1rem">
     <div class="col-4">
-      <router-link to="/team">
+      <router-link to="/team" v-if="authUser.Role =='Admin' || authUser.Role == 'Manager'">
         <span class="material-icons" style="position: relative; top: .4rem">keyboard_arrow_left</span> Back to Teams
+      </router-link>
+      <router-link :to="`/account/${authUser.Id}`" v-if="authUser.Role =='Staff' || authUser.Role == 'Equipment Staff' || authUser.Role == 'Maintainer'">
+        <a><span class="material-icons" style="position: relative; top: .4rem;">keyboard_arrow_left</span> Back to profile</a>
       </router-link>
     </div>
     <!-- <div class="col-8">
@@ -86,29 +89,34 @@
                     <th style="width: 20% !important" v-if="editMode"><strong>Action</strong></th>
                   </tr>
                 </thead>  
-                <tbody>
-                    <!-- <tr v-if="teamOnly" >
-                      <td v-on:click="toDetail(team.LeaderAccount.Id)">1</td>
-                      <td v-on:click="toDetail(team.LeaderAccount.Id)">{{team.LeaderAccount.Username}}</td>
-                      <td v-on:click="toDetail(team.LeaderAccount.Id)" style="color:#26a69a"><span style="font-size: 25px; ">♛</span> Leader</td>
-                      <strong v-on:click="toDetail(team.LeaderAccount.Id)"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
-                      <td v-if="editMode">&nbsp;</td>
-                    </tr> -->
-
+                <!-- test -->
+                <tbody v-if="authUser.Role =='Admin' || authUser.Role =='Manager'">
                     <tr :key="'member2' + index" v-for="(member, index) in toDisplayMember"  v-if="teamOnly">
-                      <td v-on:click="toDetail(member.Id)">{{ 5*(currentPageMember -1) + (index + 1)}}</td>
+                      <td v-on:click="toDetail(member.Id)" >{{ 5*(currentPageMember -1) + (index + 1)}}</td>
                       <td v-on:click="toDetail(member.Id)">{{member.Username}}</td>
-                    
-                      <!-- <td v-on:click="toDetail(member.Id)"><span v-if="member.TeamRoleID =2" style="font-size: 25px">♟Member</span> </td> -->
                       <td v-on:click="toDetail(member.Id)"> <span >{{member.TeamRole}}</span> </td>
                       <strong v-on:click="toDetail(member.Id)"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
                       <td v-if="editMode" style="padding-top: 0rem important">
                         <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
                           <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important; border-style: none" v-on:click="confirmKick(member.Id, member.Username)">Remove</button>
-
                       </td>
                     </tr>
                 </tbody>
+                <!-- test-end -->
+                <!-- test -->
+                <tbody v-else>
+                    <tr :key="'member2' + index" v-for="(member, index) in toDisplayMember"  v-if="teamOnly">
+                      <td  >{{ 5*(currentPageMember -1) + (index + 1)}}</td>
+                      <td >{{member.Username}}</td>
+                      <td > <span >{{member.TeamRole}}</span> </td>
+                      <strong ><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
+                      <td v-if="editMode" style="padding-top: 0rem important">
+                        <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
+                          <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:1rem !important; border-style: none" v-on:click="confirmKick(member.Id, member.Username)">Remove</button>
+                      </td>
+                    </tr>
+                </tbody>
+                <!-- test-end -->
               </table>
                   <div v-if="teamOnly.length > 4" class="">
     <Page :current="currentPageMember" :total="teamOnly.length" show-elevator 
