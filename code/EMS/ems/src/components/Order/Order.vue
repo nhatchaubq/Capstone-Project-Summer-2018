@@ -12,8 +12,8 @@
                                 <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
                                         <div>Priority:</div>
                                         <div>
-                                            <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: .5rem;">
-                                                <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="filterOptionsValues.priorities.includes(priority)">
+                                            <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in $store.state.workOrderPage.options.priorities" style="margin-right: .5rem;">
+                                                <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="$store.state.workOrderPage.filterOptionsValues.priorities.includes(priority)">
                                                 {{ priority.name }}
                                             </label>                              
                                         </div>                        
@@ -21,8 +21,8 @@
                                 <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
                                         <div>Status:</div>
                                         <div>
-                                            <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
-                                                <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="filterOptionsValues.status.includes(status)">
+                                            <label class="checkbox" :key="'statusOption' + status.id" v-for="status in $store.state.workOrderPage.options.status" style="margin-right: .5rem;">
+                                                <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="$store.state.workOrderPage.filterOptionsValues.status.includes(status)">
                                                 {{ status.name }}
                                             </label>
                                         </div>
@@ -97,7 +97,7 @@
                   </div>
                   <div style="">                        
                         <div class="detail-contents" style="margin-top: 1rem;">
-                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :lastOrderStatus="selectedOrder.WorkOrderRecord[0].OldStatus" :statusList="options.status.filter(status => status.name != 'Cancelled')"></step-progress>
+                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :lastOrderStatus="selectedOrder.WorkOrderRecord[0].OldStatus" :statusList="$store.state.workOrderPage.options.status.filter(status => status.name != 'Cancelled')"></step-progress>
                         </div>          
                           <!-- manager approve / reject -->
                         <div v-if="authUser.Role == 'Manager' && selectedOrder.WorkOrderStatus == 'Checked'" class="" style="margin-top: 1.5rem; margin-bottom: .5rem; display: flex; justify-content: center; align-content: center">
@@ -850,111 +850,106 @@ export default {
             this.getWorkOrders();
         }
   },
-  async created() {
-    await this.axios
-      .get(Server.WORKORDER_STATUS_API_PATH)
-      .then(response => {
-        let data = response.data;
-        for (const element of data) {
-          let status = {
-            id: element.Id,
-            name: element.Name,
-            type: this.optionTypes.STATUS
-          };
-          this.options.status.push(status);
-          if (status.name != "Cancelled" && status.name != "Closed") {
-            this.filterOptionsValues.status.push(status);
-          }
-        }
-      })
-      .catch(error => {
-        if (error == "Request failed with status code 500") {
-          this.$router.push("/500");
-        }
-      });
-    await this.axios
-      .get(Server.WORKORDER_PRIORITIES_API_PATH)
-      .then(response => {
-        let data = response.data;
-        for (const element of data) {
-          let priority = {
-            id: element.Id,
-            name: element.Name,
-            type: this.optionTypes.PRIORITY
-          };
-          this.options.priorities.push(priority);
-          this.filterOptionsValues.priorities.push(priority);
-        }
-      })
-      .catch(error => {
-        if (error == "Request failed with status code 500") {
-          this.$router.push("/500");
-        }
-      });
+  async created() {    
+    if (this.$store.state.workOrderPage.initialLoad) {
+        await this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
+            let data = response.data;
+            for (const element of data) {
+                let status = {
+                    id: element.Id,
+                    name: element.Name,
+                    type: this.optionTypes.STATUS
+                };
+                this.$store.state.workOrderPage.options.status.push(status);
+                    if (status.name != 'Cancelled' && status.name != 'Closed') {
+                        this.$store.state.workOrderPage.filterOptionsValues.status.push(status);
+                    }
+            }
+        }).catch((error) => {
+            if (error == 'Request failed with status code 500') {
+                this.$router.push('/500');
+            }
+        });
+        await this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
+            let data = response.data;
+            for (const element of data) {
+                let priority = {
+                    id: element.Id,
+                    name: element.Name,
+                    type: this.optionTypes.PRIORITY
+                };
+                this.$store.state.workOrderPage.options.priorities.push(priority);
+                this.$store.state.workOrderPage.filterOptionsValues.priorities.push(priority);
+            }
+        }).catch((error) => {
+            if (error == 'Request failed with status code 500') {
+                this.$router.push('/500');
+            }
+        });
+    }
 
     this.getWorkOrders();
     this.getBlockFloorTile();
+    if (this.$store.state.workOrderPage.initialLoad) {
+        this.$store.state.workOrderPage.initialLoad = false;
+    }
   },
   data() {
     return {
-      // socket: io(`http://localhost:3000`),
-      ErrorString: {
-        errorInvalidPosition:
-          "The location has invalid positions (missing blocks or floors or tiles).",
-        closeOrderDamagedLostItemMustProvideDescription:
-          "You must provide description for the damaged/lost equipments.",
-        errorUpdatePosition:
-          "You must select block, floor and tile to update position.",
-        closeOrderMaintenanceMustProvideDescription:
-          "You must provide description for maintained equipments."
-      },
-      Errors: {
-        RejectedDescriptionNotProvided: "",
-        closeOrderDamagedLostItemMustProvideDescription: "",
-        errorUpdatePosition: "",
-        errorInvalidPosition: "",
-        closeOrderMaintenanceMustProvideDescription: ""
-      },
-      tempValues: null, // to hold the original orders when apply filters
-      toDisplayWorkOrders: [],
-      workingOrders: [],
-      maintainingOrders: [],
-      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
-      selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
-      equipments: [], // to hold equipments in the selected work order
-      equipmentPanelIndex: [true],
-      selectedEquipmentPanelIndex: -1,
-      editMode: false, // edit work order detail
-      equipmentItem: null, // when select an item in the list of equipment of selected order
-      selectedFilter: null, // to hold the selected value when change in <select></select>
-      searchMode: false, // flag to display the "Clear search result"
-      options: {
-        priorities: [],
-        status: []
-      },
-      // filterValues: [],
-      filterOptionsValues: {
-        priorities: [],
-        status: []
-      },
-      optionTypes: {
-        STATUS: 0,
-        PRIORITY: 1
-      },
-      showCancelDialog: false,
-      showApproveRejectDialog: false,
-      showChangeStatusDialog: false,
-      showCloseWorkOrderDialog: false,
-      newStatusId: -1,
-      newStatusName: "",
-      approveWorkOrder: false,
-      changeStatusDescription: "",
-      viewDetailMode: true,
-      showUpdateItemPosition: false,
-
-      blockFloorTiles: [],
-      toUpdateSelectedLocation: null,
-      locationOptions: [],
+        // socket: io(`http://localhost:3000`),
+        ErrorString: {
+            errorInvalidPosition: 'The location has invalid positions (missing blocks or floors or tiles).',
+            closeOrderDamagedLostItemMustProvideDescription: 'You must provide description for the damaged/lost equipments.',
+            errorUpdatePosition: 'You must select block, floor and tile to update position.',
+            closeOrderMaintenanceMustProvideDescription: 'You must provide description for maintained equipments.',
+        },
+        Errors: {
+            RejectedDescriptionNotProvided: '',
+            closeOrderDamagedLostItemMustProvideDescription: '',
+            errorUpdatePosition: '',
+            errorInvalidPosition: '',
+            closeOrderMaintenanceMustProvideDescription: '',
+        },
+        tempValues: null, // to hold the original orders when apply filters
+        toDisplayWorkOrders: [],
+        workingOrders: [],
+        maintainingOrders: [],
+        workOrders: [], // orders data to display in orderblocks <order-block></order-block>
+        selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
+        equipments: [], // to hold equipments in the selected work order
+        equipmentPanelIndex: [true, ],
+        selectedEquipmentPanelIndex: -1,
+        editMode: false, // edit work order detail
+        equipmentItem: null, // when select an item in the list of equipment of selected order
+        selectedFilter: null, // to hold the selected value when change in <select></select>
+        searchMode: false, // flag to display the "Clear search result"
+        // options: { 
+        //     priorities: [],
+        //     status: []
+        // },
+        // filterValues: [],
+        // filterOptionsValues: {
+        //     priorities: [],
+        //     status: []
+        // },
+        optionTypes: {
+            STATUS: 0,
+            PRIORITY: 1
+        },
+        showCancelDialog: false,
+        showApproveRejectDialog: false,
+        showChangeStatusDialog: false,
+        showCloseWorkOrderDialog: false,
+        newStatusId: -1,
+        newStatusName: '',
+        approveWorkOrder: false,
+        changeStatusDescription: '',
+        viewDetailMode: true,        
+        showUpdateItemPosition: false,
+        
+        blockFloorTiles: [],
+        toUpdateSelectedLocation: null,
+        locationOptions: [],        
 
       toUpdatePositionItem: null,
       updateBlock: null,
@@ -1018,37 +1013,39 @@ export default {
               );
             }
             if (this.selectedOrder) {
-              let order = this.toDisplayWorkOrders.filter(
-                o => o.Id == this.selectedOrder.Id
-              )[0];
-              if (order) {
-                this.selectedOrder = order;
-                this.getEquipmentsOfWorkOrder(order);
-                if (order.TeamLocation && order.Category == "Working") {
-                  this.toUpdateSelectedLocation = this.blockFloorTiles.filter(
-                    location => location.Id == order.TeamLocation.Location.Id
-                  )[0];
+                let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
+                if (order) {
+                    this.selectedOrder = order;
+                    this.getEquipmentsOfWorkOrder(order);
+                    if (order.TeamLocation && order.Category == 'Working') {
+                        this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
+                    }
+                } else {
+                    this.selectedOrder = null;
+                    this.$router.replace('/work_order');
                 }
-              } else {
-                this.selectedOrder = null;
-                this.$router.replace("/work_order");
-              }
             } else if (this.$route.params && this.$route.params.orderId) {
-              let order = this.toDisplayWorkOrders.filter(
-                o => o.Id == this.$route.params.orderId
-              )[0];
-              if (order) {
-                this.selectedOrder = order;
-                this.getEquipmentsOfWorkOrder(order);
-                if (order.TeamLocation && order.Category == "Working") {
-                  this.toUpdateSelectedLocation = this.blockFloorTiles.filter(
-                    location => location.Id == order.TeamLocation.Location.Id
-                  )[0];
+                let order = this.toDisplayWorkOrders.filter(o => o.Id == this.$route.params.orderId)[0];
+                if (order) {
+                    this.selectedOrder = order;
+                    this.getEquipmentsOfWorkOrder(order);
+                    if (order.TeamLocation && order.Category == 'Working') {
+                        this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
+                    }
+                } else {
+                    this.selectedOrder = null;
+                    this.$router.replace('/work_order');
                 }
-              } else {
-                this.selectedOrder = null;
-                this.$router.replace("/work_order");
-              }
+            }
+            if (this.searchValues && this.searchValues.length > 0) {
+                let tempOrders = [];
+                for (const order of this.searchValues) {
+                    tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
+                }
+                this.toDisplayWorkOrders = tempOrders;
+                this.searchMode = true;
+            } else {
+                this.searchMode = false;
             }
             this.filterOrders();
           }
@@ -1154,31 +1151,31 @@ export default {
       // this.filterValues = this.filterValues.filter(value => value != filter);
       switch (filter.type) {
         case this.optionTypes.STATUS: {
-          this.filterOptionsValues.status = this.filterOptionsValues.status.filter(
+          this.$store.state.workOrderPage.filterOptionsValues.status = this.$store.state.workOrderPage.filterOptionsValues.status.filter(
             status => filter.id != status.id
           );
           break;
         }
         case this.optionTypes.PRIORITY: {
-          this.filterOptionsValues.priorities = this.filterOptionsValues.priorities.filter(
+          this.$store.state.workOrderPage.filterOptionsValues.priorities = this.$store.state.workOrderPage.filterOptionsValues.priorities.filter(
             priority => filter.id != priority.id
           );
           break;
         }
       }
       this.filterOrders();
-      if (
-        this.filterOptionsValues.status.length == 0 &&
-        this.filterOptionsValues.priorities.length == 0
-      ) {
-        this.selectedFilter = null;
-        this.toDisplayWorkOrders = this.tempValues;
-      }
+    //   if (
+    //     this.$store.state.workOrderPage.filterOptionsValues.status.length == 0 &&
+    //     this.$store.state.workOrderPage.filterOptionsValues.priorities.length == 0
+    //   ) {
+    //     this.selectedFilter = null;
+    //     this.toDisplayWorkOrders = this.tempValues;
+    //   }
     },
     filterOrders() {
       if (
-        this.filterOptionsValues.status.length > 0 ||
-        this.filterOptionsValues.priorities.length > 0
+        this.$store.state.workOrderPage.filterOptionsValues.status.length > 0 &&
+        this.$store.state.workOrderPage.filterOptionsValues.priorities.length > 0
       ) {
         if (this.tempValues == null) {
           this.tempValues = this.toDisplayWorkOrders;
@@ -1186,8 +1183,8 @@ export default {
         this.toDisplayWorkOrders = []; // reset orders before applying new filters
         // this.selectedOrder = null;
         // this.$router.replace('/work_order');
-        if (this.filterOptionsValues.status.length > 0) {
-          this.filterOptionsValues.status.forEach(status => {
+        if (this.$store.state.workOrderPage.filterOptionsValues.status.length > 0) {
+          this.$store.state.workOrderPage.filterOptionsValues.status.forEach(status => {
             this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(
               this.tempValues.filter(
                 order => order.WorkOrderStatus == status.name
@@ -1197,9 +1194,9 @@ export default {
         } else {
           this.toDisplayWorkOrders = this.tempValues;
         }
-        if (this.filterOptionsValues.priorities.length > 0) {
+        if (this.$store.state.workOrderPage.filterOptionsValues.priorities.length > 0) {
           let tempValues = [];
-          this.filterOptionsValues.priorities.forEach(priority => {
+          this.$store.state.workOrderPage.filterOptionsValues.priorities.forEach(priority => {
             tempValues = tempValues.concat(
               this.toDisplayWorkOrders.filter(
                 order => order.Priority == priority.name
@@ -1208,15 +1205,10 @@ export default {
           });
           this.toDisplayWorkOrders = tempValues;
         }
-        this.toDisplayWorkOrders = this.sortOrdersByDate(
-          this.toDisplayWorkOrders
-        );
-        if (this.searchMode) {
-            let tempOrders = [];
-            for (const order of this.searchValues) {
-                tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
-            }
-            this.toDisplayWorkOrders = tempOrders;
+        if (this.toDisplayWorkOrders.length > 0) {
+            this.toDisplayWorkOrders = this.sortOrdersByDate(
+              this.toDisplayWorkOrders
+            );
         }
 
         if (this.selectedOrder) {
@@ -1232,12 +1224,16 @@ export default {
         // for (var i = 0; i < this.filterValues.length; i++) {
         //     this.orders = this.sortOrdersByDate(this.orders);
         // }
+      } else {
+            this.selectedOrder = null;
+            this.$router.replace('/work_order');
+            this.toDisplayWorkOrders = [];
       }
     },
     sortOrdersByDate(orders) {
       return orders.sort((order1, order2) => {
-        let date1 = parseInt(new Date(order1.CreateDate).getTime());
-        let date2 = parseInt(new Date(order2.CreateDate).getTime());
+        let date1 = moment(order1.CreateDate).valueOf();
+        let date2 = moment(order2.CreateDate).valueOf();
         // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
         let result = date2 - date1;
         return result > 0
@@ -1250,11 +1246,11 @@ export default {
         // this.filterValues.push(this.selectedFilter);
         switch (filter.type) {
           case this.optionTypes.STATUS: {
-            this.filterOptionsValues.status.push(filter);
+            this.$store.state.workOrderPage.filterOptionsValues.status.push(filter);
             break;
           }
           case this.optionTypes.PRIORITY: {
-            this.filterOptionsValues.priorities.push(filter);
+            this.$store.state.workOrderPage.filterOptionsValues.priorities.push(filter);
             break;
           }
         }
@@ -1264,12 +1260,12 @@ export default {
         this.removeFilter(filter);
       }
     },
-    reset() {
-        this.filterValues = [];
-        this.filterOptionsValues.status = [];
-        this.filterValues.priorities = [];
-        this.selectedOrder = null;
-    },
+    // reset() {
+    //     this.filterValues = [];
+    //     this.$store.state.workOrderPage.filterOptionsValues.status = [];
+    //     this.$store.state.workOrderPage.filterOptionsValues.priorities = [];
+    //     this.selectedOrder = null;
+    // },
     clearSearch() {
         this.$store.state.workOrderPage.searchText = '';
         this.$store.state.workOrderPage.searchValues = [];
@@ -1774,16 +1770,16 @@ export default {
     },
     'searchValues': function() {
         this.getWorkOrders();
-        if (this.searchValues && this.searchValues.length > 0) {
-            let tempOrders = [];
-            for (const order of this.searchValues) {
-                tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
-            }
-            this.toDisplayWorkOrders = tempOrders;
-            this.searchMode = true;
-        } else {
-            this.searchMode = false;
-        }
+        // if (this.searchValues && this.searchValues.length > 0) {
+        //     let tempOrders = [];
+        //     for (const order of this.searchValues) {
+        //         tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
+        //     }
+        //     this.toDisplayWorkOrders = tempOrders;
+        //     this.searchMode = true;
+        // } else {
+        //     this.searchMode = false;
+        // }
     }
   }
 };
