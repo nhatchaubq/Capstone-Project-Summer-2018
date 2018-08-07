@@ -986,7 +986,7 @@ export default {
         .then(response => {
           if (response.data.WorkOrders) {
             let data = response.data.WorkOrders;
-            this.tempValues = null;
+            // this.tempValues = null;
             this.workOrders = data;
             if (
               this.authUser.Role == "Manager" ||
@@ -1012,40 +1012,44 @@ export default {
                 order => order.RequestUserID == this.authUser.Id
               );
             }
+            this.tempValues = this.toDisplayWorkOrders;
             if (this.selectedOrder) {
                 let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
                 if (order) {
-                    this.selectedOrder = order;
-                    this.getEquipmentsOfWorkOrder(order);
-                    if (order.TeamLocation && order.Category == 'Working') {
-                        this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
-                    }
+                  this.selectedOrder = order;
+                  this.getEquipmentsOfWorkOrder(order);
+                  if (order.TeamLocation && order.Category == 'Working') {
+                      this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
+                  }
                 } else {
-                    this.selectedOrder = null;
-                    this.$router.replace('/work_order');
+                  this.selectedOrder = null;
+                  this.$router.replace('/work_order');
                 }
             } else if (this.$route.params && this.$route.params.orderId) {
                 let order = this.toDisplayWorkOrders.filter(o => o.Id == this.$route.params.orderId)[0];
                 if (order) {
-                    this.selectedOrder = order;
-                    this.getEquipmentsOfWorkOrder(order);
-                    if (order.TeamLocation && order.Category == 'Working') {
-                        this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
-                    }
+                  this.selectedOrder = order;
+                  this.getEquipmentsOfWorkOrder(order);
+                  if (order.TeamLocation && order.Category == 'Working') {
+                      this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
+                  }
                 } else {
-                    this.selectedOrder = null;
-                    this.$router.replace('/work_order');
+                  this.selectedOrder = null;
+                  this.$router.replace('/work_order');
                 }
             }
-            if (this.searchValues && this.searchValues.length > 0) {
-                let tempOrders = [];
+            if (this.$store.state.workOrderPage.searchText != '') {
+              let tempOrders = [];
+              if (this.searchValues.length > 0) {
                 for (const order of this.searchValues) {
                     tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
                 }
-                this.toDisplayWorkOrders = tempOrders;
-                this.searchMode = true;
+              }
+              this.toDisplayWorkOrders = tempOrders;
+              this.searchMode = true;
             } else {
-                this.searchMode = false;
+              // this.$store.state.workOrderPage.searchValues = [];
+              this.searchMode = false;
             }
             this.filterOrders();
           }

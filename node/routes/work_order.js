@@ -14,7 +14,10 @@ router.get("/workorderbylocationId/:id", (request, response) => {
             " join Team as t on t.Id = tl.TeamId " +
             " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
             " join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
-            " for json path"
+            " join WorkOrderCategory as wc on wc.Id = wo.CategoryID						  " +
+            " where tl.LocationID = @locationId and (ws.Name = 'In Progress' or ws.Name = 'Closed') " +
+            " order by ws.Name desc " +
+            "  for json path "
             // "exec [GetWorkOrderByLocationId] @locationId"
         ).param("locationId", request.params.id, TYPES.Int)
         .into(response);
@@ -66,7 +69,7 @@ router.get('/id/:orderId', (request, response) => {
             //   + "                                                                                             join Equipment as e4 on ei.EquipmentID = e4.Id "
             +
             "                                                                                             join EquipmentStatus as es on ei.StatusId = es.Id " +
-            "                                                                                     where ei.EquipmentID = e.Id "
+            "                                                                                     where ei.EquipmentID = e.Id and ei.StatusID in (select Id from EquipmentStatus where [Name] != N'Lost' and [Name] != N'Archived') "
             //   + "                                                                                     order by (select count(wo4.Id) "
             //   + "                                                                                               from WorkOrder as wo4 join WorkOrderDetail as wod on wo4.Id = wod.WorkOrderID "
             //   + "                                                                                               where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id "
@@ -231,7 +234,7 @@ router.get('/get_equipment_detail/:id', (req, res) => {
             " from EquipmentItem as ei " +
             // "        join Equipment as e on ei.EquipmentID = e.Id " +
             "        join EquipmentStatus as es on ei.StatusId = es.Id " +
-            " where ei.EquipmentID = @equipmentId and ei.StatusID in (select Id from EquipmentStatus where [Name] != N'Damaged' and [Name] != N'Lost' and [Name] != N'Archived') " +
+            " where ei.EquipmentID = @equipmentId and ei.StatusID in (select Id from EquipmentStatus where [Name] != N'Lost' and [Name] != N'Archived') " +
             // " order by (select count(wo.Id) " +
             // "           from WorkOrder as wo join WorkOrderDetail as wod on wo.Id = wod.WorkOrderID " +
             // "           where wod.EquipmentItemID = ei.Id and wo.StatusID in (select Id " +
