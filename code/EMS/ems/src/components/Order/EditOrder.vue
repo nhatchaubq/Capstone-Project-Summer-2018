@@ -524,7 +524,7 @@
                 </div> 
             </div> <!-- display equipment items table to let user pick the desire item -->
             <!-- describe work order -->
-            <div class="form-field">
+            <div class="form-field" style="margin-bottom: 1rem;">
                 <div class="form-field-title">
                     Describe this work order (optional)
                 </div>
@@ -641,129 +641,137 @@ export default {
             .then(async (res) => {
                 if (res.status == 200) {
                     context.editWorkOrder = res.data;
-                    context.workOrderDateRange[0] = context.editWorkOrder.ExpectingStartDate;
-                    context.workOrderDateRange[1] = context.editWorkOrder.ExpectingCloseDate;
-                    // get work order priorities
-                    await context.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(async res => {
-                        if (res.data) {
-                            context.priorities = res.data;
-                            context.workOrderPriority = context.editWorkOrder.PriorityID;
-                            // get locations
-                            if (context.authUser.Role == 'Staff') {
-                                await context.axios.get(Server.LOCATION_API_PATH).then(async res => {
+                    if (context.editWorkOrder.RequestUserID != this.authUser.Id
+                        || (context.editWorkOrder.WorkOrderStatus != 'Requested' 
+                            && context.editWorkOrder.WorkOrderStatus != 'Rejected')) {
+                        this.$router.replace('/work_order');
+                    } else {
+                        context.workOrderDateRange[0] = context.editWorkOrder.ExpectingStartDate;
+                        context.workOrderDateRange[1] = context.editWorkOrder.ExpectingCloseDate;
+                        // get work order priorities
+                        await context.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(async res => {
+                            if (res.data) {
+                                context.priorities = res.data;
+                                context.workOrderPriority = context.editWorkOrder.PriorityID;
+                                // get locations
+                                if (context.authUser.Role == 'Staff') {
+                                    await context.axios.get(`${Server.LOCATION_API_PATH}/getLocation/${this.authUser.Id}`).then(async res => {
+                                        if (res.data) {
+                                            let data = res.data;
+                                            for (const location of data) {
+                                                if (location.isActive) {
+                                                    let option = {
+                                                        value: location.Id,
+                                                        text: `${location.Name} - ${location.Address}`,
+                                                        latitude: location.Latitude,
+                                                        longitude: location.Longitude,
+                                                    };
+                                                    context.locationOptions.push(option);
+                                                }
+                                            }
+                                            context.selectedLocation = context.locationOptions.filter(op => parseInt(op.value) == context.editWorkOrder.Location.Id)[0];
+                                            //get team in selected location
+                                            context.teamOptions = [];
+                                            let url = `${Server.LOCATION_API_PATH}/${
+                                                context.selectedLocation.value
+                                                }/team/${context.authUser.Id}`;
+                                            await context.axios.get(url).then(async res => {
+                                                if (res.data) {
+                                                    let data = res.data;
+                                                    for (const element of data) {
+                                                        let option = {
+                                                            value: element.Team.Id,
+                                                            text: element.Team.Name
+                                                        };
+                                                        context.teamOptions.push(option);
+                                                    }
+                                                    context.selectedTeam = context.teamOptions.filter(op => parseInt(op.value) == parseInt(context.editWorkOrder.Team.Id))[0];
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+    
+                                // get all equipments to display options
+                                await context.axios.get(Server.EQUIPMENT_API_PATH).then(async res => {
                                     if (res.data) {
                                         let data = res.data;
-                                        for (const location of data) {
+                                        for (const element of data) {
+                                            let quantity = parseInt(element.Equipment.Quantity);
                                             let option = {
-                                                value: location.Id,
-                                                text: `${location.Name} - ${location.Address}`,
-                                                latitude: location.Latitude,
-                                                longitude: location.Longitude,
+                                                text: `${element.Equipment.Name}, quantity: ${quantity} ${quantity > 0 ? element.Equipment.Unit.Name : 'unit'}`,
+                                                value: element.Equipment.Id,
+                                                image: element.Equipment.Image,
+                                                totalQuantity: quantity,
+                                                maintenancePeriodInMonths: element.Equipment.MaintenanceDuration.Month
                                             };
-                                            context.locationOptions.push(option);
+                                            context.equipmentOptions.push(option);
                                         }
-                                        context.selectedLocation = context.locationOptions.filter(op => parseInt(op.value) == context.editWorkOrder.Location.Id)[0];
-                                        //get team in selected location
-                                        context.teamOptions = [];
-                                        let url = `${Server.LOCATION_API_PATH}/${
-                                            context.selectedLocation.value
-                                            }/team/${context.authUser.Id}`;
-                                        await context.axios.get(url).then(async res => {
-                                            if (res.data) {
-                                                let data = res.data;
-                                                for (const element of data) {
-                                                    let option = {
-                                                        value: element.Team.Id,
-                                                        text: element.Team.Name
-                                                    };
-                                                    context.teamOptions.push(option);
-                                                }
-                                                context.selectedTeam = context.teamOptions.filter(op => parseInt(op.value) == parseInt(context.editWorkOrder.Team.Id))[0];
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-
-                            // get all equipments to display options
-                            await context.axios.get(Server.EQUIPMENT_API_PATH).then(async res => {
-                                if (res.data) {
-                                    let data = res.data;
-                                    for (const element of data) {
-                                        let quantity = parseInt(element.Equipment.Quantity);
-                                        let option = {
-                                            text: `${element.Equipment.Name}, quantity: ${quantity} ${quantity > 0 ? element.Equipment.Unit.Name : 'unit'}`,
-                                            value: element.Equipment.Id,
-                                            image: element.Equipment.Image,
-                                            totalQuantity: quantity,
-                                            maintenancePeriodInMonths: element.Equipment.MaintenanceDuration.Month
-                                        };
-                                        context.equipmentOptions.push(option);
-                                    }
-                                    context.toDisplayEquipmentOptions = context.equipmentOptions;
-                                    
-                                    for (const eq of context.editWorkOrder.Equipments) {
-                                        let equipmentOption = context.equipmentOptions.filter(op => parseInt(op.value) == parseInt(eq.Id))[0];
-                                        let itemQuantity = eq.EquipmentItems.length;
-                                        let selectedItemIds = [];
-                                        for (const item of eq.EquipmentItems) {
-                                            selectedItemIds.push(item.Id);
-                                        }
-                                        let equipmentTable = [];
-                                        for (const eqi of eq.Table) {
-                                            // alert(`Warehouse ${JSON.stringify(eqi.Warehouse)}, ${JSON.stringify(context.selectedLocation)}`)
-                                            let distance = {text: 'n/a', value: 1};
-                                            if (equipmentOption && equipmentOption.value != '') {
-                                                if (context.selectedLocation && context.selectedLocation.value != '') {
-                                                    distance = await context.getDistance(eqi.Warehouse, context.selectedLocation)
-                                                }
-                                                let item = {
-                                                    "Id": eqi.Id,
-                                                    "EquipmentID": eqi.EquipmentID,
-                                                    "SerialNumber": eqi.SerialNumber,
-                                                    "WarrantyDuration": eqi.WarrantyDuration,
-                                                    "RuntimeDays": eqi.RuntimeDays,
-                                                    "TileID": eqi.TileID,
-                                                    "Price": eqi.Price,
-                                                    "ImportDate": eqi.ImportDate,
-                                                    "NextMaintainDate": eqi.NextMaintainDate,
-                                                    "StatusId": eqi.StatusId,
-                                                    "Description": eqi.Description,
-                                                    "Status": eqi.Status,
-                                                    "Warehouse": eqi.Warehouse,
-                                                    "WorkOrders": eqi.WorkOrders,
-                                                    "Distance": distance,
-                                                };
-                                                equipmentTable.push(item);
-                                            }
-                                            // alert(JSON.stringify(distance))
-                                        }
-                                        if (context.authUser.Role == 'Staff' && context.selectedLocation.value != '') {
-                                            context.sortItems(equipmentTable);
-                                        }
-                                        let indeterminate = selectedItemIds.length > 0 && selectedItemIds.length < equipmentTable.length;
-                                        let checkAllItems = selectedItemIds.length == equipmentTable.length;
-                                        let addEquipmentWarnings = {
-                                            MustSelectEquipment: '',
-                                            AvailableQuantityIsZero: '',
-                                            SelectedEquipmentQuantityIsZero: '',
-                                            SelectedDateConflictWorkOrders: '',
-                                            UnableToSelectItem: '',
-                                            ConflictMaintenanceDate: '',
-                                        };
-                                        // check if from date conflicts any item in work orders - start
-                                        let conflictItems = [];
-                                        let unableSelectItems = [];
-                                        let itemIdConflictNextMaintenanceDate = [];
-                                        context.checkItemsIsSafeToSelect(selectedItemIds, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                        context.toDisplayEquipmentOptions = context.equipmentOptions;
                                         
-                                        context.addEquipment(true, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                        for (const eq of context.editWorkOrder.Equipments) {
+                                            let equipmentOption = context.equipmentOptions.filter(op => parseInt(op.value) == parseInt(eq.Id))[0];
+                                            let itemQuantity = eq.EquipmentItems.length;
+                                            let selectedItemIds = [];
+                                            for (const item of eq.EquipmentItems) {
+                                                selectedItemIds.push(item.Id);
+                                            }
+                                            let equipmentTable = [];
+                                            for (const eqi of eq.Table) {
+                                                // alert(`Warehouse ${JSON.stringify(eqi.Warehouse)}, ${JSON.stringify(context.selectedLocation)}`)
+                                                let distance = {text: 'n/a', value: 1};
+                                                if (equipmentOption && equipmentOption.value != '') {
+                                                    if (context.selectedLocation && context.selectedLocation.value != '') {
+                                                        distance = await context.getDistance(eqi.Warehouse, context.selectedLocation)
+                                                    }
+                                                    let item = {
+                                                        "Id": eqi.Id,
+                                                        "EquipmentID": eqi.EquipmentID,
+                                                        "SerialNumber": eqi.SerialNumber,
+                                                        "WarrantyDuration": eqi.WarrantyDuration,
+                                                        "RuntimeDays": eqi.RuntimeDays,
+                                                        "TileID": eqi.TileID,
+                                                        "Price": eqi.Price,
+                                                        "ImportDate": eqi.ImportDate,
+                                                        "NextMaintainDate": eqi.NextMaintainDate,
+                                                        "StatusId": eqi.StatusId,
+                                                        "Description": eqi.Description,
+                                                        "Status": eqi.Status,
+                                                        "Warehouse": eqi.Warehouse,
+                                                        "WorkOrders": eqi.WorkOrders,
+                                                        "Distance": distance,
+                                                    };
+                                                    equipmentTable.push(item);
+                                                }
+                                                // alert(JSON.stringify(distance))
+                                            }
+                                            if (context.authUser.Role == 'Staff' && context.selectedLocation.value != '') {
+                                                context.sortItems(equipmentTable);
+                                            }
+                                            let indeterminate = selectedItemIds.length > 0 && selectedItemIds.length < equipmentTable.length;
+                                            let checkAllItems = selectedItemIds.length == equipmentTable.length;
+                                            let addEquipmentWarnings = {
+                                                MustSelectEquipment: '',
+                                                AvailableQuantityIsZero: '',
+                                                SelectedEquipmentQuantityIsZero: '',
+                                                SelectedDateConflictWorkOrders: '',
+                                                UnableToSelectItem: '',
+                                                ConflictMaintenanceDate: '',
+                                            };
+                                            // check if from date conflicts any item in work orders - start
+                                            let conflictItems = [];
+                                            let unableSelectItems = [];
+                                            let itemIdConflictNextMaintenanceDate = [];
+                                            context.checkItemsIsSafeToSelect(selectedItemIds, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                            
+                                            context.addEquipment(true, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                        }
+                                        context.loadEditOrder = false;
                                     }
-                                    context.loadEditOrder = false;
-                                }
-                            });// get all equipments to display options
-                        }
-                    });
+                                });// get all equipments to display options
+                            }
+                        });
+                    }
                 }
             });               
     },
