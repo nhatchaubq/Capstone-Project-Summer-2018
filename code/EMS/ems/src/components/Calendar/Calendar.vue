@@ -91,7 +91,6 @@ export default {
             ExpectingStartDate <= this.endMonth &&
             this.orders[i].StartDate != null
           ) {
-            // alert(this.orders[i].Name);
             let timeDiffOffset = Math.abs(StartDate - this.startMonth);
             startOffset = Math.floor(timeDiffOffset / (1000 * 3600 * 24));
           }
@@ -189,20 +188,17 @@ export default {
             }
           }
           if (this.orders[i].WorkOrderStatus == "Requested") {
-            // alert(this.orders[i].Name);
             if (
               ExpectingCloseDate < this.endMonth &&
               ExpectingStartDate < this.startMonth
             ) {
-              var timeDiffDuration = Math.abs(
-                ExpectingCloseDate - this.startMonth
-              );
+              timeDiffDuration = Math.abs(ExpectingCloseDate - this.startMonth);
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate < this.endMonth &&
               ExpectingStartDate > this.startMonth
             ) {
-              var timeDiffDuration = Math.abs(
+              timeDiffDuration = Math.abs(
                 ExpectingCloseDate - ExpectingStartDate
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
@@ -210,22 +206,20 @@ export default {
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate < this.startMonth
             ) {
-              var timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
+              timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate > this.startMonth &&
               ExpectingStartDate < this.endMonth
             ) {
-              var timeDiffDuration = Math.abs(
-                this.endMonth - ExpectingStartDate
-              );
+              timeDiffDuration = Math.abs(this.endMonth - ExpectingStartDate);
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate > this.endMonth
             ) {
-              var timeDiffDuration = Math.abs(
+              timeDiffDuration = Math.abs(
                 ExpectingCloseDate - ExpectingStartDate
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
@@ -236,15 +230,13 @@ export default {
               ExpectingCloseDate < this.endMonth &&
               ExpectingStartDate < this.startMonth
             ) {
-              var timeDiffDuration = Math.abs(
-                ExpectingCloseDate - this.startMonth
-              );
+              timeDiffDuration = Math.abs(ExpectingCloseDate - this.startMonth);
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate < this.endMonth &&
               ExpectingStartDate > this.startMonth
             ) {
-              var timeDiffDuration = Math.abs(
+              timeDiffDuration = Math.abs(
                 ExpectingCloseDate - ExpectingStartDate
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
@@ -252,22 +244,20 @@ export default {
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate < this.startMonth
             ) {
-              var timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
+              timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate > this.startMonth &&
               ExpectingStartDate < this.endMonth
             ) {
-              var timeDiffDuration = Math.abs(
-                this.endMonth - ExpectingStartDate
-              );
+              timeDiffDuration = Math.abs(this.endMonth - ExpectingStartDate);
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate > this.endMonth
             ) {
-              var timeDiffDuration = Math.abs(
+              timeDiffDuration = Math.abs(
                 ExpectingCloseDate - ExpectingStartDate
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
@@ -310,10 +300,10 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
-                  location: this.orders[i].Location.Address
+                  location: this.orders[i].TeamLocation.Location.Address
                 };
                 this.events.push(event);
               }
@@ -331,10 +321,10 @@ export default {
                 expectStartDate: moment(
                   this.orders[i].ExpectingStartDate
                 ).format("DD-MM-YYYY"),
-                team: this.orders[i].Team.Name,
+                team: this.orders[i].TeamLocation.Team.Name,
                 closedDate: this.orders[i].ClosedDate,
                 detail: this.orders[i].WorkOrderDetails,
-                location: this.orders[i].Location.Address
+                location: this.orders[i].TeamLocation.Location.Address
               };
               this.events.push(event);
             }
@@ -491,7 +481,6 @@ export default {
               }
             }
             if (this.orders[i].WorkOrderStatus == "Checked") {
-              // alert(this.orders[i].Name);
               if (
                 ExpectingCloseDate < this.endMonth &&
                 ExpectingStartDate < this.startMonth
@@ -536,7 +525,6 @@ export default {
               }
             }
             if (this.orders[i].WorkOrderStatus == "Requested") {
-              // alert(this.orders[i].Name);
               if (
                 ExpectingCloseDate < this.endMonth &&
                 ExpectingStartDate < this.startMonth
@@ -643,8 +631,7 @@ export default {
                 (StartDate < this.startMonth && ClosedDate < this.startMonth) ||
                 (StartDate > this.endMonth && ClosedDate > this.endMonth)
               ) {
-                // alert(i);
-                // alert(this.orders[i].Name);
+
               } else {
                 var event = {
                   title: this.orders[i].Name,
@@ -659,10 +646,10 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
-                  location: this.orders[i].Location.Address
+                  location: this.orders[i].TeamLocation.Location.Address,
                 };
                 this.events.push(event);
               }
@@ -692,10 +679,10 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
-                  location: this.orders[i].Location.Address
+                  location: this.orders[i].TeamLocation.Location.Address,
                 };
                 this.events.push(event);
               }
@@ -748,7 +735,6 @@ export default {
               ExpectingStartDate <= this.endMonth &&
               this.orders[i].StartDate == null
             ) {
-              // alert(this.orders[i].Name);
               let timeDiffOffset = Math.abs(
                 ExpectingStartDate - this.startMonth
               );
@@ -758,7 +744,6 @@ export default {
               ExpectingStartDate <= this.endMonth &&
               this.orders[i].StartDate != null
             ) {
-              // alert(this.orders[i].Name);
               let timeDiffOffset = Math.abs(StartDate - this.startMonth);
               startOffset = Math.floor(timeDiffOffset / (1000 * 3600 * 24));
             }
@@ -822,7 +807,6 @@ export default {
               }
             }
             if (this.orders[i].WorkOrderStatus == "Checked") {
-              // alert(this.orders[i].Name);
               if (
                 ExpectingCloseDate < this.endMonth &&
                 ExpectingStartDate < this.startMonth
@@ -867,7 +851,6 @@ export default {
               }
             }
             if (this.orders[i].WorkOrderStatus == "Requested") {
-              // alert(this.orders[i].Name);
               if (
                 ExpectingCloseDate < this.endMonth &&
                 ExpectingStartDate < this.startMonth
@@ -976,8 +959,6 @@ export default {
                 (StartDate < this.startMonth && ClosedDate < this.startMonth) ||
                 (StartDate > this.endMonth && ClosedDate > this.endMonth)
               ) {
-                // alert(i);
-                // alert(this.orders[i].Name);
               } else {
                 var event = {
                   title: this.orders[i].Name,
@@ -992,10 +973,10 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
-                  location: this.orders[i].Location.Address
+                  location: this.orders[i].TeamLocation.Location.Address,
                 };
                 this.events.push(event);
               }
@@ -1006,8 +987,6 @@ export default {
                 (ExpectingStartDate > this.endMonth &&
                   ExpectingCloseDate > this.endMonth)
               ) {
-                // alert(i);
-                // alert(this.orders[i].Name);
               } else {
                 if (this.orders[i].WorkOrderStatus == "In Progress") {
                   this.orders[i].WorkOrderStatus = "InProgress";
@@ -1025,10 +1004,10 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
-                  location: this.orders[i].Location.Address
+                  location: this.orders[i].TeamLocation.Location.Address,
                 };
                 this.events.push(event);
               }
