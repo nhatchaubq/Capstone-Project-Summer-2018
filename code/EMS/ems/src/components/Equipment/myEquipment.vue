@@ -44,7 +44,7 @@
                     <td class="detail" width=20%>{{detail.Name}}</td>
                     <td class="detail" width=10%>{{detail.SerialNumber}}</td>
                     <td class="detail" width=8%>{{detail.Block}}</td>
-                    <td class="detail" width=6%>{{detail.FLoor}}</td>
+                    <td class="detail" width=6%>{{detail.Floor}}</td>
                     <td class="detail" width=6%>{{detail.Tile}}</td>
                     <td class="detail"><a v-on:click="showChangePosition(detail.EquipmentItemID)">Update positon</a></td>
                 </tr>
@@ -170,17 +170,6 @@ export default {
             );
           }
         }
-        for (i = 0; i < this.displayOrderDetail.length; i++) {
-          for (
-            j = 0;
-            j < this.displayOrderDetail[i].EquipmentItems.length;
-            j++
-          ) {
-            this.displayItemDetail.push(
-              this.displayOrderDetail[i].EquipmentItems[j]
-            );
-          }
-        }
       })
       .catch(error => {
         console.log(error);
@@ -234,7 +223,7 @@ export default {
       floorOptions: [],
       tileOptions: [],
       selectedItem: "",
-      WOlocationID: "",
+      WOlocationID: 0,
       locationToUpdate: "",
       updateBlock: "",
       updateFloor: "",
@@ -252,6 +241,7 @@ export default {
             this.displayOrders[i].WorkorderDetail[j].EquipmentItemID == itemId
           ) {
             this.WOlocationID = this.displayOrders[i].LocationID;
+            alert(this.WOlocationID);
           }
         }
       }
@@ -455,6 +445,9 @@ tr:nth-child(odd) {
 }
 tr:nth-child(even) {
   height: 8px;
+}
+table {
+  border: none !important;
 }
 tr {
   cursor: context-menu !important;
