@@ -14,23 +14,47 @@ const state = {
   notifications: [],
   searchValue: '',
   workOrderPage: {
+    initialLoad: true,
+    searchText: '',
+    searchValues: [],
     workingOrderViewMode: true,
+    options: { 
+      priorities: [],
+      status: []
+    },
+    filterOptionsValues: {
+      priorities: [],
+      status: []
+    },
+  },
+  locationPage: {
+    isListViewMode: true,
+    searchText: '',
+    searchValues: [],
   },
   equipmentPage: {
-    isTableMode: true
+    isTableMode: true,
+    searchText: '',
+    searchValues: [],
   },
   accountPage: {
-    isTableMode: true
+    isTableMode: true,
+    searchText: '',
+    searchValues: [],
   },
   teamPage: {
     detailPage: {
-      editMode: false,
-    }
+      editMode: false,      
+    },
+    searchText: '',
+    searchValues: [],
   },
   vendorPage: {
     detailPage: {
       editMode: false,
-    }
+    },
+    searchText: '',
+    searchValues: [],
   }
 };
 

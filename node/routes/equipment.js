@@ -22,6 +22,7 @@ router.get("/", (request, response) => {
       "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
       "JOIN [Unit] as u on e.UnitID = u.Id " +
       "JOIN [MaintenanceDuration] as md on e.MaintenanceDurationID = md.Id " +
+      "Order by e.Name asc " +
       "for json path"
     )
     .into(response);

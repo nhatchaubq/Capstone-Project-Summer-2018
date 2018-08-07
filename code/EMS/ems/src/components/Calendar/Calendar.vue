@@ -47,6 +47,7 @@ export default {
     VueFullCalendar
   },
   created() {
+    let authUser = JSON.parse(window.localStorage.getItem("user"));
     this.today = moment().format("DD-MM-YYYY");
     this.startPeriod = moment().startOf("month");
     this.endPeriod = moment().endOf("month");
@@ -193,15 +194,15 @@ export default {
               ExpectingCloseDate < this.endMonth &&
               ExpectingStartDate < this.startMonth
             ) {
-              timeDiffDuration = Math.abs(
-                ExpectingCloseDate - ExpectingStartDate
+              var timeDiffDuration = Math.abs(
+                ExpectingCloseDate - this.startMonth
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate < this.endMonth &&
               ExpectingStartDate > this.startMonth
             ) {
-              timeDiffDuration = Math.abs(
+              var timeDiffDuration = Math.abs(
                 ExpectingCloseDate - ExpectingStartDate
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
@@ -209,40 +210,41 @@ export default {
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate < this.startMonth
             ) {
-              timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
+              var timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate > this.startMonth &&
               ExpectingStartDate < this.endMonth
             ) {
-              timeDiffDuration = Math.abs(this.endMonth - ExpectingStartDate);
+              var timeDiffDuration = Math.abs(
+                this.endMonth - ExpectingStartDate
+              );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate > this.endMonth
             ) {
-              timeDiffDuration = Math.abs(
+              var timeDiffDuration = Math.abs(
                 ExpectingCloseDate - ExpectingStartDate
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             }
           }
           if (this.orders[i].WorkOrderStatus == "Approved") {
-            // alert(this.orders[i].Name);
             if (
               ExpectingCloseDate < this.endMonth &&
               ExpectingStartDate < this.startMonth
             ) {
-              timeDiffDuration = Math.abs(
-                ExpectingCloseDate - ExpectingStartDate
+              var timeDiffDuration = Math.abs(
+                ExpectingCloseDate - this.startMonth
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate < this.endMonth &&
               ExpectingStartDate > this.startMonth
             ) {
-              timeDiffDuration = Math.abs(
+              var timeDiffDuration = Math.abs(
                 ExpectingCloseDate - ExpectingStartDate
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
@@ -250,20 +252,22 @@ export default {
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate < this.startMonth
             ) {
-              timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
+              var timeDiffDuration = Math.abs(this.endMonth - this.startMonth);
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate > this.startMonth &&
               ExpectingStartDate < this.endMonth
             ) {
-              timeDiffDuration = Math.abs(this.endMonth - ExpectingStartDate);
+              var timeDiffDuration = Math.abs(
+                this.endMonth - ExpectingStartDate
+              );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
             } else if (
               ExpectingCloseDate > this.endMonth &&
               ExpectingStartDate > this.endMonth
             ) {
-              timeDiffDuration = Math.abs(
+              var timeDiffDuration = Math.abs(
                 ExpectingCloseDate - ExpectingStartDate
               );
               duration = Math.floor(timeDiffDuration / (1000 * 3600 * 24));
@@ -291,25 +295,49 @@ export default {
             if (this.orders[i].WorkOrderStatus == "In Progress") {
               this.orders[i].WorkOrderStatus = "InProgress";
             }
-            var event = {
-              title: this.orders[i].Name,
-              offset: startOffset + 1,
-              duration: duration,
-              status: this.orders[i].WorkOrderStatus,
-              userRequest: this.orders[i].RequestUsername,
-              startDate: this.orders[i].StartDate,
-              dueDate: moment(this.orders[i].ExpectingCloseDate).format(
-                "DD-MM-YYYY"
-              ),
-              expectStartDate: moment(this.orders[i].ExpectingStartDate).format(
-                "DD-MM-YYYY"
-              ),
-              team: this.orders[i].Team.Name,
-              closedDate: this.orders[i].ClosedDate,
-              detail: this.orders[i].WorkOrderDetails,
-              location: this.orders[i].Location.Address
-            };
-            this.events.push(event);
+            if (authUser.Role == "Staff") {
+              if (this.orders[i].RequestUsername == authUser.Username) {
+                var event = {
+                  title: this.orders[i].Name,
+                  offset: startOffset + 1,
+                  duration: duration,
+                  status: this.orders[i].WorkOrderStatus,
+                  userRequest: this.orders[i].RequestUsername,
+                  startDate: this.orders[i].StartDate,
+                  dueDate: moment(this.orders[i].ExpectingCloseDate).format(
+                    "DD-MM-YYYY"
+                  ),
+                  expectStartDate: moment(
+                    this.orders[i].ExpectingStartDate
+                  ).format("DD-MM-YYYY"),
+                  team: this.orders[i].Team.Name,
+                  closedDate: this.orders[i].ClosedDate,
+                  detail: this.orders[i].WorkOrderDetails,
+                  location: this.orders[i].Location.Address
+                };
+                this.events.push(event);
+              }
+            } else {
+              event = {
+                title: this.orders[i].Name,
+                offset: startOffset + 1,
+                duration: duration,
+                status: this.orders[i].WorkOrderStatus,
+                userRequest: this.orders[i].RequestUsername,
+                startDate: this.orders[i].StartDate,
+                dueDate: moment(this.orders[i].ExpectingCloseDate).format(
+                  "DD-MM-YYYY"
+                ),
+                expectStartDate: moment(
+                  this.orders[i].ExpectingStartDate
+                ).format("DD-MM-YYYY"),
+                team: this.orders[i].Team.Name,
+                closedDate: this.orders[i].ClosedDate,
+                detail: this.orders[i].WorkOrderDetails,
+                location: this.orders[i].Location.Address
+              };
+              this.events.push(event);
+            }
           }
         }
       })

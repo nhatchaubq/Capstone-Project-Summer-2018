@@ -14,6 +14,7 @@ import LocationComponent from "./components/Location/Location.vue";
 
 import EquipmentDetailComponent from "./components/Equipment/EquipmentDetail.vue";
 import AddEquipmentComponent from "./components/Equipment/AddEquipment.vue";
+import MyEquipmentComponent from "./components/Equipment/myEquipment.vue";
 import AccountComponent from "./components/Account/Account.vue";
 import AddAccountComponent from "./components/Account/AddAccount.vue";
 import AccountDetailComponent from "./components/Account/AccountDetail.vue";
@@ -514,6 +515,19 @@ let router = new Router({
       }
     },
     {
+
+      path: "/myEquipment",
+      component: MyEquipmentComponent,
+
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Equipment);
+        next();
+      },
+      meta: {
+        showSearchBar: true
+      }
+    },
+           {
       path: "/404",
       component: Page404Component,
 
@@ -525,6 +539,7 @@ let router = new Router({
         showSearchBar: false
       }
     },
+
 
     //Dien addEquipmentCategory-end
   ]

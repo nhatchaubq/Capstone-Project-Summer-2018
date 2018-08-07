@@ -12,8 +12,8 @@
                                 <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
                                         <div>Priority:</div>
                                         <div>
-                                            <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in options.priorities" style="margin-right: .5rem;">
-                                                <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="filterOptionsValues.priorities.includes(priority)">
+                                            <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in $store.state.workOrderPage.options.priorities" style="margin-right: .5rem;">
+                                                <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="$store.state.workOrderPage.filterOptionsValues.priorities.includes(priority)">
                                                 {{ priority.name }}
                                             </label>                              
                                         </div>                        
@@ -21,8 +21,8 @@
                                 <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
                                         <div>Status:</div>
                                         <div>
-                                            <label class="checkbox" :key="'statusOption' + status.id" v-for="status in options.status" style="margin-right: .5rem;">
-                                                <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="filterOptionsValues.status.includes(status)">
+                                            <label class="checkbox" :key="'statusOption' + status.id" v-for="status in $store.state.workOrderPage.options.status" style="margin-right: .5rem;">
+                                                <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="$store.state.workOrderPage.filterOptionsValues.status.includes(status)">
                                                 {{ status.name }}
                                             </label>
                                         </div>
@@ -97,7 +97,7 @@
                   </div>
                   <div style="">                        
                         <div class="detail-contents" style="margin-top: 1rem;">
-                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :lastOrderStatus="selectedOrder.WorkOrderRecord[0].OldStatus" :statusList="options.status.filter(status => status.name != 'Cancelled')"></step-progress>
+                            <step-progress :workOrderStatus="{id: selectedOrder.StatusID, name: selectedOrder.WorkOrderStatus}" :lastOrderStatus="selectedOrder.WorkOrderRecord[0].OldStatus" :statusList="$store.state.workOrderPage.options.status.filter(status => status.name != 'Cancelled')"></step-progress>
                         </div>          
                           <!-- manager approve / reject -->
                         <div v-if="authUser.Role == 'Manager' && selectedOrder.WorkOrderStatus == 'Checked'" class="" style="margin-top: 1.5rem; margin-bottom: .5rem; display: flex; justify-content: center; align-content: center">
@@ -816,7 +816,7 @@
 
 <script>
 // import Vue from "vue";
-import Vue from 'vue';
+import Vue from "vue";
 import { sync } from "vuex-pathify";
 import moment from "moment";
 import Server from "@/config/config.js";
@@ -829,7 +829,9 @@ import EquipmentDetailPopup from "@/components/Equipment/EquipmentDetailPopup";
 import Vodal from "vodal";
 import { gmapApi } from "vue2-google-maps";
 import { BasicSelect } from "vue-search-select";
-import numeral from 'numeral';
+import io from "socket.io-client";
+import Utils from "@/utils.js";
+import numeral from "numeral";
 
 export default {
   components: {
@@ -843,51 +845,54 @@ export default {
   sockets: {
         NEW_WORK_ORDER_CREATED: function() {
             this.getWorkOrders();
-            // this.filterOrders();
         },
         ORDER_STATUS_CHANGED: function() {
             this.getWorkOrders();
-            // this.filterOrders();
         }
   },
   async created() {    
-    await this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
-        let data = response.data;
-        for (const element of data) {
-            let status = {
-                id: element.Id,
-                name: element.Name,
-                type: this.optionTypes.STATUS
-            };
-            this.options.status.push(status);
-            if (status.name != 'Cancelled' && status.name != 'Closed') {
-                this.filterOptionsValues.status.push(status);
+    if (this.$store.state.workOrderPage.initialLoad) {
+        await this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
+            let data = response.data;
+            for (const element of data) {
+                let status = {
+                    id: element.Id,
+                    name: element.Name,
+                    type: this.optionTypes.STATUS
+                };
+                this.$store.state.workOrderPage.options.status.push(status);
+                    if (status.name != 'Cancelled' && status.name != 'Closed') {
+                        this.$store.state.workOrderPage.filterOptionsValues.status.push(status);
+                    }
             }
-        }
-    }).catch((error) => {
-        if (error == 'Request failed with status code 500') {
-            this.$router.push('/500');
-        }
-    });
-    await this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
-        let data = response.data;
-        for (const element of data) {
-            let priority = {
-                id: element.Id,
-                name: element.Name,
-                type: this.optionTypes.PRIORITY
-            };
-            this.options.priorities.push(priority);
-            this.filterOptionsValues.priorities.push(priority);
-        }
-    }).catch((error) => {
-        if (error == 'Request failed with status code 500') {
-            this.$router.push('/500');
-        }
-    });
+        }).catch((error) => {
+            if (error == 'Request failed with status code 500') {
+                this.$router.push('/500');
+            }
+        });
+        await this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
+            let data = response.data;
+            for (const element of data) {
+                let priority = {
+                    id: element.Id,
+                    name: element.Name,
+                    type: this.optionTypes.PRIORITY
+                };
+                this.$store.state.workOrderPage.options.priorities.push(priority);
+                this.$store.state.workOrderPage.filterOptionsValues.priorities.push(priority);
+            }
+        }).catch((error) => {
+            if (error == 'Request failed with status code 500') {
+                this.$router.push('/500');
+            }
+        });
+    }
 
     this.getWorkOrders();
     this.getBlockFloorTile();
+    if (this.$store.state.workOrderPage.initialLoad) {
+        this.$store.state.workOrderPage.initialLoad = false;
+    }
   },
   data() {
     return {
@@ -918,15 +923,15 @@ export default {
         equipmentItem: null, // when select an item in the list of equipment of selected order
         selectedFilter: null, // to hold the selected value when change in <select></select>
         searchMode: false, // flag to display the "Clear search result"
-        options: { 
-            priorities: [],
-            status: []
-        },
+        // options: { 
+        //     priorities: [],
+        //     status: []
+        // },
         // filterValues: [],
-        filterOptionsValues: {
-            priorities: [],
-            status: []
-        },
+        // filterOptionsValues: {
+        //     priorities: [],
+        //     status: []
+        // },
         optionTypes: {
             STATUS: 0,
             PRIORITY: 1
@@ -946,24 +951,24 @@ export default {
         toUpdateSelectedLocation: null,
         locationOptions: [],        
 
-        toUpdatePositionItem: null,
-        updateBlock: null,
-        updateFloor: null,
-        updateTile: null,
+      toUpdatePositionItem: null,
+      updateBlock: null,
+      updateFloor: null,
+      updateTile: null,
 
-        showCloseWorkOrderDetailDialog: false,
-        toCloseEquipment: null,
-        toCloseEquipmentItem: null,
-        toCloseItemStatus: 'Available',
-        toCloseItemDescription: '',
-        toCloseEquipments: [],
-        closeOrderDetailStep: 0,
-        selectedLocationOptionError: '',
+      showCloseWorkOrderDetailDialog: false,
+      toCloseEquipment: null,
+      toCloseEquipmentItem: null,
+      toCloseItemStatus: "Available",
+      toCloseItemDescription: "",
+      toCloseEquipments: [],
+      closeOrderDetailStep: 0,
+      selectedLocationOptionError: "",
 
-        showUpdateAllEquipmentPostionDialog: false,
+      showUpdateAllEquipmentPostionDialog: false,
 
-        selectedLocationOption: {},
-        sending: false,
+      selectedLocationOption: {},
+      sending: false
     };
   },
   computed: {
@@ -972,126 +977,151 @@ export default {
       return JSON.parse(window.localStorage.getItem("user"));
     },
     google: gmapApi,
+    searchValues: sync("workOrderPage.searchValues"),
   },
   methods: {
     getWorkOrders() {
-        this.axios.get(Server.WORKORDER_API_PATH).then((response) => {
-            if (response.data.WorkOrders) {
-                let data = response.data.WorkOrders;
-                this.tempValues = null;
-                this.workOrders = data;
-                if (this.authUser.Role == 'Manager' || this.authUser.Role == 'Equipment Staff') {
-                    this.workingOrders = data.filter(order => order.Category == 'Working');
-                    this.maintainingOrders = data.filter(order => order.Category == 'Maintain');
-                    if (this.workingOrderViewMode) {
-                        this.toDisplayWorkOrders = data.filter(order => order.Category == 'Working');
-                    } else {
-                        this.toDisplayWorkOrders = data.filter(order => order.Category == 'Maintain');
+      this.axios
+        .get(Server.WORKORDER_API_PATH)
+        .then(response => {
+          if (response.data.WorkOrders) {
+            let data = response.data.WorkOrders;
+            this.tempValues = null;
+            this.workOrders = data;
+            if (
+              this.authUser.Role == "Manager" ||
+              this.authUser.Role == "Equipment Staff"
+            ) {
+              this.workingOrders = data.filter(
+                order => order.Category == "Working"
+              );
+              this.maintainingOrders = data.filter(
+                order => order.Category == "Maintain"
+              );
+              if (this.workingOrderViewMode) {
+                this.toDisplayWorkOrders = data.filter(
+                  order => order.Category == "Working"
+                );
+              } else {
+                this.toDisplayWorkOrders = data.filter(
+                  order => order.Category == "Maintain"
+                );
+              }
+            } else {
+              this.toDisplayWorkOrders = data.filter(
+                order => order.RequestUserID == this.authUser.Id
+              );
+            }
+            if (this.selectedOrder) {
+                let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
+                if (order) {
+                    this.selectedOrder = order;
+                    this.getEquipmentsOfWorkOrder(order);
+                    if (order.TeamLocation && order.Category == 'Working') {
+                        this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
                     }
                 } else {
-                    this.toDisplayWorkOrders = data.filter(order => order.RequestUserID == this.authUser.Id);
+                    this.selectedOrder = null;
+                    this.$router.replace('/work_order');
                 }
-                if (this.selectedOrder) {
-                    let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
-                    if (order) {
-                        this.selectedOrder = order;
-                        this.getEquipmentsOfWorkOrder(order);
-                        if (order.TeamLocation && order.Category == 'Working') {
-                            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
-                        }
-                    } else {
-                        this.selectedOrder = null;
-                        this.$router.replace('/work_order');
+            } else if (this.$route.params && this.$route.params.orderId) {
+                let order = this.toDisplayWorkOrders.filter(o => o.Id == this.$route.params.orderId)[0];
+                if (order) {
+                    this.selectedOrder = order;
+                    this.getEquipmentsOfWorkOrder(order);
+                    if (order.TeamLocation && order.Category == 'Working') {
+                        this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
                     }
-                } else if (this.$route.params && this.$route.params.orderId) {
-                    let order = this.toDisplayWorkOrders.filter(o => o.Id == this.$route.params.orderId)[0];
-                    if (order) {
-                        this.selectedOrder = order;
-                        this.getEquipmentsOfWorkOrder(order);
-                        if (order.TeamLocation && order.Category == 'Working') {
-                            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
-                        }
-                    } else {
-                        this.selectedOrder = null;
-                        this.$router.replace('/work_order');
-                    }
-                } 
-                this.filterOrders();
+                } else {
+                    this.selectedOrder = null;
+                    this.$router.replace('/work_order');
+                }
             }
-        }).catch(error => {
-            console.log(error);
-            this.$router.push('/500');
+            if (this.searchValues && this.searchValues.length > 0) {
+                let tempOrders = [];
+                for (const order of this.searchValues) {
+                    tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
+                }
+                this.toDisplayWorkOrders = tempOrders;
+                this.searchMode = true;
+            } else {
+                this.searchMode = false;
+            }
+            this.filterOrders();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.$router.push("/500");
         });
     },
     getBlockFloorTile() {
-        let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}`;
-        this.axios.get(url)
-            .then((res) => {
-                if (res.status == 200) {
-                    this.blockFloorTiles = res.data;
-                    this.blockFloorTiles.forEach(location => {
-                        let blockOptions = [];              
-                        if (location.Blocks) {
-                            location.Blocks.forEach(block => {
-                                let floorOptions = [];
-                                if (block.Floors) {
-                                    block.Floors.forEach(floor => {
-                                        let tileOptions = [];
-                                        if (floor.Tiles) {
-                                            floor.Tiles.forEach(tile => {
-                                                let tileOption = {
-                                                    value: parseInt(tile.Id),
-                                                    text: tile.Name,
-                                                };
-                                                tileOptions.push(tileOption);
-                                            })
-                                        }
-        
-                                        let floorOption = {
-                                            value: parseInt(floor.Id),
-                                            text: floor.Name,
-                                            tileOptions: tileOptions
-                                        };
-                                        floorOptions.push(floorOption);
-                                    });
-                                }
-    
-                                let blockOption = {
-                                    value: parseInt(block.Id),
-                                    text: block.Name,
-                                    floorOptions: floorOptions,
-                                    totalFloor: block.TotalFloor,
-                                    totalBasementFloor: block.TotalBasementFloor,
-                                };
-                                blockOptions.push(blockOption);
-                            })
-                        }
+      let url = `${Server.LOCATION_BLOCK_FLOOR_TILE_API_PATH}`;
+      this.axios.get(url).then(res => {
+        if (res.status == 200) {
+          this.blockFloorTiles = res.data;
+          this.blockFloorTiles.forEach(location => {
+            let blockOptions = [];
+            if (location.Blocks) {
+              location.Blocks.forEach(block => {
+                let floorOptions = [];
+                if (block.Floors) {
+                  block.Floors.forEach(floor => {
+                    let tileOptions = [];
+                    if (floor.Tiles) {
+                      floor.Tiles.forEach(tile => {
+                        let tileOption = {
+                          value: parseInt(tile.Id),
+                          text: tile.Name
+                        };
+                        tileOptions.push(tileOption);
+                      });
+                    }
 
-                        let locationOption = {
-                            value: parseInt(location.Id),
-                            text: `${location.Name} - ${location.Address}`,
-                            blockOptions: blockOptions,
-                        }
-                        this.locationOptions.push(locationOption);
-                    });
+                    let floorOption = {
+                      value: parseInt(floor.Id),
+                      text: floor.Name,
+                      tileOptions: tileOptions
+                    };
+                    floorOptions.push(floorOption);
+                  });
                 }
-            })
 
+                let blockOption = {
+                  value: parseInt(block.Id),
+                  text: block.Name,
+                  floorOptions: floorOptions,
+                  totalFloor: block.TotalFloor,
+                  totalBasementFloor: block.TotalBasementFloor
+                };
+                blockOptions.push(blockOption);
+              });
+            }
+
+            let locationOption = {
+              value: parseInt(location.Id),
+              text: `${location.Name} - ${location.Address}`,
+              blockOptions: blockOptions
+            };
+            this.locationOptions.push(locationOption);
+          });
+        }
+      });
     },
     setSelectedOrder(order) {
-        // this.equipmentPanelIndex = -1;
-        if (this.$route.params && (this.$route.params.orderId == order.Id)) {
-            this.$router.replace('/work_order');
-            this.selectedOrder = null;
-        } else {
-            // this.viewDetailMode = true;
-            this.$router.replace(`/work_order/${order.Id}`)
-            // this.selectedOrder = order;
-            // get equipments in the selected work order - start
-            // this.getEquipmentsOfWorkOrder(order);
-            // this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.Location.Id)[0];
-            // get equipments in the selected work order - end
-        }
+      // this.equipmentPanelIndex = -1;
+      if (this.$route.params && this.$route.params.orderId == order.Id) {
+        this.$router.replace("/work_order");
+        this.selectedOrder = null;
+      } else {
+        // this.viewDetailMode = true;
+        this.$router.replace(`/work_order/${order.Id}`);
+        // this.selectedOrder = order;
+        // get equipments in the selected work order - start
+        // this.getEquipmentsOfWorkOrder(order);
+        // this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.Location.Id)[0];
+        // get equipments in the selected work order - end
+      }
     },
     async getEquipmentsOfWorkOrder(workOrder) {
       this.equipments = [];
@@ -1121,31 +1151,31 @@ export default {
       // this.filterValues = this.filterValues.filter(value => value != filter);
       switch (filter.type) {
         case this.optionTypes.STATUS: {
-          this.filterOptionsValues.status = this.filterOptionsValues.status.filter(
+          this.$store.state.workOrderPage.filterOptionsValues.status = this.$store.state.workOrderPage.filterOptionsValues.status.filter(
             status => filter.id != status.id
           );
           break;
         }
         case this.optionTypes.PRIORITY: {
-          this.filterOptionsValues.priorities = this.filterOptionsValues.priorities.filter(
+          this.$store.state.workOrderPage.filterOptionsValues.priorities = this.$store.state.workOrderPage.filterOptionsValues.priorities.filter(
             priority => filter.id != priority.id
           );
           break;
         }
       }
       this.filterOrders();
-      if (
-        this.filterOptionsValues.status.length == 0 &&
-        this.filterOptionsValues.priorities.length == 0
-      ) {
-        this.selectedFilter = null;
-        this.toDisplayWorkOrders = this.tempValues;
-      }
+    //   if (
+    //     this.$store.state.workOrderPage.filterOptionsValues.status.length == 0 &&
+    //     this.$store.state.workOrderPage.filterOptionsValues.priorities.length == 0
+    //   ) {
+    //     this.selectedFilter = null;
+    //     this.toDisplayWorkOrders = this.tempValues;
+    //   }
     },
     filterOrders() {
       if (
-        this.filterOptionsValues.status.length > 0 ||
-        this.filterOptionsValues.priorities.length > 0
+        this.$store.state.workOrderPage.filterOptionsValues.status.length > 0 &&
+        this.$store.state.workOrderPage.filterOptionsValues.priorities.length > 0
       ) {
         if (this.tempValues == null) {
           this.tempValues = this.toDisplayWorkOrders;
@@ -1153,8 +1183,8 @@ export default {
         this.toDisplayWorkOrders = []; // reset orders before applying new filters
         // this.selectedOrder = null;
         // this.$router.replace('/work_order');
-        if (this.filterOptionsValues.status.length > 0) {
-          this.filterOptionsValues.status.forEach(status => {
+        if (this.$store.state.workOrderPage.filterOptionsValues.status.length > 0) {
+          this.$store.state.workOrderPage.filterOptionsValues.status.forEach(status => {
             this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(
               this.tempValues.filter(
                 order => order.WorkOrderStatus == status.name
@@ -1164,9 +1194,9 @@ export default {
         } else {
           this.toDisplayWorkOrders = this.tempValues;
         }
-        if (this.filterOptionsValues.priorities.length > 0) {
+        if (this.$store.state.workOrderPage.filterOptionsValues.priorities.length > 0) {
           let tempValues = [];
-          this.filterOptionsValues.priorities.forEach(priority => {
+          this.$store.state.workOrderPage.filterOptionsValues.priorities.forEach(priority => {
             tempValues = tempValues.concat(
               this.toDisplayWorkOrders.filter(
                 order => order.Priority == priority.name
@@ -1175,44 +1205,52 @@ export default {
           });
           this.toDisplayWorkOrders = tempValues;
         }
-        this.toDisplayWorkOrders = this.sortOrdersByDate(
-          this.toDisplayWorkOrders
-        );
+        if (this.toDisplayWorkOrders.length > 0) {
+            this.toDisplayWorkOrders = this.sortOrdersByDate(
+              this.toDisplayWorkOrders
+            );
+        }
 
         if (this.selectedOrder) {
-            let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
-            if (!order) {
-                this.selectedOrder = null;
-                this.$router.replace('/work_order');
-            }
+          let order = this.toDisplayWorkOrders.filter(
+            o => o.Id == this.selectedOrder.Id
+          )[0];
+          if (!order) {
+            this.selectedOrder = null;
+            this.$router.replace("/work_order");
+          }
         }
         //   this.selectedFilter = null;
         // for (var i = 0; i < this.filterValues.length; i++) {
         //     this.orders = this.sortOrdersByDate(this.orders);
         // }
+      } else {
+            this.selectedOrder = null;
+            this.$router.replace('/work_order');
+            this.toDisplayWorkOrders = [];
       }
     },
     sortOrdersByDate(orders) {
       return orders.sort((order1, order2) => {
-        let date1 = parseInt(new Date(order1.CreateDate).getTime());
-        let date2 = parseInt(new Date(order2.CreateDate).getTime());
+        let date1 = moment(order1.CreateDate).valueOf();
+        let date2 = moment(order2.CreateDate).valueOf();
         // alert(order1.Id + ' ' + order2.Id + ' ' + order2.PriorityId  + ' ' + order1.PriorityId);
         let result = date2 - date1;
         return result > 0
           ? 1
           : result < 0 ? -1 : order2.PriorityID - order1.PriorityID;
-      });      
+      });
     },
     addFilter(filter, event) {
       if (event.target.checked) {
         // this.filterValues.push(this.selectedFilter);
         switch (filter.type) {
           case this.optionTypes.STATUS: {
-            this.filterOptionsValues.status.push(filter);
+            this.$store.state.workOrderPage.filterOptionsValues.status.push(filter);
             break;
           }
           case this.optionTypes.PRIORITY: {
-            this.filterOptionsValues.priorities.push(filter);
+            this.$store.state.workOrderPage.filterOptionsValues.priorities.push(filter);
             break;
           }
         }
@@ -1222,15 +1260,16 @@ export default {
         this.removeFilter(filter);
       }
     },
-    reset() {
-      this.filterValues = [];
-      this.filterOptionsValues.status = [];
-      this.filterValues.priorities = [];
-      this.selectedOrder = null;
-    },
+    // reset() {
+    //     this.filterValues = [];
+    //     this.$store.state.workOrderPage.filterOptionsValues.status = [];
+    //     this.$store.state.workOrderPage.filterOptionsValues.priorities = [];
+    //     this.selectedOrder = null;
+    // },
     clearSearch() {
-      this.$store.state.searchValue = "";
-      this.$store.state.workOrderPage.searchValues = [];
+        this.$store.state.workOrderPage.searchText = '';
+        this.$store.state.workOrderPage.searchValues = [];
+        this.searchMode = false;
     },
     showDetailPopup(equipmentItemId) {
       let url = `${Server.EQUIPMENTITEM_API_PATH}/chau/${equipmentItemId}`;
@@ -1259,124 +1298,175 @@ export default {
       let url = `${Server.WORKORDER_API_PATH}/status/${orderId}`;
       this.axios
         .put(url, {
-            userId: this.authUser.Id,
-            newStatusName: newOrderStatusName,
-            description:
-                this.changeStatusDescription != ""
-                ? this.changeStatusDescription
-                : null,
-            noNeedToRefreshWorkOrderUserId: this.authUser.Id
+          userId: this.authUser.Id,
+          newStatusName: newOrderStatusName,
+          description:
+            this.changeStatusDescription != ""
+              ? this.changeStatusDescription
+              : null,
+          noNeedToRefreshWorkOrderUserId: this.authUser.Id
         })
         .then(async res => {
           if (res.status == 200) {
-            if (newOrderStatusName == "Approved" ||
+            if (
+              newOrderStatusName == "Approved" ||
               newOrderStatusName == "In Progress" ||
-              newOrderStatusName == "Closed") {
-                let newItemStatusName = "";
-                if (newOrderStatusName == "Approved") {
-                    if (this.selectedOrder.Category == 'Working') {
-                        newItemStatusName = "Working Approved";
-                    } else if (this.selectedOrder.Category == 'Maintain') {
-                        newItemStatusName = "Maintainance Approved";
-                    }
-                } else if (newOrderStatusName == "In Progress") {
-                    if (this.selectedOrder.Category == 'Working') {
-                        newItemStatusName = "Working";
-                    } else if (this.selectedOrder.Category == 'Maintain') {
-                        newItemStatusName = "Maintaining";
-                    }
+              newOrderStatusName == "Closed"
+            ) {
+              let newItemStatusName = "";
+              if (newOrderStatusName == "Approved") {
+                if (this.selectedOrder.Category == "Working") {
+                  newItemStatusName = "Working Approved";
+                } else if (this.selectedOrder.Category == "Maintain") {
+                  newItemStatusName = "Maintainance Approved";
                 }
-                for (const orderDetail of this.selectedOrder.WorkOrderDetails) {
-                    let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/chau/${orderDetail.EquipmentItem.Id}`;
-                    await this.axios.put(equipmentStatusApi, {
-                        userId: this.authUser.Id,
-                        newStatusName: newItemStatusName,
-                        description: null
-                    });
+              } else if (newOrderStatusName == "In Progress") {
+                if (this.selectedOrder.Category == "Working") {
+                  newItemStatusName = "Working";
+                } else if (this.selectedOrder.Category == "Maintain") {
+                  newItemStatusName = "Maintaining";
                 }
+              }
+              for (const orderDetail of this.selectedOrder.WorkOrderDetails) {
+                let equipmentStatusApi = `http://localhost:3000/api/equipmentItem/status/chau/${
+                  orderDetail.EquipmentItem.Id
+                }`;
+                await this.axios.put(equipmentStatusApi, {
+                  userId: this.authUser.Id,
+                  newStatusName: newItemStatusName,
+                  description: null
+                });
+              }
             }
-            this.$socket.emit('ORDER_STATUS_CHANGED', {});
+            this.$socket.emit("ORDER_STATUS_CHANGED", {});
 
             // make new notification
-            let teamLeaderNotiContent = '';
-            let managerNotiContent = '';
+            let teamLeaderNotiContent = "";
+            let managerNotiContent = "";
             let metaData = {
-                page: 'work_order',
-                elementId: this.selectedOrder.Id,
+              page: "work_order",
+              elementId: this.selectedOrder.Id
             };
             // prepare notification content - start
-            if (newOrderStatusName == "Checked" 
-                || newOrderStatusName == 'Approved' 
-                || newOrderStatusName == 'Rejected') {
-                teamLeaderNotiContent = `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> your work order <strong>${this.selectedOrder.Name}</strong>`;
-                if ((newOrderStatusName == "Checked" || newOrderStatusName == 'Rejected') && this.authUser.Role == 'Equipment Staff') {
-                    managerNotiContent = `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> work order <strong>${this.selectedOrder.Name}</strong>`;
-                }
-            } else if (newOrderStatusName == 'In Progress' && this.selectedOrder.Category == 'Working') {
-                teamLeaderNotiContent = `Your work order <strong>${this.selectedOrder.Name}</strong> has changed status to <strong>In Progress</strong>. Please remember to change new position for equipments.`;
+            if (
+              newOrderStatusName == "Checked" ||
+              newOrderStatusName == "Approved" ||
+              newOrderStatusName == "Rejected"
+            ) {
+              teamLeaderNotiContent = `${this.authUser.Role} <strong>${
+                this.authUser.Username
+              }</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> your work order <strong>${
+                this.selectedOrder.Name
+              }</strong>`;
+              if (
+                (newOrderStatusName == "Checked" ||
+                  newOrderStatusName == "Rejected") &&
+                this.authUser.Role == "Equipment Staff"
+              ) {
+                managerNotiContent = `${this.authUser.Role} <strong>${
+                  this.authUser.Username
+                }</strong> has <strong>${newOrderStatusName.toLowerCase()}</strong> work order <strong>${
+                  this.selectedOrder.Name
+                }</strong>`;
+              }
+            } else if (
+              newOrderStatusName == "In Progress" &&
+              this.selectedOrder.Category == "Working"
+            ) {
+              teamLeaderNotiContent = `Your work order <strong>${
+                this.selectedOrder.Name
+              }</strong> has changed status to <strong>In Progress</strong>. Please remember to change new position for equipments.`;
             } // prepare notification content - end
-            
-            if (newOrderStatusName != 'Closed') {
-                // notification for managers and equipment staff - start
-                if ((newOrderStatusName == 'Checked' || newOrderStatusName == 'Rejected') && this.authUser.Role == 'Equipment Staff') {
-                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                        notificationContent: managerNotiContent,
-                        userRole: 'Manager',
-                        metaData: JSON.stringify(metaData),
-                    }).then((res) => {
-                        if (res.status == 200) {
-                            this.$socket.emit('NEW_NOTIFICATION', {});
-                        }
-                    });
-                } else if (newOrderStatusName == 'Cancelled') {
-                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                        notificationContent: `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has cancelled work order <strong>${this.selectedOrder.Name}</strong>`,
-                        userRole: 'Equipment Staff',
-                        metaData: JSON.stringify(metaData),
-                    }).then((res) => {
-                        if (res.status == 200) {
-                            this.$socket.emit('NEW_NOTIFICATION', {});
-                        }
-                    });
-                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
-                        notificationContent: `${this.authUser.Role} <strong>${this.authUser.Username}</strong> has cancelled work order <strong>${this.selectedOrder.Name}</strong>`,
-                        userRole: 'Manager',
-                        metaData: JSON.stringify(metaData),
-                    }).then((res) => {
-                        if (res.status == 200) {
-                            this.$socket.emit('NEW_NOTIFICATION', {});
-                        }
-                    });
-                } // notification for managers and equipment staff - end
-                // notification for teamleader and maintainer - start
-                if (newOrderStatusName == 'Checked'
-                    || newOrderStatusName == 'Approved'
-                    || newOrderStatusName == 'Rejected'
-                    || (newOrderStatusName == 'In Progress' && this.selectedOrder.Category == 'Working')) {
-                    await this.axios.post(`${Server.NOTIFICATION_API_PATH}/userid/${this.selectedOrder.RequestUserID}`, {
-                        notificationContent: teamLeaderNotiContent,
-                        metaData: JSON.stringify(metaData),
-                    }).then((res) => {
-                        if (res.status == 200) {
-                            this.$socket.emit('NEW_NOTIFICATION', {});
-                        }
-                    });
-                }
-                // notification for teamleader and maintainer - end
+
+            if (newOrderStatusName != "Closed") {
+              // notification for managers and equipment staff - start
+              if (
+                (newOrderStatusName == "Checked" ||
+                  newOrderStatusName == "Rejected") &&
+                this.authUser.Role == "Equipment Staff"
+              ) {
+                await this.axios
+                  .post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                    notificationContent: managerNotiContent,
+                    userRole: "Manager",
+                    metaData: JSON.stringify(metaData)
+                  })
+                  .then(res => {
+                    if (res.status == 200) {
+                      this.$socket.emit("NEW_NOTIFICATION", {});
+                    }
+                  });
+              } else if (newOrderStatusName == "Cancelled") {
+                await this.axios
+                  .post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                    notificationContent: `${this.authUser.Role} <strong>${
+                      this.authUser.Username
+                    }</strong> has cancelled work order <strong>${
+                      this.selectedOrder.Name
+                    }</strong>`,
+                    userRole: "Equipment Staff",
+                    metaData: JSON.stringify(metaData)
+                  })
+                  .then(res => {
+                    if (res.status == 200) {
+                      this.$socket.emit("NEW_NOTIFICATION", {});
+                    }
+                  });
+                await this.axios
+                  .post(`${Server.NOTIFICATION_API_PATH}/accounts`, {
+                    notificationContent: `${this.authUser.Role} <strong>${
+                      this.authUser.Username
+                    }</strong> has cancelled work order <strong>${
+                      this.selectedOrder.Name
+                    }</strong>`,
+                    userRole: "Manager",
+                    metaData: JSON.stringify(metaData)
+                  })
+                  .then(res => {
+                    if (res.status == 200) {
+                      this.$socket.emit("NEW_NOTIFICATION", {});
+                    }
+                  });
+              } // notification for managers and equipment staff - end
+              // notification for teamleader and maintainer - start
+              if (
+                newOrderStatusName == "Checked" ||
+                newOrderStatusName == "Approved" ||
+                newOrderStatusName == "Rejected" ||
+                (newOrderStatusName == "In Progress" &&
+                  this.selectedOrder.Category == "Working")
+              ) {
+                await this.axios
+                  .post(
+                    `${Server.NOTIFICATION_API_PATH}/userid/${
+                      this.selectedOrder.RequestUserID
+                    }`,
+                    {
+                      notificationContent: teamLeaderNotiContent,
+                      metaData: JSON.stringify(metaData)
+                    }
+                  )
+                  .then(res => {
+                    if (res.status == 200) {
+                      this.$socket.emit("NEW_NOTIFICATION", {});
+                    }
+                  });
+              }
             }
-            // await Utils.sleep(500);
-            this.changeStatusDescription = '';            
-            this.showCancelDialog = false;
-            this.showApproveRejectDialog = false;
-            this.showChangeStatusDialog = false;
-            this.newStatusName = null;
-            this.getWorkOrders();
-            // this.$router.replace('/work_order');
+            // notification for teamleader and maintainer - end
           }
+          // await Utils.sleep(500);
+          this.changeStatusDescription = "";
+          this.showCancelDialog = false;
+          this.showApproveRejectDialog = false;
+          this.showChangeStatusDialog = false;
+          this.newStatusName = null;
+          this.getWorkOrders();
+          // this.$router.replace('/work_order');
         })
         .catch(error => {
           console.log(error);
-          this.$router.push('/500');
+          this.$router.push("/500");
         });
     },
     getStatusColorClass(statusName) {
@@ -1417,171 +1507,199 @@ export default {
     },
 
     getDate(date) {
-        return moment(date).format('L');
-
+      return moment(date).format("L");
     },
     getDateWithTime(date) {
-        return moment(date).format('LLL');
+      return moment(date).format("LLL");
     },
     async updateItemPosition(itemId, tileId) {
-        this.equipmentPanelIndex = -1;
-        let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${itemId}`;
-        this.axios.put(url, {
-            tileId: tileId,
-        }).then(async (res) => {
-            if (res.status == 200) {
-                if (this.showUpdateItemPosition) { // if update item position dialog is displaying
-                    this.toUpdatePositionItem = null;
-                    this.updateBlock = null;
-                    this.updateFloor = null;
-                    this.updateTile = null;
-                    this.showUpdateItemPosition = false;
+      this.equipmentPanelIndex = -1;
+      let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${itemId}`;
+      this.axios
+        .put(url, {
+          tileId: tileId
+        })
+        .then(async res => {
+          if (res.status == 200) {
+            if (this.showUpdateItemPosition) {
+              // if update item position dialog is displaying
+              this.toUpdatePositionItem = null;
+              this.updateBlock = null;
+              this.updateFloor = null;
+              this.updateTile = null;
+              this.showUpdateItemPosition = false;
 
-                    await this.getEquipmentsOfWorkOrder(this.selectedOrder);
-                    // this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
-                }
+              await this.getEquipmentsOfWorkOrder(this.selectedOrder);
+              // this.equipmentPanelIndex = this.selectedEquipmentPanelIndex;
             }
+          }
         });
     },
     async closeWorkOrderDetails() {
-        if (this.validateCloseWorkOrder()) {
-            this.sending = true;
-            let check = true;
-            for (const value of this.toCloseEquipments) {
-                let workOrderDetail = null;
-                for (const detail of this.selectedOrder.WorkOrderDetails) {
-                    if (detail.EquipmentItemID == value.item.Id) {
-                        workOrderDetail = detail;
-                        break;
-                    }
-                }
-                let url = `${Server.WORKORDER_API_PATH}/close_detail/${workOrderDetail.Id}`;
-                await this.axios.post(url, {                
-                    userId: this.authUser.Id,
-                    itemId: value.item.Id,
-                    newItemStatus: value.status,
-                    description: value.description,
-                    cost: this.selectedOrder.Category == 'Maintain' ? value.cost : null,
-                }).then(async (response) => {
-                    if (response.status == 200) {
-                        let tileId = null;
-                        if (this.selectedOrder.Category == 'Working') {
-                            tileId = parseInt(value.tileOption.value);
-                        }
-                        if (this.selectedOrder.Category == 'Working') {
-                            let equipmentItemRuntimeDaysApi = `${Server.EQUIPMENTITEM_API_PATH}/runtimedays/${value.item.Id}`;
-                            await this.axios.put(equipmentItemRuntimeDaysApi, {
-                                workOrderId: this.selectedOrder.Id
-                            });
-                        }
-                        if (this.selectedOrder.Category == 'Working' || value.status == 'Lost') {
-                            let equipmentItemTileApi = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${value.item.Id}`;
-                            await this.axios.put(equipmentItemTileApi, {
-                                tileId: tileId,
-                            });
-                        }
-                        if (this.selectedOrder.Category == 'Maintain') {
-                            let equipmentItemMaintenanceApi = `${Server.EQUIPMENTITEM_API_PATH}/maintenance/${value.item.Id}`;
-                            await this.axios.put(equipmentItemMaintenanceApi, {
-                                nextMaintainDate: moment().add(value.item.MaintenanceDurationInMonths, 'M').format('MM-DD-YYYY'),
-                            });
-                        }
-                    } else {
-                        check = false;
-                    }
-                }).catch(error => {
-                    console.log(error);
-                    this.$router.push('/500');
-                    check = false;
-                })
-            }
-            // await Utils.sleep(500);
-            this.sending = false;
-            if (check) {
-                // awthis.updateItemPosition(parseInt(value.item.Id), tileId);   
-                this.$socket.emit('CLOSE_WORK_ORDER_DETAIL', {});
-                this.getWorkOrders();
-                // this.getEquipmentsOfWorkOrder(this.selectedOrder);
-                this.showCloseWorkOrderDetailDialog = false;
-            } else {
-                alert('Error occured!')
-            }
-        }
-    },
-    validateCloseWorkOrder() {
+      if (this.validateCloseWorkOrder()) {
+        this.sending = true;
         let check = true;
-        if (this.selectedOrder.Category == 'Working') {
-            this.toCloseEquipments.forEach(value => {
-                if (value.status != 'Lost') {
-                    if (!value.blockOption) {
-                        value.blockError = 'You must select a block';
-                        check = false;
-                    }
-                    if (!value.floorOption) {
-                        value.floorError = 'You must select a floor';
-                        check = false;
-                    }
-                    if (!value.tileOption) {
-                        value.tileError = 'You must select a tile';
-                        check = false;
-                    }
+        for (const value of this.toCloseEquipments) {
+          let workOrderDetail = null;
+          for (const detail of this.selectedOrder.WorkOrderDetails) {
+            if (detail.EquipmentItemID == value.item.Id) {
+              workOrderDetail = detail;
+              break;
+            }
+          }
+          let url = `${Server.WORKORDER_API_PATH}/close_detail/${
+            workOrderDetail.Id
+          }`;
+          await this.axios
+            .post(url, {
+              userId: this.authUser.Id,
+              itemId: value.item.Id,
+              newItemStatus: value.status,
+              description: value.description,
+              cost:
+                this.selectedOrder.Category == "Maintain" ? value.cost : null
+            })
+            .then(async response => {
+              if (response.status == 200) {
+                let tileId = null;
+                if (this.selectedOrder.Category == "Working") {
+                  tileId = parseInt(value.tileOption.value);
                 }
+                if (this.selectedOrder.Category == "Working") {
+                  let equipmentItemRuntimeDaysApi =
+                    "${Server.EQUIPMENTITEM_API_PATH}/runtimedays/${value.item.Id}";
+                  await this.axios.put(equipmentItemRuntimeDaysApi, {
+                    workOrderId: this.selectedOrder.Id
+                  });
+                }
+                if (
+                  this.selectedOrder.Category == "Working" ||
+                  value.status == "Lost"
+                ) {
+                  let equipmentItemTileApi =
+                    "${Server.EQUIPMENTITEM_API_PATH}/position/tile/${value.item.Id}";
+                  await this.axios.put(equipmentItemTileApi, {
+                    tileId: tileId
+                  });
+                }
+                if (this.selectedOrder.Category == "Maintain") {
+                  let equipmentItemMaintenanceApi =
+                    "${Server.EQUIPMENTITEM_API_PATH}/maintenance/${value.item.Id}";
+                  await this.axios.put(equipmentItemMaintenanceApi, {
+                    nextMaintainDate: moment()
+                      .add(value.item.MaintenanceDurationInMonths, "M")
+                      .format("MM-DD-YYYY")
+                  });
+                }
+              } else {
+                check = false;
+              }
+            })
+            .catch(error => {
+              console.log(error);
+              this.$router.push("/500");
+              check = false;
             });
         }
-        return check;
+        // await Utils.sleep(500);
+        this.sending = false;
+        if (check) {
+          // awthis.updateItemPosition(parseInt(value.item.Id), tileId);
+          this.$socket.emit("CLOSE_WORK_ORDER_DETAIL", {});
+          this.getWorkOrders();
+          // this.getEquipmentsOfWorkOrder(this.selectedOrder);
+          this.showCloseWorkOrderDetailDialog = false;
+        } else {
+          alert("Error occured!");
+        }
+      }
+    },
+    validateCloseWorkOrder() {
+      let check = true;
+      if (this.selectedOrder.Category == "Working") {
+        this.toCloseEquipments.forEach(value => {
+          if (value.status != "Lost") {
+            if (!value.blockOption) {
+              value.blockError = "You must select a block";
+              check = false;
+            }
+            if (!value.floorOption) {
+              value.floorError = "You must select a floor";
+              check = false;
+            }
+            if (!value.tileOption) {
+              value.tileError = "You must select a tile";
+              check = false;
+            }
+          }
+        });
+      }
+      return check;
     },
     async changeEquipmentPosition() {
-        let tileId = -1;
-        if (this.toUpdateSelectedLocation 
-            && (this.toUpdateSelectedLocation.Blocks && this.toUpdateSelectedLocation.Blocks.length > 0) 
-            && (this.toUpdateSelectedLocation.Blocks[0].Floors && this.toUpdateSelectedLocation.Blocks[0].Floors.length > 0)
-            && (this.toUpdateSelectedLocation.Blocks[0].Floors[this.toUpdateSelectedLocation.Blocks[0].TotalFloor - 1].Tiles 
-                && this.toUpdateSelectedLocation.Blocks[0].Floors[this.toUpdateSelectedLocation.Blocks[0].TotalFloor - 1].Tiles.length > 0)) {
-            tileId = this.toUpdateSelectedLocation.Blocks[0].Floors[this.toUpdateSelectedLocation.Blocks[0].TotalFloor - 1].Tiles[0].Id;
-        } else {                    
-            this.Errors.errorInvalidPosition = this.ErrorString.errorInvalidPosition;
+      let tileId = -1;
+      if (
+        this.toUpdateSelectedLocation &&
+        (this.toUpdateSelectedLocation.Blocks &&
+          this.toUpdateSelectedLocation.Blocks.length > 0) &&
+        (this.toUpdateSelectedLocation.Blocks[0].Floors &&
+          this.toUpdateSelectedLocation.Blocks[0].Floors.length > 0) &&
+        (this.toUpdateSelectedLocation.Blocks[0].Floors[
+          this.toUpdateSelectedLocation.Blocks[0].TotalFloor - 1
+        ].Tiles &&
+          this.toUpdateSelectedLocation.Blocks[0].Floors[
+            this.toUpdateSelectedLocation.Blocks[0].TotalFloor - 1
+          ].Tiles.length > 0)
+      ) {
+        tileId = this.toUpdateSelectedLocation.Blocks[0].Floors[
+          this.toUpdateSelectedLocation.Blocks[0].TotalFloor - 1
+        ].Tiles[0].Id;
+      } else {
+        this.Errors.errorInvalidPosition = this.ErrorString.errorInvalidPosition;
+      }
+      // console.log(tileId)
+      if (tileId != -1) {
+        for (const equipment of this.equipments) {
+          for (const item of equipment.EquipmentItems) {
+            let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${
+              item.Id
+            }`;
+            await this.axios.put(url, {
+              tileId: tileId
+            });
+          }
         }
-        // console.log(tileId)
-        if (tileId != -1) {
-            for (const equipment of this.equipments) {
-                for (const item of equipment.EquipmentItems) {
-                    let url = `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${item.Id}`;
-                    await this.axios.put(url, {
-                        tileId: tileId,
-                    });
-                }
-            }
-            this.showUpdateAllEquipmentPostionDialog = false;
-            this.getWorkOrders();
-        }
+        this.showUpdateAllEquipmentPostionDialog = false;
+        this.getWorkOrders();
+      }
     },
     checkLostItemEqualItemToClose() {
-        let count = 0;
-        for (const value of this.toCloseEquipments) {
-            if (value.status == 'Lost') {
-                ++count;
-            }
+      let count = 0;
+      for (const value of this.toCloseEquipments) {
+        if (value.status == "Lost") {
+          ++count;
         }
-        return count == this.toCloseEquipments.length;
+      }
+      return count == this.toCloseEquipments.length;
     },
     getNumberFormattedThousand(str) {
-        let value = numeral(str).value();
-        return numeral(value).format('0,0');
-    },
+      let value = numeral(str).value();
+      return numeral(value).format("0,0");
+    }
   },
   watch: {
-    'showCloseWorkOrderDetailDialog': function() {
-        if (!this.showCloseWorkOrderDetailDialog) {
-            this.toCloseEquipments = [];
-            this.selectedLocationOption = {};
-            this.closeOrderDetailStep = 0;
-            this.newStatusName = null;
-        }
+    showCloseWorkOrderDetailDialog: function() {
+      if (!this.showCloseWorkOrderDetailDialog) {
+        this.toCloseEquipments = [];
+        this.selectedLocationOption = {};
+        this.closeOrderDetailStep = 0;
+        this.newStatusName = null;
+      }
     },
-    'showApproveRejectDialog': function() {
-        this.Errors.RejectedDescriptionNotProvided = '';
+    showApproveRejectDialog: function() {
+      this.Errors.RejectedDescriptionNotProvided = "";
     },
-    'changeStatusDescription': function() {
+    changeStatusDescription: function() {
       if (
         this.showApproveRejectDialog &&
         !this.approveWorkOrder &&
@@ -1590,57 +1708,78 @@ export default {
         this.Errors.RejectedDescriptionNotProvided = "";
       }
     },
-    'workingOrderViewMode': function() {
-        this.selectedOrder = null;
-        this.$route.params.orderId = null;
-        this.toDisplayWorkOrders = [];
-        this.$router.replace('/work_order');
-        if (this.authUser.Role == 'Manager' || this.authUser.Role == 'Equipment Staff') {
-            if (this.workingOrderViewMode) {
-                this.toDisplayWorkOrders = this.workingOrders;
-            } else {
-                this.toDisplayWorkOrders = this.maintainingOrders;
-            }
+    workingOrderViewMode: function() {
+      this.selectedOrder = null;
+      this.$route.params.orderId = null;
+      this.toDisplayWorkOrders = [];
+      this.$router.replace("/work_order");
+      if (
+        this.authUser.Role == "Manager" ||
+        this.authUser.Role == "Equipment Staff"
+      ) {
+        if (this.workingOrderViewMode) {
+          this.toDisplayWorkOrders = this.workingOrders;
         } else {
-            this.toDisplayWorkOrders = this.workOrders.filter(order => order.RequestUserID == this.authUser.Id);
+          this.toDisplayWorkOrders = this.maintainingOrders;
         }
-        this.tempValues = null;
-        this.filterOrders();
+      } else {
+        this.toDisplayWorkOrders = this.workOrders.filter(
+          order => order.RequestUserID == this.authUser.Id
+        );
+      }
+      this.tempValues = null;
+      this.filterOrders();
     },
-    'updateTile': function() {
-        Vue.nextTick(() => {
-            if (this.updateTile && this.updateTile.Id == this.toUpdatePositionItem.TileID) {
-                this.Errors.errorUpdatePosition = 'This item is already in this position';
-            } else if (this.updateTile) {
-                this.Errors.errorUpdatePosition = '';
-            }
-        })
-    },
-    'showUpdateItemPosition': function() {
-        if (!this.showUpdateItemPosition) {
-            this.toUpdatePositionItem = null;
-            this.updateBlock = null;
-            this.updateFloor = null;
-            this.updateTile = null;
+    updateTile: function() {
+      Vue.nextTick(() => {
+        if (
+          this.updateTile &&
+          this.updateTile.Id == this.toUpdatePositionItem.TileID
+        ) {
+          this.Errors.errorUpdatePosition =
+            "This item is already in this position";
+        } else if (this.updateTile) {
+          this.Errors.errorUpdatePosition = "";
         }
+      });
     },
-    '$route.params': function() {
-        if (this.$route.params.orderId) {
-            let toSelectOrder = this.toDisplayWorkOrders.filter(order => order.Id == this.$route.params.orderId)[0];
-            if (toSelectOrder) {
-                this.selectedOrder = toSelectOrder;
-                this.getEquipmentsOfWorkOrder(toSelectOrder);
-                if (toSelectOrder.TeamLocation && toSelectOrder.Category == 'Working') {
-                    this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == toSelectOrder.TeamLocation.Location.Id)[0];
-                }
-            }
-            // }
+    "$route.params": function() {
+      if (this.$route.params.orderId) {
+        let toSelectOrder = this.toDisplayWorkOrders.filter(
+          order => order.Id == this.$route.params.orderId
+        )[0];
+        if (toSelectOrder) {
+          this.selectedOrder = toSelectOrder;
+          this.getEquipmentsOfWorkOrder(toSelectOrder);
+          if (
+            toSelectOrder.TeamLocation &&
+            toSelectOrder.Category == "Working"
+          ) {
+            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(
+              location => location.Id == toSelectOrder.TeamLocation.Location.Id
+            )[0];
+          }
         }
+        // }
+      }
     },
     'showUpdateAllEquipmentPostionDialog': function() {
         if (!this.showUpdateAllEquipmentPostionDialog) {
             this.Errors.errorInvalidPosition = '';
         }
+    },
+    'searchValues': function() {
+        this.getWorkOrders();
+        // if (this.searchValues && this.searchValues.length > 0) {
+        //     let tempOrders = [];
+        //     for (const order of this.searchValues) {
+        //         tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
+        //     }
+        //     this.toDisplayWorkOrders = tempOrders;
+        //     this.searchMode = true;
+        // } else {
+        //     this.searchMode = false;
+        // }
     }
   }
 };
