@@ -15,9 +15,9 @@ import "./styles/style.scss";
 import * as VueGoogleMaps from "vue2-google-maps";
 import iView from "iview";
 import "iview/dist/styles/iview.css";
-
-import locale from 'iview/src/locale/lang/en-US';
-
+import locale from 'iview/dist/locale/en-US';
+// import locale from 'iview/src/locale/lang/en-US';
+// import locale from 'iview/dist/locale/en-US';
 import VueSocketio from "vue-socket.io";
 import VPopover from "vue-js-popover";
 //calendar
@@ -25,7 +25,9 @@ import VCalendar from "v-calendar";
 import "v-calendar/lib/v-calendar.min.css";
 import VueTruncate from "vue-truncate-filter";
 
-Vue.use(iView);
+Vue.use(iView, {
+  locale
+});
 Vue.use(VueTruncate);
 Vue.use(VCalendar, {
   formats: {
