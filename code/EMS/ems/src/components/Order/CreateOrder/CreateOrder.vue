@@ -520,7 +520,7 @@
             </div> 
             <!-- display equipment items table to let user pick the desire item -->
             <!-- describe work order -->
-            <div class="form-field">
+            <div class="form-field" style="margin-bottom: 1rem;">
                 <div class="form-field-title">
                     Describe this work order (optional)
                 </div>
@@ -654,7 +654,7 @@ export default {
         this.workOrderPriority = this.priorities[0].Id;
       }
     });
-    this.axios.get(Server.LOCATION_API_PATH).then(res => {
+    this.axios.get(`${Server.LOCATION_API_PATH}/getLocation/${this.authUser.Id}`).then(res => {
       if (res.data) {
         let data = res.data;
         data.forEach(location => {

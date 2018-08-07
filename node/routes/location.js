@@ -13,7 +13,7 @@ router.get("/getLocation/:accountId", (req, res) => {
   req
     .sql(
       "Select distinct l.* " +
-        " From[Location] as l join TeamLocation as tl on tl.LocationID = l.Id " +
+        " From [Location] as l join TeamLocation as tl on tl.LocationID = l.Id " +
         " join Team as t on t.Id = tl.TeamID " +
         " join TeamAccount as ta on ta.TeamID = t.Id " +
         " join Account as a on a.Id = ta.AccountID " +
