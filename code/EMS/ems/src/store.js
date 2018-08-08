@@ -14,9 +14,18 @@ const state = {
   notifications: [],
   searchValue: '',
   workOrderPage: {
+    initialLoad: true,
     searchText: '',
     searchValues: [],
     workingOrderViewMode: true,
+    options: { 
+      priorities: [],
+      status: []
+    },
+    filterOptionsValues: {
+      priorities: [],
+      status: []
+    },
   },
   locationPage: {
     isListViewMode: true,
