@@ -49,12 +49,12 @@
                     <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span><span v-if="CreateAccountErrors.UserNameTrim != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UserNameTrim }}</span></span>
                     <!-- <span v-if="CreateWorkOrderErrors.NoTitle != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoTitle }}</span></span> -->
                     </div>
-                    <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.username" class="input " type="text" placeholder="Text input" >
+                    <div class="control has-icons-right" style="padding:8px">
+                        <input v-model.trim="account.username" class="input " type="text" placeholder="James123" >
 
-                            <span class="icon is-small is-left">
+                            <!-- <span class="icon is-small is-left">
                             <i class="fa fa-user"></i>
-                            </span>
+                            </span> -->
                             <!-- <span class="icon is-small is-right">
                             <i class="fa fa-check"></i>
                             </span> -->
@@ -67,11 +67,11 @@
                 <div class="form-field">
                     <div class="form-field-title">
                     <strong>   Password (required)</strong> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span>
-                <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.password" class="input " type="password" placeholder="Text input" name="password" id="password">
-                            <span class="icon is-small is-left">
+                <div class="control has-icons-right" style="padding:8px">
+                        <input v-model.trim="account.password" class="input " type="password" placeholder="Chow@321" name="password" id="password">
+                            <!-- <span class="icon is-small is-left">
                             <i class="fa fa-expeditedssl"></i>
-                            </span>
+                            </span> -->
                             <!-- <span class="icon is-small is-right">
                             <i class="fa fa-check"></i>
                             </span> -->
@@ -90,11 +90,11 @@
                         </strong>     <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
                     </div>
                     <div class="form-field-input">
-                    <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.fullname" class="input " type="text" placeholder="Text input" name="fullname" id="fullname">
-                            <span class="icon is-small is-left">
+                    <div class="control  has-icons-right" style="padding:8px">
+                        <input v-model.trim="account.fullname" class="input " type="text" placeholder="James Cole" name="fullname" id="fullname">
+                            <!-- <span class="icon is-small is-left">
                             <i class="fa fa-user"></i>
-                            </span>
+                            </span> -->
                             <!-- <span class="icon is-small is-right">
                             <i class="fa fa-check"></i>
                             </span> -->
@@ -114,11 +114,11 @@
                         </strong>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>
                     </div>
                     <div class="form-field-input">
-                    <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.phone" class="input " type="text" placeholder="Text input" name="phone" id="phone">
-                            <span class="icon is-small is-left">
+                    <div class="control has-icons-right" style="padding:8px">
+                        <input v-model.trim="account.phone" class="input " type="text" placeholder="(+84)123456789" name="phone" id="phone">
+                            <!-- <span class="icon is-small is-left">
                             <i class="fa fa-mobile"></i>
-                            </span>
+                            </span> -->
                             <!-- <span class="icon is-small is-right">
                             <i class="fa fa-check"></i>
                             </span> -->
@@ -137,11 +137,11 @@
                         </strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>
                     </div>
                     <div class="form-field-input">
-                    <div class="control has-icons-left has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.email" class="input" type="email" placeholder="Text input" >
-                            <span class="icon is-small is-left">
+                    <div class="control has-icons-right" style="padding:8px">
+                        <input v-model.trim="account.email" class="input" type="email" placeholder="CPoint@gmail.com" >
+                            <!-- <span class="icon is-small is-left">
                             <i class="fa fa-envelope"></i>
-                            </span>
+                            </span> -->
 
                         </div>
                     </div>
