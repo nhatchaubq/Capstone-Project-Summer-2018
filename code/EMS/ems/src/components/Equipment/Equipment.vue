@@ -35,7 +35,7 @@
                   <td width=5% >{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
                   <td width=20% >{{equipment.Vendor.Name | truncate(35)}}</td>
                   <td width=10%>{{equipment.MadeIn| truncate(10)  }}</td>
-                  <td width=15% >{{equipment.Description ? equipment.Description: 'N/A' }}</td>
+                  <td width=15% >{{equipment.Description  }}</td>
                   <td width=10% >{{equipment.Category.Name }}</td>
               </tr>
           </tbody>
