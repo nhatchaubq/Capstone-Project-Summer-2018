@@ -565,7 +565,7 @@ export default {
                 SelectedDateConflictWorkOrders: 'Start date or end date has conflict with some work orders.',
                 UnableToSelectItem: "You can not select items that are in work orders with status 'Approved' or 'In Progress' between your from date and to date.",
                 NoWorkOrderDateRange: 'You must select expecting start date and expecting end date of this work order',
-                ConflictMaintenanceDate: 'You can not select equipments whose maintenance date has conflict with the start date and end date of this work order.',
+                ConflictMaintenanceDate: 'You can not select equipment whose maintenance date has conflict with the start date and end date of this work order.',
             },
             AddEquipmentWarnings: {
                 MustSelectEquipment: '',
@@ -641,10 +641,10 @@ export default {
             .then(async (res) => {
                 if (res.status == 200) {
                     context.editWorkOrder = res.data;
-                    if (context.editWorkOrder.RequestUserID != this.authUser.Id
-                        || (context.editWorkOrder.WorkOrderStatus != 'Requested' 
+                    if (context.editWorkOrder.RequestUserID != context.authUser.Id
+                        || (context.editWorkOrder.WorkOrderStatus != 'Requested'
                             && context.editWorkOrder.WorkOrderStatus != 'Rejected')) {
-                        this.$router.replace('/work_order');
+                        context.$router.replace('/work_order');
                     } else {
                         context.workOrderDateRange[0] = context.editWorkOrder.ExpectingStartDate;
                         context.workOrderDateRange[1] = context.editWorkOrder.ExpectingCloseDate;
@@ -659,7 +659,7 @@ export default {
                                         if (res.data) {
                                             let data = res.data;
                                             for (const location of data) {
-                                                if (location.isActive) {
+                                                if (location.IsActive) {
                                                     let option = {
                                                         value: location.Id,
                                                         text: `${location.Name} - ${location.Address}`,
@@ -1147,17 +1147,11 @@ export default {
             let context = this;
             // let maintenancePeriodInDays = maintenancePeriodInMonths * 30;
             let workOrderDuration = moment(this.workOrderDateRange[1]).diff(moment(this.workOrderDateRange[0]), 'days');
-            var factorA = 0.3;
-            var factorB = 0.5;
-            var factorC = 0.2;
+            var factorA = 0.7;
+            var factorB = 0.3;
             if (workOrderDuration > 30) {
-                factorA = 0.5;
-                factorB = 0.3;
-                factorC = 0.2;
-            } else if (workOrderDuration <= 3) {
-                factorA = 0.2;
-                factorB = 0.3;
-                factorC = 0.5;
+                factorA = 0.3;
+                factorB = 0.7;
             }
             return items.sort(function(item1, item2) {
                 var notAllowFactor_Item1 = 1;
@@ -1218,8 +1212,8 @@ export default {
                         }
                     }
                 }
-                let result1 = notAllowFactor_Item1 * (factorA*0 + factorB*((B0_Item1 - B_Item1)/B0_Item1) + factorC*(Math.abs(Math.sin(Math.sqrt(C_Item1)/2.5) / (Math.sqrt(C_Item1 + 0.1)/2.5)))) * (1 / (D_Item1 + 1));
-                let result2 = notAllowFactor_Item2 * (factorA*0 + factorB*((B0_Item2 - B_Item2)/B0_Item2) + factorC*(Math.abs(Math.sin(Math.sqrt(C_Item2)/2.5) / (Math.sqrt(C_Item2 + 0.1)/2.5)))) * (1 / (D_Item2 + 1));
+                let result1 = notAllowFactor_Item1 * (factorA*((B0_Item1 - B_Item1)/B0_Item1) + factorB*(Math.abs(Math.sin(Math.sqrt(C_Item1)/2.5) / (Math.sqrt(C_Item1 + 0.1)/2.5)))) * (1 / (D_Item1 + 1));
+        let result2 = notAllowFactor_Item2 * (factorA*((B0_Item2 - B_Item2)/B0_Item2) + factorB*(Math.abs(Math.sin(Math.sqrt(C_Item2)/2.5) / (Math.sqrt(C_Item2 + 0.1)/2.5)))) * (1 / (D_Item2 + 1));
 
                 var result = result2 - result1;
                 return result;

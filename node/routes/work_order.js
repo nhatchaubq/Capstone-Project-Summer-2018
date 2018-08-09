@@ -59,7 +59,7 @@ router.get("/workorderbyUserId/:id", (request, response) => {
 // Get work order info to edit
 
 router.get('/id/:orderId', (request, response) => {
-    request.sql("select wo.*, json_query((select lo.Id as [Id] " +
+    request.sql("select wo.*, wos.[Name] as [WorkOrderStatus], json_query((select lo.Id as [Id] " +
             "                               from [Location] as lo join TeamLocation as tl on lo.Id = tl.LocationID " +
             "                               where tl.Id = wo.TeamLocationID " +
             "                               for json path, without_array_wrapper)) as [Location], " +
@@ -119,7 +119,8 @@ router.get('/id/:orderId', (request, response) => {
             "                                                                        where wo5.Id = @orderId)) " +
             "                                         for json path)) as [Equipments] " +
             " from WorkOrder as wo " +
-            " where Id = @orderId " +
+            "   join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
+            " where wo.Id = @orderId " +
             " for json path, without_array_wrapper")
         .param("orderId", request.params.orderId, TYPES.Int)
         .into(response);

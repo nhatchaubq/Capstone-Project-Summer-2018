@@ -181,7 +181,7 @@
                             </div>
                             <div class="detail-contents" style="width: 100%;">
                                 <div>
-                                    <span class="detail-label">Equipments: </span><span v-if="authUser.Id == selectedOrder.RequestUserID && selectedOrder.WorkOrderStatus == 'In Progress' && selectedOrder.Category == 'Working'"><a v-on:click="showUpdateAllEquipmentPostionDialog = true">update equipments' position</a></span>
+                                    <span class="detail-label">Equipment: </span><span v-if="authUser.Id == selectedOrder.RequestUserID && selectedOrder.WorkOrderStatus == 'In Progress' && selectedOrder.Category == 'Working'"><a v-on:click="showUpdateAllEquipmentPostionDialog = true">update equipment's position</a></span>
                                 </div>
                                 <v-flex>
                                     <v-expansion-panel popout v-model="equipmentPanelIndex">
@@ -371,10 +371,10 @@
         <!-- change all equipments position -->
         <modal v-model="showUpdateAllEquipmentPostionDialog" @on-cancel="showUpdateAllEquipmentPostionDialog = false" style="font-family: Roboto">
             <div slot="header" style="font-weight: bold">
-                    Change equipments' position
+                    Change equipment's position
             </div>
             <div v-if="selectedOrder && authUser.Role == 'Staff'" style="font-size: 1rem">
-                You are about to change all equipments of work order <strong>{{ selectedOrder.Name }}</strong> to location <strong>{{ selectedOrder.TeamLocation.Location.Name }}.</strong>
+                You are about to change all equipment of work order <strong>{{ selectedOrder.Name }}</strong> to location <strong>{{ selectedOrder.TeamLocation.Location.Name }}.</strong>
             </div>
             <div v-if="Errors.errorInvalidPosition != ''" class="error-text">
                 {{ Errors.errorInvalidPosition }}
@@ -407,7 +407,7 @@
             <div v-if="closeOrderDetailStep == 0">
                 <div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 2rem; display: grid;"
                     :style="{'grid-template-columns': (selectedOrder && selectedOrder.Category == 'Working') ? '40% 10% 10% 10% 29%' : '30% 8% 8% 8% 16% 30%'}">
-                    <div>Equipments</div>
+                    <div>Equipment</div>
                     <div style="text-align: center">Good</div>
                     <div style="text-align: center">Damaged</div>
                     <div style="text-align: center">Lost</div>
@@ -902,9 +902,9 @@ export default {
         // socket: io(`http://localhost:3000`),
         ErrorString: {
             errorInvalidPosition: 'The location has invalid positions (missing blocks or floors or tiles).',
-            closeOrderDamagedLostItemMustProvideDescription: 'You must provide description for the damaged/lost equipments.',
+            closeOrderDamagedLostItemMustProvideDescription: 'You must provide description for the damaged/lost equipment.',
             errorUpdatePosition: 'You must select block, floor and tile to update position.',
-            closeOrderMaintenanceMustProvideDescription: 'You must provide description for maintained equipments.',
+            closeOrderMaintenanceMustProvideDescription: 'You must provide description for maintained equipment.',
         },
         Errors: {
             RejectedDescriptionNotProvided: '',
@@ -1016,7 +1016,6 @@ export default {
                 order => order.RequestUserID == this.authUser.Id
               );
             }
-            this.tempValues = this.toDisplayWorkOrders;
             if (this.selectedOrder) {
                 let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
                 if (order) {
@@ -1056,6 +1055,7 @@ export default {
               this.searchMode = false;
 
             }
+            this.tempValues = this.toDisplayWorkOrders;
             this.filterOrders();
           }
         })
@@ -1565,7 +1565,7 @@ export default {
               newItemStatus: value.status,
               description: value.description,
               cost:
-                this.selectedOrder.Category == "Maintain" ? value.cost : null
+                this.selectedOrder.Category == "Maintain" ? numeral(value.cost).value() : null
             })
             .then(async response => {
               if (response.status == 200) {
@@ -1575,7 +1575,7 @@ export default {
                 }
                 if (this.selectedOrder.Category == "Working") {
                   let equipmentItemRuntimeDaysApi =
-                    "${Server.EQUIPMENTITEM_API_PATH}/runtimedays/${value.item.Id}";
+                    `${Server.EQUIPMENTITEM_API_PATH}/runtimedays/${value.item.Id}`;
                   await this.axios.put(equipmentItemRuntimeDaysApi, {
                     workOrderId: this.selectedOrder.Id
                   });
@@ -1585,14 +1585,14 @@ export default {
                   value.status == "Lost"
                 ) {
                   let equipmentItemTileApi =
-                    "${Server.EQUIPMENTITEM_API_PATH}/position/tile/${value.item.Id}";
+                    `${Server.EQUIPMENTITEM_API_PATH}/position/tile/${value.item.Id}`;
                   await this.axios.put(equipmentItemTileApi, {
                     tileId: tileId
                   });
                 }
                 if (this.selectedOrder.Category == "Maintain") {
                   let equipmentItemMaintenanceApi =
-                    "${Server.EQUIPMENTITEM_API_PATH}/maintenance/${value.item.Id}";
+                    `${Server.EQUIPMENTITEM_API_PATH}/maintenance/${value.item.Id}`;
                   await this.axios.put(equipmentItemMaintenanceApi, {
                     nextMaintainDate: moment()
                       .add(value.item.MaintenanceDurationInMonths, "M")

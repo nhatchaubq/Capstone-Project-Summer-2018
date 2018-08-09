@@ -1,0 +1,19 @@
+{
+    "createWorkOrder": [
+        {
+            "name": "Normal",
+            "workOrderDuration": 0,
+            "daysFromCreateDate": 0,
+            "durationFactor": 0.3,
+            "distanceFactor": 0.7
+        },
+        {
+            "name": "Urgent",
+            "workOrderDuration": 0,
+            "daysFromCreateDate": 1,
+            "operandDaysFromCreateDate": "lesser",            
+            "durationFactor": 0.7,
+            "distanceFactor": 0.3
+        }
+    ]
+}
