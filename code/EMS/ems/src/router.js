@@ -34,6 +34,7 @@ import LocationMapViewComponent from "./components/Location/MapView.vue";
 import AddBlockFloorTileComponent from "./components/Location/AddBlockFloorTile.vue";
 import Component500 from "./components/Error/500.vue";
 import EditWorkOrder from "./components/Order/EditOrder.vue";
+import ConfigurationComponent from './components/Configuration/Configuration.vue';
 // chaubqn - end
 
 // hau - start
@@ -527,7 +528,7 @@ let router = new Router({
         showSearchBar: true
       }
     },
-           {
+    {
       path: "/404",
       component: Page404Component,
 
@@ -539,7 +540,18 @@ let router = new Router({
         showSearchBar: false
       }
     },
+    {
+      path: "/configuration",
+      component: ConfigurationComponent,
 
+      beforeEnter: (to, from, next) => {
+        store.set("title", menu.Configuration);
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    }
 
     //Dien addEquipmentCategory-end
   ]

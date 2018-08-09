@@ -51,6 +51,22 @@ router.get("/:id", (request, response) => {
     .into(response);
 });
 
+router.get("/search/:value", (req, res) => {
+  req
+    .sql("  SELECT distinct e.Id, e.Name as [EquipmentName] " +
+      " FROM Equipment as e  " +
+      "JOIN [Vendor] as v ON e.VendorID = v.Id " +
+      "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
+      "JOIN [Unit] as u on e.UnitID = u.Id " +
+      "JOIN [MaintenanceDuration] as md on e.MaintenanceDurationID = md.Id " +
+      " WHERE e.[Name] like N'%' + @searchText + '%' or v.[BusinessName] like N'%' + @searchText + '%' or e.[MadeIn] like N'%' + @searchText + '%' " +
+      "     or convert(nvarchar(max), e.Id) = @searchText or ec.[Name] like N'%' + @searchText + '%' " +
+      " order by e.Name desc" +
+      " for json path")
+    .param("searchText", req.params.value, TYPES.NVarChar)
+    .into(res);
+});
+
 // /*Get Equipment BY ID*/
 // router.get("/:id", (request, response) => {
 //   request

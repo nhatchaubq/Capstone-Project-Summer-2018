@@ -1,57 +1,56 @@
 <template>
   <div>
-    <div v-if="!equipments">
-      There is no equipment yet.
+    
+    <div v-if="toDisplayData && toDisplayData.length!=0">   
+        <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer' " >
+          <div class="field is-grouped view-mode" style="margin-bottom: 0.2rem !important; padding: 0rem!important">
+            <router-link to='/Equipment/'>  
+              <button class="btn-view-mode-left" style="margin-right:0rem" disabled="disabled"> All Equipment</button>
+            </router-link>
+            <router-link to='/myEquipment/'>  
+              <button class="btn-view-mode-right" >My Equipment</button>
+            </router-link>
+          </div>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th ><strong>Order #</strong></th>
+                    <th ><strong>Equipment name</strong></th>
+                    <th ><strong>Available</strong></th>
+                    <th ><strong>Vendor name</strong></th>
+                    <th ><strong>Made In</strong></th>
+                    <th ><strong>Description</strong></th>
+                    <th ><strong>Category</strong></th>
+                </tr>
+            </thead>  
+            <tbody>
+                <tr v-bind:key=" 'toDisplayData'+ index +''+ equipment.Id " v-for="(equipment, index) in toDisplayData" v-on:click="gotoDetail(equipment.Id)">
+                    <td width=5% >{{ 10*(currentPage -1) + (index + 1) }}</td>   
+                    <td width=30% >{{equipment.Name | truncate(50)}}</td>
+                    <td width=5% >{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
+                    <td width=20% >{{equipment.Vendor.Name | truncate(35)}}</td>
+                    <td width=10%>{{equipment.MadeIn| truncate(10)  }}</td>
+                    <td width=15% >{{equipment.Description ? equipment.Description: 'N/A' }}</td>
+                    <td width=10% >{{equipment.Category.Name }}</td>
+                </tr>
+            </tbody>
+        </table>
+      <div v-if="equipments.length >9" class="pageNa">
+        <Page :current="currentPage" :total="equipments.length" show-elevator 
+          @on-change="(newPageNumber) => {
+            currentPage = newPageNumber
+            let start = 10 * (newPageNumber - 1);
+            let end = start + 10;
+            showarlet(`${start } ${end} ${this.total}`)
+            toDisplayData = equipments.slice(start, end);
+          }">
+        </Page>
+      </div>  
     </div>
     <div v-else>
-
-    <div v-if="equipments">
-       <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer' " >
-        <div class="field is-grouped view-mode" style="margin-bottom: 0.2rem !important; padding: 0rem!important">
-          <router-link to='/Equipment/'>  
-            <button class="btn-view-mode-left" style="margin-right:0rem" disabled="disabled"> All Equipments</button>
-          </router-link>
-          <router-link to='/myEquipment/'>  
-            <button class="btn-view-mode-right" >My Equipment Items</button>
-          </router-link>
-        </div>
-      </div>
-      <table class="table">
-          <thead>
-              <tr>
-                  <th ><strong>Order #</strong></th>
-                  <th ><strong>Equipment name</strong></th>
-                  <th ><strong>Available</strong></th>
-                  <th ><strong>Vendor name</strong></th>
-                  <th ><strong>Made In</strong></th>
-                  <th ><strong>Description</strong></th>
-                  <th ><strong>Category</strong></th>
-              </tr>
-          </thead>  
-          <tbody>
-              <tr v-bind:key=" 'toDisplayData'+ index +''+ equipment.Id " v-for="(equipment, index) in toDisplayData" v-on:click="gotoDetail(equipment.Id)">
-                  <td width=5% >{{ 10*(currentPage -1) + (index + 1) }}</td>   
-                  <td width=30% >{{equipment.Name | truncate(50)}}</td>
-                  <td width=5% >{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
-                  <td width=20% >{{equipment.Vendor.Name | truncate(35)}}</td>
-                  <td width=10%>{{equipment.MadeIn| truncate(10)  }}</td>
-                  <td width=15% >{{equipment.Description  }}</td>
-                  <td width=10% >{{equipment.Category.Name }}</td>
-              </tr>
-          </tbody>
-      </table>
-    </div>
-    <div v-if="equipments.length >9" class="">
-      <Page :current="currentPage" :total="equipments.length" show-elevator 
-        @on-change="(newPageNumber) => {
-          currentPage = newPageNumber
-          let start = 10 * (newPageNumber - 1);
-          let end = start + 10;
-          showarlet(`${start } ${end} ${this.total}`)
-          toDisplayData = equipments.slice(start, end);
-        }">
-      </Page>
-    </div>  
+      There is no equipment to display.
 
     </div>
     <router-link to='/equipment/create/'>
@@ -72,37 +71,58 @@ export default {
     // EquipmentCard
   },
   created() {
-    let URL = Server.EQUIPMENT_API_PATH;
-    this.axios
-      .get(URL)
-      .then(response => {
-        let data = response.data;
-        // alert('in');
-        data.forEach(element => {
-          let equipment = element.Equipment;
-          this.equipments.push(equipment);
-          this.toDisplayData = this.equipments.slice(0, 10);
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    this.getEquipment();
   },
   computed: {
     isTableMode: sync("equipmentPage.isTableMode"),
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
-    }
+    },
+    searchValues: sync("equipmentPage.searchValues")
   },
   data() {
     return {
       currentPage: 1,
       equipments: [],
       toDisplayData: [],
-      selectedEquipment: null
+      selectedEquipment: null,
+      searchMode: false
     };
   },
   methods: {
+    getEquipment() {
+      let URL = Server.EQUIPMENT_API_PATH;
+      this.axios
+        .get(URL)
+        .then(response => {
+          let data = response.data;
+          // alert('in');
+          data.forEach(element => {
+            let equipment = element.Equipment;
+            this.equipments.push(equipment);
+
+            if (this.$store.state.equipmentPage.searchText != "") {
+              let tempEQTs = [];
+              if (this.searchValues.length > 0) {
+                for (const equipment of this.searchValues) {
+                  tempEQTs = tempEQTs.concat(
+                    this.equipments.filter(e => e.Id == equipment.Id)
+                  );
+                }
+              }
+              this.equipments = tempEQTs;
+              this.searchMode = true;
+            } else {
+              // this.$store.state.workOrderPage.searchValues = [];
+              this.searchMode = false;
+            }
+            this.toDisplayData = this.equipments.slice(0, 10);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     setSelectedEquipment(equipment) {
       this.selectedEquipment = equipment;
     },
@@ -114,6 +134,13 @@ export default {
     },
     gotoDetail(equipmentId) {
       this.$router.push(`/equipment/${equipmentId}`);
+    }
+  },
+  watch: {
+    searchValues: function() {
+      this.equipments = [];
+      this.toDisplayData = [];
+      this.getEquipment();
     }
   }
 };
@@ -148,9 +175,9 @@ export default {
 tr {
   cursor: pointer;
 }
-tr:hover {
+/* tr:hover {
   background-color: #fff !important;
-}
+} */
 .btn-view-mode {
   background-color: white;
   padding: 0.4rem 0.6rem;

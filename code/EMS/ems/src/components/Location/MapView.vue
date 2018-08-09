@@ -153,7 +153,7 @@
                     </v-expansion-panel>
                 </v-flex>
                 <div v-else style="font-size: 1rem;">
-                    There is no equipments in tile {{ mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles[currentTileIndex].Name }}.
+                    There is no equipment in tile {{ mapViewSelectedLocation.Blocks[curentBlockIndex].Floors[currentFloorIndex].Tiles[currentTileIndex].Name }}.
                 </div>
             </div>
       </modal>
