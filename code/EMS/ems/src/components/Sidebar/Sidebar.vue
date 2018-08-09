@@ -38,7 +38,7 @@
               {{ menu.Report }}
             </div>
           </router-link>
-        </li>
+        </li>   
         <div class="divider" v-if="authUser.Role != 'Admin'"></div>
             
         <li>
@@ -46,6 +46,14 @@
             <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
             <i class="material-icons">build</i>
             {{ menu.Equipment }}
+          </div>
+          </router-link>
+        </li>
+        <li>
+          <router-link to='/category'>
+            <div class="sidebar-list-content" :class="isActive(menu.Categories)">
+            <i class="material-icons">category</i>
+            {{ menu.Categories }}
           </div>
           </router-link>
         </li>
