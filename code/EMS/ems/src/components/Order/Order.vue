@@ -843,13 +843,14 @@ export default {
     BasicSelect
   },
   sockets: {
-        NEW_WORK_ORDER_CREATED: function() {
-            this.getWorkOrders();
-        },
-        ORDER_STATUS_CHANGED: function() {
-            this.getWorkOrders();
-        }
+    NEW_WORK_ORDER_CREATED: function() {
+      this.getWorkOrders();
+    },
+    ORDER_STATUS_CHANGED: function() {
+      this.getWorkOrders();
+    }
   },
+
   async created() {    
     if (this.$store.state.workOrderPage.initialLoad) {
         await this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
@@ -888,6 +889,7 @@ export default {
         });
     }
 
+
     this.getWorkOrders();
     this.getBlockFloorTile();
     if (this.$store.state.workOrderPage.initialLoad) {
@@ -896,6 +898,7 @@ export default {
   },
   data() {
     return {
+
         // socket: io(`http://localhost:3000`),
         ErrorString: {
             errorInvalidPosition: 'The location has invalid positions (missing blocks or floors or tiles).',
@@ -951,6 +954,7 @@ export default {
         toUpdateSelectedLocation: null,
         locationOptions: [],        
 
+
       toUpdatePositionItem: null,
       updateBlock: null,
       updateFloor: null,
@@ -977,7 +981,7 @@ export default {
       return JSON.parse(window.localStorage.getItem("user"));
     },
     google: gmapApi,
-    searchValues: sync("workOrderPage.searchValues"),
+    searchValues: sync("workOrderPage.searchValues")
   },
   methods: {
     getWorkOrders() {
@@ -1050,6 +1054,7 @@ export default {
             } else {
               // this.$store.state.workOrderPage.searchValues = [];
               this.searchMode = false;
+
             }
             this.filterOrders();
           }
@@ -1214,7 +1219,6 @@ export default {
               this.toDisplayWorkOrders
             );
         }
-
         if (this.selectedOrder) {
           let order = this.toDisplayWorkOrders.filter(
             o => o.Id == this.selectedOrder.Id
@@ -1271,9 +1275,9 @@ export default {
     //     this.selectedOrder = null;
     // },
     clearSearch() {
-        this.$store.state.workOrderPage.searchText = '';
-        this.$store.state.workOrderPage.searchValues = [];
-        this.searchMode = false;
+      this.$store.state.workOrderPage.searchText = "";
+      this.$store.state.workOrderPage.searchValues = [];
+      this.searchMode = false;
     },
     showDetailPopup(equipmentItemId) {
       let url = `${Server.EQUIPMENTITEM_API_PATH}/chau/${equipmentItemId}`;
@@ -1767,10 +1771,25 @@ export default {
         // }
       }
     },
-    'showUpdateAllEquipmentPostionDialog': function() {
-        if (!this.showUpdateAllEquipmentPostionDialog) {
-            this.Errors.errorInvalidPosition = '';
+    "$route.params": function() {
+      if (this.$route.params.orderId) {
+        let toSelectOrder = this.toDisplayWorkOrders.filter(
+          order => order.Id == this.$route.params.orderId
+        )[0];
+        if (toSelectOrder) {
+          this.selectedOrder = toSelectOrder;
+          this.getEquipmentsOfWorkOrder(toSelectOrder);
+          if (
+            toSelectOrder.TeamLocation &&
+            toSelectOrder.Category == "Working"
+          ) {
+            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(
+              location => location.Id == toSelectOrder.TeamLocation.Location.Id
+            )[0];
+          }
         }
+        // }
+      }
     },
     'searchValues': function() {
         this.getWorkOrders();
