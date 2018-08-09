@@ -2,7 +2,7 @@
 <div>
   <div style="padding: 0rem 2rem 0rem 1rem">
     <router-link to='/equipment'>
-        <a><span class="fa fa-chevron-left"></span> Back to Equipments </a>
+        <a><span class="fa fa-chevron-left"></span> Back to Equipment </a>
     </router-link>
   </div>
     <div>
@@ -213,7 +213,14 @@
                   <span><strong>  Price (required) </strong></span>
                   </div>
                   <div class="field is-horizontal" style="margin-right:1rem">
-                    <input type="number" min="50000" style="text-align: right" class="input" placeholder="Price" v-model="form.price" step="10000">
+                    <input type="text" min="50000" style="text-align: right" class="input" placeholder="Price" v-model="form.price" v-on:input="() => {
+                            if (form.price < 0 || form.price == '') {
+                                form.price = 0;
+                            } else if (form.price.length > 14) {
+                                form.price  = '99,999,999,999';
+                            }
+                            form.price  = getNumberFormattedThousand(form.price);
+                        }">
                     <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">VNĐ</label>
                   </div>
                     <span v-if="CreateItemErrors.NoPrice != ''">. <span class="error-text">{{ CreateItemErrors.NoPrice }}</span></span>                  
@@ -273,13 +280,12 @@
                                                                                       editItemMode = false;
                                                                                     }" animation="slideUp"> -->
           <!-- <equipment-detail-popup :equipment="selectedItem" class="" v-show="selectedItem != null"></equipment-detail-popup> -->
-      <modal v-model="detailPopUp" >
+      <modal v-model="detailPopUp"  :closable="false">
          <div v-if="selectedItem!=null" > 
            <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
           <div slot="header">
-              <div class="field" style=" display: grid; grid-template-columns: 10% 75% 10%">
-                <i class="material-icons" style="font-size: 1.75rem;color:gray;padding-top: 0.4rem;padding-left: 0.4rem">forumbee</i>
-                <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong>
+              <div class="field" style=" display: grid; grid-template-columns: 85% 10%">
+                <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a;padding-left: 0.4rem">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong>
                 <div class="" v-if="currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation)">
                   <div class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button></div>  
                 </div>
@@ -313,10 +319,17 @@
                     <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" >  
                       <div class="">
                         <input v-if="!editItemMode" v-model="selectedItem.Item.Price" class="input col-7 " type="text" disabled="disabled"> 
-                        <input v-else v-model="selectedItem.Item.Price" class="input col-7 " type="number" min="50000" step="10000"> 
+                        <input v-else v-model="selectedItem.Item.Price" class="input col-7 " type="text" min="50000" v-on:input="() => {
+                            if (selectedItem.Item.Price < 0 || selectedItem.Item.Price == '') {
+                               selectedItem.Item.Price = 0;
+                            } else if (selectedItem.Item.Price.length > 14) {
+                                selectedItem.Item.Price  = '99,999,999,999';
+                            }
+                           selectedItem.Item.Price = getNumberFormattedThousand(selectedItem.Item.Price);
+                        }"> 
                       </div>
                       <div class="">
-                        <label style=" margin-top: 0.75rem;margin-left: 0.4rem;">VNĐ</label>
+                        <label style=" margin-top: 0.75rem;margin-left: 0.4rem;">VND</label>
                       </div>
                     </div>
                   </div>
@@ -722,6 +735,7 @@ import Vodal from "vodal";
 import moment from "moment";
 import Utils from "@/utils.js";
 import Simplert from "vue2-simplert";
+import numeral from "numeral";
 export default {
   // name: "ConditionalModal",
 
@@ -1057,6 +1071,13 @@ export default {
     };
   },
   methods: {
+    getNumberFormattedThousand(str) {
+      let value = numeral(str).value();
+      return numeral(value).format("0,0");
+    },
+    myParseInt(string) {
+      return numeral(string).value();
+    },
     cancelUpdateEquipment() {
       this.editMode = !this.editMode;
       this.EquimentByID.Name = this.equipmentName;
@@ -1149,7 +1170,7 @@ export default {
                 serialNumber: number,
                 warehoueid: this.form.selectedLocation.value,
                 warrantyDuration: this.form.warrantyDuration,
-                price: this.form.price,
+                price: numeral(this.form.price).value(),
                 statusId: 1,
                 description: "No description",
                 tileID: this.form.selectedTile.value
@@ -1249,6 +1270,9 @@ export default {
                 this.detailPopUp = true;
                 this.selectedItem = response.data;
                 this.itemPrice = this.selectedItem.Item.Price;
+                this.selectedItem.Item.Price = this.getNumberFormattedThousand(
+                  this.selectedItem.Item.Price
+                );
                 this.itemDescription = this.selectedItem.Item.Description;
                 this.itemWarehouse = this.selectedItem.Item.WarehouseID;
                 this.itemWarranty = this.selectedItem.Item.WarrantyDuration;
@@ -1270,6 +1294,9 @@ export default {
                 this.totalExistDays = Math.floor(
                   this.totalExistDays / (1000 * 3600 * 24)
                 );
+                if(this.totalExistDays == 0){
+                  this.totalExistDays  = 1
+                }
                 this.percentRuntime = (
                   this.selectedItem.Item.RuntimeDays /
                   this.totalExistDays *
@@ -1717,7 +1744,7 @@ export default {
               warrantyDuration: this.selectedItem.Item.WarrantyDuration,
               warehouseid: this.selectedItem.Item.WarehouseID,
               runtimeDays: this.selectedItem.Item.RuntimeDays,
-              price: this.selectedItem.Item.Price,
+              price: numeral(this.selectedItem.Item.Price).value(),
               importdate: this.selectedItem.Item.ImportDate,
               lastmaintaindate: this.selectedItem.Item.LastMaintainDate,
               nextmaintaindate: this.selectedItem.Item.NextMaintainDate,

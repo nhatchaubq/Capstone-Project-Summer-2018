@@ -33,7 +33,7 @@
             <div class="form-field" >
               <div>
                 <div class="form-field-title">
-                <strong> Status </strong> <span v-if="location.Items" class="error-text"> (There are the equipments in this location. Can't change the activity status)</span>
+                <strong> Status </strong> <span v-if="location.Items" class="error-text"> (There are the equipment in this location. Can't change the activity status)</span>
                 </div>
                 <div class="form-field-input" style="padding-left:30px;padding-top:10px;">
                   <label class="radio" v-on:click="location.IsActive = true" style="margin-right:25px;">

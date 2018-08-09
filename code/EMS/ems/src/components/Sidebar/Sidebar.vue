@@ -75,7 +75,7 @@
           </div>
           </router-link>
         </li>
-          <li v-if="authUser.Role =='Admin' || authUser.Role =='Manager'">
+        <li v-if="authUser.Role =='Admin' || authUser.Role =='Manager'">
           <router-link to='/account'>
             <div class="sidebar-list-content" v-bind:class="isActive(menu.Accounts)">
             <i class="material-icons">people</i>
@@ -83,7 +83,15 @@
           </div>
           </router-link>
         </li>
-
+        <li v-if="authUser.Role =='Admin'">
+          <router-link to='/configuration'>
+            <div class="sidebar-list-content" v-bind:class="isActive(menu.Configuration)">
+            <i class="material-icons">settings_applications</i>
+           {{ menu.Configuration }}
+          </div>
+          </router-link>
+        </li>
+        
 
       </ul>
     </div>

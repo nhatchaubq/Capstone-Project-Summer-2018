@@ -70,7 +70,10 @@
                         <div class="field is-horizontal" >
                             <input type="text" class="input" placeholder="Name" v-model="newCategory">
                             <button class="button is-rounded is-primary" style="margin-left: .6rem" v-on:click="createNewCategory">Add</button>
-                            <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddCategory = false">Cancel</button>
+                            <button class="button is-rounded" style="margin-left: .6rem" v-on:click="() =>{
+                              showingAddCategory = false;
+                              newCategory = '';
+                              }">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -90,7 +93,10 @@
                       <div class="field is-horizontal" >
                           <input type="text" class="input" placeholder="Name" v-model="newVendor">
                           <button class="button is-rounded is-primary" style="margin-left: .6rem" v-on:click ="createNewVendor">Add</button>
-                          <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddVendor = false">Cancel</button>
+                          <button class="button is-rounded" style="margin-left: .6rem" v-on:click="() =>{
+                              showingAddVendor = false;
+                              newVendor = '';
+                              }">Cancel</button>
                       </div>
                     </div>
                 </div>                 
@@ -110,9 +116,19 @@
                         <span><strong> Duration (required) </strong></span> 
                         </div>
                         <div class="field is-horizontal" >
-                            <input type="number" class="input" placeholder="Duration (month)" v-model="newDuration">
+                            <input type="text" class="input" placeholder="Duration (month)" v-model="newDuration" v-on:input="() => {
+                            if (newDuration < 1 || newDuration == '') {
+                                newDuration = 0;
+                            } else if (newDuration > 60) {
+                                newDuration = '60';
+                            }
+                            newDuration = getNumberFormattedThousand(newDuration);
+                        }">
                             <button class="button is-rounded is-primary" style="margin-left: .6rem" v-on:click="createNewMaintenanceDuration">Add</button>
-                            <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddMaintenanceDuration = false">Cancel</button>
+                            <button class="button is-rounded" style="margin-left: .6rem" v-on:click="() =>{
+                              showingAddMaintenanceDuration = false;
+                              newDuration = 3;
+                              }">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -132,7 +148,10 @@
                         <div class="field is-horizontal" >
                             <input type="text" class="input" placeholder="Name" v-model="newUnit">
                             <button class="button is-rounded is-primary" style="margin-left: .6rem" v-on:click="createNewUnit">Add</button>
-                            <button class="button is-rounded" style="margin-left: .6rem" v-on:click= "showingAddUnit = false">Cancel</button>
+                            <button class="button is-rounded" style="margin-left: .6rem" v-on:click="() =>{
+                              showingAddUnit = false;
+                              newUnit = '';
+                              }">Cancel</button>
                         </div>
                     </div>
                 </div>                  
@@ -168,6 +187,7 @@ import Utils from "@/utils.js";
 import fileBase64 from "vue-file-base64";
 import moment from "moment";
 import Simplert from "vue2-simplert";
+import numeral from "numeral";
 export default {
   props: ["filterby"],
   components: {
@@ -345,7 +365,7 @@ export default {
       newCategory: "",
       newVendor: "",
       newUnit: "",
-      newDuration: "",
+      newDuration: 3,
       showingAddCategory: false,
       showingAddVendor: false,
       showingAddUnit: false,
@@ -369,6 +389,10 @@ export default {
   },
 
   methods: {
+    getNumberFormattedThousand(str) {
+      let value = numeral(str).value();
+      return numeral(value).format("0,0");
+    },
     EquipSelected(equipment) {
       console.log(
         `Customer Selected:\nid: ${equipment.Dd}\nname: ${equipment.Name}`

@@ -17,7 +17,8 @@ let menu = {
     Project: 'Project',
     Department: 'Department',
     Test: 'test',
-    MyProfile: 'My Profile'
+    MyProfile: 'My Profile',
+    Configuration: 'Configuration',
 }
 
 export default menu;
