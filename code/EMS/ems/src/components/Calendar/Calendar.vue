@@ -310,7 +310,7 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
                   location: this.orders[i].Location.Address
@@ -331,7 +331,7 @@ export default {
                 expectStartDate: moment(
                   this.orders[i].ExpectingStartDate
                 ).format("DD-MM-YYYY"),
-                team: this.orders[i].Team.Name,
+                team: this.orders[i].TeamLocation.Team.Name,
                 closedDate: this.orders[i].ClosedDate,
                 detail: this.orders[i].WorkOrderDetails,
                 location: this.orders[i].Location.Address
@@ -659,7 +659,7 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
                   location: this.orders[i].Location.Address
@@ -692,7 +692,7 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
                   location: this.orders[i].Location.Address
@@ -992,7 +992,7 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
                   location: this.orders[i].Location.Address
@@ -1025,7 +1025,7 @@ export default {
                   expectStartDate: moment(
                     this.orders[i].ExpectingStartDate
                   ).format("DD-MM-YYYY"),
-                  team: this.orders[i].Team.Name,
+                  team: this.orders[i].TeamLocation.Team.Name,
                   closedDate: this.orders[i].ClosedDate,
                   detail: this.orders[i].WorkOrderDetails,
                   location: this.orders[i].Location.Address

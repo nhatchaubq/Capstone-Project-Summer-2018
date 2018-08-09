@@ -43,17 +43,11 @@ export default {
     this.getNotifications();
   },
   sockets: {
-    NEW_NOTIFICATION: function(data) {
-      if (data.needToUpdateNotification) {
-        if (
-          (data.needToUpdateNotification.roles &&
-            data.needToUpdateNotification.roles.includes(this.authUser.Role)) ||
-          (data.needToUpdateNotification.userIds &&
-            data.needToUpdateNotification.userIds.includes(this.authUser.Id))
-        ) {
-          this.getNotifications();
-        }
-      }
+    NEW_NOTIFICATION: function() {
+      this.getNotifications();
+    },
+    WEB_CONFIG: function(data) {
+      this.$store.state.config = JSON.parse(data);
     }
   },
   data() {
