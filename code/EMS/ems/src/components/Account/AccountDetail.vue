@@ -14,14 +14,15 @@
   top: 6rem;
   right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
   <div>
-<div v-if="!editMode">
+<!-- <div v-if="!editMode"> -->
+  <div>
   <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Username" style="width: 100%; height: 20rem ">
 </div>
 <div v-if="editMode">
  <div class="form-field-picture">
               <div class="form-field-title">
                   <!-- <span><strong>  Picture (required) </strong></span><span v-if="CreateAccountErrors.NoImage != ''"> <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span> -->
-                  <span><strong>  Picture (required) </strong></span>
+                  <span><strong>  Picture </strong></span>
 
               </div>
               <div class="input_picture">
@@ -372,17 +373,17 @@ export default {
         PhoneMin: " Use from 9 to 13 characters for your phone number",
         PhoneMax: " Use from 9 to 13 characters for your phone number",
 
-        NoEmail: " Enter email",
-        NoImage: "You must choose an image",
+        NoEmail: " Enter email"
+        // NoImage: "You must choose an image",
         // NoRole: "You must provide role for this account"
-        NotSamePass: "pass not the same"
+        // NotSamePass: "pass not the same"
       },
       CreateAccountErrors: {
         // NoUsername: '',
         // NoFullname: "",
         FullNameMax: "",
         FullNameMin: "",
-        NotSamePass: "",
+        // NotSamePass: "",
 
         // NoPassword: "",
         WeakAccount: "",
@@ -392,8 +393,8 @@ export default {
         PhoneMin: "",
         PhoneMax: "",
 
-        NoEmail: "",
-        NoImage: ""
+        NoEmail: ""
+        // NoImage: ""
         // NoRole: ""
       },
       account: {
@@ -415,9 +416,9 @@ export default {
       // if (this.account.Fullname === "") {
       //   this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
       // }
-      if (!this.files[0]) {
-        this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
-      }
+      // if (!this.files[0]) {
+      //   this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
+      // }
       if (this.account.Fullname.length < 6) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
@@ -445,12 +446,12 @@ export default {
       if (this.account.Email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
-      if (this.account.Password != this.SelectedMemberPassword) {
-        this.CreateAccountErrors.NotSamePass = this.ErrorStrings.NotSamePass;
-      }
+      //       if (this.account.Password != this.SelectedMemberPassword) {
+      //   this.CreateAccountErrors.NotSamePass = this.ErrorStrings.NotSamePass;
+      // }
 
       if (this.validateAccount()) {
-        this.CreateAccountErrors.NoImage = "";
+        // this.CreateAccountErrors.NoImage = "";
         let formData = new FormData();
         formData.append("api_key", "982394881563116");
         formData.append("file", this.files[0]);
@@ -519,8 +520,8 @@ export default {
         this.CreateAccountErrors.NoEmail === "" &&
         //&& this.CreateAccountErrors.NoRole === ""
         this.CreateAccountErrors.WeakAccount === "" &&
-        this.CreateAccountErrors.MaxPassword === "" &&
-        this.CreateAccountErrors.NoImage == ""
+        this.CreateAccountErrors.MaxPassword === ""
+        // this.CreateAccountErrors.NoImage == ""
 
         //  && this.CreateAccountErrors.NoUsername === ''
       );
@@ -617,15 +618,15 @@ export default {
         this.CreateAccountErrors.PhoneMax = "";
       }
     },
-    files: function() {
-      if (
-        !this.files[0] &&
-        !this.files[0].name &&
-        this.CreateAccountErrors.NoImage != ""
-      ) {
-        this.CreateAccountErrors.Image = "";
-      }
-    },
+    // files: function() {
+    //   if (
+    //     !this.files[0] &&
+    //     !this.files[0].name &&
+    //     this.CreateAccountErrors.NoImage != ""
+    //   ) {
+    //     this.CreateAccountErrors.Image = "";
+    //   }
+    // },
     "account.Email": function() {
       if (this.account.Email != "") {
         this.CreateAccountErrors.NoEmail = "";
