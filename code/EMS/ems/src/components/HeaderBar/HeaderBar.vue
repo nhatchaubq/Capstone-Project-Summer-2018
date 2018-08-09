@@ -162,360 +162,415 @@
 </template>
 
 <script>
-import { sync, } from 'vuex-pathify';
-import menu from '@/models/menu.js';
-import Server from '@/config/config.js';
-import moment from 'moment';
+import { sync } from "vuex-pathify";
+import menu from "@/models/menu.js";
+import Server from "@/config/config.js";
+import moment from "moment";
 
 export default {
-    name: 'header-bar',
-    data() {
-        return {
-            showMenu: false,
-            searchText: '',
-            searchFunction: null,
+  name: "header-bar",
+  data() {
+    return {
+      showMenu: false,
+      searchText: "",
+      searchFunction: null
+    };
+  },
+  computed: {
+    title: sync("title"),
+    showSearchBar: sync("showSearchBar"),
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    },
+    notifications: sync("notifications")
+  },
+  methods: {
+    makeTimeout(seconds) {
+      if (this.searchFunction) {
+        clearTimeout(this.searchFunction);
+      }
+      this.searchFunction = setTimeout(() => this.search(), seconds * 1000);
+    },
+    search() {
+      if (this.searchText != "") {
+        if (this.searchFunction) {
+          clearTimeout(this.searchFunction);
+          this.searchFunction = null;
         }
-    },
-    computed: {
-        title: sync('title'),
-        showSearchBar: sync('showSearchBar'),
-        authUser() {
-            return JSON.parse(window.localStorage.getItem("user"));
-        },
-        notifications: sync('notifications'),
-    },
-    methods: {
-        makeTimeout(seconds) {
-            if (this.searchFunction) {
-                clearTimeout(this.searchFunction);
-            }
-            this.searchFunction = setTimeout(() => this.search(), seconds * 1000);
-        },
-        search() {
-            if (this.searchText != '') {
-                if (this.searchFunction) {
-                    clearTimeout(this.searchFunction);
-                    this.searchFunction = null;
+        let searchApi;
+        switch (this.title) {
+          case menu.WorkOrder: {
+            searchApi = `${Server.WORKORDER_SEARCH_API_PATH}/${
+              this.searchText
+            }`;
+            this.axios
+              .get(searchApi)
+              .then(res => {
+                if (res.status == 200) {
+                  this.$store.state.workOrderPage.searchValues = res.data;
+                  this.searchFunction = null;
                 }
-                let searchApi;
-                switch(this.title) {
-                    case menu.WorkOrder: {
-                        searchApi = `${Server.WORKORDER_SEARCH_API_PATH}/${this.searchText}`;
-                        this.axios.get(searchApi)
-                            .then((res) => {
-                                if (res.status == 200) {
-                                    this.$store.state.workOrderPage.searchValues = res.data;
-                                    this.searchFunction = null;
-                                }
-                            }).catch((error) => {
-                                console.log(error);
-                                this.$router.push('/500');
-                            });
-                        break;
-                    }
+              })
+              .catch(error => {
+                console.log(error);
+                this.$router.push("/500");
+              });
+            break;
+          }
+          case menu.Equipment: {
+            searchApi =
+              "http://localhost:3000/api/equipment/search/" + this.searchText;
+             this.axios
+              .get(searchApi)
+              .then(res => {
+                if (res.status == 200) {
+                  this.$store.state.equipmentPage.searchValues = res.data;
+                  this.searchFunction = null;
                 }
-            }
-        },
-        getUserAvatar() {
-            if (this.authUser.AvatarImage) {
-                return this.authUser.AvatarImage;
-            } else {
-                return require("@/assets/avatar-user.png");
-            }
-        },
-        logout() {
-            this.$store.state.isLoggedIn = false;
-            window.localStorage.removeItem("user");
-            this.$router.push("/");
-        },
-        showAlert(msg) {
-            alert(msg);
-        },
-        getStatusTimeString(notiObj) {
-            setInterval(() => {
-                const milis = moment().valueOf() - moment(notiObj.CreatedDate).valueOf();
-                const duration = moment.duration(milis);
-                const days = duration.days();
-                // alert(`asDays ${days}`)
-                if (days == 0) {
-                    const hours = duration.hours();
-                    if (hours == 0) {
-                        const minutes = duration.minutes();
-                        if (minutes > 0) {
-                            notiObj.TimeString = `About ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} ago`;
-                        } else if (minutes == 0) {
-                            notiObj.TimeString = `Just now`;
-                        }
-                    } else {
-                        notiObj.TimeString = `About ${hours} ${hours > 1 ? 'hours' : 'hour'} ago`;
-                    }
-                } else if (days == 1) {
-                    notiObj.TimeString = `Yesterday at ${moment(notiObj.CreatedDate).format('hh:mm a')}`;
-                } else {
-                    notiObj.TimeString = `${moment(notiObj.CreatedDate).format('LLL')}`;
+              })
+              .catch(error => {
+                console.log(error);
+                this.$router.push("/500");
+              });
+            break;
+          }
+          case menu.Location: {
+            searchApi = `${Server.LOCATION_SEARCH_API_PATH}/${this.searchText}`;
+            this.axios
+              .get(searchApi)
+              .then(res => {
+                if (res.status == 200) {
+                  this.$store.state.locationPage.searchValues = res.data;
+                  this.searchFunction = null;
                 }
-            }, 1000);
+              })
+              .catch(error => {
+                console.log(error);
+                this.$router.push("/500");
+              });
+            break;
+          }
         }
+      }
     },
-    watch: {
-        'title': function() {
-            switch (this.title) {
-                case menu.WorkOrder: {
-                    this.searchText = this.$store.state.workOrderPage.searchText;
-                    break;
-                }
-                case menu.Equipment: {
-                    this.searchText = this.$store.state.equipmentPage.searchText;
-                    break;
-                }
-                case menu.Location: {
-                    this.searchText = this.$store.state.locationPage.searchText;
-                    break;
-                }
-                case menu.Vendors: {
-                    this.searchText = this.$store.state.vendorPage.searchText;
-                    break;
-                }
-                case menu.Accounts: {
-                    this.searchText = this.$store.state.accountPage.searchText;
-                    break;
-                }
-                case menu.Teams: {
-                    this.searchText = this.$store.state.teamPage.searchText;
-                    break;
-                }                
-                default: {
-                    this.searchText = '';
-                    break;
-                }
+    getUserAvatar() {
+      if (this.authUser.AvatarImage) {
+        return this.authUser.AvatarImage;
+      } else {
+        return require("@/assets/avatar-user.png");
+      }
+    },
+    logout() {
+      this.$store.state.isLoggedIn = false;
+      window.localStorage.removeItem("user");
+      this.$router.push("/");
+    },
+    showAlert(msg) {
+      alert(msg);
+    },
+    getStatusTimeString(notiObj) {
+      setInterval(() => {
+        const milis =
+          moment().valueOf() - moment(notiObj.CreatedDate).valueOf();
+        const duration = moment.duration(milis);
+        const days = duration.days();
+        // alert(`asDays ${days}`)
+        if (days == 0) {
+          const hours = duration.hours();
+          if (hours == 0) {
+            const minutes = duration.minutes();
+            if (minutes > 0) {
+              notiObj.TimeString = `About ${minutes} ${
+                minutes > 1 ? "minutes" : "minute"
+              } ago`;
+            } else if (minutes == 0) {
+              notiObj.TimeString = `Just now`;
             }
-        },
-        'searchText': function() {
-            switch (this.title) {
-                case menu.WorkOrder: {
-                    this.$store.state.workOrderPage.searchText = this.searchText;
-                    if (this.searchText == '') {
-                        this.$store.state.workOrderPage.searchValues = [];
-                    }
-                    break;
-                }
-                case menu.Equipment: {
-                    this.$store.state.equipmentPage.searchText = this.searchText;
-                    break;
-                }
-                case menu.Location: {
-                    this.$store.state.locationPage.searchText = this.searchText;
-                    break;
-                }
-                case menu.Vendors: {
-                    this.$store.state.vendorPage.searchText = this.searchText;
-                    break;
-                }
-                case menu.Accounts: {
-                    this.$store.state.accountPage.searchText = this.searchText;
-                    break;
-                }
-                case menu.Teams: {
-                    this.$store.state.teamPage.searchText = this.searchText;
-                    break;
-                }
-            }
-        },
-        '$store.state.workOrderPage.searchText': function() {
-            this.searchText = this.$store.state.workOrderPage.searchText;
+          } else {
+            notiObj.TimeString = `About ${hours} ${
+              hours > 1 ? "hours" : "hour"
+            } ago`;
+          }
+        } else if (days == 1) {
+          notiObj.TimeString = `Yesterday at ${moment(
+            notiObj.CreatedDate
+          ).format("hh:mm a")}`;
+        } else {
+          notiObj.TimeString = `${moment(notiObj.CreatedDate).format("LLL")}`;
         }
+      }, 1000);
+    }
+  },
+  watch: {
+    title: function() {
+      switch (this.title) {
+        case menu.WorkOrder: {
+          this.searchText = this.$store.state.workOrderPage.searchText;
+          break;
+        }
+        case menu.Equipment: {
+          this.searchText = this.$store.state.equipmentPage.searchText;
+          break;
+        }
+        case menu.Location: {
+          this.searchText = this.$store.state.locationPage.searchText;
+          break;
+        }
+        case menu.Vendors: {
+          this.searchText = this.$store.state.vendorPage.searchText;
+          break;
+        }
+        case menu.Accounts: {
+          this.searchText = this.$store.state.accountPage.searchText;
+          break;
+        }
+        case menu.Teams: {
+          this.searchText = this.$store.state.teamPage.searchText;
+          break;
+        }
+        default: {
+          this.searchText = "";
+          break;
+        }
+      }
     },
-    
-}
+    searchText: function() {
+      switch (this.title) {
+        case menu.WorkOrder: {
+          this.$store.state.workOrderPage.searchText = this.searchText;
+          if (this.searchText == "") {
+            this.$store.state.workOrderPage.searchValues = [];
+          }
+          break;
+        }
+        case menu.Equipment: {
+          this.$store.state.equipmentPage.searchText = this.searchText;
+          if (this.searchText == "") {
+            this.$store.state.equipmentPage.searchValues = [];
+          }
+          break;
+        }
+        case menu.Location: {
+          this.$store.state.locationPage.searchText = this.searchText;
+          if (this.searchText == "") {
+            this.$store.state.locationPage.searchValues = [];
+          }
+          break;
+        }
+        case menu.Vendors: {
+          this.$store.state.vendorPage.searchText = this.searchText;
+          break;
+        }
+        case menu.Accounts: {
+          this.$store.state.accountPage.searchText = this.searchText;
+          break;
+        }
+        case menu.Teams: {
+          this.$store.state.teamPage.searchText = this.searchText;
+          break;
+        }
+      }
+    },
+    "$store.state.workOrderPage.searchText": function() {
+      this.searchText = this.$store.state.workOrderPage.searchText;
+    },
+    "$store.state.equimentPage.searchText": function() {
+      this.searchText = this.$store.state.equipmentPage.searchText;
+      },
+    "$store.state.locationPage.searchText": function() {
+      this.searchText = this.$store.state.locationPage.searchText;
+    }
+  }
+};
 </script>
 
 <style scoped>
-    .headerbar {
-        display: grid;
-        grid-template-columns: auto auto;
-        /* height: 4rem; */
-        /* background-color: var(--light-background); */
-        /* background-color: #b0bec5; */
-        background-color: #eeeeee;
-        z-index: 2;
-        width: 100%;
-        padding: 0rem 2rem;
-        /* border-bottom: 2px solid var(--dark-background); */
-    }
+.headerbar {
+  display: grid;
+  grid-template-columns: auto auto;
+  /* height: 4rem; */
+  /* background-color: var(--light-background); */
+  /* background-color: #b0bec5; */
+  background-color: #eeeeee;
+  z-index: 2;
+  width: 100%;
+  padding: 0rem 2rem;
+  /* border-bottom: 2px solid var(--dark-background); */
+}
 
-    .headerbar-title {
-        /* padding-top: 0.6rem;
+.headerbar-title {
+  /* padding-top: 0.6rem;
         padding-left: 2rem; */
-        font-size: 1.6rem;
-        color: var(--dark-background);
-        height: 100%;
-        padding-top: .5rem
-        /* width: 30rem; */
-        /* font-weight: bold; */
-    }
-    
-    .headerbar-end {
-        display: flex;
-        justify-content: flex-end;
-        padding-top: .4rem;
-        /* padding: .9rem 1.3rem .9rem 0; */
-        /* display: grid;
+  font-size: 1.6rem;
+  color: var(--dark-background);
+  height: 100%;
+  padding-top: 0.5rem;
+  /* width: 30rem; */
+  /* font-weight: bold; */
+}
+
+.headerbar-end {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.4rem;
+  /* padding: .9rem 1.3rem .9rem 0; */
+  /* display: grid;
         grid-template-columns: 70% 15% 15%; */
-        /* grid-column-gap: 10px; */
-        /* padding-right: 1rem; */
-        /* display: flex; */
-    }
+  /* grid-column-gap: 10px; */
+  /* padding-right: 1rem; */
+  /* display: flex; */
+}
 
-    .searchbar-wrapper {
-        margin-top: -.1rem;
-        width: 100%;
-        margin-right: 2rem;
-        transition: all 0.25s ease-in-out;
-    }
+.searchbar-wrapper {
+  margin-top: -0.1rem;
+  width: 100%;
+  margin-right: 2rem;
+  transition: all 0.25s ease-in-out;
+}
 
-    .searchbar {
-        /* border: none !important; */
-        /* display: flex; */
-        margin-left: -40px;
-        margin-right: -40px;
-        /* border: 1px solid #bdbdbd; */
-        background-color: var(--light-background);
-        /* border: 1px solid var(--light-background); */
-        border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        padding: 5px 40px 5px 40px;
-        box-shadow: 1px 1px 2px #bdbdbd;
-        transition: all 0.25s ease-in;
-        font-style: italic;
-        width: 100%;
-    }
+.searchbar {
+  /* border: none !important; */
+  /* display: flex; */
+  margin-left: -40px;
+  margin-right: -40px;
+  /* border: 1px solid #bdbdbd; */
+  background-color: var(--light-background);
+  /* border: 1px solid var(--light-background); */
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 5px 40px 5px 40px;
+  box-shadow: 1px 1px 2px #bdbdbd;
+  transition: all 0.25s ease-in;
+  font-style: italic;
+  width: 100%;
+}
 
-    .searchbar-wrapper i {
-        position: relative;
-        padding: 10px;
-        color: #9e9e9e;
-        /* z-index: 1; */
-        /* transition: all 0.25s ease-in-out; */
-    }
+.searchbar-wrapper i {
+  position: relative;
+  padding: 10px;
+  color: #9e9e9e;
+  /* z-index: 1; */
+  /* transition: all 0.25s ease-in-out; */
+}
 
-    .searchbar:hover, .searchbar-wrapper input:focus {
-        /* border: 1px solid #eeeeee; */
-        box-shadow: 4px 4px 8px #bdbdbd;  
-    }
+.searchbar:hover,
+.searchbar-wrapper input:focus {
+  /* border: 1px solid #eeeeee; */
+  box-shadow: 4px 4px 8px #bdbdbd;
+}
 
-    #searchIcon:hover {
-        cursor: pointer;
-    }
+#searchIcon:hover {
+  cursor: pointer;
+}
 
-    #clearSearchBtn {
-        cursor: pointer;
-        transition: all .2s ease-in-out;
-    }
-    #clearSearchBtn:hover {
-        color: #bdbdbd;
-    }
-    #clearSearchBtn:active {
-        color: #757575;
-    }
+#clearSearchBtn {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+#clearSearchBtn:hover {
+  color: #bdbdbd;
+}
+#clearSearchBtn:active {
+  color: #757575;
+}
 
-    .headerbar-button {
-        /* margin-top: 0.7rem; */
-        user-select: none;
-        color: #424242;
-        border: 1px solid black;
-        /* background-color: #e0e0e0; */
-        text-align: center;
-        width: 2.25rem;
-        height: 2.2rem;
-        border-radius: 50%;
-        box-shadow: 0px 0px 0px #e0e0e0;
-        transition: all .25s ease-in;
-    }
+.headerbar-button {
+  /* margin-top: 0.7rem; */
+  user-select: none;
+  color: #424242;
+  border: 1px solid black;
+  /* background-color: #e0e0e0; */
+  text-align: center;
+  width: 2.25rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  box-shadow: 0px 0px 0px #e0e0e0;
+  transition: all 0.25s ease-in;
+}
 
-    .headerbar-button i {
-        position: relative;
-        top: 5px;
-        transition: all .25s ease-in;        
-    }
+.headerbar-button i {
+  position: relative;
+  top: 5px;
+  transition: all 0.25s ease-in;
+}
 
-    .headerbar-button:hover {
-        border: 1px solid var(--primary-color);
-        background-color: var(--primary-color);
-        box-shadow: 3px 3px 5px #bdbdbd;  
-        cursor: pointer;        
-    }
+.headerbar-button:hover {
+  border: 1px solid var(--primary-color);
+  background-color: var(--primary-color);
+  box-shadow: 3px 3px 5px #bdbdbd;
+  cursor: pointer;
+}
 
-    .headerbar-button:hover i {
-        color: white;    
-    }
-    .circle-avatar-container {
-        /* position: fixed;
+.headerbar-button:hover i {
+  color: white;
+}
+.circle-avatar-container {
+  /* position: fixed;
         left: 5rem;
         bottom: 0.8rem; */
-        border-radius: 50%;
-        border: 1px solid var(--shadow);
-        width: 2.25rem;
-        height: 2.2rem;
-    }
-    .circle-avatar-container:hover {
-        cursor: pointer;
-    }
+  border-radius: 50%;
+  border: 1px solid var(--shadow);
+  width: 2.25rem;
+  height: 2.2rem;
+}
+.circle-avatar-container:hover {
+  cursor: pointer;
+}
 
-    .circle-avatar {
-        /* position: relative; */
-        border-radius: 50%;
-        /* left: 5rem;
+.circle-avatar {
+  /* position: relative; */
+  border-radius: 50%;
+  /* left: 5rem;
             bottom: .8rem; */
-        width: 100%;
-        height: 100%;
-    }
+  width: 100%;
+  height: 100%;
+}
 
-    .noti-tile {
-        user-select: none;
-        cursor: pointer;
-        background: #f5f5f5;
-        z-index: 5;
-    }
+.noti-tile {
+  user-select: none;
+  cursor: pointer;
+  background: #f5f5f5;
+  z-index: 5;
+}
 
-    .noti-tile:hover {
-        background: #fafafa;
-    }
+.noti-tile:hover {
+  background: #fafafa;
+}
 
-    .noti-tile:hover .mark-as-read-dot {
-        opacity: 100;
-    }
+.noti-tile:hover .mark-as-read-dot {
+  opacity: 100;
+}
 
-    .noti-tile:active {
-        background: #e0e0e0;
-    }
+.noti-tile:active {
+  background: #e0e0e0;
+}
 
-    .noti-tile.unread {
-        user-select: none;
-        cursor: pointer;
-        background: #E0F7FA;
-    }
+.noti-tile.unread {
+  user-select: none;
+  cursor: pointer;
+  background: #e0f7fa;
+}
 
-    .noti-tile.unread:hover {
-        background: #E9FBFD;
-    }
+.noti-tile.unread:hover {
+  background: #e9fbfd;
+}
 
-    .noti-tile.unread:active {
-        background: #ACEAF3;
-    }
+.noti-tile.unread:active {
+  background: #aceaf3;
+}
 
-    .mark-as-read-dot {
-        opacity: 0;
-        color: #bdbdbd;
-        z-index: 99;
-        transition: all .17s ease-in-out;
-    }
+.mark-as-read-dot {
+  opacity: 0;
+  color: #bdbdbd;
+  z-index: 99;
+  transition: all 0.17s ease-in-out;
+}
 
-    .mark-as-read-dot:hover {
-        color: #e0e0e0;
-    }
+.mark-as-read-dot:hover {
+  color: #e0e0e0;
+}
 
-    .mark-as-read-dot:active {
-        color: #9e9e9e;
-    }
-
+.mark-as-read-dot:active {
+  color: #9e9e9e;
+}
 </style>

@@ -196,7 +196,7 @@
                  </div> -->                  
                </div>
             </div>
-            <div v-else>position</div>
+            <div v-else>  </div>
       </div>
       <div v-else style="height: 100% !important">
         <map-view :locations="locations"></map-view>     
@@ -298,6 +298,8 @@ import Vodal from "vodal";
 import "vodal/common.css";
 import "vodal/slide-up.css";
 import MapView from "./MapView";
+
+import { sync } from "vuex-pathify";
 // import StepProgress from "@/components/StepProgress/StepProgress.vue";
 import moment from "moment";
 
@@ -311,7 +313,8 @@ export default {
     google: gmapApi,
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
-    }
+    },
+    searchValues: sync("locationPage.searchValues")
   },
   created() {
     // alert(JSON.parse(window.localStorage.getItem("user")).Id);
@@ -334,6 +337,7 @@ export default {
         let data = response.data;
         data.forEach(location => {
           this.locations.push(location);
+          this.allLocations.push(location);
         });
         this.setSelectedLocation(data[0]);
       })
@@ -359,6 +363,7 @@ export default {
         POSITION: 3,
         MAP: 4
       },
+      allLocations: [],
       // chaubqn - start chaubqn - start
       isListViewMode: true,
       status: []
@@ -454,6 +459,36 @@ export default {
           console.log(error);
         });
     },
+    getAllLocation() {
+      this.locations = [];
+      this.allLocations = [];
+      let url = "";
+      if (
+        JSON.parse(window.localStorage.getItem("user")).Role == "Manager" ||
+        JSON.parse(window.localStorage.getItem("user")).Role ==
+          "Equipment Staff"
+      ) {
+        url = "http://localhost:3000/api/location/";
+      } else {
+        url = `http://localhost:3000/api/location/getLocation/${
+          JSON.parse(window.localStorage.getItem("user")).Id
+        }`;
+      }
+      // alert(url);
+      this.axios
+        .get(url)
+        .then(response => {
+          let data = response.data;
+          data.forEach(location => {
+            this.locations.push(location);
+            this.allLocations.push(location);
+          });
+          this.setSelectedLocation(data[0]);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     getWororderFromLocation(location) {
       this.workorders = [];
       let url = `${Server.WORKODER_BY_ID_LOCATION_API_PATH}/${location.Id}`;
@@ -526,6 +561,26 @@ export default {
     //     })
     // }
     // chaubqn - end
+  },
+  watch: {
+    searchValues: function() {
+      if (this.searchValues && this.searchValues.length > 0) {
+        let tmpLocations = [];
+        for (const location of this.searchValues) {
+          tmpLocations = tmpLocations.concat(
+            this.allLocations.filter(l => l.Id == location.Id)
+          );
+        }
+        this.locations = tmpLocations;
+      } else {
+        this.locations = [];
+      }
+    },
+    "$store.state.locationPage.searchText": function() {
+      if (this.$store.state.locationPage.searchText == "") {
+        this.getAllLocation();
+      }
+    }
   }
 };
 </script>

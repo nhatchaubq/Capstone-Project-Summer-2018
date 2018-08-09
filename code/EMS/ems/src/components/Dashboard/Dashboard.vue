@@ -336,17 +336,14 @@ export default {
           let data = res.data;
           let today = {
             key: `today`,
-            // highlight: {
-            //   backgroundColor: "#26a69a"
-            //   // Other properties are available too, like `height` & `borderRadius`
-            // },
+            highlight: {
+              backgroundColor: "#26a69a"
+              // Other properties are available too, like `height` & `borderRadius`
+            },
             contentStyle: {
               color: "#fafafa"
             },
-            dot: {
-              backgroundColor: "#26a69a",
-              
-            },
+
             // popover: {
             //   label: ""
             // },
@@ -365,6 +362,9 @@ export default {
               },
               // popover: {
               //   label: item
+              // },
+              // dot: {
+              //   backgroundColor: "#26a69a"
               // },
               dates: [
                 new Date(
