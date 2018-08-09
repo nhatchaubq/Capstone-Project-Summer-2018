@@ -83,7 +83,7 @@
 
 
 
-    <button v-on:click="$router.push('/team/add')" id="btn-add-account" class=" button btn-primary material-shadow-animate" v-if="authUser.Role =='Admin'">Add Team</button>
+    <button v-on:click="$router.push('/team/add')" id="btn-add-account" class=" button btn-primary material-shadow-animate" v-if="authUser.Role =='Manager'">Add Team</button>
 
 
 </div>

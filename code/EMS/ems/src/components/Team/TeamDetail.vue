@@ -23,7 +23,7 @@
 
           </div>
           <div class="col-1" style="display: flex; justify-content: flex-end; padding:0rem" >
-            <div v-if="authUser.Role =='Admin'  ">
+            <div v-if="authUser.Role =='Manager'  ">
               <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode" >Edit</button>
             </div>
           </div>

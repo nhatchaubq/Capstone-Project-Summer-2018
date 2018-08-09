@@ -19,6 +19,19 @@ router.get("/", (request, response) => {
 //     .into(response);
 // });
 
+
+router.get("/search/:value", function (request, response) {
+  request
+    .sql(
+      "SELECT distinct v.* FROM [Vendor] as v WHERE v.BusinessName like N'%Công%' " +
+      "ORDER BY v.BusinessName DESC " +
+      "for json path "
+
+    )
+    .param("searchText", req.params.value, TYPES.NVarChar)
+    .into(response);
+});
+
 router.get("/:id", (request, response) => {
   request
     .sql(
