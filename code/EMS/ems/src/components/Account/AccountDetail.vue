@@ -14,13 +14,15 @@
   top: 6rem;
   right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
   <div>
-<div v-if="!editMode">
-  <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Name" style="width: 100%; height: 20rem ">
+<!-- <div v-if="!editMode"> -->
+  <div>
+  <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Username" style="width: 100%; height: 20rem ">
 </div>
 <div v-if="editMode">
  <div class="form-field-picture">
               <div class="form-field-title">
-                  <span><strong>  Picture (required) </strong></span><span v-if="CreateAccountErrors.NoImage != ''">. <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span>
+                  <!-- <span><strong>  Picture (required) </strong></span><span v-if="CreateAccountErrors.NoImage != ''"> <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span> -->
+                  <span><strong>  Picture </strong></span>
 
               </div>
               <div class="input_picture">
@@ -153,8 +155,9 @@
 
 <div class="material-box">
 <div class="row" style="margin: 0 !important">
-  <h2 class="col-9" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
-  <div class="col-3" v-if ="!editMode">
+  <h2 class="col-8" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <div class="col-4 " style="padding-right: 0rem !important" v-if ="!editMode">
+    <button class="button btn-edit btn-primary material-shadow-animate pull-right" style="margin-bottom:0.2rem !important"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id ">Change Password</button>
     <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
   </div>
 </div>
@@ -166,17 +169,15 @@
   </div>
   <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
   <input v-else v-model.trim="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
-  <div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
-      <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
+  <div v-if="authUser.Role =='Admin' ">
+    <div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
+        <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
+    </div>
+      <input v-if="editMode" v-model.trim ="account.Password"  class="input col-7 " type="password"  placeholder="Text input">
   </div>
-    <input v-if="editMode" v-model.trim ="account.Password"  class="input col-7 " type="password"  placeholder="Text input">
-  <!-- <div class="row" style="margin-top:0.5rem;  height: 36px">
-    <div class="col-12" style="margin-top:0.5rem">Password: </div>
 
-    <input v-if="!editMode" v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-    <input v-else v-model="account.Password" class="input col-7 " type="text"  placeholder="Text input">
 
-  </div> -->
+
 
   <div class="row" style="margin-top:0.5rem; height: 36px" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' ">
     <div class=" col-12" style="margin-top:0.5rem">
@@ -220,7 +221,7 @@
   <input v-else v-model.trim="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
 <div class="row" v-if="editMode">
   <!-- <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Save change</button> -->
-  <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()" >Save changes</button>
+  <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editAccount()" >Save changes</button>
     <button v-if="editMode" class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
          getAccountDetail($route.params.id);
          editMode = false;
@@ -243,7 +244,55 @@
                     </router-link> ( {{team.TeamRole.TeamRole}} ) </div>
 </div> -->
 
+ <!-- modal-start change lead -->
+      <!-- change status dialog -->
+      <modal v-model="ChangeLeadPopUp" style="font-family: Roboto">
+          <div slot="header" style="font-weight: bold">
+                Change Your Password
+            </div>
+            <div style="font-size: 1rem">
+                <div >
+                   
+                    <!-- <span ><strong> Are you sure you want to kick this member?? </strong></span> -->
+                    <div style="font-size: .95rem; font-weight: 500; margin-top: 0.5rem;">
+                      <div class="row">
+                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Id: </div>
+                        <div class="col-7">{{SelectedMemberId}}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Username: </div>
+                        <div class="col-7">{{SelectedMemberName}}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member pass: </div>
+                        <div class="col-7">{{SelectedMemberPassword}}</div>
+                      </div>
+                    </div>
 
+                    <div class="row" style="margin-bottom:0.4rem">
+                        <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">Current </div>
+
+                      <input v-model="currentPassInput"  class="input col-7 " type="text"   placeholder="Text input" >
+                      <div>{{currentPassInput}}</div>
+                    </div>
+                    <div class="row" style="margin-bottom:0.4rem">
+                      <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">New </div>
+                        <input v-model.trim="SelectedMemberPassword"  class="input col-7 " type="text"  placeholder="Text input" >
+                        <!-- <div>{{SelectedMemberPassword}}</div> -->
+                    </div>
+                    <div class="row" style="margin-bottom:0.4rem">
+                      <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">Retype new </div>
+                        <input   class="input col-7 " type="text"  placeholder="Text input" >
+                    </div>
+                    
+                </div>
+            </div>
+            <div slot="footer">
+        <button class="button btn-edit material-shadow-animate "  style="background-color:white; color: black; margin-left: 3rem; border-color: silver" v-on:click="cancel" >Cancel</button>
+                   <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 1rem" v-on:click="changePass(SelectedMemberId,SelectedMemberPassword)">Change</button>
+            </div>
+      </modal> <!-- change status dialog -->
+ <!-- modal-end -->
 
          
 
@@ -297,10 +346,18 @@ export default {
 
   data() {
     return {
+      // currentPass: authUser.Password,
+      currentPassInput: "",
+      // currentPass = author.Password,
+      SelectedMemberId: null,
+      SelectedMemberName: "",
+      SelectedMemberPassword: "",
       files: [],
       currentPage: 1,
       teamAccount: [],
       toDisplayData: [],
+      NewPassWord1: "",
+      ChangeLeadPopUp: false,
       sending: false,
       ErrorStrings: {
         // NoUsername: 'You must provide username for this account',
@@ -316,15 +373,17 @@ export default {
         PhoneMin: " Use from 9 to 13 characters for your phone number",
         PhoneMax: " Use from 9 to 13 characters for your phone number",
 
-        NoEmail: " Enter email",
-        NoImage: "You must choose an image"
+        NoEmail: " Enter email"
+        // NoImage: "You must choose an image",
         // NoRole: "You must provide role for this account"
+        // NotSamePass: "pass not the same"
       },
       CreateAccountErrors: {
         // NoUsername: '',
         // NoFullname: "",
         FullNameMax: "",
         FullNameMin: "",
+        // NotSamePass: "",
 
         // NoPassword: "",
         WeakAccount: "",
@@ -334,8 +393,8 @@ export default {
         PhoneMin: "",
         PhoneMax: "",
 
-        NoEmail: "",
-        NoImage: ""
+        NoEmail: ""
+        // NoImage: ""
         // NoRole: ""
       },
       account: {
@@ -357,9 +416,9 @@ export default {
       // if (this.account.Fullname === "") {
       //   this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
       // }
-      if (!this.files[0]) {
-        this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
-      }
+      // if (!this.files[0]) {
+      //   this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
+      // }
       if (this.account.Fullname.length < 6) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
@@ -387,9 +446,12 @@ export default {
       if (this.account.Email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
+      //       if (this.account.Password != this.SelectedMemberPassword) {
+      //   this.CreateAccountErrors.NotSamePass = this.ErrorStrings.NotSamePass;
+      // }
 
       if (this.validateAccount()) {
-        this.CreateAccountErrors.NoImage = "";
+        // this.CreateAccountErrors.NoImage = "";
         let formData = new FormData();
         formData.append("api_key", "982394881563116");
         formData.append("file", this.files[0]);
@@ -458,8 +520,9 @@ export default {
         this.CreateAccountErrors.NoEmail === "" &&
         //&& this.CreateAccountErrors.NoRole === ""
         this.CreateAccountErrors.WeakAccount === "" &&
-        this.CreateAccountErrors.MaxPassword === "" &&
-        this.CreateAccountErrors.NoImage == ""
+        this.CreateAccountErrors.MaxPassword === ""
+        // this.CreateAccountErrors.NoImage == ""
+
         //  && this.CreateAccountErrors.NoUsername === ''
       );
     },
@@ -469,6 +532,25 @@ export default {
         let data = response.data;
         this.account = data;
       });
+    },
+
+    changePass(Id, SelectedMemberPassword) {
+      let URLChange = "http://localhost:3000/api/account/changeYourPass";
+      // alert(Id);
+      this.axios
+        .put(URLChange, {
+          tmpAcc: {
+            id: Id,
+            password: SelectedMemberPassword
+          }
+        })
+        .then(res => {
+          if (res.status == 200) {
+            // alert(SelectedMemberPassword);
+            this.getAccountDetail(this.$route.params.id);
+            this.ChangeLeadPopUp = false;
+          }
+        });
     },
     getAllTeamOfThisAccount(accountId) {
       let URL = `http://localhost:3000/api/account/id/${accountId}`;
@@ -483,6 +565,18 @@ export default {
     },
     gotoDetail(teamId) {
       this.$router.push(`/team/${teamId}`);
+    },
+    gotoDetailP(memberID, memberName, Password) {
+      // this.show = true;
+      this.SelectedMemberId = memberID;
+      this.SelectedMemberName = memberName;
+      this.SelectedMemberPassword = Password;
+      this.ChangeLeadPopUp = true;
+      alert(Password);
+    },
+    cancel() {
+      // this.show = false;
+      this.ChangeLeadPopUp = false;
     }
   },
   watch: {
@@ -524,15 +618,15 @@ export default {
         this.CreateAccountErrors.PhoneMax = "";
       }
     },
-    files: function() {
-      if (
-        !this.files[0] &&
-        !this.files[0].name &&
-        this.CreateAccountErrors.NoImage != ""
-      ) {
-        this.CreateAccountErrors.Image = "";
-      }
-    },
+    // files: function() {
+    //   if (
+    //     !this.files[0] &&
+    //     !this.files[0].name &&
+    //     this.CreateAccountErrors.NoImage != ""
+    //   ) {
+    //     this.CreateAccountErrors.Image = "";
+    //   }
+    // },
     "account.Email": function() {
       if (this.account.Email != "") {
         this.CreateAccountErrors.NoEmail = "";
@@ -587,7 +681,7 @@ export default {
 } */
 .btn-confirm-edit {
   background-color: var(--primary-color);
-  margin-left: 7rem;
+  margin-left: 1rem;
   margin-top: 1rem;
   /* padding: 13px; */
   color: white;

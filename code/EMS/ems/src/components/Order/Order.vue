@@ -852,40 +852,51 @@ export default {
   },
 
   async created() {    
+
     if (this.$store.state.workOrderPage.initialLoad) {
-        await this.axios.get(Server.WORKORDER_STATUS_API_PATH).then(response => {
-            let data = response.data;
-            for (const element of data) {
-                let status = {
-                    id: element.Id,
-                    name: element.Name,
-                    type: this.optionTypes.STATUS
-                };
-                this.$store.state.workOrderPage.options.status.push(status);
-                    if (status.name != 'Cancelled' && status.name != 'Closed') {
-                        this.$store.state.workOrderPage.filterOptionsValues.status.push(status);
-                    }
+      await this.axios
+        .get(Server.WORKORDER_STATUS_API_PATH)
+        .then(response => {
+          let data = response.data;
+          for (const element of data) {
+            let status = {
+              id: element.Id,
+              name: element.Name,
+              type: this.optionTypes.STATUS
+            };
+            this.$store.state.workOrderPage.options.status.push(status);
+            if (status.name != "Cancelled" && status.name != "Closed") {
+              this.$store.state.workOrderPage.filterOptionsValues.status.push(
+                status
+              );
             }
-        }).catch((error) => {
-            if (error == 'Request failed with status code 500') {
-                this.$router.push('/500');
-            }
+          }
+        })
+        .catch(error => {
+          if (error == "Request failed with status code 500") {
+            this.$router.push("/500");
+          }
         });
-        await this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(response => {
-            let data = response.data;
-            for (const element of data) {
-                let priority = {
-                    id: element.Id,
-                    name: element.Name,
-                    type: this.optionTypes.PRIORITY
-                };
-                this.$store.state.workOrderPage.options.priorities.push(priority);
-                this.$store.state.workOrderPage.filterOptionsValues.priorities.push(priority);
-            }
-        }).catch((error) => {
-            if (error == 'Request failed with status code 500') {
-                this.$router.push('/500');
-            }
+      await this.axios
+        .get(Server.WORKORDER_PRIORITIES_API_PATH)
+        .then(response => {
+          let data = response.data;
+          for (const element of data) {
+            let priority = {
+              id: element.Id,
+              name: element.Name,
+              type: this.optionTypes.PRIORITY
+            };
+            this.$store.state.workOrderPage.options.priorities.push(priority);
+            this.$store.state.workOrderPage.filterOptionsValues.priorities.push(
+              priority
+            );
+          }
+        })
+        .catch(error => {
+          if (error == "Request failed with status code 500") {
+            this.$router.push("/500");
+          }
         });
     }
 
@@ -893,11 +904,12 @@ export default {
     this.getWorkOrders();
     this.getBlockFloorTile();
     if (this.$store.state.workOrderPage.initialLoad) {
-        this.$store.state.workOrderPage.initialLoad = false;
+      this.$store.state.workOrderPage.initialLoad = false;
     }
   },
   data() {
     return {
+
 
         // socket: io(`http://localhost:3000`),
         ErrorString: {
@@ -953,6 +965,7 @@ export default {
         blockFloorTiles: [],
         toUpdateSelectedLocation: null,
         locationOptions: [],        
+
 
 
       toUpdatePositionItem: null,
@@ -1017,35 +1030,45 @@ export default {
               );
             }
             if (this.selectedOrder) {
-                let order = this.toDisplayWorkOrders.filter(o => o.Id == this.selectedOrder.Id)[0];
-                if (order) {
-                  this.selectedOrder = order;
-                  this.getEquipmentsOfWorkOrder(order);
-                  if (order.TeamLocation && order.Category == 'Working') {
-                      this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
-                  }
-                } else {
-                  this.selectedOrder = null;
-                  this.$router.replace('/work_order');
+              let order = this.toDisplayWorkOrders.filter(
+                o => o.Id == this.selectedOrder.Id
+              )[0];
+              if (order) {
+                this.selectedOrder = order;
+                this.getEquipmentsOfWorkOrder(order);
+                if (order.TeamLocation && order.Category == "Working") {
+                  this.toUpdateSelectedLocation = this.blockFloorTiles.filter(
+                    location => location.Id == order.TeamLocation.Location.Id
+                  )[0];
                 }
+              } else {
+                this.selectedOrder = null;
+                this.$router.replace("/work_order");
+              }
             } else if (this.$route.params && this.$route.params.orderId) {
-                let order = this.toDisplayWorkOrders.filter(o => o.Id == this.$route.params.orderId)[0];
-                if (order) {
-                  this.selectedOrder = order;
-                  this.getEquipmentsOfWorkOrder(order);
-                  if (order.TeamLocation && order.Category == 'Working') {
-                      this.toUpdateSelectedLocation = this.blockFloorTiles.filter(location => location.Id == order.TeamLocation.Location.Id)[0];
-                  }
-                } else {
-                  this.selectedOrder = null;
-                  this.$router.replace('/work_order');
+              let order = this.toDisplayWorkOrders.filter(
+                o => o.Id == this.$route.params.orderId
+              )[0];
+              if (order) {
+                this.selectedOrder = order;
+                this.getEquipmentsOfWorkOrder(order);
+                if (order.TeamLocation && order.Category == "Working") {
+                  this.toUpdateSelectedLocation = this.blockFloorTiles.filter(
+                    location => location.Id == order.TeamLocation.Location.Id
+                  )[0];
                 }
+              } else {
+                this.selectedOrder = null;
+                this.$router.replace("/work_order");
+              }
             }
-            if (this.$store.state.workOrderPage.searchText != '') {
+            if (this.$store.state.workOrderPage.searchText != "") {
               let tempOrders = [];
               if (this.searchValues.length > 0) {
                 for (const order of this.searchValues) {
-                    tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
+                  tempOrders = tempOrders.concat(
+                    this.toDisplayWorkOrders.filter(o => o.Id == order.Id)
+                  );
                 }
               }
               this.toDisplayWorkOrders = tempOrders;
@@ -1173,18 +1196,19 @@ export default {
         }
       }
       this.filterOrders();
-    //   if (
-    //     this.$store.state.workOrderPage.filterOptionsValues.status.length == 0 &&
-    //     this.$store.state.workOrderPage.filterOptionsValues.priorities.length == 0
-    //   ) {
-    //     this.selectedFilter = null;
-    //     this.toDisplayWorkOrders = this.tempValues;
-    //   }
+      //   if (
+      //     this.$store.state.workOrderPage.filterOptionsValues.status.length == 0 &&
+      //     this.$store.state.workOrderPage.filterOptionsValues.priorities.length == 0
+      //   ) {
+      //     this.selectedFilter = null;
+      //     this.toDisplayWorkOrders = this.tempValues;
+      //   }
     },
     filterOrders() {
       if (
         this.$store.state.workOrderPage.filterOptionsValues.status.length > 0 &&
-        this.$store.state.workOrderPage.filterOptionsValues.priorities.length > 0
+        this.$store.state.workOrderPage.filterOptionsValues.priorities.length >
+          0
       ) {
         if (this.tempValues == null) {
           this.tempValues = this.toDisplayWorkOrders;
@@ -1192,32 +1216,41 @@ export default {
         this.toDisplayWorkOrders = []; // reset orders before applying new filters
         // this.selectedOrder = null;
         // this.$router.replace('/work_order');
-        if (this.$store.state.workOrderPage.filterOptionsValues.status.length > 0) {
-          this.$store.state.workOrderPage.filterOptionsValues.status.forEach(status => {
-            this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(
-              this.tempValues.filter(
-                order => order.WorkOrderStatus == status.name
-              )
-            );
-          });
+        if (
+          this.$store.state.workOrderPage.filterOptionsValues.status.length > 0
+        ) {
+          this.$store.state.workOrderPage.filterOptionsValues.status.forEach(
+            status => {
+              this.toDisplayWorkOrders = this.toDisplayWorkOrders.concat(
+                this.tempValues.filter(
+                  order => order.WorkOrderStatus == status.name
+                )
+              );
+            }
+          );
         } else {
           this.toDisplayWorkOrders = this.tempValues;
         }
-        if (this.$store.state.workOrderPage.filterOptionsValues.priorities.length > 0) {
+        if (
+          this.$store.state.workOrderPage.filterOptionsValues.priorities
+            .length > 0
+        ) {
           let tempValues = [];
-          this.$store.state.workOrderPage.filterOptionsValues.priorities.forEach(priority => {
-            tempValues = tempValues.concat(
-              this.toDisplayWorkOrders.filter(
-                order => order.Priority == priority.name
-              )
-            );
-          });
+          this.$store.state.workOrderPage.filterOptionsValues.priorities.forEach(
+            priority => {
+              tempValues = tempValues.concat(
+                this.toDisplayWorkOrders.filter(
+                  order => order.Priority == priority.name
+                )
+              );
+            }
+          );
           this.toDisplayWorkOrders = tempValues;
         }
         if (this.toDisplayWorkOrders.length > 0) {
-            this.toDisplayWorkOrders = this.sortOrdersByDate(
-              this.toDisplayWorkOrders
-            );
+          this.toDisplayWorkOrders = this.sortOrdersByDate(
+            this.toDisplayWorkOrders
+          );
         }
         if (this.selectedOrder) {
           let order = this.toDisplayWorkOrders.filter(
@@ -1233,9 +1266,9 @@ export default {
         //     this.orders = this.sortOrdersByDate(this.orders);
         // }
       } else {
-            this.selectedOrder = null;
-            this.$router.replace('/work_order');
-            this.toDisplayWorkOrders = [];
+        this.selectedOrder = null;
+        this.$router.replace("/work_order");
+        this.toDisplayWorkOrders = [];
       }
     },
     sortOrdersByDate(orders) {
@@ -1254,11 +1287,15 @@ export default {
         // this.filterValues.push(this.selectedFilter);
         switch (filter.type) {
           case this.optionTypes.STATUS: {
-            this.$store.state.workOrderPage.filterOptionsValues.status.push(filter);
+            this.$store.state.workOrderPage.filterOptionsValues.status.push(
+              filter
+            );
             break;
           }
           case this.optionTypes.PRIORITY: {
-            this.$store.state.workOrderPage.filterOptionsValues.priorities.push(filter);
+            this.$store.state.workOrderPage.filterOptionsValues.priorities.push(
+              filter
+            );
             break;
           }
         }
@@ -1771,38 +1808,23 @@ export default {
         // }
       }
     },
-    "$route.params": function() {
-      if (this.$route.params.orderId) {
-        let toSelectOrder = this.toDisplayWorkOrders.filter(
-          order => order.Id == this.$route.params.orderId
-        )[0];
-        if (toSelectOrder) {
-          this.selectedOrder = toSelectOrder;
-          this.getEquipmentsOfWorkOrder(toSelectOrder);
-          if (
-            toSelectOrder.TeamLocation &&
-            toSelectOrder.Category == "Working"
-          ) {
-            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(
-              location => location.Id == toSelectOrder.TeamLocation.Location.Id
-            )[0];
-          }
-        }
-        // }
+    showUpdateAllEquipmentPostionDialog: function() {
+      if (!this.showUpdateAllEquipmentPostionDialog) {
+        this.Errors.errorInvalidPosition = "";
       }
     },
-    'searchValues': function() {
-        this.getWorkOrders();
-        // if (this.searchValues && this.searchValues.length > 0) {
-        //     let tempOrders = [];
-        //     for (const order of this.searchValues) {
-        //         tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
-        //     }
-        //     this.toDisplayWorkOrders = tempOrders;
-        //     this.searchMode = true;
-        // } else {
-        //     this.searchMode = false;
-        // }
+    searchValues: function() {
+      this.getWorkOrders();
+      // if (this.searchValues && this.searchValues.length > 0) {
+      //     let tempOrders = [];
+      //     for (const order of this.searchValues) {
+      //         tempOrders = tempOrders.concat(this.toDisplayWorkOrders.filter(o => o.Id == order.Id));
+      //     }
+      //     this.toDisplayWorkOrders = tempOrders;
+      //     this.searchMode = true;
+      // } else {
+      //     this.searchMode = false;
+      // }
     }
   }
 };
