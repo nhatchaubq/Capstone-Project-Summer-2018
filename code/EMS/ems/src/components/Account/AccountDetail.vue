@@ -176,10 +176,11 @@
 
 <div class="material-box">
 <div class="row" style="margin: 0 !important">
-  <h2 class="col-8" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
-  <div class="col-4 " style="padding-right: 0rem !important" v-if ="!editMode">
-    <button class="button btn-edit btn-primary material-shadow-animate pull-right" style="margin-bottom:0.2rem !important"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id ">Change Password</button>
-    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
+  <h2 class="col-7" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <!-- <div class="col-6 row pull-right" style="padding: 0rem !important; position: absolute !important; right: -26rem !important;" v-if ="!editMode"> -->
+  <div class="col-5 row" style="padding: 0rem !important;float: right !important " v-if ="!editMode">
+    <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; float: right !important"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
+    <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0rem !important; float: right !important" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
   </div>
 </div>
 <!-- <form @submit.prevent="editAccount()"> -->
@@ -194,7 +195,7 @@
     <div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
         <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
     </div>
-      <input v-if="editMode" v-model.trim ="account.Password"  class="input col-7 " type="Chow@321"  placeholder="Chow@321">
+      <input v-if="editMode" v-model.trim ="account.Password" class="input col-7 " type="password"  placeholder="Chow@321">
   </div>
 
 
