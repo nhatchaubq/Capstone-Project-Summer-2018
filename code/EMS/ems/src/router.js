@@ -205,6 +205,9 @@ let router = new Router({
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Accounts);
         next();
+      },
+      meta: {
+        showSearchBar: true
       }
     },
     {

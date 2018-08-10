@@ -22,6 +22,20 @@ router.get("/", (request, response) => {
 
     .into(response);
 });
+
+router.get("/search/:value", function (request, response) {
+  request
+    .sql(
+      "SELECT distinct t.* " +
+      "FROM [Team] as t " +
+      "WHERE t.Name like N'%' + @searchText + '%' " +
+      "ORDER BY t.Name DESC " +
+      "for json path "
+    )
+    .param("searchText", request.params.value, TYPES.NVarChar)
+    .into(response);
+});
+
 router.get("/getAllTeam", (request, response) => {
   request.sql("select * from [Team] for json path").into(response);
 });

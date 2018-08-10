@@ -138,7 +138,7 @@
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.email" class="input" type="email" placeholder="CPoint@gmail.com" >
+                        <input v-model.trim="account.email" class="input" type="email" placeholder="DPoint@gmail.com" >
                             <!-- <span class="icon is-small is-left">
                             <i class="fa fa-envelope"></i>
                             </span> -->

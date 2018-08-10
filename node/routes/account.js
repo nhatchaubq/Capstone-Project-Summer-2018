@@ -25,12 +25,11 @@ router.get("/search/:value", function (request, response) {
     .sql(
       "SELECT distinct acc.* FROM [Account] as acc " +
       "Join [Role] as r ON r.Id = acc.RoleID  " +
-      "WHERE acc.Username like N'%est%' " +
+      "WHERE acc.Username like N'%' + @searchText + '%' " +
       "ORDER BY acc.IsActive DESC,acc.Username ASC " +
       "for json path "
-
     )
-    .param("searchText", req.params.value, TYPES.NVarChar)
+    .param("searchText", request.params.value, TYPES.NVarChar)
     .into(response);
 });
 
