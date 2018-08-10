@@ -33,8 +33,8 @@
     </table>
 
 <!-- test1 -->
-  <div v-if="vendors.length >9" class="">
-    <Page :current="currentPage" :total="vendors.length" show-elevator 
+  <div v-if="totalVendor > 9" class="">
+    <Page :current="currentPage" :total="totalVendor" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage =newPageNumber
         let start = 10 * (newPageNumber - 1);
@@ -56,33 +56,61 @@
 
 <script>
 import Server from "@/config/config.js";
+import { sync } from "vuex-pathify";
 export default {
   computed: {
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
     },
+    searchValues: sync("vendorPage.searchValues")
   },
   created() {
-    let url = Server.VENDOR_API_PATH;
-    this.axios.get(url).then(res => {
-      let data = res.data;
-      data.forEach(element => {
-        let vendor = element;
-        this.vendors.push(vendor);
-        this.toDisplayData = this.vendors.slice(0, 10);
-      });
-    });
+    this.getVendorDetail();
   },
   data() {
     return {
       currentPage: 1,
       vendors: [],
-      toDisplayData: []
+      toDisplayData: [],
+      totalVendor: 0
     };
   },
   methods: {
     gotoDetail(vendorId) {
       this.$router.push(`/vendor/${vendorId}`);
+    },
+    getVendorDetail() {
+      let url = Server.VENDOR_API_PATH;
+      this.axios.get(url).then(res => {
+        this.vendors = res.data;
+        this.totalVendor = this.vendors.length;
+        this.toDisplayData = this.vendors.slice(0, 10);
+      });
+    }
+  },
+  watch: {
+    searchValues: function() {
+      if (this.searchValues && this.searchValues.length > 0) {
+        let tmpVendors = [];
+        for (const vendor of this.searchValues) {
+          tmpVendors = tmpVendors.concat(
+            this.vendors.filter(v => v.Id == vendor.Id)
+          );
+        }
+        // this.vendors = tmpVendors;
+        this.totalVendor = tmpVendors.length;
+        this.toDisplayData = tmpVendors.slice(0, 10);
+        this.currentPage = 1;
+      } else {
+        this.vendors = [];
+        this.toDisplayData = [];
+        this.totalVendor = 0;
+      }
+    },
+    "$store.state.vendorPage.searchText": function() {
+      if (this.$store.state.vendorPage.searchText == "") {
+        this.getVendorDetail();
+      }
     }
   }
 };

@@ -54,7 +54,7 @@
       <tbody>
           <tr  :key="account.Id" v-for="(account, index) in toDisplayData"  style="height:28px !important" v-on:click="gotoDetail(account.Id)"  >
           <td>{{ 10*(currentPage -1) + (index + 1) }}</td>   
-          <td>{{account.Username | truncate(11)}}</td>
+          <td>{{account.Username | truncate(13)}}</td>
           <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
           <td>{{account.Email ? account.Email : "N/A" }}</td>
           <td>{{account.Phone ? account.Phone : "N/A"}}</td>
@@ -66,8 +66,8 @@
       </tbody>
     </table>  
 
-  <div v-if="accounts.length >9" class="">
-    <Page :current="currentPage" :total="accounts.length" show-elevator 
+  <div v-if="totalAccount > 9" >
+    <Page :current="currentPage" :total="totalAccount" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage = newPageNumber
         let start = 10 * (newPageNumber - 1);
@@ -105,23 +105,25 @@ export default {
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
     },
-    isTableMode: sync("accountPage.isTableMode")
+    isTableMode: sync("accountPage.isTableMode"),
+    searchValues: sync("accountPage.searchValues")
   },
   created() {
-    let url = Server.ACCOUNT_API_PATH;
-    this.axios
-      .get(url)
-      .then(response => {
-        let data = response.data;
-        data.forEach(element => {
-          let account = element.Account;
-          this.accounts.push(account);
-          this.toDisplayData = this.accounts.slice(0, 10);
-        });
-      })
-      .catch(error => {
-        alert(error);
-      });
+    // let url = Server.ACCOUNT_API_PATH;
+    // this.axios
+    //   .get(url)
+    //   .then(response => {
+    //     let data = response.data;
+    //     data.forEach(element => {
+    //       let account = element.Account;
+    //       this.accounts.push(account);
+    //       this.toDisplayData = this.accounts.slice(0, 10);
+    //     });
+    //   })
+    //   .catch(error => {
+    //     alert(error);
+    //   });
+    this.getAccountDetail();
   },
   // computed: {
   //   isTableMode: sync("accountPage.isTableMode")
@@ -129,6 +131,7 @@ export default {
   data() {
     return {
       currentPage: 1,
+      totalAccount: 0,
       toDisplayData: [],
       accounts: [],
       selectedAccount: null,
@@ -148,6 +151,40 @@ export default {
     },
     gotoDetail(accountId) {
       this.$router.push(`/account/${accountId}`);
+    },
+    getAccountDetail() {
+      let url = Server.ACCOUNT_API_PATH;
+      this.axios.get(url).then(response => {
+        this.accounts = [];
+        response.data.forEach(value => this.accounts.push(value.Account));
+        this.totalAccount = this.accounts.length;
+        this.toDisplayData = this.accounts.slice(0, 10);
+      });
+    }
+  },
+  watch: {
+    searchValues: function() {
+      if (this.searchValues && this.searchValues.length > 0) {
+        let tmpAccounts = [];
+        for (const account of this.searchValues) {
+          tmpAccounts = tmpAccounts.concat(
+            this.accounts.filter(v => v.Id == account.Id)
+          );
+        }
+
+        this.totalAccount = tmpAccounts.length;
+        this.toDisplayData = tmpAccounts.slice(0, 10);
+        this.currentPage = 1;
+      } else {
+        this.accounts = [];
+        this.toDisplayData = [];
+        this.totalAccount = 0;
+      }
+    },
+    "$store.state.accountPage.searchText": function() {
+      if (this.$store.state.accountPage.searchText == "") {
+        this.getAccountDetail();
+      }
     }
   }
 };

@@ -23,12 +23,13 @@ router.get("/", (request, response) => {
 router.get("/search/:value", function (request, response) {
   request
     .sql(
-      "SELECT distinct v.* FROM [Vendor] as v WHERE v.BusinessName like N'%Công%' " +
+      "SELECT distinct v.* FROM [Vendor] as v " +
+      "WHERE v.BusinessName like N'%' + @searchText + '%' or v.BusinessAddress like N'%' + @searchText + '%' or v.ContactEmail like N'%' + @searchText + '%' or v.ContactName like N'%' + @searchText + '%'  or v.Description like N'%' + @searchText + '%' or v.Website like N'%' + @searchText + '%' " +
       "ORDER BY v.BusinessName DESC " +
       "for json path "
-
     )
-    .param("searchText", req.params.value, TYPES.NVarChar)
+    // .param("id", request.params.id, TYPES.Int)
+    .param("searchText", request.params.value, TYPES.NVarChar)
     .into(response);
 });
 

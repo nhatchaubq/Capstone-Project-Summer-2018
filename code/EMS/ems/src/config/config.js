@@ -8,6 +8,7 @@ const LOGIN_API_PATH = SERVER_DEFAULT + "/login";
 const ACCOUNT_API_PATH = SERVER_DEFAULT + "/account";
 const CREATE_ACCOUNT_API_PATH = ACCOUNT_API_PATH + "/create";
 const VIEW_ACCOUNT_DETAIL_API_PATH = ACCOUNT_API_PATH + "/1";
+const ACCOUNT_SEARCH_API_PATH = ACCOUNT_API_PATH + "/search";
 // user api section - end
 
 // equipment api section - start
@@ -47,17 +48,19 @@ const LOCATION_DELETE_TEAM_WITHOUT_WORDODER =
 const TEAM_LOCATION_API_PATH = SERVER_DEFAULT + "/team_location";
 const TEAM_LOCATION_CREATE_API_PATH =
   TEAM_LOCATION_API_PATH + "/createTeamLocation";
+
 //team_location api section - end
 
 //team api section - start
 const TEAM_API_PATH = SERVER_DEFAULT + "/team";
 const TEAM_BY_LOCATION_ID_API_PATH = TEAM_API_PATH + "/getTeamByLocation";
 const TEAM_ACCOUNT_CREATE_API_PATH = SERVER_DEFAULT + "/team_account/createTeamAccount";
+const TEAM_SEARCH_API_PATH = TEAM_API_PATH + "/search";
 //team api section - end
 
 // vendor api section -start
 const VENDOR_API_PATH = SERVER_DEFAULT + "/vendor";
-
+const VENDOR_SEARCH_API_PATH = VENDOR_API_PATH + "/search";
 // vendor api section -end
 
 // dashBoard
@@ -91,6 +94,7 @@ export default {
   LOGIN_API_PATH,
   ACCOUNT_API_PATH,
   CREATE_ACCOUNT_API_PATH,
+  ACCOUNT_SEARCH_API_PATH,
   EQUIPMENT_API_PATH,
   REPORT_API_PATH,
 
@@ -120,8 +124,10 @@ export default {
   LOCATION_DELETE_TEAM_WITHOUT_WORDODER,
 
   TEAM_ACCOUNT_CREATE_API_PATH,
+  TEAM_SEARCH_API_PATH,
 
   VENDOR_API_PATH,
+  VENDOR_SEARCH_API_PATH,
 
   DASHBOARD_API_PATH,
   REPORT_EQUIPMENT_API_PATH,
