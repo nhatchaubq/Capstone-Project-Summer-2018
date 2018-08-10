@@ -55,7 +55,8 @@ const state = {
     },
     searchText: '',
     searchValues: [],
-  }
+  },
+  config: [],
 };
 
 const mutations = make.mutations(state);

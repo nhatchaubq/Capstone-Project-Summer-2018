@@ -15,7 +15,7 @@
                             <input v-model.trim="searchText" type="text" class="searchbar" placeholder="Search"
                                 v-on:input="() => {
                                     if (searchText != '') {
-                                        makeTimeout(2);
+                                        makeTimeout(1);
                                     }
                                 }"/>
                             <i v-if="searchText != ''" class="fa fa-times" id="clearSearchBtn" @click="searchText = ''"></i>

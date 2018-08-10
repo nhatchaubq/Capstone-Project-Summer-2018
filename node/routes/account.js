@@ -17,6 +17,27 @@ router.get("/", function (request, response) {
     .into(response);
 });
 
+// search-start
+
+
+router.get("/search/:value", function (request, response) {
+  request
+    .sql(
+      "SELECT distinct acc.* FROM [Account] as acc " +
+      "Join [Role] as r ON r.Id = acc.RoleID  " +
+      "WHERE acc.Username like N'%est%' " +
+      "ORDER BY acc.IsActive DESC,acc.Username ASC " +
+      "for json path "
+
+    )
+    .param("searchText", req.params.value, TYPES.NVarChar)
+    .into(response);
+});
+
+
+// search-end
+
+
 
 
 /* POST request, for insert */
@@ -61,6 +82,12 @@ router.delete("/:id", function (request, response) {
   request
     .sql("delete from [Account] where Id = @id")
     .param("id", request.params.id, TYPES.NVarChar)
+    .exec(response);
+});
+router.put('/changeYourPass', function (request, response) {
+  request.sql('update [Account] set Password = @password where Id = @id')
+    .param('id', request.body.tmpAcc.id, TYPES.Int)
+    .param('password', request.body.tmpAcc.password, TYPES.NVarChar)
     .exec(response);
 });
 

@@ -24,12 +24,12 @@
                 <div class="form-field-title">
                 <strong>  Business name (required)</strong><span v-if="CreateVendorErrors.NoBusinessName != ''"> <span class="error-text">{{ CreateVendorErrors.NoBusinessName }}</span></span> <span v-if="CreateVendorErrors.BusinessNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessNameMin }}</span></span> <span v-if="CreateVendorErrors.BusinessNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessNameMax }}</span></span>
                 </div>
-                <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model.trim="Vendor.BusinessName" class="input " type="text" placeholder="Text input" >
+                <div class="control has-icons-right" style="padding:8px">
+                    <input v-model.trim="Vendor.BusinessName" class="input " type="text" placeholder="DPoint Company" >
 
-                        <span class="icon is-small is-left">
+                        <!-- <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
-                        </span>
+                        </span> -->
                         <!-- <span class="icon is-small is-right">
                         <i class="fa fa-check"></i>
                         </span> -->
@@ -42,11 +42,11 @@
             <div class="form-field">
                 <div class="form-field-title">
                 <strong>Business address  (required)</strong><span v-if="CreateVendorErrors.NoBusinessAddress != ''"> <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
-            <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model.trim="Vendor.BusinessAddress" class="input " type="text" placeholder="Text input">
-                        <span class="icon is-small is-left">
+            <div class="controlhas-icons-right" style="padding:8px">
+                    <input v-model.trim="Vendor.BusinessAddress" class="input " type="text" placeholder="160/5 Tan Chanh Hiep, Quan 12, Ho Chi Minh">
+                        <!-- <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
-                        </span>
+                        </span> -->
                         <!-- <span class="icon is-small is-right">
                         <i class="fa fa-check"></i>
                         </span> -->
@@ -63,11 +63,11 @@
                      <strong>Website</strong> <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span>
                 </div>
                 <div class="form-field-input">
-                <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model.trim="Vendor.Website" class="input " type="text" placeholder="Text input" >
-                        <span class="icon is-small is-left">
+                <div class="control has-icons-right" style="padding:8px">
+                    <input v-model.trim="Vendor.Website" class="input " type="text" placeholder="www.d-point.co.jp" >
+                        <!-- <span class="icon is-small is-left">
                         <i class="fa fa-firefox"></i>
-                        </span>
+                        </span> -->
                         <!-- <span class="icon is-small is-right">
                         <i class="fa fa-check"></i>
                         </span> -->
@@ -84,11 +84,11 @@
                      <strong>Contact name (required)</strong><span v-if="CreateVendorErrors.NoContactName != ''"> <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span> <span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span>
                 </div>
                 <div class="form-field-input">
-                <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model.trim="Vendor.ContactName" class="input " type="text" placeholder="Text input" >
-                        <span class="icon is-small is-left">
+                <div class="control  has-icons-right" style="padding:8px">
+                    <input v-model.trim="Vendor.ContactName" class="input " type="text" placeholder="d-point" >
+                        <!-- <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
-                        </span>
+                        </span> -->
                         <!-- <span class="icon is-small is-right">
                         <i class="fa fa-check"></i>
                         </span> -->
@@ -105,11 +105,11 @@
                     <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
                 </div>
                 <div class="form-field-input">
-                <div class="control has-icons-left has-icons-right" style="padding:8px">
-                    <input v-model.trim="Vendor.ContactEmail" class="input" type="email" placeholder="Text input" >
-                        <span class="icon is-small is-left">
+                <div class="control has-icons-right" style="padding:8px">
+                    <input v-model.trim="Vendor.ContactEmail" class="input" type="email" placeholder="dpoint@gmail.com" >
+                        <!-- <span class="icon is-small is-left">
                         <i class="fa fa-envelope"></i>
-                        </span>
+                        </span> -->
 
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                 <div class="form-field-title ">
                      <strong>Description</strong>
                 </div>   <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
-                    <textarea  id="text-descrip" rows="4" cols="55" v-model.trim="Vendor.Description"  >
+                    <textarea  id="text-descrip" rows="4" cols="55" v-model.trim="Vendor.Description"   >
                     </textarea>
                 <!-- <h3>{{account.startdate}}</h3> -->
             </div>

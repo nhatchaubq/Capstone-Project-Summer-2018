@@ -12,6 +12,7 @@
             </router-link>
           </div>
         </div>
+
         <table class="table">
             <thead>
                 <tr>
@@ -50,6 +51,7 @@
     </div>
     <div v-else>
       There is no equipment to display.
+
     </div>
     <router-link to='/equipment/create/'>
       <button id="btn-add-equipment"  class="button btn-primary material-shadow-animate">Add Equipment</button>

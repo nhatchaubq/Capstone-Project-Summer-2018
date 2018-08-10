@@ -38,7 +38,7 @@
               {{ menu.Report }}
             </div>
           </router-link>
-        </li>
+        </li>   
         <div class="divider" v-if="authUser.Role != 'Admin'"></div>
             
         <li>
@@ -46,6 +46,14 @@
             <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
             <i class="material-icons">build</i>
             {{ menu.Equipment }}
+          </div>
+          </router-link>
+        </li>
+        <li>
+          <router-link to='/category'>
+            <div class="sidebar-list-content" :class="isActive(menu.Categories)">
+            <i class="material-icons">category</i>
+            {{ menu.Categories }}
           </div>
           </router-link>
         </li>
@@ -67,7 +75,7 @@
           </div>
           </router-link>
         </li>
-          <li v-if="authUser.Role =='Admin' || authUser.Role =='Manager'">
+        <li v-if="authUser.Role =='Admin' || authUser.Role =='Manager'">
           <router-link to='/account'>
             <div class="sidebar-list-content" v-bind:class="isActive(menu.Accounts)">
             <i class="material-icons">people</i>
@@ -75,7 +83,15 @@
           </div>
           </router-link>
         </li>
-
+        <li v-if="authUser.Role =='Admin'">
+          <router-link to='/configuration'>
+            <div class="sidebar-list-content" v-bind:class="isActive(menu.Configuration)">
+            <i class="material-icons">settings_applications</i>
+           {{ menu.Configuration }}
+          </div>
+          </router-link>
+        </li>
+        
 
       </ul>
     </div>
