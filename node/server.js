@@ -83,6 +83,9 @@ app.use(
   "/api/allaccwithout",
   require("./routes/AllAccWithoutMaintainerAndAdmin")
 );
+app.use("/api/changeYourPass",
+  require("./routes/changeYourPass")
+);
 
 app.use("/api/report", require("./routes/report"));
 app.use("/api/block", require("./routes/block"));

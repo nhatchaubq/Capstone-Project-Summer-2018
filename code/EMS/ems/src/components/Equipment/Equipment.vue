@@ -37,7 +37,7 @@
                 </tr>
             </tbody>
         </table>
-      <div v-if="equipments.length >9" class="pageNa">
+      <div v-if="equipments.length >9" class="">
         <Page :current="currentPage" :total="equipments.length" show-elevator 
           @on-change="(newPageNumber) => {
             currentPage = newPageNumber
