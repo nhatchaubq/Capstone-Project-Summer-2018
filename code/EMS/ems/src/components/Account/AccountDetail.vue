@@ -130,8 +130,8 @@
           <tr  :key="team.Id" v-for="(team, index) in toDisplayData" v-on:click="gotoDetail(team.Id)" >
             <td width=7%>{{ 5*(currentPage -1) + (index + 1)}}</td>
             <td width=40%>{{team.Name? team.Name: "N/A" }}</td>
-            <td width=15% v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
-            <td width=15% v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">♟Member</span> </strong> </td> 
+            <td width=15% v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">Leader</span>   </strong> </td> 
+            <td width=15% v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">Member</span> </strong> </td> 
             <!-- <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td> -->
 
           </tr>
@@ -176,9 +176,14 @@
 
 <div class="material-box">
 <div class="row" style="margin: 0 !important">
-  <h2 class="col-7" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
-  <!-- <div class="col-6 row pull-right" style="padding: 0rem !important; position: absolute !important; right: -26rem !important;" v-if ="!editMode"> -->
-  <div class="col-5 row" style="padding: 0rem !important;float: right !important " v-if ="!editMode">
+  <h2 class="col-6" v-if="authUser.Role !='Admin' && !editMode" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  </h2>
+  <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <div class="col-6 row" style="padding: 0rem !important" v-if ="!editMode && authUser.Role !='Admin'">
+    <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; position: absolute; right: 4rem;"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
+    <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0.5rem !important; position: absolute; right: 0rem;" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
+  </div>
+  <h2 class="col-11" v-if="authUser.Role =='Admin'" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <div class="col-1 row" style="padding: 0rem !important " v-if ="!editMode && authUser.Role =='Admin'">
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; float: right !important"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0rem !important; float: right !important" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
   </div>
@@ -245,7 +250,7 @@
  <div v-if="editMode">
 
 <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Picture</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>  </div> 
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Picture</strong>  <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>  </div> 
 </div>
                 <div class="">                  
                   <label class="file-label"  > 
@@ -319,7 +324,7 @@
                 <div >
                    
                     <!-- <span ><strong> Are you sure you want to kick this member?? </strong></span> -->
-                    <div style="font-size: .95rem; font-weight: 500; margin-top: 0.5rem;">
+                    <!-- <div style="font-size: .95rem; font-weight: 500; margin-top: 0.5rem;">
                       <div class="row">
                         <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Id: </div>
                         <div class="col-7">{{SelectedMemberId}}</div>
@@ -332,7 +337,7 @@
                         <div class="col-5" style="text-align: right; padding-left:0rem !important">Member pass: </div>
                         <div class="col-7">{{SelectedMemberPassword}}</div>
                       </div>
-                    </div>
+                    </div> -->
 
                     <div class="row" style="margin-bottom:0.4rem">
                         <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">Current </div>
@@ -341,7 +346,8 @@
                       <!-- <div>{{currentPassInput}}</div> -->
         
                     </div>
-                    <!-- <div style="margin-left:8rem" v-show="CreatePassErrors.NotSameOldPass != ''"> <span class="error-text">{{ CreatePassErrors.NotSameOldPass }}</span></div> -->
+                    <div style="margin-left:8rem" v-if="CreatePassErrors.NotSameOldPass != ''"> <span class="error-text">{{ CreatePassErrors.NotSameOldPass }}</span></div>
+                    
                     <div class="row" style="margin-bottom:0.4rem">
                       <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">New </div>
                         <!-- <input  :value="SelectedMemberPassword" placeholder="Nhập cái gì đó vào đây đi ông bạn!"  class="input col-7 " type="text"  > -->
@@ -349,13 +355,12 @@
                         <!-- <input  :value="SelectedMemberPassword1"  class="input col-7 " type="text"  placeholder="Text input" > -->
                         <!-- <div>{{SelectedMemberPassword}}</div> -->
                     </div>
-                    
-                    <!-- <divclass="error-text">{{ CreatePassErrors.NotSameOldPass}}</div>  -->
+                   <div style="margin-left:8rem" v-if="CreatePassErrors.MinMaxNewPass != ''"> <span class="error-text">{{ CreatePassErrors.MinMaxNewPass }}</span></div>
                     <div class="row" style="margin-bottom:0.4rem">
                       <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">Retype new </div>
                         <input v-model.trim="retypePass"  class="input col-7 " type="text"  placeholder="Chow@321" >
                     </div>
-                    <div v-if="CreatePassErrors.NotSameValueRe"> <span class="error-text">{{ CreatePassErrors.NotSameValueRe }}</span></div>
+                    <div style="margin-left:8rem" v-if="CreatePassErrors.NotSameValueRe != ''"> <span class="error-text">{{ CreatePassErrors.NotSameValueRe }}</span></div>
                 </div>
             </div>
             <div slot="footer">
@@ -363,8 +368,27 @@
                    <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 1rem" v-on:click="changePass(SelectedMemberId,SelectedMemberPassword1)">Change</button>
             </div>
       </modal> <!-- change status dialog -->
- <!-- modal-end -->
 
+
+ <!-- modal-end -->
+<!-- modal ok-start -->
+      <!-- change status dialog -->
+      <modal v-model="showOkPopup"  style="font-family: Roboto">
+          <div slot="header" style="font-weight: bold">
+                Saved changed
+            </div>
+            <div style="font-size: 1rem">
+                <div >
+                   
+                    <div>Update successfully</div>
+                </div>
+            </div>
+            <div slot="footer">
+        <button class="button btn-primary btn-edit material-shadow-animate "   v-on:click="ok" >Close</button>
+                   <!-- <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 1rem" v-on:click="changePass(SelectedMemberId,SelectedMemberPassword1)">Change</button> -->
+            </div>
+      </modal> <!-- change status dialog -->
+<!-- modal ok-end -->
          
 
 
@@ -418,6 +442,7 @@ export default {
   data() {
     return {
       // currentPass: authUser.Password,
+      showOkPopup: false,
       currentPassInput: "",
       retypePass: "",
       SelectedMemberPassword1: "",
@@ -447,16 +472,18 @@ export default {
         PhoneMax: " Use from 9 to 13 characters for your phone number",
 
         NoEmail: " Enter email",
-        // NotSameOldPass: "Enter correct current password"
+        NotSameOldPass: "Enter correct current password",
+        MinMaxNewPass: "Use from 6 to 50 characters for your new password",
 
         // NoImage: "You must choose an image",
         // NoRole: "You must provide role for this account"
-        NotSamePass: "pass not the same",
+        // NotSamePass: "pass not the same",
         NotSameValueRe: "Please enter the same value again."
       },
       CreatePassErrors: {
         NotSameOldPass: "",
-        NotSameValueRe: ""
+        NotSameValueRe: "",
+        MinMaxNewPass: ""
       },
       CreateAccountErrors: {
         // NoUsername: '',
@@ -526,6 +553,7 @@ export default {
       if (this.account.Email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
+
       //       if (this.account.Password != this.SelectedMemberPassword) {
       //   this.CreateAccountErrors.NotSamePass = this.ErrorStrings.NotSamePass;
       // }
@@ -606,9 +634,13 @@ export default {
         //  && this.CreateAccountErrors.NoUsername === ''
       );
     },
-    // validatePass() {
-    //   return this.CreatePassErrors.NotSameOldPass == "";
-    // },
+    validatePass() {
+      return (
+        this.CreatePassErrors.NotSameOldPass == "" &&
+        this.CreatePassErrors.NotSameValueRe == "" &&
+        this.CreatePassErrors.MinMaxNewPass == ""
+      );
+    },
     getAccountDetail(accountId) {
       let URL = `http://localhost:3000/api/account/id/${accountId}`;
       this.axios.get(URL).then(response => {
@@ -618,31 +650,40 @@ export default {
     },
 
     changePass(Id, SelectedMemberPassword1) {
-      // if (this.currentPassInput != this.SelectedMemberPassword) {
-      //   this.CreatePassErrors.NotSameOldPass = this.ErrorStrings.NotSameOldPass;
+      if (this.currentPassInput != this.SelectedMemberPassword) {
+        this.CreatePassErrors.NotSameOldPass = this.ErrorStrings.NotSameOldPass;
+      }
       if (this.retypePass != this.SelectedMemberPassword1) {
         this.CreatePassErrors.NotSameValueRe = this.ErrorStrings.NotSameValueRe;
-        if (this.validatePass()) {
-          let URLChange = "http://localhost:3000/api/account/changeYourPass";
-          // alert(Id);
-          this.axios
-            .put(URLChange, {
-              tmpAcc: {
-                id: Id,
-                password: SelectedMemberPassword1
-              }
-            })
-            .then(res => {
-              if (res.status == 200) {
-                // alert(SelectedMemberPassword);
-                this.getAccountDetail(this.$route.params.id);
-                this.ChangeLeadPopUp = false;
-                alert("Your password has been changed successfully!");
-                // alert(`${{ SelectedMemberPassword1 }}"`);
-              }
-            });
-        }
-        // }
+      }
+      if (
+        !this.SelectedMemberPassword1 ||
+        (this.SelectedMemberPassword1 &&
+          (this.SelectedMemberPassword1.length < 6 ||
+            this.SelectedMemberPassword1.length > 50))
+      ) {
+        this.CreatePassErrors.MinMaxNewPass = this.ErrorStrings.MinMaxNewPass;
+      }
+      if (this.validatePass()) {
+        let URLChange = "http://localhost:3000/api/changeYourPass";
+        // alert(Id);
+        this.axios
+          .put(URLChange, {
+            tmpAcc: {
+              id: Id,
+              password: SelectedMemberPassword1
+            }
+          })
+          .then(res => {
+            if (res.status == 200) {
+              // alert(SelectedMemberPassword);
+              this.getAccountDetail(this.$route.params.id);
+              this.ChangeLeadPopUp = false;
+              this.showOkPopup = true;
+              // alert("Your password has been changed successfully!");
+              // alert(`${{ SelectedMemberPassword1 }}"`);
+            }
+          });
       }
     },
     getAllTeamOfThisAccount(accountId) {
@@ -665,19 +706,30 @@ export default {
       this.SelectedMemberName = memberName;
       this.SelectedMemberPassword = Password;
       this.ChangeLeadPopUp = true;
-      alert(Password);
+      // alert(Password);
     },
     cancel() {
       // this.show = false;
       this.ChangeLeadPopUp = false;
+    },
+    ok() {
+      this.showOkPopup = false;
     }
   },
   watch: {
-    // currentPassInput: function() {
-    //   if (this.currentPassInput == this.NewPassWord1) {
-    //     this.CreatePassErrors.NotSameOldPass = "";
-    //   }
-    // },
+    currentPassInput: function() {
+      if (this.currentPassInput == this.SelectedMemberPassword) {
+        this.CreatePassErrors.NotSameOldPass = "";
+      }
+    },
+    SelectedMemberPassword1: function() {
+      if (this.SelectedMemberPassword1.length > 5) {
+        this.CreatePassErrors.MinMaxNewPass = "";
+      }
+      if (this.SelectedMemberPassword1.length < 51) {
+        this.CreatePassErrors.MinMaxNewPass = "";
+      }
+    },
     retypePass: function() {
       if (this.retypePass == this.SelectedMemberPassword1) {
         this.CreatePassErrors.NotSameValueRe = "";
@@ -720,6 +772,7 @@ export default {
       if (!this.ChangeLeadPopUp) {
         this.SelectedMemberPassword1 = "";
         this.retypePass = "";
+        this.currentPassInput = "";
       }
     },
     // files: function() {

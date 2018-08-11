@@ -105,6 +105,7 @@ export default {
         this.vendors = [];
         this.toDisplayData = [];
         this.totalVendor = 0;
+        // this.getVendorDetail();
       }
     },
     "$store.state.vendorPage.searchText": function() {
