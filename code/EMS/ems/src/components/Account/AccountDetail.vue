@@ -19,9 +19,9 @@
   <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Username" style="width: 100%; height: 20rem ">
 </div>
 <div v-if="editMode">
- <div class="form-field-picture">
+ <!-- <div class="form-field-picture">
               <div class="form-field-title">
-                  <!-- <span><strong>  Picture (required) </strong></span><span v-if="CreateAccountErrors.NoImage != ''"> <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span> -->
+                  
                   <span><strong>  Picture </strong></span>
 
               </div>
@@ -29,9 +29,6 @@
                 <div>
                   <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
                           {{ file.name }}
-                      <div>
-                          <img class="file-upload" v-bind:src="getFilePath(file)" width="300px" height="450px"/>
-                      </div>
                       </div>
                 </div>
                 <div>                    
@@ -50,7 +47,31 @@
                   </label>
               </div>
               </div> 
-            </div>
+            </div> -->
+
+              <!-- <div class="row" style="height:30px" v-if="editMode">
+                <div class="" style="margin-top:0.5rem">
+                  Picture:
+                </div>
+                <div class="input_picture">                  
+                  <label class="file-label"  > 
+                  <span class="file-cta">
+                      <input v-if="!editMode" class="file-input" type="file" accept="image/*" style="opacity:0" ref="fileInput"  disabled="disabled" />
+                      <input v-else class="file-input" type="file" accept="image/*"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
+                      <span class="file-icon" style="margin-right=0;">
+                          <i class="fa fa-upload"></i>
+                      </span>
+                      <span class="file-label">
+                                Choose images...
+                      </span>
+                  </span>
+                      <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
+                          {{ file.name }}
+                      </div>
+                  </label>              
+                </div>
+              </div> -->
+                         
 </div>
 
 
@@ -109,8 +130,8 @@
           <tr  :key="team.Id" v-for="(team, index) in toDisplayData" v-on:click="gotoDetail(team.Id)" >
             <td width=7%>{{ 5*(currentPage -1) + (index + 1)}}</td>
             <td width=40%>{{team.Name? team.Name: "N/A" }}</td>
-            <td width=15% v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
-            <td width=15% v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">♟Member</span> </strong> </td> 
+            <td width=15% v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">Leader</span>   </strong> </td> 
+            <td width=15% v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">Member</span> </strong> </td> 
             <!-- <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td> -->
 
           </tr>
@@ -155,10 +176,16 @@
 
 <div class="material-box">
 <div class="row" style="margin: 0 !important">
-  <h2 class="col-8" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
-  <div class="col-4 " style="padding-right: 0rem !important" v-if ="!editMode">
-    <button class="button btn-edit btn-primary material-shadow-animate pull-right" style="margin-bottom:0.2rem !important"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id ">Change Password</button>
-    <button class="button btn-edit btn-primary material-shadow-animate pull-right" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
+  <h2 class="col-6" v-if="authUser.Role !='Admin' && !editMode" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  </h2>
+  <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <div class="col-6 row" style="padding: 0rem !important" v-if ="!editMode && authUser.Role !='Admin'">
+    <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; position: absolute; right: 4rem;"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
+    <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0.5rem !important; position: absolute; right: 0rem;" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
+  </div>
+  <h2 class="col-11" v-if="authUser.Role =='Admin'" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <div class="col-1 row" style="padding: 0rem !important " v-if ="!editMode && authUser.Role =='Admin'">
+    <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; float: right !important"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
+    <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0rem !important; float: right !important" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
   </div>
 </div>
 <!-- <form @submit.prevent="editAccount()"> -->
@@ -167,13 +194,13 @@
       <strong>Full name</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span>    <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
       </div>  
   </div>
-  <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-  <input v-else v-model.trim="account.Fullname" class="input col-7 " type="text"  placeholder="Text input" >
+  <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole" disabled="disabled">
+  <input v-else v-model.trim="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole" >
   <div v-if="authUser.Role =='Admin' ">
     <div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
         <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
     </div>
-      <input v-if="editMode" v-model.trim ="account.Password"  class="input col-7 " type="password"  placeholder="Text input">
+      <input v-if="editMode" v-model.trim ="account.Password" class="input col-7 " type="password"  placeholder="Chow@321">
   </div>
 
 
@@ -198,7 +225,62 @@
         </label>
       </div>
   </div>
+  <!-- <div class="row" style="margin-top:0.5rem; height: 36px">
+    <div class="col-12" > <strong>Role</strong> </div>
+  </div>
+  <div class="col-7" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
   <div class="row" style="margin-top:0.5rem; height: 36px">
+    <div class="col-12"> <strong>Start date</strong>  </div>
+  </div>
+  <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? getDate(account.StartDate): 'N/A' }}</div> -->
+  <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
+  <div class="row" style="margin-top:0.5rem; height: 36px">
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span> </div> 
+  <!-- <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div> -->
+</div>
+  <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com" disabled="disabled">
+  <input v-else v-model.trim="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com">
+<div class="row" style="margin-top:0.5rem; height: 36px">
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Phone</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>  </div> 
+  <!-- <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div> -->
+</div>
+  <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789" disabled="disabled">
+  <input v-else v-model.trim="account.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789">
+ <!-- picture -->
+ <div v-if="editMode">
+
+<div class="row" style="margin-top:0.5rem; height: 36px">
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Picture</strong>  <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>  </div> 
+</div>
+                <div class="">                  
+                  <label class="file-label"  > 
+                  <span class="file-cta">
+                      <input v-if="!editMode" class="file-input" type="file" accept="image/*" style="opacity:0" ref="fileInput"  disabled="disabled" />
+                      <input v-else class="file-input" type="file" accept="image/*"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
+                      <span class="file-icon" style="margin-right=0;">
+                          <i class="fa fa-upload"></i>
+                      </span>
+                      <span class="file-label">
+                                Choose images...
+                      </span>
+                  </span>
+                      <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important; margin-top:0.5rem">
+                          {{ file.name }}
+                      </div>
+                  </label>              
+                </div>
+ </div>
+
+
+
+ <!-- picture-end -->
+ 
+ 
+ 
+ 
+ 
+ 
+ <div class="row" style="margin-top:0.5rem; height: 36px">
     <div class="col-12" > <strong>Role</strong> </div>
   </div>
   <div class="col-7" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
@@ -206,19 +288,7 @@
     <div class="col-12"> <strong>Start date</strong>  </div>
   </div>
   <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? getDate(account.StartDate): 'N/A' }}</div>
-  <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
-  <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span> </div> 
-  <!-- <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div> -->
-</div>
-  <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="Text input" disabled="disabled">
-  <input v-else v-model.trim="account.Email" class="input col-7 " type="email"  placeholder="Text input">
-<div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Phone</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>  </div> 
-  <!-- <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div> -->
-</div>
-  <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-  <input v-else v-model.trim="account.Phone" class="input col-7 " type="text"  placeholder="Text input">
+
 <div class="row" v-if="editMode">
   <!-- <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Save change</button> -->
   <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editAccount()" >Save changes</button>
@@ -254,7 +324,7 @@
                 <div >
                    
                     <!-- <span ><strong> Are you sure you want to kick this member?? </strong></span> -->
-                    <div style="font-size: .95rem; font-weight: 500; margin-top: 0.5rem;">
+                    <!-- <div style="font-size: .95rem; font-weight: 500; margin-top: 0.5rem;">
                       <div class="row">
                         <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Id: </div>
                         <div class="col-7">{{SelectedMemberId}}</div>
@@ -267,33 +337,58 @@
                         <div class="col-5" style="text-align: right; padding-left:0rem !important">Member pass: </div>
                         <div class="col-7">{{SelectedMemberPassword}}</div>
                       </div>
-                    </div>
+                    </div> -->
 
                     <div class="row" style="margin-bottom:0.4rem">
                         <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">Current </div>
 
-                      <input v-model="currentPassInput"  class="input col-7 " type="text"   placeholder="Text input" >
-                      <div>{{currentPassInput}}</div>
+                      <input v-model="currentPassInput"  class="input col-7 " type="text"   placeholder="Chow@321" >
+                      <!-- <div>{{currentPassInput}}</div> -->
+        
                     </div>
+                    <div style="margin-left:8rem" v-if="CreatePassErrors.NotSameOldPass != ''"> <span class="error-text">{{ CreatePassErrors.NotSameOldPass }}</span></div>
+                    
                     <div class="row" style="margin-bottom:0.4rem">
                       <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">New </div>
-                        <input v-model.trim="SelectedMemberPassword"  class="input col-7 " type="text"  placeholder="Text input" >
+                        <!-- <input  :value="SelectedMemberPassword" placeholder="Nhập cái gì đó vào đây đi ông bạn!"  class="input col-7 " type="text"  > -->
+                        <input v-model.trim="SelectedMemberPassword1"  class="input col-7 " type="text"  placeholder="Chow@321" >
+                        <!-- <input  :value="SelectedMemberPassword1"  class="input col-7 " type="text"  placeholder="Text input" > -->
                         <!-- <div>{{SelectedMemberPassword}}</div> -->
                     </div>
+                   <div style="margin-left:8rem" v-if="CreatePassErrors.MinMaxNewPass != ''"> <span class="error-text">{{ CreatePassErrors.MinMaxNewPass }}</span></div>
                     <div class="row" style="margin-bottom:0.4rem">
                       <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">Retype new </div>
-                        <input   class="input col-7 " type="text"  placeholder="Text input" >
+                        <input v-model.trim="retypePass"  class="input col-7 " type="text"  placeholder="Chow@321" >
                     </div>
-                    
+                    <div style="margin-left:8rem" v-if="CreatePassErrors.NotSameValueRe != ''"> <span class="error-text">{{ CreatePassErrors.NotSameValueRe }}</span></div>
                 </div>
             </div>
             <div slot="footer">
         <button class="button btn-edit material-shadow-animate "  style="background-color:white; color: black; margin-left: 3rem; border-color: silver" v-on:click="cancel" >Cancel</button>
-                   <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 1rem" v-on:click="changePass(SelectedMemberId,SelectedMemberPassword)">Change</button>
+                   <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 1rem" v-on:click="changePass(SelectedMemberId,SelectedMemberPassword1)">Change</button>
             </div>
       </modal> <!-- change status dialog -->
- <!-- modal-end -->
 
+
+ <!-- modal-end -->
+<!-- modal ok-start -->
+      <!-- change status dialog -->
+      <modal v-model="showOkPopup"  style="font-family: Roboto">
+          <div slot="header" style="font-weight: bold">
+                Saved changed
+            </div>
+            <div style="font-size: 1rem">
+                <div >
+                   
+                    <div>Update successfully</div>
+                </div>
+            </div>
+            <div slot="footer">
+        <button class="button btn-primary btn-edit material-shadow-animate "   v-on:click="ok" >Close</button>
+                   <!-- <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 1rem" v-on:click="changePass(SelectedMemberId,SelectedMemberPassword1)">Change</button> -->
+            </div>
+      </modal> <!-- change status dialog -->
+<!-- modal ok-end -->
          
 
 
@@ -347,7 +442,10 @@ export default {
   data() {
     return {
       // currentPass: authUser.Password,
+      showOkPopup: false,
       currentPassInput: "",
+      retypePass: "",
+      SelectedMemberPassword1: "",
       // currentPass = author.Password,
       SelectedMemberId: null,
       SelectedMemberName: "",
@@ -373,10 +471,19 @@ export default {
         PhoneMin: " Use from 9 to 13 characters for your phone number",
         PhoneMax: " Use from 9 to 13 characters for your phone number",
 
-        NoEmail: " Enter email"
+        NoEmail: " Enter email",
+        NotSameOldPass: "Enter correct current password",
+        MinMaxNewPass: "Use from 6 to 50 characters for your new password",
+
         // NoImage: "You must choose an image",
         // NoRole: "You must provide role for this account"
-        // NotSamePass: "pass not the same"
+        // NotSamePass: "pass not the same",
+        NotSameValueRe: "Please enter the same value again."
+      },
+      CreatePassErrors: {
+        NotSameOldPass: "",
+        NotSameValueRe: "",
+        MinMaxNewPass: ""
       },
       CreateAccountErrors: {
         // NoUsername: '',
@@ -446,6 +553,7 @@ export default {
       if (this.account.Email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
+
       //       if (this.account.Password != this.SelectedMemberPassword) {
       //   this.CreateAccountErrors.NotSamePass = this.ErrorStrings.NotSamePass;
       // }
@@ -526,6 +634,13 @@ export default {
         //  && this.CreateAccountErrors.NoUsername === ''
       );
     },
+    validatePass() {
+      return (
+        this.CreatePassErrors.NotSameOldPass == "" &&
+        this.CreatePassErrors.NotSameValueRe == "" &&
+        this.CreatePassErrors.MinMaxNewPass == ""
+      );
+    },
     getAccountDetail(accountId) {
       let URL = `http://localhost:3000/api/account/id/${accountId}`;
       this.axios.get(URL).then(response => {
@@ -534,23 +649,42 @@ export default {
       });
     },
 
-    changePass(Id, SelectedMemberPassword) {
-      let URLChange = "http://localhost:3000/api/account/changeYourPass";
-      // alert(Id);
-      this.axios
-        .put(URLChange, {
-          tmpAcc: {
-            id: Id,
-            password: SelectedMemberPassword
-          }
-        })
-        .then(res => {
-          if (res.status == 200) {
-            // alert(SelectedMemberPassword);
-            this.getAccountDetail(this.$route.params.id);
-            this.ChangeLeadPopUp = false;
-          }
-        });
+    changePass(Id, SelectedMemberPassword1) {
+      if (this.currentPassInput != this.SelectedMemberPassword) {
+        this.CreatePassErrors.NotSameOldPass = this.ErrorStrings.NotSameOldPass;
+      }
+      if (this.retypePass != this.SelectedMemberPassword1) {
+        this.CreatePassErrors.NotSameValueRe = this.ErrorStrings.NotSameValueRe;
+      }
+      if (
+        !this.SelectedMemberPassword1 ||
+        (this.SelectedMemberPassword1 &&
+          (this.SelectedMemberPassword1.length < 6 ||
+            this.SelectedMemberPassword1.length > 50))
+      ) {
+        this.CreatePassErrors.MinMaxNewPass = this.ErrorStrings.MinMaxNewPass;
+      }
+      if (this.validatePass()) {
+        let URLChange = "http://localhost:3000/api/changeYourPass";
+        // alert(Id);
+        this.axios
+          .put(URLChange, {
+            tmpAcc: {
+              id: Id,
+              password: SelectedMemberPassword1
+            }
+          })
+          .then(res => {
+            if (res.status == 200) {
+              // alert(SelectedMemberPassword);
+              this.getAccountDetail(this.$route.params.id);
+              this.ChangeLeadPopUp = false;
+              this.showOkPopup = true;
+              // alert("Your password has been changed successfully!");
+              // alert(`${{ SelectedMemberPassword1 }}"`);
+            }
+          });
+      }
     },
     getAllTeamOfThisAccount(accountId) {
       let URL = `http://localhost:3000/api/account/id/${accountId}`;
@@ -572,19 +706,35 @@ export default {
       this.SelectedMemberName = memberName;
       this.SelectedMemberPassword = Password;
       this.ChangeLeadPopUp = true;
-      alert(Password);
+      // alert(Password);
     },
     cancel() {
       // this.show = false;
       this.ChangeLeadPopUp = false;
+    },
+    ok() {
+      this.showOkPopup = false;
     }
   },
   watch: {
-    // "account.username": function(){
-    //     if(this.account.username != ''){
-    //         this.CreateAccountErrors.NoUsername = ''
-    //     }
-    // },
+    currentPassInput: function() {
+      if (this.currentPassInput == this.SelectedMemberPassword) {
+        this.CreatePassErrors.NotSameOldPass = "";
+      }
+    },
+    SelectedMemberPassword1: function() {
+      if (this.SelectedMemberPassword1.length > 5) {
+        this.CreatePassErrors.MinMaxNewPass = "";
+      }
+      if (this.SelectedMemberPassword1.length < 51) {
+        this.CreatePassErrors.MinMaxNewPass = "";
+      }
+    },
+    retypePass: function() {
+      if (this.retypePass == this.SelectedMemberPassword1) {
+        this.CreatePassErrors.NotSameValueRe = "";
+      }
+    },
     "account.Password": function() {
       if (this.account.Password != "") {
         this.CreateAccountErrors.NoPassword = "";
@@ -616,6 +766,13 @@ export default {
       }
       if (this.account.Phone.length < 14) {
         this.CreateAccountErrors.PhoneMax = "";
+      }
+    },
+    ChangeLeadPopUp: function() {
+      if (!this.ChangeLeadPopUp) {
+        this.SelectedMemberPassword1 = "";
+        this.retypePass = "";
+        this.currentPassInput = "";
       }
     },
     // files: function() {
