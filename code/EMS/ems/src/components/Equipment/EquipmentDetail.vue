@@ -15,9 +15,9 @@
             <div class="">
               <div class="field" style=" display: grid; grid-template-columns: 70% 20% 10%">
                   <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{equipmentName}}</strong>
-                  <button v-if="!addItemMode" class="btn-Add"   v-on:click="addItem">Add Item</button>
+                  <button v-if="!addItemMode && authUser.Role=='Equipment Staff'" class="btn-Add"   v-on:click="addItem">Add Item</button>
                   <!-- <div class="" v-else ><button  class="btn-Add" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" >Add Item</button></div> -->
-                  <button v-if="!editMode" class="btn-edit"  v-on:click="editMode = !editMode">Edit</button> 
+                  <button v-if="!editMode && authUser.Role=='Equipment Staff'" class="btn-edit"  v-on:click="editMode = !editMode">Edit</button> 
                   <!-- <div class="" v-else><button class="btn-edit" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" :class="{'is-active-option': editMode}">Edit</button> </div> -->
              </div>
               <span v-if="editMode"  style="color:red; font-size:14px">* is required, please input these fields</span>
@@ -286,8 +286,8 @@
           <div slot="header">
               <div class="field" style=" display: grid; grid-template-columns: 85% 10%">
                 <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a;padding-left: 0.4rem">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong>
-                <div class="" v-if="currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation)">
-                  <div class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button></div>  
+                <div class="" v-if="currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation &&currentsttName != workingstt) ">
+                  <div class="" v-if="!editItemMode && authUser.Role=='Equipment Staff' "><button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button></div>  
                 </div>
                 <!-- <div class="" v-else><button class="btn-edit" style="color: white; border-bottom: 1px solid black;background-color: #26a69a; border-radius: 5px" disabled="disabled">Edit</button></div>   -->
               </div>
@@ -450,8 +450,6 @@
                             </tr>
                           </tbody>
                       </table>
-       
-
                     </div>
                     <div class="" v-else style="padding-top: 0,75rem;font-style: italic">
                       This item has been not change status by someone!
@@ -459,7 +457,7 @@
                   </div>
                 </div>
                 <div v-if="currentViewMode ==  viewModes.Position">
-                  <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode * is required, please input these fields</span>
+                  <span v-if="editItemMode && authUser.Role=='Equipment Staff' && selectedItem.Item.StatusID"  style="color:red; font-size:14px"> Edit Mode * is required, please input these fields</span>
                   <div class = "" v-if="itemLocationID == lostLocation">
                     <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
                       <div class="" style="margin-top:0.5rem" >
@@ -501,7 +499,6 @@
                         <div class=""><input v-model="itemTileID" class="input col-7 " type="text" disabled="disabled"></div>
                       </div>
                     </div>
-                  
                   </div>
                   <div class="" v-else>
                       <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
@@ -670,7 +667,6 @@
                         <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label>  
                       </div>
                     </div>
-                     
                   </div>
                 </div>
               </div>  
@@ -916,6 +912,11 @@ export default {
   //     JsBarcode("#code128", "Hi!");
 
   // },
+  computed: {
+    authUser() {
+      return JSON.parse(window.localStorage.getItem("user"));
+    }
+  },
   data() {
     return {
       currentPageEquipmentItem: 1,
@@ -946,6 +947,8 @@ export default {
       lostBlock: "Undefined",
       lostLocation: "Undefined",
       lostAddress: "Undefined",
+      workingstt: "Working",
+      maintainstt: "Maintaining",
       showingBarcode: false,
       changeItemSttDescription: "",
       show: false,
@@ -1294,8 +1297,8 @@ export default {
                 this.totalExistDays = Math.floor(
                   this.totalExistDays / (1000 * 3600 * 24)
                 );
-                if(this.totalExistDays == 0){
-                  this.totalExistDays  = 1
+                if (this.totalExistDays == 0) {
+                  this.totalExistDays = 1;
                 }
                 this.percentRuntime = (
                   this.selectedItem.Item.RuntimeDays /

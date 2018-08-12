@@ -54,7 +54,7 @@
 
     </div>
     <router-link to='/equipment/create/'>
-      <button id="btn-add-equipment"  class="button btn-primary material-shadow-animate">Add Equipment</button>
+      <button v-if="authUser.Role == 'Equipment Staff'" id="btn-add-equipment"  class="button btn-primary material-shadow-animate">Add Equipment</button>
     </router-link>
   </div>
 </template>
