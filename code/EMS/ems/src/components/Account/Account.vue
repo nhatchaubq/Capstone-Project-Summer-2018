@@ -17,10 +17,13 @@
         <!-- <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button> -->
         <router-link to='/account/'>  
-          <button class="btn-view-mode-left" style="margin-right:0rem" disabled="disabled">Account view</button>
+          <button v-if="authUser.Role !='Admin'" class="btn-view-mode-left" style="margin-right:0rem" disabled="disabled">Account view</button>
         </router-link>
+        <!-- <router-link to='/account/'>  
+          <button v-if="authUser.Role !='Manager'" class="btn-view-mode" style="margin-right:0rem" disabled="disabled">Account view</button>
+        </router-link> -->
         <router-link to='/team/'>  
-          <button class="btn-view-mode-right" v-if="authUser.Role =='Manager'" >Team view</button>
+          <button  class="btn-view-mode-right" v-if="authUser.Role =='Manager'" >Team view</button>
         </router-link>
       </div>
     </div>
