@@ -172,6 +172,30 @@ export default {
   /* background-color: #009688;
   color: white; */
 }
+th {
+  text-align: left;
+  background-color: #cfd8dc;
+  height: 30px;
+  line-height: 30px;
+  padding: 0.5rem !important;
+}
+
+td {
+  vertical-align: middle;
+  height: 40px;
+  line-height: 25px;
+  padding: 0.5rem;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+  color: #263238;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+  color: #263238;
+}
 tr {
   cursor: pointer;
 }
