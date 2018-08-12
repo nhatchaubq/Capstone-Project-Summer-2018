@@ -23,6 +23,10 @@ router.get("/search/:value", function (request, response) {
       "SELECT distinct acc.* FROM [Account] as acc " +
       "Join [Role] as r ON r.Id = acc.RoleID  " +
       "WHERE acc.Username like N'%' + @searchText + '%' " +
+      "or acc.Fullname like N'%' + @searchText + '%'" +
+      "or acc.Email like N'%' + @searchText + '%'" +
+      "or acc.Phone like N'%' + @searchText + '%' " +
+      "or r.Name like N'%' + @searchText + '%' " +
       "ORDER BY acc.IsActive DESC,acc.Username ASC " +
       "for json path "
     )

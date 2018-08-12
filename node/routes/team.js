@@ -26,11 +26,26 @@ router.get("/", (request, response) => {
 router.get("/search/:value", function (request, response) {
   request
     .sql(
+      // "SELECT distinct t.* " +
+      // "FROM [Team] as t " +
+      // "JOIN [TeamAccount] as ta ON ta.TeamID =t.Id " +
+      // "JOIN [Account] as acc ON acc.Id =ta.AccountID " +
+      // "JOIN [Role] as r ON r.Id = acc.RoleID" +
+      // "WHERE t.Name like N'%' + @searchText + '%' or t.CreatedDate like N'%' + @searchText + '%' " +
+      // "or (acc.Username like N'%' + @searchText + '%' and ta.TeamRoleID = (select tr.Id from [TeamRoles] as tr where tr.TeamRole ='Leader')) " +    
+      // "ORDER BY t.Name DESC " +
+      // "for json path "
       "SELECT distinct t.* " +
-      "FROM [Team] as t " +
-      "WHERE t.Name like N'%' + @searchText + '%' " +
-      "ORDER BY t.Name DESC " +
-      "for json path "
+      "FROM [Team] as t   " +
+      "JOIN [TeamAccount] as ta ON ta.TeamID =t.Id   " +
+      "JOIN [Account] as acc ON acc.Id =ta.AccountID   " +
+      "JOIN [Role] as r ON r.Id = acc.RoleID  " +
+      "WHERE t.Name like N'%' + @searchText + '%' or t.CreatedDate like N'%' + @searchText + '%'   " +
+      // "or (acc.Username like N'%' + @searchText + '%' and ta.TeamRoleID = (select tr.Id from [TeamRoles] as tr where tr.TeamRole ='Leader'))   " +
+      "or (acc.Username like N'%' + @searchText + '%' )   " +
+
+      "ORDER BY t.Name DESC   " +
+      "for json path"
     )
     .param("searchText", request.params.value, TYPES.NVarChar)
     .into(response);
