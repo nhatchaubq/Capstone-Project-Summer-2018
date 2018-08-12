@@ -194,6 +194,7 @@ let router = new Router({
       }
     },
     {
+      name: "teamDetail",
       path: "/team/:id",
       component: TeamDetailComponent,
       beforeEnter: (to, from, next) => {
@@ -230,6 +231,14 @@ let router = new Router({
         next();
       }
     },
+    // {
+    //   path: "/profile",
+    //   component: AccountDetailComponent,
+    //   beforeEnter: (to, from, next) => {
+    //     store.set("title", menu.AccountDetails);
+    //     next();
+    //   }
+    // },
     {
       path: "/department",
       component: DepartmentComponent,
@@ -273,6 +282,7 @@ let router = new Router({
       }
     },
     {
+      name: "vendorDetail",
       path: "/vendor/:id",
       component: VendorDetailComponent,
       beforeEnter: (to, from, next) => {

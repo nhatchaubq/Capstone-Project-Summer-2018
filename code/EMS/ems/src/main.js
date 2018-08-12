@@ -81,17 +81,21 @@ router.beforeEach((to, from, next) => {
     } else if (to.name == "edit_location" && authUser.Role != "Manager") {
       next("/");
     } else if (to.name == "allVendor" && authUser.Role != "Equipment Staff") {
-      next("/");
+      next("/500");
     } else if (to.name == "addVendor" && authUser.Role != "Equipment Staff") {
-      next("/");
+      next("/500");
+    } else if (to.name == "vendorDetail" && authUser.Role != "Equipment Staff") {
+      next("/500");
     } else if (to.name == "allAccount" && (authUser.Role != "Admin" && authUser.Role != "Manager")) {
-      next("/");
+      next("/500");
     } else if (to.name == "addAccount" && authUser.Role != "Admin") {
-      next("/");
+      next("/500");
     } else if (to.name == "allTeam" && authUser.Role != "Manager") {
-      next("/");
+      next("/500");
     } else if (to.name == "addTeam" && authUser.Role != "Manager") {
-      next("/");
+      next("/500");
+    } else if (to.name == "teamDetail" && authUser.Role == "Admin") {
+      next("/500");
 
     } else if (
       to.name == "report" &&

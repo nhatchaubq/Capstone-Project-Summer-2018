@@ -83,7 +83,7 @@
           </div>
           </router-link>
         </li>
-        <li v-if="authUser.Role !='Manager'">
+        <li v-if="authUser.Role =='Admin'">
           <router-link to='/account'>
             <div class="sidebar-list-content" v-bind:class="isActive(menu.Accounts)">
             <i class="material-icons">people</i>
