@@ -194,7 +194,14 @@
               <span><strong>  Quantity (required) </strong></span>
             </div>
             <div class="field is-horizontal">
-                <input type="number" min="1" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" >
+                <input type="text" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" v-on:input="() => {
+                            if (quantity < 1 || quantity == '') {
+                                quantity = 0;
+                            } else if (quantity > 50) {
+                                quantity = 50;
+                            }
+                            quantity  = getNumberFormattedThousand(quantity);
+                        }" >
                 <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">Create Serial Number</button>
             </div>
             <div class="field is-horizontal">
@@ -230,7 +237,14 @@
                    <span><strong> Warranty (required) </strong></span>
                   </div>
                   <div class="field is-horizontal" >
-                    <input type="number" min="1" style="text-align: right" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration">
+                    <input type="text" min="1" style="text-align: right" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration" v-on:input="() => {
+                            if (form.warrantyDuration < 0 || form.warrantyDuration == '') {
+                                form.warrantyDuration = 0;
+                            } else if (form.warrantyDuration > 999) {
+                                form.warrantyDuration = 999;
+                            }
+                            form.warrantyDuration  = getNumberFormattedThousand(form.warrantyDuration);
+                        }">
                     <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Month</label>
                   </div> 
                     <span v-if="CreateItemErrors.NoWarranty != ''">. <span class="error-text">{{ CreateItemErrors.NoWarranty }}</span></span>                  
@@ -284,7 +298,7 @@
          <div v-if="selectedItem!=null" > 
            <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
           <div slot="header">
-              <div class="field" style=" display: grid; grid-template-columns: 85% 10%; height:2rem">
+              <div class="field" style=" display: grid; grid-template-columns: 85% 10%; height:3rem">
                 <div style="margin-top:0.25rem"><strong style="padding-top:0.25rem; margin-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a;padding-left: 0.4rem">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong></div>
                 <div class="" v-if="currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation &&currentsttName != workingstt) ">
                   <div class="" v-if="!editItemMode && authUser.Role=='Equipment Staff'"><button class="btn-edit" v-on:click="editItemMode = !editItemMode" style="font-size: 16px;">Edit</button></div>  
@@ -846,7 +860,7 @@ export default {
       });
 
     this.axios
-      .get("http://localhost:3000/api/EquipmentCategory")
+      .get("http://localhost:3000/api/EquipmentCategory/getAllCate")
       .then(response => {
         let data = response.data;
         data.forEach(category => {
