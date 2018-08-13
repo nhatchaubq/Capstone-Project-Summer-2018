@@ -175,6 +175,7 @@ let router = new Router({
       }
     },
     {
+      name: "allTeam",
       path: "/team",
       component: TeamComponent,
       beforeEnter: (to, from, next) => {
@@ -186,6 +187,7 @@ let router = new Router({
       }
     },
     {
+      name: "addTeam",
       path: "/team/add",
       component: AddTeamComponent,
       beforeEnter: (to, from, next) => {
@@ -194,6 +196,7 @@ let router = new Router({
       }
     },
     {
+      name: "teamDetail",
       path: "/team/:id",
       component: TeamDetailComponent,
       beforeEnter: (to, from, next) => {
@@ -202,6 +205,7 @@ let router = new Router({
       }
     },
     {
+      name: "allAccount",
       path: "/account",
       component: AccountComponent,
       beforeEnter: (to, from, next) => {
@@ -213,6 +217,7 @@ let router = new Router({
       }
     },
     {
+      name: "addAccount",
       path: "/account/add",
       component: AddAccountComponent,
       beforeEnter: (to, from, next) => {
@@ -228,6 +233,14 @@ let router = new Router({
         next();
       }
     },
+    // {
+    //   path: "/profile",
+    //   component: AccountDetailComponent,
+    //   beforeEnter: (to, from, next) => {
+    //     store.set("title", menu.AccountDetails);
+    //     next();
+    //   }
+    // },
     {
       path: "/department",
       component: DepartmentComponent,
@@ -259,6 +272,7 @@ let router = new Router({
       }
     },
     {
+      name: "allVendor",
       path: "/vendor",
       component: VendorComponent,
       beforeEnter: (to, from, next) => {
@@ -270,6 +284,7 @@ let router = new Router({
       }
     },
     {
+      name: "vendorDetail",
       path: "/vendor/:id",
       component: VendorDetailComponent,
       beforeEnter: (to, from, next) => {
@@ -289,6 +304,7 @@ let router = new Router({
     //   }
     // },
     {
+      name: "addVendor",
       path: "/vendor1/add",
       component: AddVendor1Component,
       beforeEnter: (to, from, next) => {
