@@ -17,10 +17,13 @@
         <!-- <button class="btn-view-mode-left" :class='{"is-active": isTableMode}' v-on:click="setTableMode(true)">Table view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isTableMode}' v-on:click="setTableMode(false)">Card view</button> -->
         <router-link to='/account/'>  
-          <button class="btn-view-mode-left" style="margin-right:0rem" disabled="disabled">Account view</button>
+          <button v-if="authUser.Role !='Admin'" class="btn-view-mode-left" style="margin-right:0rem" disabled="disabled">Account view</button>
         </router-link>
+        <!-- <router-link to='/account/'>  
+          <button v-if="authUser.Role !='Manager'" class="btn-view-mode" style="margin-right:0rem" disabled="disabled">Account view</button>
+        </router-link> -->
         <router-link to='/team/'>  
-          <button class="btn-view-mode-right" v-if="authUser.Role !='Equipment Staff'" >Team view</button>
+          <button  class="btn-view-mode-right" v-if="authUser.Role =='Manager'" >Team view</button>
         </router-link>
       </div>
     </div>
@@ -63,8 +66,8 @@
             <td :style="{color: account.IsActive? 'var(--primary-color)' : '#607D8B'}">{{account.IsActive? "Active" : "Inactive"}}</td>
           </strong> 
           </tr>
-      </tbody>
-    </table>  
+      </tbody>  
+    </table>
 
   <div v-if="totalAccount > 9" >
     <Page :current="currentPage" :total="totalAccount" show-elevator 
@@ -168,13 +171,20 @@ export default {
         let tmpAccounts = [];
         for (const account of this.searchValues) {
           tmpAccounts = tmpAccounts.concat(
-            this.accounts.filter(v => v.Id == account.Id)
+            this.accounts.filter(a => a.Id == account.Id)
           );
         }
-
-        this.totalAccount = tmpAccounts.length;
         this.toDisplayData = tmpAccounts.slice(0, 10);
+        this.totalAccount = this.toDisplayData.length;
         this.currentPage = 1;
+        if (this.toDisplayData == "") {
+          this.getAccountDetail();
+          for (const account of this.searchValues) {
+            tmpAccounts = tmpAccounts.concat(
+              this.accounts.filter(a => a.Id == account.Id)
+            );
+          }
+        }
       } else {
         this.accounts = [];
         this.toDisplayData = [];

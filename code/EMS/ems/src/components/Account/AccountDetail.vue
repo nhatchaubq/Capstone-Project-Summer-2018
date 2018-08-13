@@ -342,7 +342,7 @@
                     <div class="row" style="margin-bottom:0.4rem">
                         <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">Current </div>
 
-                      <input v-model="currentPassInput"  class="input col-7 " type="text"   placeholder="Chow@321" >
+                      <input v-model="currentPassInput"  class="input col-7 " type="password"   placeholder="Chow@321" >
                       <!-- <div>{{currentPassInput}}</div> -->
         
                     </div>
@@ -351,14 +351,14 @@
                     <div class="row" style="margin-bottom:0.4rem">
                       <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">New </div>
                         <!-- <input  :value="SelectedMemberPassword" placeholder="Nhập cái gì đó vào đây đi ông bạn!"  class="input col-7 " type="text"  > -->
-                        <input v-model.trim="SelectedMemberPassword1"  class="input col-7 " type="text"  placeholder="Chow@321" >
+                        <input v-model.trim="SelectedMemberPassword1"  class="input col-7 " type="password"  placeholder="Chow@321" >
                         <!-- <input  :value="SelectedMemberPassword1"  class="input col-7 " type="text"  placeholder="Text input" > -->
                         <!-- <div>{{SelectedMemberPassword}}</div> -->
                     </div>
                    <div style="margin-left:8rem" v-if="CreatePassErrors.MinMaxNewPass != ''"> <span class="error-text">{{ CreatePassErrors.MinMaxNewPass }}</span></div>
                     <div class="row" style="margin-bottom:0.4rem">
                       <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">Retype new </div>
-                        <input v-model.trim="retypePass"  class="input col-7 " type="text"  placeholder="Chow@321" >
+                        <input v-model.trim="retypePass"  class="input col-7 " type="password"  placeholder="Chow@321" >
                     </div>
                     <div style="margin-left:8rem" v-if="CreatePassErrors.NotSameValueRe != ''"> <span class="error-text">{{ CreatePassErrors.NotSameValueRe }}</span></div>
                 </div>
