@@ -19,7 +19,16 @@
                       <input type="radio" name="status" style="padding-right:0.5rem" :checked="!linechartOption"> Damaged and Lost Equipment Items
                     </label>
                   </div>
-                    <bar-chart :chartData="lineChartData" ref="lineChart" styles="height: 40vh"  ></bar-chart>                    
+                    <bar-chart :chartData="lineChartData" ref="lineChart" styles="height: 40vh"  ></bar-chart>
+                  <div style="font-size:12px; text-align:center;font-style: italic;">
+                    <div v-if="linechartOption">
+                      Completed work orders chart in the past 11 months to the current moment.
+                    </div>
+                    <div v-else>
+                      Damaged and lost equipments chart in the past 11 months to the current moment.
+                    </div>  
+                  </div> 
+
                 </div>
                 <!-- line chart- end -->
               </div>
