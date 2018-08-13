@@ -1,19 +1,28 @@
 {
-    "createWorkOrder": [
-        {
-            "name": "Normal",
-            "workOrderDuration": 0,
-            "daysFromCreateDate": 0,
-            "durationFactor": 0.3,
-            "distanceFactor": 0.7
-        },
-        {
-            "name": "Urgent",
-            "workOrderDuration": 0,
-            "daysFromCreateDate": 1,
-            "operandDaysFromCreateDate": "lesser",            
-            "durationFactor": 0.7,
-            "distanceFactor": 0.3
-        }
-    ]
+    "createWorkOrder": {
+        "maximumWorkOrderDuration": 2,
+        "maximumWorkOrderDurationType": "year",
+        "maximumConflictWorkOrders": 2,
+        "presets": [
+            {
+                "name": "Normal",
+                "workOrderDuration": 0,
+                "workOrderDurationType": "year",
+                "durationFromCreateDate": 0,
+                "durationFromCreateDateType": "month",
+                "durationFactor": 0.2,
+                "distanceFactor": 0.8
+            },
+            {
+                "name": "Urgent",
+                "workOrderDuration": 6,
+                "workOrderDurationType": "month",
+                "durationFromCreateDate": 6,
+                "durationFromCreateDateType": "year",
+                "operandDaysFromCreateDate": "lesser",
+                "durationFactor": 1,
+                "distanceFactor": 0
+            }
+        ]
+    }
 }

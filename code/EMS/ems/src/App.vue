@@ -44,11 +44,13 @@ export default {
   },
   sockets: {
     NEW_NOTIFICATION: function() {
-      this.getNotifications();
+      if (this.authUser.Role != 'Admin') {
+        this.getNotifications();
+      }
     },
     WEB_CONFIG: function(data) {
-      this.$store.state.config = JSON.parse(data);
-    }
+      this.$store.state.config = data;
+    },
   },
   data() {
     return {};
