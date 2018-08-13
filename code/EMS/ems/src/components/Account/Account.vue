@@ -66,8 +66,8 @@
             <td :style="{color: account.IsActive? 'var(--primary-color)' : '#607D8B'}">{{account.IsActive? "Active" : "Inactive"}}</td>
           </strong> 
           </tr>
-      </tbody>
-    </table>  
+      </tbody>  
+    </table>
 
   <div v-if="totalAccount > 9" >
     <Page :current="currentPage" :total="totalAccount" show-elevator 
@@ -171,13 +171,20 @@ export default {
         let tmpAccounts = [];
         for (const account of this.searchValues) {
           tmpAccounts = tmpAccounts.concat(
-            this.accounts.filter(v => v.Id == account.Id)
+            this.accounts.filter(a => a.Id == account.Id)
           );
         }
-
-        this.totalAccount = tmpAccounts.length;
         this.toDisplayData = tmpAccounts.slice(0, 10);
+        this.totalAccount = this.toDisplayData.length;
         this.currentPage = 1;
+        if (this.toDisplayData == "") {
+          this.getAccountDetail();
+          for (const account of this.searchValues) {
+            tmpAccounts = tmpAccounts.concat(
+              this.accounts.filter(a => a.Id == account.Id)
+            );
+          }
+        }
       } else {
         this.accounts = [];
         this.toDisplayData = [];
