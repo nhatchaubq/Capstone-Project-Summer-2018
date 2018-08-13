@@ -16,6 +16,14 @@ const EQUIPMENT_API_PATH = SERVER_DEFAULT + "/equipment";
 // equipment api section - end
 
 // equipmentitem api section - start
+
+// equipment category api -start
+const EQUIPMENT_CATEGORY_CREATE_API_PATH =
+  SERVER_DEFAULT + "/EquipmentCategory/createCategory";
+const EQUIPMENT_CATEGORY_UPDATE_API_PATH =
+  SERVER_DEFAULT + "/EquipmentCategory/editCategory";
+
+//equipment category api - end
 const EQUIPMENTITEM_API_PATH = SERVER_DEFAULT + "/equipmentItem";
 const EQUIPMENTITEM_BY_ID_LOCATION_API_PATH = SERVER_DEFAULT + "/equipmentItem";
 // equipmentitem api section - end
@@ -52,7 +60,8 @@ const TEAM_LOCATION_CREATE_API_PATH =
 //team api section - start
 const TEAM_API_PATH = SERVER_DEFAULT + "/team";
 const TEAM_BY_LOCATION_ID_API_PATH = TEAM_API_PATH + "/getTeamByLocation";
-const TEAM_ACCOUNT_CREATE_API_PATH = SERVER_DEFAULT + "/team_account/createTeamAccount";
+const TEAM_ACCOUNT_CREATE_API_PATH =
+  SERVER_DEFAULT + "/team_account/createTeamAccount";
 //team api section - end
 
 // vendor api section -start
@@ -82,7 +91,7 @@ const REPORT_RETURNED_WORKORDER_API_PATH =
 //api report -end
 
 // api notification - start
-const NOTIFICATION_API_PATH = SERVER_DEFAULT + '/notification';
+const NOTIFICATION_API_PATH = SERVER_DEFAULT + "/notification";
 // api notification - end
 
 export default {
@@ -134,5 +143,8 @@ export default {
   REPORT_LATE_WORKORDER_API_PATH,
   REPORT_RETURNED_WORKORDER_API_PATH,
 
-  NOTIFICATION_API_PATH
+  NOTIFICATION_API_PATH,
+
+  EQUIPMENT_CATEGORY_CREATE_API_PATH,
+  EQUIPMENT_CATEGORY_UPDATE_API_PATH
 };
