@@ -51,7 +51,6 @@
     </div>
     <div v-else>
       There is no equipment to display.
-
     </div>
     <router-link to='/equipment/create/'>
       <button v-if="authUser.Role == 'Equipment Staff'" id="btn-add-equipment"  class="button btn-primary material-shadow-animate">Add Equipment</button>

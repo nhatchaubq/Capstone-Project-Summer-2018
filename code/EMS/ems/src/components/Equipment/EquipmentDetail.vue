@@ -13,7 +13,7 @@
                 <img :src= "this.EquimentByID.Image" style="width: 400px; height: 350px; ">
             </div>
             <div class="">
-              <div class="field" style=" display: grid; grid-template-columns: 70% 20% 10%">
+              <div class="field" style=" display: grid; grid-template-columns: 70% 20% 10%;">
                   <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{equipmentName}}</strong>
                   <button v-if="!addItemMode && authUser.Role=='Equipment Staff'" class="btn-Add"   v-on:click="addItem">Add Item</button>
                   <!-- <div class="" v-else ><button  class="btn-Add" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" >Add Item</button></div> -->
@@ -284,21 +284,21 @@
          <div v-if="selectedItem!=null" > 
            <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
           <div slot="header">
-              <div class="field" style=" display: grid; grid-template-columns: 85% 10%">
-                <strong style="padding-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a;padding-left: 0.4rem">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong>
+              <div class="field" style=" display: grid; grid-template-columns: 85% 10%; height:2rem">
+                <div style="margin-top:0.25rem"><strong style="padding-top:0.25rem; margin-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a;padding-left: 0.4rem">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong></div>
                 <div class="" v-if="currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation &&currentsttName != workingstt) ">
-                  <div class="" v-if="!editItemMode && authUser.Role=='Equipment Staff' "><button class="btn-edit" v-on:click="editItemMode = !editItemMode">Edit</button></div>  
+                  <div class="" v-if="!editItemMode && authUser.Role=='Equipment Staff'"><button class="btn-edit" v-on:click="editItemMode = !editItemMode" style="font-size: 16px;">Edit</button></div>  
                 </div>
                 <!-- <div class="" v-else><button class="btn-edit" style="color: white; border-bottom: 1px solid black;background-color: #26a69a; border-radius: 5px" disabled="disabled">Edit</button></div>   -->
               </div>
           </div>
-          <div style="font-size: 0.9rem; font:roboto">  
+          <div style="font-size: 0.9rem; font:roboto; padding-top:0.25rem">  
               <div class="control-mode-item">
                   <div class="field is-grouped view-mode" style="">
                       <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.Details}' v-on:click="setViewMode(viewModes.Details)">Details</button>
                       <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.Status}' v-on:click="setViewMode(viewModes.Status)">Status</button>
                       <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.Position}' v-on:click="setViewMode(viewModes.Position)">Position</button>
-                      <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.WorkOrder}' v-on:click="setViewMode(viewModes.WorkOrder)">Work Order</button>
+                      <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.WorkOrder}' v-on:click="setViewMode(viewModes.WorkOrder)">Working Order</button>
                       <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.RunTime}' v-on:click="setViewMode(viewModes.RunTime)">Runtime</button>
                   </div>
               </div>
@@ -426,30 +426,32 @@
                       <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
                       <button class="btn-UpdateItem" v-on:click="changeItemStatus">Save changes</button>
                     </div>
-                    <div class="wrap-table" style="max-height: 310px; overflow-y: auto; padding-top:0,5rem" v-if="statusHistories && statusHistories.length != 0">
+                    <div class="wrap-table" style=" padding-top:0,5rem" v-if="statusHistories && statusHistories.length != 0">
                       <div><h4 style="font-style: italic">Table: Equipment status history</h4></div>
-                    <table class="mytable">
-                        <thead>
-                          <tr>
-                            <th><strong>Order#</strong></th>                            
-                            <th><strong>From</strong></th>
-                            <th><strong>To</strong></th>
-                            <th><strong>By_User</strong></th>
-                            <th><strong>Date</strong></th>
-                            <th><strong>Note</strong></th>
-                          </tr>
-                        </thead>  
-                          <tbody>
-                            <tr v-for="(history, index) in statusHistories" style="font-size=16">
-                              <td style="font-size=14;">{{index + 1}}</td>
-                              <td style="font-size=14;">{{history.OldStatus.Name}}</td>    
-                              <td style="font-size=14;">{{history.NewStatus.Name}}</td>  
-                              <td style="font-size=14;">{{history.Fullname}}</td>  
-                              <td style="font-size=14;">{{history.Date}}</td>
-                              <td style="font-size=14;">{{history.Description}}</td>    
-                            </tr>
-                          </tbody>
-                      </table>
+                      <div style="max-height: 350px; overflow-y: auto;">
+                        <table class="mytable">
+                            <thead>
+                              <tr>
+                                <th><strong>Order#</strong></th>                            
+                                <th><strong>From</strong></th>
+                                <th><strong>To</strong></th>
+                                <th><strong>By_User</strong></th>
+                                <th><strong>Date</strong></th>
+                                <th><strong>Note</strong></th>
+                              </tr>
+                            </thead>  
+                            <tbody >
+                              <tr v-for="(history, index) in statusHistories" style="font-size=16">
+                                <td width=5% style="font-size=14;">{{index + 1}}</td>
+                                <td width=22% style="font-size=14;">{{history.OldStatus.Name}}</td>    
+                                <td width=22% style="font-size=14;">{{history.NewStatus.Name}}</td>  
+                                <td width=17% style="font-size=14;">{{history.Fullname}}</td>  
+                                <td width=19% style="font-size=14;">{{history.Date}}</td>
+                                <td width=15% style="font-size=14;">{{history.Description}}</td>    
+                              </tr>
+                            </tbody>
+                        </table>
+                      </div>
                     </div>
                     <div class="" v-else style="padding-top: 0,75rem;font-style: italic">
                       This item has been not change status by someone!
@@ -601,29 +603,31 @@
                 <div v-if="currentViewMode ==  viewModes.WorkOrder">
                   <div class="wrap-table"  style="max-height: 300px; overflow-y: auto">
                     <div class="" v-if="allworkorder && allworkorder.length != 0">
-                      <div><h4 style="font-style: italic">Table: Equipment work order history</h4></div>
-                      <table class="mytable">
-                        <thead>
-                            <tr>
-                              <th><strong>Order#</strong></th>                            
-                              <th><strong>Name</strong></th>
-                              <th><strong>RequestUser</strong></th>
-                              <th><strong>StartDate</strong></th>
-                              <th><strong>ClosedDate</strong></th>
-                              <th><strong>Status</strong></th>
-                            </tr>
-                          </thead>  
+                      <div><h4 style="font-style: italic">Table: Equipment working order history</h4></div>
+                      <div class="" style="max-height: 350px; overflow-y: auto;">
+                        <table class="mytable">
+                          <thead>
+                              <tr>
+                                <th><strong>Order#</strong></th>                            
+                                <th><strong>Name</strong></th>
+                                <th><strong>RequestUser</strong></th>
+                                <th><strong>StartDate</strong></th>
+                                <th><strong>ClosedDate</strong></th>
+                                <th><strong>Status</strong></th>
+                              </tr>
+                            </thead>  
                             <tbody>
                               <tr v-for="(workorder, index) in allworkorder" style="font-size=16">
-                                <td style="font-size=14;">{{index + 1}}</td>    
-                                <td style="font-size=14;">{{workorder.Name}}</td>    
-                                <td style="font-size=14;">{{workorder.RequestUser}}</td>
-                                <td style="font-size=14;">{{workorder.Detail[0].StartDate}}</td>  
-                                <td style="font-size=14;">{{workorder.Detail[0].ClosedDate ? workorder.Detail[0].ClosedDate : ''}}</td>
-                                <td style="font-size=14;">{{workorder.Status}}</td>     
+                                <td width=3% style="font-size=14;">{{index + 1}}</td>    
+                                <td width=33% style="font-size=14;">{{workorder.Name | truncate(30)}}</td>    
+                                <td width=18% style="font-size=14;">{{workorder.RequestUser}}</td>
+                                <td width=17% style="font-size=14;">{{workorder.StartDate}}</td>  
+                                <td width=17% style="font-size=14;">{{workorder.Detail[0].ClosedDate ? workorder.Detail[0].ClosedDate : ''}}</td>
+                                <td width=14% style="font-size=14;">{{workorder.Status}}</td>     
                               </tr>
                             </tbody>
                         </table>
+                      </div>
                     </div>
                     <div class="" v-else style="font-style: italic;">
                       <h3>This item has no work order</h3>
@@ -667,6 +671,36 @@
                         <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label>  
                       </div>
                     </div>
+                    <div class="" v-if="allMaintainWorkorder && allMaintainWorkorder.length != 0">
+                      <div><h4 style="font-style: italic">Table: Equipment maintaining order history</h4></div>
+                      <div class="" style="max-height: 350px; overflow-y: auto;">
+                        <table class="mytable">
+                          <thead>
+                              <tr>
+                                <th><strong>Order#</strong></th>                            
+                                <th><strong>Name</strong></th>
+                                <th><strong>Maintainer</strong></th>
+                                <th><strong>StartDate</strong></th>
+                                <th><strong>ClosedDate</strong></th>
+                                <th><strong>Cost</strong></th>
+                              </tr>
+                            </thead>  
+                            <tbody>
+                              <tr v-for="(workorder, index) in allMaintainWorkorder" style="font-size=16">
+                                <td width=3% style="font-size=14;">{{index + 1}}</td>    
+                                <td width=33% style="font-size=14;">{{workorder.Name | truncate(30)}}</td>    
+                                <td width=18% style="font-size=14;">{{workorder.RequestUser}}</td>
+                                <td width=17% style="font-size=14;">{{workorder.StartDate}}</td>  
+                                <td width=17% style="font-size=14;">{{workorder.Detail[0].ClosedDate ? workorder.Detail[0].ClosedDate : ''}}</td>
+                                <td width=14% style="font-size=14;">{{workorder.Detail[0].Cost >= 0 ? getNumberFormattedThousand(workorder.Detail[0].Cost) : 'Maintaining'}}</td>     
+                              </tr>
+                            </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="" v-else style="font-style: italic;">
+                      <h3>This item has no maintaining work order</h3>
+                    </div> 
                   </div>
                 </div>
               </div>  
@@ -983,6 +1017,7 @@ export default {
       randomNumbers: [],
       statusHistories: [],
       allworkorder: [],
+      allMaintainWorkorder: [],
       tiles: [],
       serialNumbers: [],
       oldstt: "",
@@ -1287,6 +1322,7 @@ export default {
                 this.oldstt = this.selectedItem.Item.StatusID;
                 this.statusHistories = [];
                 this.allworkorder = [];
+                this.allMaintainWorkorder = [];
                 this.lastWorkedDate = "";
                 this.downtime = 0;
                 this.percentRuntime = 0;
@@ -1329,6 +1365,21 @@ export default {
                     data.forEach(workorder => {
                       // alert(workorder.CreateDate);
                       this.allworkorder.push(workorder);
+                    });
+                  })
+                  .catch(error => {
+                    alert(error);
+                  });
+                this.axios
+                  .get(
+                    "http://localhost:3000/api/equipmentItem/allMaintainWorkorder/" +
+                      itemId
+                  )
+                  .then(response => {
+                    let data = response.data;
+                    data.forEach(workorder => {
+                      // alert(workorder.CreateDate);
+                      this.allMaintainWorkorder.push(workorder);
                     });
                   })
                   .catch(error => {
@@ -1382,6 +1433,7 @@ export default {
                 this.oldstt = this.selectedItem.Item.StatusID;
                 this.statusHistories = [];
                 this.allworkorder = [];
+                this.allMaintainWorkorder = [];
                 this.axios
                   .get(
                     "http://localhost:3000/api/equipmentItemHistory/" + itemId
@@ -1404,6 +1456,20 @@ export default {
                     let data = response.data;
                     data.forEach(workorder => {
                       this.allworkorder.push(workorder);
+                    });
+                  })
+                  .catch(error => {
+                    alert(error);
+                  });
+                this.axios
+                  .get(
+                    "http://localhost:3000/api/equipmentItem/allMaintainWorkorder/" +
+                      itemId
+                  )
+                  .then(response => {
+                    let data = response.data;
+                    data.forEach(workorder => {
+                      this.allMaintainWorkorder.push(workorder);
                     });
                   })
                   .catch(error => {
