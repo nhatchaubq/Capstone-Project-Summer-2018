@@ -6,45 +6,40 @@ router.get("/", function (request, response) {
   request
     .sql(
       "SELECT acc.Id as 'Account.Id', acc.Username as 'Account.Username', acc.Password as 'Account.Password', acc.Email as 'Account.Email', " +
-
       "acc.Fullname as 'Account.Fullname', acc.Phone as 'Account.Phone', acc.IsActive as 'Account.IsActive', acc.StartDate as 'Account.StartDate', " +
       "acc.EndDate as 'Account.EndDate', acc.AvatarImage as 'Account.AvatarImage', acc.RoleID as 'Account.RoleId', r.Name as 'Account.Role.Name' " +
       "FROM [Account] as acc JOIN [Role] as r ON acc.RoleID = r.Id " +
       "ORDER BY acc.IsActive DESC,acc.Username ASC " +
       "for json path"
-
     )
     .into(response);
 });
 
 // search-start
 
-
 router.get("/search/:value", function (request, response) {
   request
     .sql(
       "SELECT distinct acc.* FROM [Account] as acc " +
       "Join [Role] as r ON r.Id = acc.RoleID  " +
-      "WHERE acc.Username like N'%est%' " +
+      "WHERE acc.Username like N'%' + @searchText + '%' " +
+      "or acc.Fullname like N'%' + @searchText + '%'" +
+      "or acc.Email like N'%' + @searchText + '%'" +
+      "or acc.Phone like N'%' + @searchText + '%' " +
+      "or r.Name like N'%' + @searchText + '%' " +
       "ORDER BY acc.IsActive DESC,acc.Username ASC " +
       "for json path "
-
     )
-    .param("searchText", req.params.value, TYPES.NVarChar)
+    .param("searchText", request.params.value, TYPES.NVarChar)
     .into(response);
 });
 
-
 // search-end
-
-
-
 
 /* POST request, for insert */
 router.post("/", (request, response) => {
   request
     .sql(
-
       "insert into [Account](Username, Password, Email, Fullname, Phone, IsActive, StartDate, EndDate, RoleId, AvatarImage)" +
       " values(@username, @password, @email, @fullname, @phone, 'True', getdate(), @enddate, @roleid, @avatarimage)"
     )
@@ -64,7 +59,6 @@ router.post("/", (request, response) => {
 
 /* PUT request, for update */
 
-
 router.put('/:id', function (request, response) {
   request.sql('update [Account] set Fullname = @fullname, Password = @password, IsActive = @isActive, Email = @email, Phone = @phone, AvatarImage = @avatarimage  where Id = @id')
     .param('id', request.params.id, TYPES.Int)
@@ -77,6 +71,7 @@ router.put('/:id', function (request, response) {
     .exec(response);
 });
 router.put('/edit/id')
+
 /* DELETE request, for delete */
 router.delete("/:id", function (request, response) {
   request
@@ -84,13 +79,12 @@ router.delete("/:id", function (request, response) {
     .param("id", request.params.id, TYPES.NVarChar)
     .exec(response);
 });
-router.put('/changeYourPass', function (request, response) {
-  request.sql('update [Account] set Password = @password where Id = @id')
-    .param('id', request.body.tmpAcc.id, TYPES.Int)
-    .param('password', request.body.tmpAcc.password, TYPES.NVarChar)
-    .exec(response);
-});
-
-
+// router.put("/changeYourPass", function(request, response) {
+//   request
+//     .sql("update [Account] set Password = @password where Id = @id")
+//     .param("id", request.body.tmpAcc.id, TYPES.Int)
+//     .param("password", request.body.tmpAcc.password, TYPES.NVarChar)
+//     .exec(response);
+// });
 
 module.exports = router;

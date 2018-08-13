@@ -43,11 +43,9 @@
 
                 <th><strong>#</strong></th>
                 <th><strong>Team name</strong></th>
-                <th><strong> <span style="font-size: 25px">♛</span>  Leader </strong></th>
+                <th><strong>Leader </strong></th>
                 <th><strong>Members </strong></th>
                 <th><strong>Create date </strong></th>
-
-
 
 
                 <!-- <th><strong>Department</strong></th> -->
@@ -61,14 +59,14 @@
               <!-- <router-link :to="`/account/${team.TeamLeader.Id}`">   -->
                 <td :style="{color: team.TeamLeader ? 'var(--primary-color)' : '#607D8B'}"> <span style="font-size: 25px;"></span> {{ team.TeamLeader ? team.TeamLeader.Username : 'n/a'}}</td>
               <!-- </router-link> -->
-              <td>{{team.Members.Quantity}}</td>
+              <td>{{team.Members.Quantity? team.Members.Quantity: 'N/A'}}</td>
               <td>{{getDate(team.CreatedDate)}}</td>
 
             </tr>
         </tbody>
     </table>
-  <div v-if="teams.length >9" class="">
-    <Page :current="currentPage" :total="teams.length" show-elevator 
+  <div v-if="totalTeam >9" class="">
+    <Page :current="currentPage" :total="totalTeam" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage = newPageNumber
         let start = 10 * (newPageNumber - 1);
@@ -91,6 +89,8 @@
 
 <script>
 import moment from "moment";
+import Server from "@/config/config.js";
+import { sync } from "vuex-pathify";
 export default {
   components: {
     moment
@@ -109,28 +109,31 @@ export default {
     //     JSON.parse(window.localStorage.getItem("user")).Id
     //   }`;
     // }
-    let URL = "http://localhost:3000/api/team";
-    this.axios.get(URL).then(res => {
-      // alert(JSON.parse(window.localStorage.getItem("user")).Id);
-      let data = res.data;
-      data.forEach(element => {
-        let team = element.Team;
-        this.teams.push(team);
-        this.toDisplayData = this.teams.slice(0, 10);
-      });
-    });
+
+    // let URL = "http://localhost:3000/api/team";
+    // this.axios.get(URL).then(res => {
+    //   let data = res.data;
+    //   data.forEach(element => {
+    //     let team = element.Team;
+    //     this.teams.push(team);
+    //     this.toDisplayData = this.teams.slice(0, 10);
+    //   });
+    // });
+    this.getTeamDetail();
   },
   data() {
     return {
       currentPage: 1,
       teams: [],
-      toDisplayData: []
+      toDisplayData: [],
+      totalTeam: 0
     };
   },
   computed: {
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
-    }
+    },
+    searchValues: sync("teamPage.searchValues")
   },
   methods: {
     gotoDetail(teamId) {
@@ -138,6 +141,38 @@ export default {
     },
     getDate(date) {
       return moment(date).format("L");
+    },
+    getTeamDetail() {
+      let url = Server.TEAM_API_PATH;
+      this.axios.get(url).then(response => {
+        this.teams = [];
+        response.data.forEach(value => this.teams.push(value.Team));
+        this.totalTeam = this.teams.length;
+        this.toDisplayData = this.teams.slice(0, 10);
+      });
+    }
+  },
+  watch: {
+    searchValues: function() {
+      if (this.searchValues && this.searchValues.length > 0) {
+        let tmpTeams = [];
+        for (const team of this.searchValues) {
+          tmpTeams = tmpTeams.concat(this.teams.filter(te => te.Id == team.Id));
+        }
+
+        this.totalTeam = tmpTeams.length;
+        this.toDisplayData = tmpTeams.slice(0, 10);
+        this.currentPage = 1;
+      } else {
+        this.teams = [];
+        this.toDisplayData = [];
+        this.totalTeam = 0;
+      }
+    },
+    "$store.state.teamPage.searchText": function() {
+      if (this.$store.state.teamPage.searchText == "") {
+        this.getTeamDetail();
+      }
     }
   }
 };

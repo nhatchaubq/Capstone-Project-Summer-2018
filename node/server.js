@@ -16,9 +16,7 @@ app.use(cors());
 var connection = {
   server: "localhost",
   userName: "sa",
-
-  password: "123456",
-
+  password: "tien1005",
   port: "1433",
   options: {
     // instanceName : "SQLEXPRESS",
@@ -82,6 +80,9 @@ app.use("/api/dashboard", require("./routes/dashBoard"));
 app.use(
   "/api/allaccwithout",
   require("./routes/AllAccWithoutMaintainerAndAdmin")
+);
+app.use("/api/changeYourPass",
+  require("./routes/changeYourPass")
 );
 
 app.use("/api/report", require("./routes/report"));
