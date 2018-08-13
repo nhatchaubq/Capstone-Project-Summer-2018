@@ -2,6 +2,7 @@ var app = require("express")();
 const bodyParser = require("body-parser");
 const tediousExpress = require("express4-tedious");
 const cors = require("cors");
+const fs = require('fs');
 
 // server.listen(80);
 // io.on('connection', function (socket) {
@@ -17,7 +18,7 @@ var connection = {
   server: "localhost",
   userName: "sa",
 
-  password: "123456",
+  password: "cCS94@bcnq836894",
 
   port: "1433",
   options: {
@@ -43,8 +44,7 @@ var server = app.listen(3000, () => {
 
 var io = require("socket.io")(server);
 io.on("connection", function (socket) {
-  let config = require('./web_config/config.json');
-  socket.emit('WEB_CONFIG', JSON.stringify(config));
+  socket.emit('WEB_CONFIG', require('./web_config/config.json'));
   socket.on("NEW_WORK_ORDER_CREATED", function (data) {
     socket.broadcast.emit("NEW_WORK_ORDER_CREATED", data);
   });
@@ -56,6 +56,15 @@ io.on("connection", function (socket) {
   });
   socket.on('CLOSE_WORK_ORDER_DETAIL', function (data) {
     socket.broadcast.emit('ORDER_STATUS_CHANGED', data);
+  });
+  socket.on('CONFIGURATION_CHANGED', function(data) {
+    fs.writeFile('./web_config/config.json', JSON.stringify(data, null, 4), 'utf8', function(err) {
+      if (err) {
+        return console.log(err);
+      }
+      socket.broadcast.emit('WEB_CONFIG', data);
+      console.log('new config saved');
+    });
   });
 });
 

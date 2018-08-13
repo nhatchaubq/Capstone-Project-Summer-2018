@@ -41,7 +41,7 @@
                           <div class="view-mode col-4" 
                                 :class="{'view-mode-active': !workingOrderViewMode}"
                                 v-on:click="() => {$store.state.workOrderPage.workingOrderViewMode = false}">
-                              Maintaining Orders
+                              Maintenance Orders
                           </div>
                       </div>
                   </div>
@@ -1607,7 +1607,7 @@ export default {
             .then(async response => {
               if (response.status == 200) {
                 let tileId = null;
-                if (this.selectedOrder.Category == "Working") {
+                if (this.selectedOrder.Category == "Working" && value.status != "Lost") {
                   tileId = parseInt(value.tileOption.value);
                 }
                 if (this.selectedOrder.Category == "Working") {

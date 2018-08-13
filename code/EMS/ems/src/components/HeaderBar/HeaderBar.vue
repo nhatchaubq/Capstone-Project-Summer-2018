@@ -35,7 +35,7 @@
                     <!-- </div> 
                 </div> -->
                 <!-- noti button -->
-                <div style="padding-right: .5rem; padding-top: .2rem; margin-right: 2.5rem">
+                <div style="padding-right: .5rem; padding-top: .2rem; margin-right: 2.5rem" v-show="authUser.Role != 'Admin'">
                         <v-badge style="margin-top: .2rem;" color="red" v-popover:notificationPanel>
                             <span slot="badge" v-if="notifications.filter(noti => !noti.Status).length > 0">
                                 {{ notifications.filter(noti => !noti.Status).length }}

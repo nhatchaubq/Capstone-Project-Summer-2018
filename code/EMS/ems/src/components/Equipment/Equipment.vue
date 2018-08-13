@@ -43,7 +43,6 @@
             currentPage = newPageNumber
             let start = 10 * (newPageNumber - 1);
             let end = start + 10;
-            showarlet(`${start } ${end} ${this.total}`)
             toDisplayData = equipments.slice(start, end);
           }">
         </Page>
