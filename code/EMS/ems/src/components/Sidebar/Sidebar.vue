@@ -51,13 +51,13 @@
         </li>
         <li>
           <router-link to='/category'>
-            <div class="sidebar-list-content" :class="isActive(menu.Categories)">
-            <i class="material-icons">category</i>
-            {{ menu.Categories }}
+            <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
+            <i class="material-icons">build</i>
+            {{ menu.Equipment }} Category
           </div>
           </router-link>
         </li>
-        <li>
+        <li v-if="authUser.Role != 'Admin'">
           <router-link to='/location'>
             <div class="sidebar-list-content" :class="isActive(menu.Location)">
               <i class="material-icons">location_on</i>
@@ -112,8 +112,7 @@ export default {
     currentSelected: sync("title"),
 
     authUser() {
-      return JSON.parse(window.localStorage.getItem('user'));
-
+      return JSON.parse(window.localStorage.getItem("user"));
     }
   },
   data() {
