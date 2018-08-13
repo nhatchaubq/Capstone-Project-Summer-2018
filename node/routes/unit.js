@@ -1,7 +1,7 @@
 var router = require('express').Router();
 var TYPES = require('tedious').TYPES;
 router.get('/', (request, response) => {
-    request.sql("SELECT * From [Unit] for json path")
+    request.sql("SELECT * From [Unit] order by Name asc for json path")
         .into(response);
 });
 

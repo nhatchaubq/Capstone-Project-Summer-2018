@@ -85,7 +85,7 @@
                 </div>
                 <div class="form-field-input">
                 <div class="control  has-icons-right" style="padding:8px">
-                    <input v-model.trim="Vendor.ContactName" class="input " type="text" placeholder="d-point" >
+                    <input v-model.trim="Vendor.ContactName" class="input " type="text" placeholder="D-point" >
                         <!-- <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
                         </span> -->

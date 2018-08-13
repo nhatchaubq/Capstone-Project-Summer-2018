@@ -220,7 +220,7 @@ export default {
           case menu.Equipment: {
             searchApi =
               "http://localhost:3000/api/equipment/search/" + this.searchText;
-             this.axios
+            this.axios
               .get(searchApi)
               .then(res => {
                 if (res.status == 200) {
@@ -241,6 +241,54 @@ export default {
               .then(res => {
                 if (res.status == 200) {
                   this.$store.state.locationPage.searchValues = res.data;
+                  this.searchFunction = null;
+                }
+              })
+              .catch(error => {
+                console.log(error);
+                this.$router.push("/500");
+              });
+            break;
+          }
+          case menu.Vendors: {
+            searchApi = `${Server.VENDOR_SEARCH_API_PATH}/${this.searchText}`;
+            this.axios
+              .get(searchApi)
+              .then(res => {
+                if (res.status == 200) {
+                  this.$store.state.vendorPage.searchValues = res.data;
+                  this.searchFunction = null;
+                }
+              })
+              .catch(error => {
+                console.log(error);
+                this.$router.push("/500");
+              });
+            break;
+          }
+          case menu.Accounts: {
+            searchApi = `${Server.ACCOUNT_SEARCH_API_PATH}/${this.searchText}`;
+            this.axios
+              .get(searchApi)
+              .then(res => {
+                if (res.status == 200) {
+                  this.$store.state.accountPage.searchValues = res.data;
+                  this.searchFunction = null;
+                }
+              })
+              .catch(error => {
+                console.log(error);
+                this.$router.push("/500");
+              });
+            break;
+          }
+          case menu.Teams: {
+            searchApi = `${Server.TEAM_SEARCH_API_PATH}/${this.searchText}`;
+            this.axios
+              .get(searchApi)
+              .then(res => {
+                if (res.status == 200) {
+                  this.$store.state.teamPage.searchValues = res.data;
                   this.searchFunction = null;
                 }
               })
@@ -376,7 +424,7 @@ export default {
     },
     "$store.state.equimentPage.searchText": function() {
       this.searchText = this.$store.state.equipmentPage.searchText;
-      },
+    },
     "$store.state.locationPage.searchText": function() {
       this.searchText = this.$store.state.locationPage.searchText;
     }

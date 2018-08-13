@@ -38,7 +38,7 @@
               {{ menu.Report }}
             </div>
           </router-link>
-        </li>
+        </li>   
         <div class="divider" v-if="authUser.Role != 'Admin'"></div>
             
         <li>
@@ -50,6 +50,14 @@
           </router-link>
         </li>
         <li>
+          <router-link to='/category'>
+            <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
+            <i class="material-icons">build</i>
+            {{ menu.Equipment }} Category
+          </div>
+          </router-link>
+        </li>
+        <li v-if="authUser.Role != 'Admin'">
           <router-link to='/location'>
             <div class="sidebar-list-content" :class="isActive(menu.Location)">
               <i class="material-icons">location_on</i>
@@ -67,11 +75,19 @@
           </div>
           </router-link>
         </li>
-        <li v-if="authUser.Role =='Admin' || authUser.Role =='Manager'">
+        <li v-if="authUser.Role =='Manager'">
           <router-link to='/account'>
             <div class="sidebar-list-content" v-bind:class="isActive(menu.Accounts)">
             <i class="material-icons">people</i>
            {{ menu.AccountsTeams }}
+          </div>
+          </router-link>
+        </li>
+        <li v-if="authUser.Role =='Admin'">
+          <router-link to='/account'>
+            <div class="sidebar-list-content" v-bind:class="isActive(menu.Accounts)">
+            <i class="material-icons">people</i>
+           {{ menu.Accounts }}
           </div>
           </router-link>
         </li>
@@ -104,8 +120,7 @@ export default {
     currentSelected: sync("title"),
 
     authUser() {
-      return JSON.parse(window.localStorage.getItem('user'));
-
+      return JSON.parse(window.localStorage.getItem("user"));
     }
   },
   data() {

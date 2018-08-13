@@ -19,7 +19,7 @@
             <div class="form-content">
             <div class="form-field-picture">
               <div class="form-field-title">
-                  <span><strong>  Picture (required) </strong></span><span v-if="CreateAccountErrors.NoImage != ''">. <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span>
+                  <span><strong>  Picture (required) </strong></span><span v-if="CreateAccountErrors.NoImage != ''"> <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span>
 
               </div>
               <div class="input_picture">                    
@@ -138,7 +138,7 @@
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.email" class="input" type="email" placeholder="CPoint@gmail.com" >
+                        <input v-model.trim="account.email" class="input" type="email" placeholder="DPoint@gmail.com" >
                             <!-- <span class="icon is-small is-left">
                             <i class="fa fa-envelope"></i>
                             </span> -->

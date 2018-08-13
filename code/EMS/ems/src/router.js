@@ -23,10 +23,11 @@ import ProjectComponent from "./components/Project/Project.vue";
 import CreateLocation from "./components/Location/CreateLocation.vue";
 import VendorComponent from "./components/Vendor/Vendor.vue";
 import VendorDetailComponent from "./components/Vendor/VendorDetail.vue";
+import CategoryComponent from "./components/Category/Category.vue";
+import CreateCategoryComponent from "./components/Category/CreateCategory.vue";
 // import AddVendorComponent from "./components/Vendor/AddVendor.vue";
 import AddVendor1Component from "./components/Vendor/AddVendor1.vue";
 import EditLocation from "./components/Location/EditLocation.vue";
-
 
 // chaubqn - start
 import TestComponent from "./components/TestSite/Test.vue";
@@ -34,7 +35,7 @@ import LocationMapViewComponent from "./components/Location/MapView.vue";
 import AddBlockFloorTileComponent from "./components/Location/AddBlockFloorTile.vue";
 import Component500 from "./components/Error/500.vue";
 import EditWorkOrder from "./components/Order/EditOrder.vue";
-import ConfigurationComponent from './components/Configuration/Configuration.vue';
+import ConfigurationComponent from "./components/Configuration/Configuration.vue";
 // chaubqn - end
 
 // hau - start
@@ -57,7 +58,7 @@ import DienComponent from "./components/chartTest/test1.vue";
 
 //Dien addEquipmentCategory-start
 import AddEquipmentCategoryComponent from "./components/Equipment/AddEquipmentCategory.vue";
-import Page404Component from "./components/page/404.vue"
+import Page404Component from "./components/page/404.vue";
 // import TestPageNaviComponent from "./components/Vendor/testPageNavi.vue";
 //Dien addEquipmentCategory-end
 
@@ -68,7 +69,8 @@ import menu from "./models/menu";
 
 let router = new Router({
   mode: "history",
-  routes: [{
+  routes: [
+    {
       path: "/",
       component: DashboardComponent,
       beforeEnter: (to, from, next) => {
@@ -173,6 +175,7 @@ let router = new Router({
       }
     },
     {
+      name: "allTeam",
       path: "/team",
       component: TeamComponent,
       beforeEnter: (to, from, next) => {
@@ -184,6 +187,7 @@ let router = new Router({
       }
     },
     {
+      name: "addTeam",
       path: "/team/add",
       component: AddTeamComponent,
       beforeEnter: (to, from, next) => {
@@ -192,6 +196,7 @@ let router = new Router({
       }
     },
     {
+      name: "teamDetail",
       path: "/team/:id",
       component: TeamDetailComponent,
       beforeEnter: (to, from, next) => {
@@ -200,14 +205,19 @@ let router = new Router({
       }
     },
     {
+      name: "allAccount",
       path: "/account",
       component: AccountComponent,
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Accounts);
         next();
+      },
+      meta: {
+        showSearchBar: true
       }
     },
     {
+      name: "addAccount",
       path: "/account/add",
       component: AddAccountComponent,
       beforeEnter: (to, from, next) => {
@@ -223,6 +233,14 @@ let router = new Router({
         next();
       }
     },
+    // {
+    //   path: "/profile",
+    //   component: AccountDetailComponent,
+    //   beforeEnter: (to, from, next) => {
+    //     store.set("title", menu.AccountDetails);
+    //     next();
+    //   }
+    // },
     {
       path: "/department",
       component: DepartmentComponent,
@@ -254,6 +272,7 @@ let router = new Router({
       }
     },
     {
+      name: "allVendor",
       path: "/vendor",
       component: VendorComponent,
       beforeEnter: (to, from, next) => {
@@ -265,6 +284,7 @@ let router = new Router({
       }
     },
     {
+      name: "vendorDetail",
       path: "/vendor/:id",
       component: VendorDetailComponent,
       beforeEnter: (to, from, next) => {
@@ -284,6 +304,7 @@ let router = new Router({
     //   }
     // },
     {
+      name: "addVendor",
       path: "/vendor1/add",
       component: AddVendor1Component,
       beforeEnter: (to, from, next) => {
@@ -516,7 +537,6 @@ let router = new Router({
       }
     },
     {
-
       path: "/myEquipment",
       component: MyEquipmentComponent,
 
@@ -546,6 +566,28 @@ let router = new Router({
 
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Configuration);
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      path: "/category",
+      component: CategoryComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", "Equipment Category");
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      path: "/createCategory",
+      component: CreateCategoryComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", "Equipment Category");
         next();
       },
       meta: {

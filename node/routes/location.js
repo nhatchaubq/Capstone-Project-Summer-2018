@@ -50,7 +50,6 @@ router.put("/updateLocation", (req, res) => {
       "Update [Location] set Name = @name,Address = @address,Description = @description,IsActive = @isActive " +
         "where Id = @locationId"
     )
-
     .param("locationId", req.body.newLocation.id, TYPES.Int)
     .param("name", req.body.newLocation.name, TYPES.NVarChar)
     .param("address", req.body.newLocation.address, TYPES.NVarChar)

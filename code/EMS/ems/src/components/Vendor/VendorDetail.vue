@@ -22,8 +22,8 @@
             <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
           </div>
         </div>
-          <input v-if="!editMode" v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-          <input v-else v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="Text input" >
+          <input v-if="!editMode" v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="160/5 Tan Chanh Hiep, Quan 12, Ho Chi Minh" disabled="disabled">
+          <input v-else v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="160/5 Tan Chanh Hiep, Quan 12, Ho Chi Minh" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem" >
             <strong>
@@ -33,8 +33,8 @@
             <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span>
           </div>
         </div>
-          <input v-if="!editMode" v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled"> 
-          <input v-else v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="Text input" >
+          <input v-if="!editMode" v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="www.d-point.co.jp" disabled="disabled"> 
+          <input v-else v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="www.d-point.co.jp" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem;" >
             <strong>
@@ -44,8 +44,8 @@
             <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span>
           </div>
         </div>
-          <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" disabled="disabled">
-          <input v-else v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="Text input" >
+          <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D-point" disabled="disabled">
+          <input v-else v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D-point" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem"  >
             <strong>
@@ -55,8 +55,8 @@
             <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
           </div>
         </div>
-          <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="Text input" disabled="disabled">
-          <input v-else v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="Text input" >
+          <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="dpoint@gmail.com" disabled="disabled">
+          <input v-else v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="dpoint@gmail.com" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem" >
             <strong>
@@ -66,8 +66,8 @@
             <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
           </div> 
         </div> 
-          <input v-if="!editMode" v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" style="margin-bottom:1rem" disabled="disabled">
-          <input v-else v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="Text input" >
+          <input v-if="!editMode" v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="D-point is a small company ... " style="margin-bottom:1rem" disabled="disabled">
+          <input v-else v-model.trim="Vendor.Description" class="input col-7 " type="text"  placeholder="D-point is a small company ... " >
         <div class="row" v-if="editMode">
           <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editVendor()">Save change</button>
           <button class="button btn-cancel material-shadow-animate" v-on:click="() => {
@@ -385,7 +385,7 @@ export default {
   computed: {
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
-    },
+    }
   },
   created() {
     let URL = `http://localhost:3000/api/vendor/${this.$route.params.id}`;

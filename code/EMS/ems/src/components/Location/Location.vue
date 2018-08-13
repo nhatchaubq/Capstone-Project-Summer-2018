@@ -577,6 +577,9 @@ export default {
       }
     },
     "$store.state.locationPage.searchText": function() {
+      if (this.$store.state.locationPage.searchText.length > 0) {
+        this.setSelectedLocation(null);
+      }
       if (this.$store.state.locationPage.searchText == "") {
         this.getAllLocation();
       }

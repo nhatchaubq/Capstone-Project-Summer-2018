@@ -37,7 +37,7 @@
                 </tr>
             </tbody>
         </table>
-      <div v-if="equipments.length >9" class="pageNa">
+      <div v-if="equipments.length >9" class="">
         <Page :current="currentPage" :total="equipments.length" show-elevator 
           @on-change="(newPageNumber) => {
             currentPage = newPageNumber
@@ -50,10 +50,9 @@
     </div>
     <div v-else>
       There is no equipment to display.
-
     </div>
     <router-link to='/equipment/create/'>
-      <button id="btn-add-equipment"  class="button btn-primary material-shadow-animate">Add Equipment</button>
+      <button v-if="authUser.Role == 'Equipment Staff'" id="btn-add-equipment"  class="button btn-primary material-shadow-animate">Add Equipment</button>
     </router-link>
   </div>
 </template>
@@ -170,6 +169,30 @@ export default {
   cursor: pointer;
   /* background-color: #009688;
   color: white; */
+}
+th {
+  text-align: left;
+  background-color: #cfd8dc;
+  height: 30px;
+  line-height: 30px;
+  padding: 0.5rem !important;
+}
+
+td {
+  vertical-align: middle;
+  height: 40px;
+  line-height: 25px;
+  padding: 0.5rem;
+}
+
+tr:nth-child(odd) {
+  background-color: white;
+  color: #263238;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+  color: #263238;
 }
 tr {
   cursor: pointer;

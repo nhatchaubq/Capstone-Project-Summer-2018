@@ -19,7 +19,16 @@
                       <input type="radio" name="status" style="padding-right:0.5rem" :checked="!linechartOption"> Damaged and Lost Equipment Items
                     </label>
                   </div>
-                    <bar-chart :chartData="lineChartData" ref="lineChart" styles="height: 40vh"  ></bar-chart>                    
+                    <bar-chart :chartData="lineChartData" ref="lineChart" styles="height: 40vh"  ></bar-chart>
+                  <div style="font-size:12px; text-align:center;font-style: italic;">
+                    <div v-if="linechartOption">
+                      Completed work orders chart in the past 11 months to the current moment.
+                    </div>
+                    <div v-else>
+                      Damaged and lost equipments chart in the past 11 months to the current moment.
+                    </div>  
+                  </div> 
+
                 </div>
                 <!-- line chart- end -->
               </div>
@@ -112,7 +121,7 @@
 
                         <div style="width:100%" class="Chart1">
                             <strong>Equipment items by status</strong>  
-                            <pie-chart styles="height: 40vh" :data="pieChartData"></pie-chart>
+                            <pie-chart styles="height: 40vh" :data="pieChartData" :option="myoption" ></pie-chart>
                         </div>
                   
                         </div>
@@ -292,6 +301,11 @@ export default {
         labels: [],
         values: []
       },
+      myoption: {
+        onClick: function(evt) {
+          alert("123");
+        }
+      },
       // doughnutChartData: {
       //   TodayLabels: [],
       //   TodayData: []
@@ -334,22 +348,6 @@ export default {
       .then(res => {
         if (res.status == 200) {
           let data = res.data;
-          let today = {
-            key: `today`,
-            highlight: {
-              backgroundColor: "#26a69a"
-              // Other properties are available too, like `height` & `borderRadius`
-            },
-            contentStyle: {
-              color: "#fafafa"
-            },
-
-            // popover: {
-            //   label: ""
-            // },
-            dates: [new Date(moment(moment()).format("L"))]
-          };
-          this.attrs.push(today);
           data.forEach(item => {
             let attr = {
               key: `today ${item.Id}`,
@@ -377,6 +375,22 @@ export default {
             this.attrs.push(attr);
             this.equipmentItems.push(item);
           });
+          let today = {
+            key: `today`,
+            highlight: {
+              backgroundColor: "#26a69a"
+              // Other properties are available too, like `height` & `borderRadius`
+            },
+            contentStyle: {
+              color: "#fafafa"
+            },
+
+            // popover: {
+            //   label: ""
+            // },
+            dates: [new Date(moment(moment()).format("L"))]
+          };
+          this.attrs.push(today);
         }
       })
       .catch(error => {
