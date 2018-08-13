@@ -1,20 +1,16 @@
 <template>
   <div>
-    <div v-if="!equipments">
-      There is no equipment yet.
-    </div>
-    <div v-else>
-    <div v-if="equipments">
-       <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer' " >
+    <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer' " >
         <div class="field is-grouped view-mode" style="margin-bottom: 0.2rem !important; padding: 0rem!important">
           <router-link to='/Equipment/'>  
-            <button class="btn-view-mode-left" style="margin-right:0rem"> All Equipments</button>
+            <button class="btn-view-mode-left" style="margin-right:0rem"> All Equipment</button>
           </router-link>
           <router-link to='/myEquipment/'>  
-            <button class="btn-view-mode-right" disabled="disabled">My Equipment Items</button>
+            <button class="btn-view-mode-right" disabled="disabled">My Equipment</button>
           </router-link>
         </div>
-      </div>
+    </div>
+    <div v-if="displayOrders && displayOrders.length != 0"> 
       <table class="table" >
           <thead>
                 <tr>
@@ -50,8 +46,8 @@
                 </tr>
           </tbody>
       </table>
-       <modal v-model="changePosition" style="font-family: Roboto">
-         <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
+      <modal v-model="changePosition" style="font-family: Roboto">
+        <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
         <div slot="header" style="font-weight: bold">
             <span>Update Position </span>
         </div>
@@ -125,7 +121,9 @@
                     }">Save changes</button>
         </div>
       </modal>
-    </div> 
+    </div>
+    <div v-else>
+      There is no equipment yet.
     </div>
   </div>
 </template>
@@ -241,7 +239,6 @@ export default {
             this.displayOrders[i].WorkorderDetail[j].EquipmentItemID == itemId
           ) {
             this.WOlocationID = this.displayOrders[i].LocationID;
-            alert(this.WOlocationID);
           }
         }
       }
