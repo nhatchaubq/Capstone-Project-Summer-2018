@@ -4,111 +4,22 @@
     <router-link to="/account" v-if="authUser.Role =='Admin' || authUser.Role == 'Manager'">
       <a><span class="material-icons" style="position: relative; top: .4rem;">keyboard_arrow_left</span> Back to Accounts</a>
     </router-link>
-    <!-- <router-link :to="`/account/${authUser.Id}`" v-if="authUser.Role =='Staff' || authUser.Role == 'Equipment Staff' || authUser.Role == 'Maintainer'">
-      <a><span class="material-icons" style="position: relative; top: .4rem;">keyboard_arrow_left</span> Back to profile</a>
-    </router-link> -->
+
 
 <div class="grid-wrapper1">
 
-  <!-- <button class="button " style="background-color:green;   position: fixed;
-  top: 6rem;
-  right: 2rem;" v-on:click="editMode = !editMode">edit</button> -->
   <div>
-<!-- <div v-if="!editMode"> -->
+
   <div>
   <img :src="account.AvatarImage? account.AvatarImage: 'https://i.stack.imgur.com/l60Hf.png' " :alt="account.Username" style="width: 100%; height: 20rem ">
 </div>
 <div v-if="editMode">
- <!-- <div class="form-field-picture">
-              <div class="form-field-title">
-                  
-                  <span><strong>  Picture </strong></span>
-
-              </div>
-              <div class="input_picture">
-                <div>
-                  <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
-                          {{ file.name }}
-                      </div>
-                </div>
-                <div>                    
-                  <label class="file-label" style="width: 100% !important"> 
-                  <span class="file-cta">
-                      <input class="file-input" type="file" accept="image/*" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
-                      <span class="file-icon">
-
-                          <i class="fa fa-upload"></i>
-                      </span>
-                      <span class="file-label">
-                          Choose images...
-                      </span>
-                  </span>
-                      
-                  </label>
-              </div>
-              </div> 
-            </div> -->
-
-              <!-- <div class="row" style="height:30px" v-if="editMode">
-                <div class="" style="margin-top:0.5rem">
-                  Picture:
-                </div>
-                <div class="input_picture">                  
-                  <label class="file-label"  > 
-                  <span class="file-cta">
-                      <input v-if="!editMode" class="file-input" type="file" accept="image/*" style="opacity:0" ref="fileInput"  disabled="disabled" />
-                      <input v-else class="file-input" type="file" accept="image/*"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
-                      <span class="file-icon" style="margin-right=0;">
-                          <i class="fa fa-upload"></i>
-                      </span>
-                      <span class="file-label">
-                                Choose images...
-                      </span>
-                  </span>
-                      <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
-                          {{ file.name }}
-                      </div>
-                  </label>              
-                </div>
-              </div> -->
+ 
                          
 </div>
 
 
-<!-- test -->
-<!-- <div v-if="!editMode">
- <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
-  <div v-if="!account.Teams">
-    This account has no team.
-  </div>
-  <div v-else>
-    
-    <table class="mytable">
-      <thead>
-        <tr>
 
-          <th style="width:3% !important"><strong>#</strong></th>
-          <th style="width:47% !important"><strong>Team name </strong></th>
-          <th style="width:15% !important"><strong>Team role </strong></th>
-        </tr>
-      </thead>  
-      <tbody>
-          <tr v-bind:key="team.id" v-for="(team, index) in account.Teams" v-on:click="gotoDetail(team.Id)" >
-            <td >{{index + 1}}</td>
-            <td >{{team.Name? team.Name: "N/A" }}</td>
-            <td v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">♛Leader</span>   </strong> </td> 
-            <td v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">♟Member</span> </strong> </td> 
-
-
-          </tr>
-      </tbody>
-    </table>
-
-  </div>
-</div> -->
-<!-- test-end -->
-
-<!-- test- page-navigate-start -->
 <div>
   <div v-if="!editMode">
  <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
@@ -117,10 +28,10 @@
   </div>
   <div v-else>
     <table class="mytable" >
-    <!-- <table class="mytable"> -->
+
       <thead>
         <tr>
-          <!-- <th><strong>ID</strong></th> -->
+
           <th ><strong>#</strong></th>
           <th ><strong>Team name </strong></th>
           <th><strong>Team role </strong></th>
@@ -132,16 +43,12 @@
             <td width=40%>{{team.Name? team.Name: "N/A" }}</td>
             <td width=15% v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">Leader</span>   </strong> </td> 
             <td width=15% v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">Member</span> </strong> </td> 
-            <!-- <td >{{Equipment.ecName ? Equipment.ecName : "N/A"}} </td> -->
+          
 
           </tr>
       </tbody>
     </table>  
-  <!-- <div>
-    <span style="margin-right: 1rem;" :key="team.Id" v-for="team in toDisplayData">
-      {{ team.Name }}
-    </span>
-  </div> -->
+
   <div v-if="teamAccount.length >4">
     <Page :current="currentPage" :total="teamAccount.length" show-elevator  
       @on-change="(newPageNumber) => {
@@ -158,26 +65,14 @@
 </div>
 </div>            
 
-<!-- test- page-navigate-end -->
 
-
-
-<!-- <div v-bind:key="team.id" v-for="team in account.Teams" >
-  <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'">      
-                        {{team.Name}}
-      ({{team.TeamRole.TeamRole}} ) </div>
-  <div style="margin-left:1.5rem" v-else>                        
-                      <router-link :to="`/team/${team.Id}`">
-                        {{team.Name}}
-                    </router-link> ( {{team.TeamRole.TeamRole}} ) </div>
-
-</div> -->
   </div>
 
 <div class="material-box">
 <div class="row" style="margin: 0 !important">
+ 
   <h2 class="col-6" v-if="authUser.Role !='Admin' && !editMode" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  </h2>
-  <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode"  style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
   <div class="col-6 row" style="padding: 0rem !important" v-if ="!editMode && authUser.Role !='Admin'">
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; position: absolute; right: 4rem;"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0.5rem !important; position: absolute; right: 0rem;" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
@@ -188,14 +83,14 @@
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0rem !important; float: right !important" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
   </div>
 </div>
-<!-- <form @submit.prevent="editAccount()"> -->
+
   <div  class="row " style="height: 36px" >
       <div class="col-12" style="margin-top:0.5rem" >
       <strong>Full name</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span>    <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
       </div>  
   </div>
-  <input v-if="!editMode" v-model="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole" disabled="disabled">
-  <input v-else v-model.trim="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole" >
+  <input v-model="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole" disabled="disabled">
+ 
   <div v-if="authUser.Role =='Admin' ">
     <div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
         <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
@@ -225,28 +120,20 @@
         </label>
       </div>
   </div>
-  <!-- <div class="row" style="margin-top:0.5rem; height: 36px">
-    <div class="col-12" > <strong>Role</strong> </div>
-  </div>
-  <div class="col-7" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
-  <div class="row" style="margin-top:0.5rem; height: 36px">
-    <div class="col-12"> <strong>Start date</strong>  </div>
-  </div>
-  <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? getDate(account.StartDate): 'N/A' }}</div> -->
-  <!-- <h2 style="padding-top:0.9rem;padding-bottom: 0.9rem">Start date: {{account.StartDate ? account.StartDate: 'N/A' }}</h2> -->
+  
   <div class="row" style="margin-top:0.5rem; height: 36px">
   <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span> </div> 
-  <!-- <div class="col-7">{{account.Email ?account.Email: 'N/A' }} </div> -->
+  
 </div>
   <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com" disabled="disabled">
   <input v-else v-model.trim="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com">
 <div class="row" style="margin-top:0.5rem; height: 36px">
   <div class="col-12" style="margin-top:0.5rem"> <strong>Phone</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>  </div> 
-  <!-- <div class="col-7">{{account.Phone ? account.Phone: 'N/A' }} </div> -->
+
 </div>
   <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789" disabled="disabled">
   <input v-else v-model.trim="account.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789">
- <!-- picture -->
+
  <div v-if="editMode">
 
 <div class="row" style="margin-top:0.5rem; height: 36px">
@@ -273,7 +160,7 @@
 
 
 
- <!-- picture-end -->
+
  
  
  
@@ -283,14 +170,14 @@
  <div class="row" style="margin-top:0.5rem; height: 36px">
     <div class="col-12" > <strong>Role</strong> </div>
   </div>
-  <div class="col-7" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
+  <div v-if="account.SystemRole" class="col-7" style="padding-left: 0 !important;"> {{account.SystemRole.Name}}</div>
   <div class="row" style="margin-top:0.5rem; height: 36px">
     <div class="col-12"> <strong>Start date</strong>  </div>
   </div>
   <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? getDate(account.StartDate): 'N/A' }}</div>
 
 <div class="row" v-if="editMode">
-  <!-- <button class="button btn-confirm-edit btn-primary material-shadow-animate" v-on:click="editAccount()">Save change</button> -->
+ 
   <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editAccount()" >Save changes</button>
     <button v-if="editMode" class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
          getAccountDetail($route.params.id);
@@ -298,24 +185,7 @@
       }">Cancel</button>
 </div>
 
-<!-- </form> -->
 
-
-<!-- <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
-<div v-bind:key="team.id" v-for="team in account.Teams" >
-  <div style="margin-left:1.5rem; color:#26a69a" v-if="team.TeamRole.TeamRole == 'Leader'"> 
-                        <router-link :to="`/team/${team.Id}`">
-                        {{team.Name}}
-                    </router-link>
-      ({{team.TeamRole.TeamRole}} ) </div>
-  <div style="margin-left:1.5rem" v-else>                        
-                      <router-link :to="`/team/${team.Id}`">
-                        {{team.Name}}
-                    </router-link> ( {{team.TeamRole.TeamRole}} ) </div>
-</div> -->
-
- <!-- modal-start change lead -->
-      <!-- change status dialog -->
       <modal v-model="ChangeLeadPopUp" style="font-family: Roboto">
           <div slot="header" style="font-weight: bold">
                 Change Your Password
@@ -323,37 +193,22 @@
             <div style="font-size: 1rem">
                 <div >
                    
-                    <!-- <span ><strong> Are you sure you want to kick this member?? </strong></span> -->
-                    <!-- <div style="font-size: .95rem; font-weight: 500; margin-top: 0.5rem;">
-                      <div class="row">
-                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Id: </div>
-                        <div class="col-7">{{SelectedMemberId}}</div>
-                      </div>
-                      <div class="row">
-                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Username: </div>
-                        <div class="col-7">{{SelectedMemberName}}</div>
-                      </div>
-                      <div class="row">
-                        <div class="col-5" style="text-align: right; padding-left:0rem !important">Member pass: </div>
-                        <div class="col-7">{{SelectedMemberPassword}}</div>
-                      </div>
-                    </div> -->
+                  
 
                     <div class="row" style="margin-bottom:0.4rem">
                         <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">Current </div>
 
                       <input v-model="currentPassInput"  class="input col-7 " type="password"   placeholder="Chow@321" >
-                      <!-- <div>{{currentPassInput}}</div> -->
+        
         
                     </div>
                     <div style="margin-left:8rem" v-if="CreatePassErrors.NotSameOldPass != ''"> <span class="error-text">{{ CreatePassErrors.NotSameOldPass }}</span></div>
                     
                     <div class="row" style="margin-bottom:0.4rem">
                       <div class="col-3" style="margin-top:0.4rem; text-align: right !important;font-weight: bold">New </div>
-                        <!-- <input  :value="SelectedMemberPassword" placeholder="Nhập cái gì đó vào đây đi ông bạn!"  class="input col-7 " type="text"  > -->
+                      
                         <input v-model.trim="SelectedMemberPassword1"  class="input col-7 " type="password"  placeholder="Chow@321" >
-                        <!-- <input  :value="SelectedMemberPassword1"  class="input col-7 " type="text"  placeholder="Text input" > -->
-                        <!-- <div>{{SelectedMemberPassword}}</div> -->
+  
                     </div>
                    <div style="margin-left:8rem" v-if="CreatePassErrors.MinMaxNewPass != ''"> <span class="error-text">{{ CreatePassErrors.MinMaxNewPass }}</span></div>
                     <div class="row" style="margin-bottom:0.4rem">
@@ -367,12 +222,10 @@
         <button class="button btn-edit material-shadow-animate "  style="background-color:white; color: black; margin-left: 3rem; border-color: silver" v-on:click="cancel" >Cancel</button>
                    <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 1rem" v-on:click="changePass(SelectedMemberId,SelectedMemberPassword1)">Change</button>
             </div>
-      </modal> <!-- change status dialog -->
+      </modal> 
 
 
- <!-- modal-end -->
-<!-- modal ok-start -->
-      <!-- change status dialog -->
+
       <modal v-model="showOkPopup"  style="font-family: Roboto">
           <div slot="header" style="font-weight: bold">
                 Saved changed
@@ -385,10 +238,10 @@
             </div>
             <div slot="footer">
         <button class="button btn-primary btn-edit material-shadow-animate "   v-on:click="ok" >Close</button>
-                   <!-- <button class="button btn-edit btn-primary material-shadow-animate "  style="margin-left: 1rem" v-on:click="changePass(SelectedMemberId,SelectedMemberPassword1)">Change</button> -->
+                  
             </div>
-      </modal> <!-- change status dialog -->
-<!-- modal ok-end -->
+      </modal>
+
          
 
 
@@ -425,23 +278,12 @@ export default {
     moment
   },
   created() {
-    //   let URL = "http://localhost:3000/api/account/id/:id";
-    //   this.axios.get(URL).then(response => {
-    //     let data = response.data;
-    //     // alert('in');
-    //     data.forEach(element => {
-    //       let account = element.Account;
-    //       this.accounts.push(account);
-    //     });
-    //   });
-    // },
     this.getAccountDetail(this.$route.params.id);
     this.getAllTeamOfThisAccount(this.$route.params.id);
   },
 
   data() {
     return {
-      // currentPass: authUser.Password,
       showOkPopup: false,
       currentPassInput: "",
       retypePass: "",
@@ -584,7 +426,6 @@ export default {
                 .then(res => {
                   // this.$router.push("/account");
                   if (res.status == 200) {
-                    alert("Change successful");
                     this.editMode = false;
                     this.getAccountDetail(this.$route.params.id);
                   }
@@ -609,12 +450,11 @@ export default {
     onUpload() {
       let formData = new FormData();
       formData.append("file", this.file);
-      alert("in");
+
       this.axios.post(
         "https://api.cloudinary.com/v1_1/deanwflps/image/upload",
         formData
       );
-      alert(this.selectedFile.name);
     },
     validateAccount() {
       return (
@@ -666,7 +506,7 @@ export default {
       }
       if (this.validatePass()) {
         let URLChange = "http://localhost:3000/api/changeYourPass";
-        // alert(Id);
+
         this.axios
           .put(URLChange, {
             tmpAcc: {
@@ -676,12 +516,9 @@ export default {
           })
           .then(res => {
             if (res.status == 200) {
-              // alert(SelectedMemberPassword);
               this.getAccountDetail(this.$route.params.id);
               this.ChangeLeadPopUp = false;
               this.showOkPopup = true;
-              // alert("Your password has been changed successfully!");
-              // alert(`${{ SelectedMemberPassword1 }}"`);
             }
           });
       }
@@ -701,15 +538,12 @@ export default {
       this.$router.push(`/team/${teamId}`);
     },
     gotoDetailP(memberID, memberName, Password) {
-      // this.show = true;
       this.SelectedMemberId = memberID;
       this.SelectedMemberName = memberName;
       this.SelectedMemberPassword = Password;
       this.ChangeLeadPopUp = true;
-      // alert(Password);
     },
     cancel() {
-      // this.show = false;
       this.ChangeLeadPopUp = false;
     },
     ok() {
