@@ -1,7 +1,8 @@
 <template>
      <div class="form">
+       
          
-         <form @submit.prevent="createAccount1()">
+         <!-- <form @submit.prevent="createAccount1()"> -->
             <div class="form-title">
                 <div class="form-title-start ">
                   <div>
@@ -12,10 +13,25 @@
                     <router-link to='/account'>
                       <button id="btn-cancel" class="button" >Cancel</button>
                     </router-link>
-                    <button id="btn-add" class="button">Create Account</button>
+                    <button id="btn-add" class="button" v-on:click="createAccount1()">Create Account</button>
                 </div>
             </div>
-            
+                <!-- <table class="mytable" style="margin-bottom:0.5rem !important">
+
+      <tbody>
+          <tr  :key="account.Id" v-for="(account, index) in accounts"  style="height:28px !important" v-on:click="gotoDetail(account.Id)"  >
+          <td>{{ 10*(currentPage -1) + (index + 1) }}</td>   
+          <td>{{account.Username | truncate(13)}}</td>
+          <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
+          <td>{{account.Email ? account.Email : "N/A" }}</td>
+          <td>{{account.Phone ? account.Phone : "N/A"}}</td>
+          <td>{{account.Role.Name}}</td>
+          <strong>
+            <td :style="{color: account.IsActive? 'var(--primary-color)' : '#607D8B'}">{{account.IsActive? "Active" : "Inactive"}}</td>
+          </strong> 
+          </tr>
+      </tbody>  
+    </table> -->
             <div class="form-content">
             <div class="form-field-picture">
               <div class="form-field-title">
@@ -134,11 +150,11 @@
                     <div class="form-field-title">
                         <strong>
                             Email (required) 
-                        </strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>
+                        </strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span><span v-if="CreateAccountErrors.validEmail != ''"> <span class="error-text">{{ CreateAccountErrors.validEmail }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.email" class="input" type="email" placeholder="DPoint@gmail.com" >
+                        <input v-model.trim="account.email" class="input" v-validate="'required|email'" type="text" placeholder="DPoint@gmail.com" name="email" >
                             <!-- <span class="icon is-small is-left">
                             <i class="fa fa-envelope"></i>
                             </span> -->
@@ -230,7 +246,7 @@
                     <button id="btn-add" class="button">Create Account</button>
                 </div> -->
           </div>
-         </form>
+         <!-- </form> -->
     </div>
 </template>
 
@@ -259,11 +275,16 @@ export default {
       .catch(error => {
         alert(error);
       });
+    this.axios.get("http://localhost:3000/api/account").then(res => {
+      this.existedAccounts = [];
+      res.data.forEach(value => this.accounts.push(value.Account));
+    });
   },
 
   data() {
     return {
       files: [],
+      accounts: [],
       sending: false,
       ErrorStrings: {
         // NoUsername: "You must provide username for this account",
@@ -288,9 +309,10 @@ export default {
         PhoneMin: " Use from 9 to 13 characters for your phonenumber",
         PhoneMax: " Use from 9 to 13 characters for your phonenumber",
         // phone-end
-        NoEmail: " Enter email",
+        NoEmail: " Enter email ",
         NoRole: " Select role",
-        NoImage: "You must choose an image"
+        NoImage: "You must choose an image",
+        validEmail: "Valid email required"
       },
       CreateAccountErrors: {
         // NoUsername: "",
@@ -308,7 +330,8 @@ export default {
         // NoPhone: "",
         NoEmail: "",
         NoRole: "",
-        NoImage: ""
+        NoImage: "",
+        validEmail: ""
       },
       account: {
         username: "",
@@ -328,6 +351,7 @@ export default {
       //   if (this.account.username === "") {
       //     this.CreateAccountErrors.NoUsername = this.ErrorStrings.NoUsername;
       //   }
+      let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (!this.files[0]) {
         this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
       }
@@ -373,6 +397,11 @@ export default {
 
       if (!this.account.roleid || this.account.roleid == "") {
         this.CreateAccountErrors.NoRole = this.ErrorStrings.NoRole;
+      }
+      if (!emailRegex.test(this.account.email)) {
+        this.CreateAccountErrors.validEmail = this.ErrorStrings.validEmail;
+      } else {
+        this.CreateAccountErrors.validEmail = "";
       }
 
       if (this.validateAccount()) {
@@ -443,7 +472,8 @@ export default {
         this.CreateAccountErrors.PhoneMin === "" &&
         this.CreateAccountErrors.NoEmail === "" &&
         this.CreateAccountErrors.NoRole === "" &&
-        this.CreateAccountErrors.NoImage == ""
+        this.CreateAccountErrors.NoImage == "" &&
+        this.CreateAccountErrors.validEmail == ""
       );
     }
   },
@@ -458,6 +488,11 @@ export default {
       if (this.account.username.length < 51) {
         this.CreateAccountErrors.UsernameMax = "";
       }
+      // if (this.username && this.account.username.length > 0) {
+      //   let tmpAccounts = [];
+      //   for (const account of this.account.username) {
+      //   }
+      // }
     },
     "account.password": function() {
       //   if (this.account.password != "") {
@@ -495,6 +530,9 @@ export default {
     "account.email": function() {
       if (this.account.email != "") {
         this.CreateAccountErrors.NoEmail = "";
+      }
+      if (this.account.email == this.emailRegex) {
+        this.CreateAccountErrors.validEmail = "";
       }
     },
     files: function() {

@@ -102,7 +102,7 @@
                 <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
+                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span>    
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
@@ -171,7 +171,8 @@ export default {
         WebMax: " Use 200 characters or fewer for your website",
         DesMax: " Use 500 characters or fewer for your description",
 
-        NoEmail: " Enter email"
+        NoEmail: " Enter email ",
+        validEmail: "Valid email required"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -186,7 +187,8 @@ export default {
         ContactNameMin: "",
         ContactNameMax: "",
         NoEmail: "",
-        DesMax: ""
+        DesMax: "",
+        validEmail: ""
       },
       Vendor: {
         BusinessName: "",
@@ -200,6 +202,8 @@ export default {
   },
   methods: {
     createVendor() {
+      // let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       // if (this.Vendor.BusinessName === "") {
       //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
       // }
@@ -236,7 +240,11 @@ export default {
       if (this.Vendor.ContactEmail === "") {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
-
+      if (!emailRegex.test(this.Vendor.ContactEmail)) {
+        this.CreateVendorErrors.validEmail = this.ErrorStrings.validEmail;
+      } else {
+        this.CreateVendorErrors.validEmail = "";
+      }
       if (this.validateVendor())
         this.axios
           .post("http://localhost:3000/api/Vendor", {
@@ -259,7 +267,8 @@ export default {
         this.CreateVendorErrors.ContactNameMax === "" &&
         this.CreateVendorErrors.WebMax === "" &&
         this.CreateVendorErrors.DesMax === "" &&
-        this.CreateVendorErrors.NoEmail === ""
+        this.CreateVendorErrors.NoEmail === "" &&
+        this.CreateVendorErrors.validEmail == ""
       );
     }
   },
@@ -301,6 +310,9 @@ export default {
     "Vendor.ContactEmail": function() {
       if (this.Vendor.ContactEmail != "") {
         this.CreateVendorErrors.NoEmail = "";
+      }
+      if (this.Vendor.ContactEmail == this.emailRegex) {
+        this.CreateVendorErrors.validEmail = "";
       }
     },
     "Vendor.Website": function() {

@@ -52,7 +52,7 @@
               Contact email 
 
             </strong>
-            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
+            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span>      
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="dpoint@gmail.com" disabled="disabled">
@@ -410,9 +410,10 @@ export default {
         // NoContactName: "You must provide contact name for this vendor",
         ContactNameMin: " Use from 6 to 50 characters for your contact name",
         ContactNameMax: " Use from 6 to 50 characters for your contact name",
-        NoEmail: " Enter email",
+        NoEmail: " Enter email ",
         WebMax: " Use 200 characters or fewer for your website",
-        DesMax: " Use 500 characters or fewer for your description"
+        DesMax: " Use 500 characters or fewer for your description",
+        validEmail: "Valid email required"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -424,7 +425,8 @@ export default {
         ContactNameMax: "",
         NoEmail: "",
         WebMax: "",
-        DesMax: ""
+        DesMax: "",
+        validEmail: ""
       },
       Vendor: null,
       checkedActive: [],
@@ -436,6 +438,7 @@ export default {
       // if (this.Vendor.BusinessName === "") {
       //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
       // }
+      let emailRegex = /^(([^<>()\[\]\\.,;!#$%\^&*:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (
         !this.Vendor.BusinessAddress ||
         (this.Vendor.BusinessAddress && this.Vendor.BusinessAddress == "")
@@ -475,6 +478,11 @@ export default {
       }
       if (this.Vendor.Description && this.Vendor.Description.length > 500) {
         this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
+      }
+      if (!emailRegex.test(this.Vendor.ContactEmail)) {
+        this.CreateVendorErrors.validEmail = this.ErrorStrings.validEmail;
+      } else {
+        this.CreateVendorErrors.validEmail = "";
       }
       if (this.validateVendor())
         this.axios
@@ -518,7 +526,8 @@ export default {
         this.CreateVendorErrors.ContactNameMax === "" &&
         this.CreateVendorErrors.WebMax === "" &&
         this.CreateVendorErrors.DesMax === "" &&
-        this.CreateVendorErrors.NoEmail === ""
+        this.CreateVendorErrors.NoEmail === "" &&
+        this.CreateVendorErrors.validEmail == ""
       );
     },
     gotoDetail(EquipmentId) {
@@ -556,6 +565,9 @@ export default {
     "Vendor.ContactEmail": function() {
       if (this.Vendor.ContactEmail != "") {
         this.CreateVendorErrors.NoEmail = "";
+      }
+      if (this.Vendor.ContactEmail == this.emailRegex) {
+        this.CreateVendorErrors.validEmail = "";
       }
     },
     "Vendor.Website": function() {

@@ -122,7 +122,7 @@
   </div>
   
   <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span> </div> 
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span> <span v-if="CreateAccountErrors.validEmail != ''"> <span class="error-text">{{ CreateAccountErrors.validEmail }}</span></span> </div> 
   
 </div>
   <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com" disabled="disabled">
@@ -313,7 +313,8 @@ export default {
         PhoneMin: " Use from 9 to 13 characters for your phone number",
         PhoneMax: " Use from 9 to 13 characters for your phone number",
 
-        NoEmail: " Enter email",
+        NoEmail: " Enter email ",
+        validEmail: "Valid email required",
         NotSameOldPass: "Enter correct current password",
         MinMaxNewPass: "Use from 6 to 50 characters for your new password",
 
@@ -342,7 +343,8 @@ export default {
         PhoneMin: "",
         PhoneMax: "",
 
-        NoEmail: ""
+        NoEmail: "",
+        validEmail: ""
         // NoImage: ""
         // NoRole: ""
       },
@@ -368,6 +370,7 @@ export default {
       // if (!this.files[0]) {
       //   this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
       // }
+      let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (this.account.Fullname.length < 6) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
@@ -394,6 +397,11 @@ export default {
       }
       if (this.account.Email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+      if (!emailRegex.test(this.account.Email)) {
+        this.CreateAccountErrors.validEmail = this.ErrorStrings.validEmail;
+      } else {
+        this.CreateAccountErrors.validEmail = "";
       }
 
       //       if (this.account.Password != this.SelectedMemberPassword) {
@@ -468,7 +476,8 @@ export default {
         this.CreateAccountErrors.NoEmail === "" &&
         //&& this.CreateAccountErrors.NoRole === ""
         this.CreateAccountErrors.WeakAccount === "" &&
-        this.CreateAccountErrors.MaxPassword === ""
+        this.CreateAccountErrors.MaxPassword === "" &&
+        this.CreateAccountErrors.validEmail == ""
         // this.CreateAccountErrors.NoImage == ""
 
         //  && this.CreateAccountErrors.NoUsername === ''
@@ -621,6 +630,9 @@ export default {
     "account.Email": function() {
       if (this.account.Email != "") {
         this.CreateAccountErrors.NoEmail = "";
+      }
+      if (this.account.Email == this.emailRegex) {
+        this.CreateAccountErrors.validEmail = "";
       }
     }
     // "account.roleid": function() {
