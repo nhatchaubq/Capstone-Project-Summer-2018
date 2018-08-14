@@ -81,7 +81,7 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                     <strong>Contact name (required)</strong><span v-if="CreateVendorErrors.NoContactName != ''"> <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span> <span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span>
+                     <strong>Contact name (required)</strong><span v-if="CreateVendorErrors.NoContactName != ''"> <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span> <span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span> <span v-if="CreateVendorErrors.validContactName != ''"> <span class="error-text">{{ CreateVendorErrors.validContactName }}</span></span>
                 </div>
                 <div class="form-field-input">
                 <div class="control  has-icons-right" style="padding:8px">
@@ -165,15 +165,16 @@ export default {
         BusinessAddressMin:
           " Use from 6 to 50 characters for your business address",
         // NoContactName: "You must provide contact name for this vendor",
-        ContactNameMin: " Use from 6 to 50 characters for your contact name",
-        ContactNameMax: " Use from 6 to 50 characters for your contact name",
+        ContactNameMin: " Use from 6 to 50 characters for your contact name ",
+        ContactNameMax: " Use from 6 to 50 characters for your contact name ",
 
         WebMax: " Use 200 characters or fewer for your website",
         DesMax: " Use 500 characters or fewer for your description",
 
         NoEmail: " Enter email ",
         validEmail: "Valid email required",
-        validWeb: "Valid website required"
+        validWeb: "Valid website required",
+        validContactName: "Enter alphabet characters"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -190,7 +191,8 @@ export default {
         NoEmail: "",
         DesMax: "",
         validEmail: "",
-        validWeb: ""
+        validWeb: "",
+        validContactName: ""
       },
       Vendor: {
         BusinessName: "",
@@ -207,7 +209,7 @@ export default {
       // let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       let webRegex = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
-
+      let contactNameRegex = /^[a-zA-Z]+$/;
       if (this.Vendor.BusinessName.length < 6) {
         this.CreateVendorErrors.BusinessNameMin = this.ErrorStrings.BusinessNameMin;
       }
@@ -231,6 +233,11 @@ export default {
       }
       if (this.Vendor.ContactName.length > 50) {
         this.CreateVendorErrors.ContactNameMax = this.ErrorStrings.ContactNameMax;
+      }
+      if (!contactNameRegex.test(this.Vendor.ContactName)) {
+        this.CreateVendorErrors.validContactName = this.ErrorStrings.validContactName;
+      } else {
+        this.CreateVendorErrors.validContactName = "";
       }
       if (this.Vendor.Website.length > 200) {
         this.CreateVendorErrors.WebMax = this.ErrorStrings.WebMax;
@@ -275,7 +282,8 @@ export default {
         this.CreateVendorErrors.DesMax === "" &&
         this.CreateVendorErrors.NoEmail === "" &&
         this.CreateVendorErrors.validEmail == "" &&
-        this.CreateVendorErrors.validWeb == ""
+        this.CreateVendorErrors.validWeb == "" &&
+        this.CreateVendorErrors.validContactName == ""
       );
     }
   },
@@ -312,6 +320,9 @@ export default {
       }
       if (this.Vendor.ContactName.length < 51) {
         this.CreateVendorErrors.ContactNameMax = "";
+      }
+      if (this.Vendor.ContactName == this.contactNameRegex) {
+        this.CreateVendorErrors.validContactName = "";
       }
     },
     "Vendor.ContactEmail": function() {

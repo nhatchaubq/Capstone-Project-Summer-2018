@@ -72,12 +72,13 @@
 <div class="row" style="margin: 0 !important">
  
   <h2 class="col-6" v-if="authUser.Role !='Admin' && !editMode" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  </h2>
-  <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode"  style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode"  style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  </h2>
+  <!-- <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode"  style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2> -->
   <div class="col-6 row" style="padding: 0rem !important" v-if ="!editMode && authUser.Role !='Admin'">
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; position: absolute; right: 4rem;"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0.5rem !important; position: absolute; right: 0rem;" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
   </div>
-  <h2 class="col-11" v-if="authUser.Role =='Admin'" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <h2 class="col-11" v-if="authUser.Role =='Admin'" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong> </h2>
   <div class="col-1 row" style="padding: 0rem !important " v-if ="!editMode && authUser.Role =='Admin'">
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; float: right !important"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0rem !important; float: right !important" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>

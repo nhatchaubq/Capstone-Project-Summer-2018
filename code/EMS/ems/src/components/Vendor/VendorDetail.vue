@@ -8,7 +8,8 @@
   <div class="grid-wrapper1 col-12" style="margin-bottom:1rem">
     <div class="material-box" >
       <div class="row" style="margin: 0 !important; height:36px ">
-        <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a" >{{Vendor.BusinessName}}  <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> </strong> </h2>
+        <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a" >{{Vendor.BusinessName}}   </strong> </h2>
+        <!-- <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a" >{{Vendor.BusinessName}}  <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> </strong> </h2> -->
       <div style="padding: 0rem !important" class="col-1"  v-if="authUser.Role =='Equipment Staff'">
         <button  v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate " v-on:click="editMode = !editMode">Edit</button>
       </div>
@@ -19,7 +20,7 @@
             <strong>
               Business address 
             </strong>
-            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
+            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span></span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="160/5 Tan Chanh Hiep, Quan 12, Ho Chi Minh" disabled="disabled">
@@ -41,7 +42,7 @@
               Contact name 
 
             </strong>
-            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span>
+            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span> <span v-if="CreateVendorErrors.validContactName != ''"> <span class="error-text">{{ CreateVendorErrors.validContactName }}</span></span> </span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D-point" disabled="disabled">
@@ -73,6 +74,7 @@
           <button class="button btn-cancel material-shadow-animate" v-on:click="() => {
         this.CreateVendorErrors.validEmail = false;
         this.CreateVendorErrors.validWeb = false;
+        this.CreateVendorErrors.validContactName = false;
          reload($route.params.id);
          editMode = false;
       }">Cancel</button>
@@ -410,13 +412,14 @@ export default {
         BusinessAddressMin:
           " Use from 6 to 200 characters for your business address",
         // NoContactName: "You must provide contact name for this vendor",
-        ContactNameMin: " Use from 6 to 50 characters for your contact name",
-        ContactNameMax: " Use from 6 to 50 characters for your contact name",
+        ContactNameMin: " Use from 6 to 50 characters for your contact name ",
+        ContactNameMax: " Use from 6 to 50 characters for your contact name ",
         NoEmail: " Enter email ",
         WebMax: " Use 200 characters or fewer for your website",
         DesMax: " Use 500 characters or fewer for your description",
         validEmail: "Valid email required",
-        validWeb: "Valid website required"
+        validWeb: "Valid website required",
+        validContactName: "Enter alphabet characters"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -430,7 +433,8 @@ export default {
         WebMax: "",
         DesMax: "",
         validEmail: "",
-        validWeb: ""
+        validWeb: "",
+        validContactName: ""
       },
       Vendor: null,
       checkedActive: [],
@@ -444,6 +448,8 @@ export default {
       // }
       let webRegex = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%\^&*:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      let contactNameRegex = /^[a-zA-Z]+$/;
+
       if (
         !this.Vendor.BusinessAddress ||
         (this.Vendor.BusinessAddress && this.Vendor.BusinessAddress == "")
@@ -471,6 +477,11 @@ export default {
             this.Vendor.ContactName.length > 50))
       ) {
         this.CreateVendorErrors.ContactNameMin = this.ErrorStrings.ContactNameMin;
+      }
+      if (!contactNameRegex.test(this.Vendor.ContactName)) {
+        this.CreateVendorErrors.validContactName = this.ErrorStrings.validContactName;
+      } else {
+        this.CreateVendorErrors.validContactName = "";
       }
       if (
         !this.Vendor.ContactEmail ||
@@ -538,7 +549,8 @@ export default {
         this.CreateVendorErrors.DesMax === "" &&
         this.CreateVendorErrors.NoEmail === "" &&
         this.CreateVendorErrors.validEmail == "" &&
-        this.CreateVendorErrors.validWeb == ""
+        this.CreateVendorErrors.validWeb == "" &&
+        this.CreateVendorErrors.validContactName == ""
       );
     },
     gotoDetail(EquipmentId) {
@@ -569,9 +581,9 @@ export default {
       if (this.Vendor.ContactName.length < 51) {
         this.CreateVendorErrors.ContactNameMax = "";
       }
-      // if (this.Vendor.ContactName != "") {
-      //   this.CreateVendorErrors.NoContactName = "";
-      // }
+      if (this.Vendor.ContactName == this.contactNameRegex) {
+        this.CreateVendorErrors.validContactName = "";
+      }
     },
     "Vendor.ContactEmail": function() {
       if (this.Vendor.ContactEmail != "") {
