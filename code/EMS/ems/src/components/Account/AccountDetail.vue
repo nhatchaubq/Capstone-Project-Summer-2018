@@ -72,12 +72,13 @@
 <div class="row" style="margin: 0 !important">
  
   <h2 class="col-6" v-if="authUser.Role !='Admin' && !editMode" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  </h2>
-  <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode"  style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode"  style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  </h2>
+  <!-- <h2 class="col-12" v-if="authUser.Role !='Admin' && editMode"  style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2> -->
   <div class="col-6 row" style="padding: 0rem !important" v-if ="!editMode && authUser.Role !='Admin'">
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; position: absolute; right: 4rem;"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0.5rem !important; position: absolute; right: 0rem;" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
   </div>
-  <h2 class="col-11" v-if="authUser.Role =='Admin'" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong>  <span v-if="editMode" > <strong style="color: #26a69a;font-size: 20px;"> - EDIT INFORMATION</strong> </span></h2>
+  <h2 class="col-11" v-if="authUser.Role =='Admin'" style="padding: 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a;" >{{account.Username}}</strong> </h2>
   <div class="col-1 row" style="padding: 0rem !important " v-if ="!editMode && authUser.Role =='Admin'">
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-bottom:0.2rem !important; float: right !important"  v-on:click="gotoDetailP(account.Id, account.Username, account.Password )" v-if="authUser.Id == account.Id && authUser.Role !='Admin'">Change Password</button>
     <button class="button btn-edit btn-primary material-shadow-animate " style="margin-left:0rem !important; float: right !important" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' || authUser.Id == account.Id">Edit</button>
@@ -122,7 +123,7 @@
   </div>
   
   <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span> </div> 
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"> <strong style="color:red"> *</strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>  <span v-if="CreateAccountErrors.validEmail != ''"> <span  class="error-text">{{ CreateAccountErrors.validEmail }}</span></span> </span>  </div> 
   
 </div>
   <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com" disabled="disabled">
@@ -137,7 +138,7 @@
  <div v-if="editMode">
 
 <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Picture</strong>  <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>  </div> 
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Picture</strong>  </div> 
 </div>
                 <div class="">                  
                   <label class="file-label"  > 
@@ -180,8 +181,10 @@
  
   <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editAccount()" >Save changes</button>
     <button v-if="editMode" class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
+        this.CreateAccountErrors.validEmail = false;
          getAccountDetail($route.params.id);
          editMode = false;
+
       }">Cancel</button>
 </div>
 
@@ -313,7 +316,8 @@ export default {
         PhoneMin: " Use from 9 to 13 characters for your phone number",
         PhoneMax: " Use from 9 to 13 characters for your phone number",
 
-        NoEmail: " Enter email",
+        NoEmail: " Enter email ",
+        validEmail: "Valid email required",
         NotSameOldPass: "Enter correct current password",
         MinMaxNewPass: "Use from 6 to 50 characters for your new password",
 
@@ -342,7 +346,8 @@ export default {
         PhoneMin: "",
         PhoneMax: "",
 
-        NoEmail: ""
+        NoEmail: "",
+        validEmail: ""
         // NoImage: ""
         // NoRole: ""
       },
@@ -368,6 +373,7 @@ export default {
       // if (!this.files[0]) {
       //   this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
       // }
+      let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (this.account.Fullname.length < 6) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
@@ -394,6 +400,11 @@ export default {
       }
       if (this.account.Email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+      if (!emailRegex.test(this.account.Email)) {
+        this.CreateAccountErrors.validEmail = this.ErrorStrings.validEmail;
+      } else {
+        this.CreateAccountErrors.validEmail = "";
       }
 
       //       if (this.account.Password != this.SelectedMemberPassword) {
@@ -468,7 +479,8 @@ export default {
         this.CreateAccountErrors.NoEmail === "" &&
         //&& this.CreateAccountErrors.NoRole === ""
         this.CreateAccountErrors.WeakAccount === "" &&
-        this.CreateAccountErrors.MaxPassword === ""
+        this.CreateAccountErrors.MaxPassword === "" &&
+        this.CreateAccountErrors.validEmail == ""
         // this.CreateAccountErrors.NoImage == ""
 
         //  && this.CreateAccountErrors.NoUsername === ''
@@ -621,6 +633,9 @@ export default {
     "account.Email": function() {
       if (this.account.Email != "") {
         this.CreateAccountErrors.NoEmail = "";
+      }
+      if (this.account.Email == this.emailRegex) {
+        this.CreateAccountErrors.validEmail = "";
       }
     }
     // "account.roleid": function() {
