@@ -60,7 +60,7 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                     <strong>Website</strong> <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span>
+                     <strong>Website</strong> <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span><span v-if="CreateVendorErrors.validWeb != ''"> <span class="error-text">{{ CreateVendorErrors.validWeb }}</span></span>
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
@@ -172,7 +172,8 @@ export default {
         DesMax: " Use 500 characters or fewer for your description",
 
         NoEmail: " Enter email ",
-        validEmail: "Valid email required"
+        validEmail: "Valid email required",
+        validWeb: "Valid website required"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -188,7 +189,8 @@ export default {
         ContactNameMax: "",
         NoEmail: "",
         DesMax: "",
-        validEmail: ""
+        validEmail: "",
+        validWeb: ""
       },
       Vendor: {
         BusinessName: "",
@@ -204,9 +206,8 @@ export default {
     createVendor() {
       // let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      // if (this.Vendor.BusinessName === "") {
-      //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
-      // }
+      let webRegex = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
+
       if (this.Vendor.BusinessName.length < 6) {
         this.CreateVendorErrors.BusinessNameMin = this.ErrorStrings.BusinessNameMin;
       }
@@ -245,6 +246,11 @@ export default {
       } else {
         this.CreateVendorErrors.validEmail = "";
       }
+      if (!webRegex.test(this.Vendor.Website)) {
+        this.CreateVendorErrors.validWeb = this.ErrorStrings.validWeb;
+      } else {
+        this.CreateVendorErrors.validWeb = "";
+      }
       if (this.validateVendor())
         this.axios
           .post("http://localhost:3000/api/Vendor", {
@@ -268,7 +274,8 @@ export default {
         this.CreateVendorErrors.WebMax === "" &&
         this.CreateVendorErrors.DesMax === "" &&
         this.CreateVendorErrors.NoEmail === "" &&
-        this.CreateVendorErrors.validEmail == ""
+        this.CreateVendorErrors.validEmail == "" &&
+        this.CreateVendorErrors.validWeb == ""
       );
     }
   },
@@ -318,6 +325,9 @@ export default {
     "Vendor.Website": function() {
       if (this.Vendor.Website.length < 201) {
         this.CreateVendorErrors.WebMax = "";
+      }
+      if (this.Vendor.Website == this.webRegex) {
+        this.CreateVendorErrors.validWeb = "";
       }
     },
     "Vendor.Description": function() {

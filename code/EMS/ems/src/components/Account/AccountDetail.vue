@@ -122,7 +122,7 @@
   </div>
   
   <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span> <span v-if="CreateAccountErrors.validEmail != ''"> <span class="error-text">{{ CreateAccountErrors.validEmail }}</span></span> </div> 
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"> <strong style="color:red"> *</strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>  <span v-if="CreateAccountErrors.validEmail != ''"> <span  class="error-text">{{ CreateAccountErrors.validEmail }}</span></span> </span>  </div> 
   
 </div>
   <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com" disabled="disabled">
@@ -137,7 +137,7 @@
  <div v-if="editMode">
 
 <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Picture</strong>  <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>  </div> 
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Picture</strong>  </div> 
 </div>
                 <div class="">                  
                   <label class="file-label"  > 
@@ -180,8 +180,10 @@
  
   <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editAccount()" >Save changes</button>
     <button v-if="editMode" class="button btn-cancel btn-primary material-shadow-animate" v-on:click="() => {
+        this.CreateAccountErrors.validEmail = false;
          getAccountDetail($route.params.id);
          editMode = false;
+
       }">Cancel</button>
 </div>
 

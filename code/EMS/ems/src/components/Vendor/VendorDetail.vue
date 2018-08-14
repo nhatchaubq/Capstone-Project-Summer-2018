@@ -30,7 +30,7 @@
                 Website 
 
             </strong>
-            <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span>
+            <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span> <span v-if="editMode"><span v-if="CreateVendorErrors.validWeb != ''"> <span class="error-text">{{ CreateVendorErrors.validWeb }}</span></span></span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="www.d-point.co.jp" disabled="disabled"> 
@@ -52,7 +52,7 @@
               Contact email 
 
             </strong>
-            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span>      
+            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span></span>      
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="dpoint@gmail.com" disabled="disabled">
@@ -71,6 +71,8 @@
         <div class="row" v-if="editMode">
           <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editVendor()">Save change</button>
           <button class="button btn-cancel material-shadow-animate" v-on:click="() => {
+        this.CreateVendorErrors.validEmail = false;
+        this.CreateVendorErrors.validWeb = false;
          reload($route.params.id);
          editMode = false;
       }">Cancel</button>
@@ -413,7 +415,8 @@ export default {
         NoEmail: " Enter email ",
         WebMax: " Use 200 characters or fewer for your website",
         DesMax: " Use 500 characters or fewer for your description",
-        validEmail: "Valid email required"
+        validEmail: "Valid email required",
+        validWeb: "Valid website required"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -426,7 +429,8 @@ export default {
         NoEmail: "",
         WebMax: "",
         DesMax: "",
-        validEmail: ""
+        validEmail: "",
+        validWeb: ""
       },
       Vendor: null,
       checkedActive: [],
@@ -438,6 +442,7 @@ export default {
       // if (this.Vendor.BusinessName === "") {
       //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
       // }
+      let webRegex = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%\^&*:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (
         !this.Vendor.BusinessAddress ||
@@ -484,6 +489,11 @@ export default {
       } else {
         this.CreateVendorErrors.validEmail = "";
       }
+      if (!webRegex.test(this.Vendor.Website)) {
+        this.CreateVendorErrors.validWeb = this.ErrorStrings.validWeb;
+      } else {
+        this.CreateVendorErrors.validWeb = "";
+      }
       if (this.validateVendor())
         this.axios
           .put(`http://localhost:3000/api/vendor/${this.$route.params.id}`, {
@@ -527,7 +537,8 @@ export default {
         this.CreateVendorErrors.WebMax === "" &&
         this.CreateVendorErrors.DesMax === "" &&
         this.CreateVendorErrors.NoEmail === "" &&
-        this.CreateVendorErrors.validEmail == ""
+        this.CreateVendorErrors.validEmail == "" &&
+        this.CreateVendorErrors.validWeb == ""
       );
     },
     gotoDetail(EquipmentId) {
@@ -573,6 +584,9 @@ export default {
     "Vendor.Website": function() {
       if (this.Vendor.Website.length < 201) {
         this.CreateVendorErrors.WebMax = "";
+      }
+      if (this.Vendor.Website == this.webRegex) {
+        this.CreateVendorErrors.validWeb = "";
       }
     },
     "Vendor.Description": function() {

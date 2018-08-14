@@ -1,6 +1,7 @@
 <template>
-     <div class="form">
-       
+     <div>
+     <!-- <div class="form"> -->
+ 
          
          <!-- <form @submit.prevent="createAccount1()"> -->
             <div class="form-title">
@@ -154,10 +155,8 @@
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.email" class="input" v-validate="'required|email'" type="text" placeholder="DPoint@gmail.com" name="email" >
-                            <!-- <span class="icon is-small is-left">
-                            <i class="fa fa-envelope"></i>
-                            </span> -->
+                        <input v-model.trim="account.email" class="input"  type="text" placeholder="DPoint@gmail.com"  >
+                  
 
                         </div>
                     </div>
