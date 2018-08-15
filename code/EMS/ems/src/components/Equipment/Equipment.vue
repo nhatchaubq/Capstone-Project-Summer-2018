@@ -1,6 +1,29 @@
 <template>
   <div>
-    
+    <div v-if="authUser.Role == 'Equipment Staff' || authUser.Role == 'Manager' " >
+        <div class="filter" style="width: 100%; display: grid; grid-template-columns: 5% auto">
+          <div style="font-weight: bold">
+              Filter:
+          </div>
+          <div>
+              <div style="width: 100%; height:1.5rem;display: grid; grid-template-columns:4rem 6rem auto;">
+                <div>Status: </div> 
+                  <div style="user-select: none; display: grid; grid-template-columns: 3.5rem auto;">
+                      <div>Active:</div>
+                      <div style="padding-top:0.1rem">
+                        <input type="checkbox" v-model="activeChecked">                            
+                      </div>                        
+                  </div>
+                  <div style="user-select: none; display: grid; grid-template-columns: 4.5rem auto;">
+                      <div>In Active:</div>
+                      <div style="padding-top:0.1rem">
+                        <input type="checkbox"  v-model="inActiveChecked">
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
     <div v-if="toDisplayData && toDisplayData.length!=0">   
         <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer' " >
           <div class="field is-grouped view-mode" style="margin-bottom: 0.2rem !important; padding: 0rem!important">
@@ -12,31 +35,32 @@
             </router-link>
           </div>
         </div>
-
-        <table class="table">
-            <thead>
-                <tr>
-                    <th ><strong>Order #</strong></th>
-                    <th ><strong>Equipment name</strong></th>
-                    <th ><strong>Available</strong></th>
-                    <th ><strong>Vendor name</strong></th>
-                    <th ><strong>Made In</strong></th>
-                    <th ><strong>Description</strong></th>
-                    <th ><strong>Category</strong></th>
-                </tr>
-            </thead>  
-            <tbody>
-                <tr v-bind:key=" 'toDisplayData'+ index +''+ equipment.Id " v-for="(equipment, index) in toDisplayData" v-on:click="gotoDetail(equipment.Id)">
-                    <td width=5% >{{ 10*(currentPage -1) + (index + 1) }}</td>   
-                    <td width=30% >{{equipment.Name | truncate(50)}}</td>
-                    <td width=5% >{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
-                    <td width=20% >{{equipment.Vendor.Name | truncate(35)}}</td>
-                    <td width=10%>{{equipment.MadeIn| truncate(10)  }}</td>
-                    <td width=15% >{{equipment.Description ? equipment.Description: 'N/A' }}</td>
-                    <td width=10% >{{equipment.Category.Name }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div style="padding-top:0.5rem">
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th style="text-align:center" ><strong>No.</strong></th>
+                      <th ><strong>Equipment name</strong></th>
+                      <th ><strong>Available</strong></th>
+                      <th ><strong>Vendor name</strong></th>      
+                      <th ><strong>Description</strong></th>
+                      <th ><strong>Category</strong></th>
+                      <th ><strong>Status</strong></th>
+                  </tr>
+              </thead>  
+              <tbody>
+                  <tr v-bind:key=" 'toDisplayData'+ index +''+ equipment.Id " v-for="(equipment, index) in toDisplayData" v-on:click="gotoDetail(equipment.Id)">
+                      <td width=5% style="text-align:center" >{{ 10*(currentPage -1) + (index + 1) }}</td>   
+                      <td width=30% >{{equipment.Name | truncate(50)}}</td>
+                      <td width=5% >{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
+                      <td width=20% >{{equipment.Vendor.Name | truncate(30)}}</td>
+                      <td width=15% >{{equipment.Description ? equipment.Description: 'N/A' }}</td>
+                      <td width=10% >{{equipment.Category.Name }}</td>
+                      <td width=10% :style="{color: equipment.Status? 'var(--primary-color)' : '#607D8B'}">{{equipment.Status? "Active" : "InActive"}}</td>
+                  </tr>
+              </tbody>
+          </table>
+        </div>
       <div v-if="equipments.length >9" class="">
         <Page :current="currentPage" :total="equipments.length" show-elevator 
           @on-change="(newPageNumber) => {
@@ -84,7 +108,9 @@ export default {
       equipments: [],
       toDisplayData: [],
       selectedEquipment: null,
-      searchMode: false
+      searchMode: false,
+      inActiveChecked: false,
+      activeChecked: true
     };
   },
   methods: {
@@ -97,8 +123,75 @@ export default {
           // alert('in');
           data.forEach(element => {
             let equipment = element.Equipment;
+            if (equipment.Status) {
+              this.equipments.push(equipment);
+            }
+            if (this.$store.state.equipmentPage.searchText != "") {
+              let tempEQTs = [];
+              if (this.searchValues.length > 0) {
+                for (const equipment of this.searchValues) {
+                  tempEQTs = tempEQTs.concat(
+                    this.equipments.filter(e => e.Id == equipment.Id)
+                  );
+                }
+              }
+              this.equipments = tempEQTs;
+              this.searchMode = true;
+            } else {
+              // this.$store.state.workOrderPage.searchValues = [];
+              this.searchMode = false;
+            }
+            this.toDisplayData = this.equipments.slice(0, 10);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getAllEquipmentStatusTrueFalse() {
+      let URL = Server.EQUIPMENT_API_PATH;
+      this.axios
+        .get(URL)
+        .then(response => {
+          let data = response.data;
+          // alert('in');
+          data.forEach(element => {
+            let equipment = element.Equipment;
             this.equipments.push(equipment);
-
+            if (this.$store.state.equipmentPage.searchText != "") {
+              let tempEQTs = [];
+              if (this.searchValues.length > 0) {
+                for (const equipment of this.searchValues) {
+                  tempEQTs = tempEQTs.concat(
+                    this.equipments.filter(e => e.Id == equipment.Id)
+                  );
+                }
+              }
+              this.equipments = tempEQTs;
+              this.searchMode = true;
+            } else {
+              // this.$store.state.workOrderPage.searchValues = [];
+              this.searchMode = false;
+            }
+            this.toDisplayData = this.equipments.slice(0, 10);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getEquipmentInActive() {
+      let URL = Server.EQUIPMENT_API_PATH;
+      this.axios
+        .get(URL)
+        .then(response => {
+          let data = response.data;
+          // alert('in');
+          data.forEach(element => {
+            let equipment = element.Equipment;
+            if (equipment.Status == false) {
+              this.equipments.push(equipment);
+            }
             if (this.$store.state.equipmentPage.searchText != "") {
               let tempEQTs = [];
               if (this.searchValues.length > 0) {
@@ -139,6 +232,48 @@ export default {
       this.equipments = [];
       this.toDisplayData = [];
       this.getEquipment();
+    },
+    activeChecked: function() {
+      this.equipments = [];
+      this.toDisplayData = [];
+      if (this.activeChecked) {
+        if (this.inActiveChecked) {
+          this.getAllEquipmentStatusTrueFalse();
+          this.currentPage = 1;
+        } else {
+          this.getEquipment();
+          this.currentPage = 1;
+        }
+      } else {
+        if (this.inActiveChecked) {
+          this.getEquipmentInActive();
+          this.currentPage = 1;
+        } else {
+          this.equipments = [];
+          this.toDisplayData = [];
+        }
+      }
+    },
+    inActiveChecked: function() {
+      this.equipments = [];
+      this.toDisplayData = [];
+      if (this.inActiveChecked) {
+        if (this.activeChecked) {
+          this.getAllEquipmentStatusTrueFalse();
+          this.currentPage = 1;
+        } else {
+          this.getEquipmentInActive();
+          this.currentPage = 1;
+        }
+      } else {
+        if (this.activeChecked) {
+          this.getEquipment();
+          this.currentPage = 1;
+        } else {
+          this.equipments = [];
+          this.toDisplayData = [];
+        }
+      }
     }
   }
 };
