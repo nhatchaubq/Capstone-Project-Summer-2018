@@ -39,9 +39,9 @@
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                   <span><strong> Equipment Name (required) 
-                  </strong></span><span v-if="CreateEquipmentErrors.NoName != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoName }}</span></span>
-                  </strong></span><span v-if="CreateEquipmentErrors.NameLength != ''">. <span class="error-text">{{ CreateEquipmentErrors.NameLength }}</span></span>
+                   <span><strong> Equipment Name (required) </strong></span>
+                   <span v-if="CreateEquipmentErrors.NoName != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoName }}</span></span>
+                    <span v-if="CreateEquipmentErrors.NameLength != ''">. <span class="error-text">{{ CreateEquipmentErrors.NameLength }}</span></span>
                 </div>
                 <div class="form-field-input" >
                   <!-- <Autocomplete :items="equipmentOptions"
@@ -120,7 +120,7 @@
                             if (newDuration < 1 || newDuration == '') {
                                 newDuration = 0;
                             } else if (newDuration > 60) {
-                                newDuration = '60';
+                                newDuration = 60;
                             }
                             newDuration = getNumberFormattedThousand(newDuration);
                         }">
@@ -228,7 +228,7 @@ export default {
         alert(error);
       });
     this.axios
-      .get("http://localhost:3000/api/EquipmentCategory")
+      .get("http://localhost:3000/api/EquipmentCategory/getAllCate")
       .then(response => {
         let data = response.data;
         data.forEach(category => {
@@ -439,79 +439,190 @@ export default {
           alert(error);
         });
     },
-    createNewCategory() {
+    async createNewCategory() {
       if (this.newCategory.trim() == "") {
-        alert("Please enter Category name");
+        let obj = {
+          message: "Please enter new category!!!",
+          type: "warning",
+          showXclose: false
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else {
-        this.axios
-          .post("http://localhost:3000/api/EquipmentCategory/categoryName", {
-            name: this.newCategory
-          })
-          .then(function(respone) {
-            // console.log(respone);
+        var duplicate = 0;
+        for (var i = 0; i < this.categoryOptions.length; i++) {
+          if (
+            this.categoryOptions[i].text.toUpperCase() ==
+            this.newCategory.trim().toUpperCase()
+          ) {
+            duplicate = duplicate + 1;
+          }
+        }
+        if (duplicate == 0) {
+          let res = await this.axios
+            .post("http://localhost:3000/api/EquipmentCategory/categoryName", {
+              name: this.newCategory
+            })
+            .catch(function(error) {
+              console.log(error);
+              alert("Add failed: " + error);
+            });
+          if (res.status == 200) {
+            let obj = {
+              message: "Create new category successfully",
+              type: "success",
+              hideAllButton: true,
+              showXclose: false
+            };
+            this.$refs.simplert.openSimplert(obj);
+            await Utils.sleep(1100);
             location.reload();
-            alert("Add new category successfully");
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+          }
+        } else {
+          let obj = {
+            message: "This category is existed!!!",
+            type: "warning",
+            showXclose: false
+          };
+          this.$refs.simplert.openSimplert(obj);
+        }
       }
     },
-    createNewVendor() {
-      if (this.newVendor == "") {
-        alert("Please enter vendor name");
+    async createNewVendor() {
+      if (this.newVendor.trim() == "") {
+        let obj = {
+          message: "Please enter new vendor name!!!",
+          type: "warning",
+          showXclose: false
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else {
-        this.axios
-          .post("http://localhost:3000/api/Vendor/vendorName", {
-            businessName: this.newVendor
-          })
-          .then(function(respone) {
-            // console.log(respone);
+        var duplicate = 0;
+        for (var i = 0; i < this.vendorOptions.length; i++) {
+          if (
+            this.vendorOptions[i].text.toUpperCase() ==
+            this.newVendor.trim().toUpperCase()
+          ) {
+            duplicate = duplicate + 1;
+          }
+        }
+        if (duplicate == 0) {
+          let res = await this.axios
+            .post("http://localhost:3000/api/Vendor/vendorName", {
+              businessName: this.newVendor
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+          if (res.status == 200) {
+            let obj = {
+              message: "Create new vendor successfully",
+              type: "success",
+              hideAllButton: true,
+              showXclose: false
+            };
+            this.$refs.simplert.openSimplert(obj);
+            await Utils.sleep(1100);
             location.reload();
-            alert("Add new vendor successfully");
-            this.created();
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+          }
+        } else {
+          let obj = {
+            message: "This vendor is existed!!!",
+            type: "warning",
+            showXclose: false
+          };
+          this.$refs.simplert.openSimplert(obj);
+        }
       }
     },
-    createNewUnit() {
-      if (this.newUnit == "") {
-        alert("Please enter Unit name");
+    async createNewUnit() {
+      if (this.newUnit.trim() == "") {
+        let obj = {
+          message: "Please enter new unit!!!",
+          type: "warning",
+          showXclose: false
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else {
-        this.axios
-          .post("http://localhost:3000/api/unit", {
-            name: this.newUnit
-          })
-          .then(function(respone) {
-            // console.log(respone);
+        var duplicate = 0;
+        for (var i = 0; i < this.unitOptions.length; i++) {
+          if (
+            this.unitOptions[i].text.toUpperCase() ==
+            this.newUnit.trim().toUpperCase()
+          ) {
+            duplicate = duplicate + 1;
+          }
+        }
+        if (duplicate == 0) {
+          let res = await this.axios
+            .post("http://localhost:3000/api/unit", {
+              name: this.newUnit
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+          if (res.status == 200) {
+            let obj = {
+              message: "Create new unit successfully",
+              type: "success",
+              hideAllButton: true,
+              showXclose: false
+            };
+            this.$refs.simplert.openSimplert(obj);
+            await Utils.sleep(1100);
             location.reload();
-            alert("Add new Unit successfully");
-            this.created();
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+          }
+        } else {
+          let obj = {
+            message: "This unit is existed!!!",
+            type: "warning",
+            showXclose: false
+          };
+          this.$refs.simplert.openSimplert(obj);
+        }
       }
     },
-    createNewMaintenanceDuration() {
+    async createNewMaintenanceDuration() {
       if (this.newDuration == "" || this.newDuration < 3) {
-        alert("Maintenance duration must be bigger than 3 months");
+        let obj = {
+          message: "Maintaince duration must be from 3 to 60 months",
+          type: "warning",
+          showXclose: false
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else {
-        this.axios
-          .post("http://localhost:3000/api/maintenanceDuration", {
-            month: this.newDuration
-          })
-          .then(function(respone) {
-            // console.log(respone);
+        var duplicate = 0;
+        for (var i = 0; i < this.maintenanceDurationOptions.length; i++) {
+          if (this.maintenanceDurationOptions[i].text == this.newDuration) {
+            duplicate = duplicate + 1;
+          }
+        }
+        if (duplicate == 0) {
+          let res = await this.axios
+            .post("http://localhost:3000/api/maintenanceDuration", {
+              month: this.newDuration
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+          if (res.status == 200) {
+            let obj = {
+              message: "Create new maintaince duration successfully",
+              type: "success",
+              hideAllButton: true,
+              showXclose: false
+            };
+            this.$refs.simplert.openSimplert(obj);
+            await Utils.sleep(1100);
             location.reload();
-            alert("Add new Maintenance Duration successfully");
-            this.created();
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+          }
+        } else {
+          let obj = {
+            message: "This maintaince duration is existed!!!",
+            type: "warning",
+            showXclose: false
+          };
+          this.$refs.simplert.openSimplert(obj);
+        }
       }
     },
     async createNewEquipment() {
@@ -527,7 +638,10 @@ export default {
       if (this.form.EquipmentName.trim() === "") {
         this.CreateEquipmentErrors.NoName = this.ErrorStrings.NoName;
       }
-      if (this.form.EquipmentName.trim().length < 5) {
+      if (
+        this.form.EquipmentName.trim().length < 5 ||
+        this.form.EquipmentName.trim().length > 250
+      ) {
         this.CreateEquipmentErrors.NameLength = this.ErrorStrings.NameLength;
       }
       if (this.selectedVendor.value === "") {
@@ -542,7 +656,7 @@ export default {
       if (this.form.Unit === "") {
         this.CreateEquipmentErrors.NoMaintenanceDuration = this.ErrorStrings.NoMaintenanceDuration;
       }
-      if (this.form.MadeIn.trim().length > 250) {
+      if (this.form.MadeIn.trim().length > 50) {
         this.CreateEquipmentErrors.MadeInTooLong = this.ErrorStrings.MadeInTooLong;
       }
       if (this.form.Description.trim().length > 250) {
@@ -577,6 +691,7 @@ export default {
         this.CreateEquipmentErrors.NoCategory === "" &&
         this.CreateEquipmentErrors.NoVendor === "" &&
         this.CreateEquipmentErrors.NoUnit === "" &&
+        this.CreateEquipmentErrors.NameLength === "" &&
         this.CreateEquipmentErrors.NoMaintenanceDuration === ""
       ) {
         for (var i = 0; i < context.equipments.length; i++) {
@@ -594,7 +709,6 @@ export default {
             exist = exist + 1;
           }
         }
-        alert(exist);
         if (exist == 0) {
           context.axios
             .post("http://localhost:3000/api/equipment", {
@@ -733,13 +847,8 @@ export default {
       }
       if (
         this.form.EquipmentName.trim().length >= 5 &&
-        this.CreateEquipmentErrors.NameLength != ""
-      ) {
-        this.CreateEquipmentErrors.NameLength = "";
-      }
-      if (
-        this.form.EquipmentName.trim().length < 250 &&
-        this.CreateEquipmentErrors.NameLength != ""
+        this.CreateEquipmentErrors.NameLength != "" &&
+        this.form.EquipmentName.trim().length < 250
       ) {
         this.CreateEquipmentErrors.NameLength = "";
       }

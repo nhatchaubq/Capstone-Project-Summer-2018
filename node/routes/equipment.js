@@ -11,7 +11,7 @@ router.get("/", (request, response) => {
       "SELECT e.Id as 'Equipment.Id', e.Name as 'Equipment.Name', " +
       "e.Image  as 'Equipment.Image', e.MadeIn as 'Equipment.MadeIn', " +
       "e.Description as 'Equipment.Description', e.VendorID as 'Equipment.VendorId', " +
-      "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId', " +
+      "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId', e.Status as 'Equipment.Status', " +
       "u.[Name] as [Equipment.Unit.Name], e.UnitID as 'Equipment.UnitId', " +
       "md.[Months] as [Equipment.MaintenanceDuration.Month], e.MaintenanceDurationID as 'Equipment.MaintenanceDurationId', " +
       "ec.Name as 'Equipment.Category.Name', (select count(Id)  from EquipmentItem where EquipmentID = e.Id) as [Equipment.Quantity], " +
@@ -22,7 +22,7 @@ router.get("/", (request, response) => {
       "JOIN [EquipmentCategory] as ec ON e.CategoryID = ec.Id " +
       "JOIN [Unit] as u on e.UnitID = u.Id " +
       "JOIN [MaintenanceDuration] as md on e.MaintenanceDurationID = md.Id " +
-      "Order by e.Name asc " +
+      "Order by e.Status desc,e.Name asc " +
       "for json path"
     )
     .into(response);
@@ -33,7 +33,7 @@ router.get("/:id", (request, response) => {
     .sql(
       "SELECT e.Id as 'Equipment.Id', e.Name as 'Equipment.Name', " +
       "e.Image  as 'Equipment.Image', e.MadeIn as 'Equipment.MadeIn', " +
-      "e.Description as 'Equipment.Description', e.VendorID as 'Equipment.VendorId', " +
+      "e.Description as 'Equipment.Description', e.VendorID as 'Equipment.VendorId', e.Status as 'Equipment.Status', " +
       "v.BusinessName as 'Equipment.Vendor.Name', e.CategoryID as 'Equipment.CategoryId',  " +
       "ec.Name as 'Equipment.Category.Name', e.UnitID as 'Equipment.UnitID', unit.Name as 'Equipment.Unit.Name',e.MaintenanceDurationID as 'Equipment.MaintenanceDurationID', duration.Months as 'Equipment.MaintenanceDuration.Months' , (select count(Id)  from EquipmentItem where EquipmentID = e.Id) as [Equipment.Quantity], " +
       "(select count(Id) from EquipmentItem as ei where EquipmentID = e.Id and ei.StatusId = 1) as [Equipment.AvailableQuantity], " +
@@ -101,8 +101,8 @@ router.get("/:equipmentId/:vendorId", function (request, response) {
 router.post("/", (request, response) => {
   request
     .sql(
-      "INSERT INTO Equipment (Name, VendorID, Image, MadeIn, Description, CategoryID, UnitID, MaintenanceDurationID)" +
-      " VALUES (@name, @vendorID, @image, @madein, @description, @categoryID, @unitID, @maintenanceDurationID)"
+      "INSERT INTO Equipment (Name, VendorID, Image, MadeIn, Description, CategoryID, UnitID, MaintenanceDurationID, Status)" +
+      " VALUES (@name, @vendorID, @image, @madein, @description, @categoryID, @unitID, @maintenanceDurationID, 'True')"
     )
     .param("name", request.body.name, TYPES.NVarChar)
     .param("vendorID", request.body.vendorID, TYPES.Int)
@@ -119,7 +119,7 @@ router.post("/", (request, response) => {
 router.put("/:id", function (request, response) {
   request
     .sql(
-      "UPDATE [Equipment] set Name = @name, VendorID = @vendorid, Image=@image, MadeIn=@madein, Description=@description, CategoryID=@categoryid, UnitID=@unitid, MaintenanceDurationID=@maintenanceDurationid where Id = @id"
+      "UPDATE [Equipment] set Name = @name, VendorID = @vendorid, Image=@image, MadeIn=@madein, Description=@description, CategoryID=@categoryid, UnitID=@unitid, MaintenanceDurationID=@maintenanceDurationid, Status = @status where Id = @id"
     )
     .param("id", request.params.id, TYPES.Int)
     .param("name", request.body.name, TYPES.NVarChar)
@@ -130,6 +130,7 @@ router.put("/:id", function (request, response) {
     .param("description", request.body.description, TYPES.NVarChar)
     .param("unitid", request.body.unitid, TYPES.Int)
     .param("maintenanceDurationid", request.body.maintenanceDurationid, TYPES.Int)
+    .param("status", request.body.status, TYPES.Bit)
 
     .exec(response);
 });

@@ -297,7 +297,7 @@ export default {
               if (this.authUser.Role == "Maintainer") {
                 if (this.orders[i].RequestUsername == this.authUser.Username) {
                   var event = {
-                    title: this.orders[i].Name,
+                    title: this.orders[i].Id + " - " + this.orders[i].Name,
                     offset: startOffset + 1,
                     duration: duration,
                     status: this.orders[i].WorkOrderStatus,
@@ -317,7 +317,7 @@ export default {
               } else if (this.authUser.Role == "Staff") {
                 if (this.orders[i].RequestUsername == this.authUser.Username) {
                   event = {
-                    title: this.orders[i].Name,
+                    title: this.orders[i].Id + " - " + this.orders[i].Name,
                     offset: startOffset + 1,
                     duration: duration,
                     status: this.orders[i].WorkOrderStatus,
@@ -342,7 +342,11 @@ export default {
               ) {
                 if (this.orders[i].Category == "Maintain") {
                   event = {
-                    title: "Maintain - " + this.orders[i].Name,
+                    title:
+                      "Maintain - " +
+                      this.orders[i].Id +
+                      " - " +
+                      this.orders[i].Name,
                     offset: startOffset + 1,
                     duration: duration,
                     status: this.orders[i].WorkOrderStatus,
@@ -359,7 +363,11 @@ export default {
                   };
                 } else {
                   event = {
-                    title: "Working - " + this.orders[i].Name,
+                    title:
+                      "Working - " +
+                      this.orders[i].Id +
+                      " - " +
+                      this.orders[i].Name,
                     offset: startOffset + 1,
                     duration: duration,
                     status: this.orders[i].WorkOrderStatus,

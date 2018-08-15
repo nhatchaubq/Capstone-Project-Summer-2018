@@ -1,20 +1,16 @@
 <template>
   <div>
-    <div v-if="!equipments">
-      There is no equipment yet.
-    </div>
-    <div v-else>
-    <div v-if="equipments">
-       <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer' " >
+    <div v-if="authUser.Role == 'Staff' || authUser.Role == 'Maintainer' " >
         <div class="field is-grouped view-mode" style="margin-bottom: 0.2rem !important; padding: 0rem!important">
           <router-link to='/Equipment/'>  
-            <button class="btn-view-mode-left" style="margin-right:0rem"> All Equipments</button>
+            <button class="btn-view-mode-left" style="margin-right:0rem"> All Equipment</button>
           </router-link>
           <router-link to='/myEquipment/'>  
-            <button class="btn-view-mode-right" disabled="disabled">My Equipment Items</button>
+            <button class="btn-view-mode-right" disabled="disabled">My Equipment</button>
           </router-link>
         </div>
-      </div>
+    </div>
+    <div v-if="displayOrders && displayOrders.length != 0"> 
       <table class="table" >
           <thead>
                 <tr>
@@ -36,7 +32,7 @@
           <tbody style="font-size:14px"   v-bind:key="index" v-for="(order, index) in displayOrders">
                 <tr>
                     <td style="margin-top:0.5rem" width=10% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Location}}</td> 
-                    <td style="margin-top:0.5rem" width=20% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Name}}</td>
+                    <td :style=" {color: period[index]<3? 'red' : 'black'}" width=20% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Name}}</td>
                     <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.StartDate)}}</td>
                     <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.ExpectingCloseDate)}}</td>
                 </tr>
@@ -50,8 +46,8 @@
                 </tr>
           </tbody>
       </table>
-       <modal v-model="changePosition" style="font-family: Roboto">
-         <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
+      <modal v-model="changePosition" style="font-family: Roboto">
+        <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
         <div slot="header" style="font-weight: bold">
             <span>Update Position </span>
         </div>
@@ -125,7 +121,9 @@
                     }">Save changes</button>
         </div>
       </modal>
-    </div> 
+    </div>
+    <div v-else>
+      There is no equipment yet.
     </div>
   </div>
 </template>
@@ -160,6 +158,18 @@ export default {
         let data = response.data;
         this.displayOrders = data;
         for (var i = 0; i < this.displayOrders.length; i++) {
+          this.period[i] = Math.abs(
+            moment(this.displayOrders[i].ExpectingCloseDate).valueOf() -
+              moment().valueOf()
+          );
+
+          this.period[i] = Math.floor(this.period[i] / (1000 * 3600 * 24));
+          if (
+            moment().valueOf() >
+            moment(this.displayOrders[i].ExpectingCloseDate).valueOf()
+          ) {
+            this.period[i] = -this.period[i];
+          }
           for (
             var j = 0;
             j < this.displayOrders[i].WorkorderDetail.length;
@@ -187,7 +197,6 @@ export default {
       });
   },
   computed: {
-    isTableMode: sync("equipmentPage.isTableMode"),
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
     }
@@ -202,6 +211,7 @@ export default {
       displayLocation: [],
       displayOrderDetail: [],
       displayItemDetail: [],
+      period: [],
       selectedEquipment: null,
       changePosition: false,
       form: {
@@ -241,7 +251,6 @@ export default {
             this.displayOrders[i].WorkorderDetail[j].EquipmentItemID == itemId
           ) {
             this.WOlocationID = this.displayOrders[i].LocationID;
-            alert(this.WOlocationID);
           }
         }
       }

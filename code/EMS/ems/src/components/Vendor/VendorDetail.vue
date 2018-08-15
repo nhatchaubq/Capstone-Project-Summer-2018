@@ -8,7 +8,8 @@
   <div class="grid-wrapper1 col-12" style="margin-bottom:1rem">
     <div class="material-box" >
       <div class="row" style="margin: 0 !important; height:36px ">
-        <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a" >{{Vendor.BusinessName}}  <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> </strong> </h2>
+        <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a" >{{Vendor.BusinessName}}   </strong> </h2>
+        <!-- <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a" >{{Vendor.BusinessName}}  <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> </strong> </h2> -->
       <div style="padding: 0rem !important" class="col-1"  v-if="authUser.Role =='Equipment Staff'">
         <button  v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate " v-on:click="editMode = !editMode">Edit</button>
       </div>
@@ -19,7 +20,7 @@
             <strong>
               Business address 
             </strong>
-            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
+            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span></span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.BusinessAddress" class="input col-7 " type="text"  placeholder="160/5 Tan Chanh Hiep, Quan 12, Ho Chi Minh" disabled="disabled">
@@ -30,7 +31,7 @@
                 Website 
 
             </strong>
-            <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span>
+            <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span> <span v-if="editMode"><span v-if="CreateVendorErrors.validWeb != ''"> <span class="error-text">{{ CreateVendorErrors.validWeb }}</span></span></span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.Website" class="input col-7 " type="text"  placeholder="www.d-point.co.jp" disabled="disabled"> 
@@ -41,7 +42,7 @@
               Contact name 
 
             </strong>
-            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span>
+            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span> <span v-if="CreateVendorErrors.validContactName != ''"> <span class="error-text">{{ CreateVendorErrors.validContactName }}</span></span> </span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D-point" disabled="disabled">
@@ -52,7 +53,7 @@
               Contact email 
 
             </strong>
-            <span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span>  
+            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span></span>      
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="dpoint@gmail.com" disabled="disabled">
@@ -71,6 +72,9 @@
         <div class="row" v-if="editMode">
           <button class="button btn-confirm-edit btn-primary material-shadow-animate"  v-on:click="editVendor()">Save change</button>
           <button class="button btn-cancel material-shadow-animate" v-on:click="() => {
+        this.CreateVendorErrors.validEmail = false;
+        this.CreateVendorErrors.validWeb = false;
+        this.CreateVendorErrors.validContactName = false;
          reload($route.params.id);
          editMode = false;
       }">Cancel</button>
@@ -408,11 +412,14 @@ export default {
         BusinessAddressMin:
           " Use from 6 to 200 characters for your business address",
         // NoContactName: "You must provide contact name for this vendor",
-        ContactNameMin: " Use from 6 to 50 characters for your contact name",
-        ContactNameMax: " Use from 6 to 50 characters for your contact name",
-        NoEmail: " Enter email",
+        ContactNameMin: " Use from 6 to 50 characters for your contact name ",
+        ContactNameMax: " Use from 6 to 50 characters for your contact name ",
+        NoEmail: " Enter email ",
         WebMax: " Use 200 characters or fewer for your website",
-        DesMax: " Use 500 characters or fewer for your description"
+        DesMax: " Use 500 characters or fewer for your description",
+        validEmail: "Valid email required",
+        validWeb: "Valid website required",
+        validContactName: "Enter alphabet characters"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -424,7 +431,10 @@ export default {
         ContactNameMax: "",
         NoEmail: "",
         WebMax: "",
-        DesMax: ""
+        DesMax: "",
+        validEmail: "",
+        validWeb: "",
+        validContactName: ""
       },
       Vendor: null,
       checkedActive: [],
@@ -436,6 +446,10 @@ export default {
       // if (this.Vendor.BusinessName === "") {
       //   this.CreateVendorErrors.NoBusinessName = this.ErrorStrings.NoBusinessName;
       // }
+      let webRegex = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+      let emailRegex = /^(([^<>()\[\]\\.,;!#$%\^&*:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      let contactNameRegex = /^[a-zA-Z]+$/;
+
       if (
         !this.Vendor.BusinessAddress ||
         (this.Vendor.BusinessAddress && this.Vendor.BusinessAddress == "")
@@ -464,6 +478,11 @@ export default {
       ) {
         this.CreateVendorErrors.ContactNameMin = this.ErrorStrings.ContactNameMin;
       }
+      if (!contactNameRegex.test(this.Vendor.ContactName)) {
+        this.CreateVendorErrors.validContactName = this.ErrorStrings.validContactName;
+      } else {
+        this.CreateVendorErrors.validContactName = "";
+      }
       if (
         !this.Vendor.ContactEmail ||
         (this.Vendor.ContactEmail && this.Vendor.ContactEmail == "")
@@ -475,6 +494,16 @@ export default {
       }
       if (this.Vendor.Description && this.Vendor.Description.length > 500) {
         this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
+      }
+      if (!emailRegex.test(this.Vendor.ContactEmail)) {
+        this.CreateVendorErrors.validEmail = this.ErrorStrings.validEmail;
+      } else {
+        this.CreateVendorErrors.validEmail = "";
+      }
+      if (!webRegex.test(this.Vendor.Website)) {
+        this.CreateVendorErrors.validWeb = this.ErrorStrings.validWeb;
+      } else {
+        this.CreateVendorErrors.validWeb = "";
       }
       if (this.validateVendor())
         this.axios
@@ -518,7 +547,10 @@ export default {
         this.CreateVendorErrors.ContactNameMax === "" &&
         this.CreateVendorErrors.WebMax === "" &&
         this.CreateVendorErrors.DesMax === "" &&
-        this.CreateVendorErrors.NoEmail === ""
+        this.CreateVendorErrors.NoEmail === "" &&
+        this.CreateVendorErrors.validEmail == "" &&
+        this.CreateVendorErrors.validWeb == "" &&
+        this.CreateVendorErrors.validContactName == ""
       );
     },
     gotoDetail(EquipmentId) {
@@ -549,18 +581,24 @@ export default {
       if (this.Vendor.ContactName.length < 51) {
         this.CreateVendorErrors.ContactNameMax = "";
       }
-      // if (this.Vendor.ContactName != "") {
-      //   this.CreateVendorErrors.NoContactName = "";
-      // }
+      if (this.Vendor.ContactName == this.contactNameRegex) {
+        this.CreateVendorErrors.validContactName = "";
+      }
     },
     "Vendor.ContactEmail": function() {
       if (this.Vendor.ContactEmail != "") {
         this.CreateVendorErrors.NoEmail = "";
       }
+      if (this.Vendor.ContactEmail == this.emailRegex) {
+        this.CreateVendorErrors.validEmail = "";
+      }
     },
     "Vendor.Website": function() {
       if (this.Vendor.Website.length < 201) {
         this.CreateVendorErrors.WebMax = "";
+      }
+      if (this.Vendor.Website == this.webRegex) {
+        this.CreateVendorErrors.validWeb = "";
       }
     },
     "Vendor.Description": function() {
