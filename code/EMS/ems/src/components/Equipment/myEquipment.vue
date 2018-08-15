@@ -32,7 +32,7 @@
           <tbody style="font-size:14px"   v-bind:key="index" v-for="(order, index) in displayOrders">
                 <tr>
                     <td style="margin-top:0.5rem" width=10% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Location}}</td> 
-                    <td style="margin-top:0.5rem" width=20% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Name}}</td>
+                    <td :style=" {color: period[index]<3? 'red' : 'black'}" width=20% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Name}}</td>
                     <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.StartDate)}}</td>
                     <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.ExpectingCloseDate)}}</td>
                 </tr>
@@ -158,6 +158,18 @@ export default {
         let data = response.data;
         this.displayOrders = data;
         for (var i = 0; i < this.displayOrders.length; i++) {
+          this.period[i] = Math.abs(
+            moment(this.displayOrders[i].ExpectingCloseDate).valueOf() -
+              moment().valueOf()
+          );
+
+          this.period[i] = Math.floor(this.period[i] / (1000 * 3600 * 24));
+          if (
+            moment().valueOf() >
+            moment(this.displayOrders[i].ExpectingCloseDate).valueOf()
+          ) {
+            this.period[i] = -this.period[i];
+          }
           for (
             var j = 0;
             j < this.displayOrders[i].WorkorderDetail.length;
@@ -185,7 +197,6 @@ export default {
       });
   },
   computed: {
-    isTableMode: sync("equipmentPage.isTableMode"),
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
     }
@@ -200,6 +211,7 @@ export default {
       displayLocation: [],
       displayOrderDetail: [],
       displayItemDetail: [],
+      period: [],
       selectedEquipment: null,
       changePosition: false,
       form: {

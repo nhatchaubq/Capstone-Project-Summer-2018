@@ -10,7 +10,7 @@
         <div class="field" style=" display: grid; grid-template-columns: 45% 55%; width: 100;">
            
             <div class="left" style="padding-top:0.5rem; padding-left:1rem ">
-                <img :src= "this.EquimentByID.Image" style="width: 400px; height: 350px; ">
+                <img :src= "this.EquimentByID.Image" style="width: 400px; height: 400px; ">
             </div>
             <div class="">
               <div class="field" style=" display: grid; grid-template-columns: 70% 20% 10%;">
@@ -100,9 +100,32 @@
                     </div>
                     <label style=" margin-top: 0.75rem;margin-left: 0.2rem;padding-left:1rem">months/time maintenance</label>
                   </div>
-                  
               </div>
-             
+             <div  class="row" style="height:36px;" >
+                  <div class="" style="margin-top:0.5rem" >
+                      Status:  <span v-if="editMode" style="color:red; font-size:18px">*</span>
+                  </div>
+                  <div class="is-horizontal" v-if="!editMode" style="height:36px; display: grid;grid-template-columns: 38% 60%;margin-top:0.5rem">
+                    <label v-if="EquimentByID.Status" style="margin-right: 1rem;" class="radio"  >
+                      <input type="radio" name="active" v-on:change="EquimentByID.Status = true" :checked="EquimentByID.Status" :disabled="!editMode">
+                      Active
+                    </label>
+                    <label v-else class="radio">
+                      <input type="radio"  name="active" v-on:change="EquimentByID.Status = false" :checked="!EquimentByID.Status" :disabled="!editMode">
+                      InActive
+                    </label>
+                  </div>
+                  <div class="is-horizontal" v-else style="height:36px; display: grid;grid-template-columns: 38% 60%;margin-top:0.5rem">
+                    <label style="margin-right: 1rem;" class="radio"  >
+                      <input type="radio" name="active" value="Active"  v-on:change="EquimentByID.Status = true"  :checked="EquimentByID.Status" >
+                      Active
+                    </label>
+                    <label class="radio">
+                      <input type="radio"  name="active" value="InActive" v-on:change="EquimentByID.Status = false" :checked="!EquimentByID.Status" >
+                      InActive
+                    </label>
+                  </div>
+              </div>
               <div  class="row" style="height:36px" >
                   <div class="" style="margin-top:0.5rem" >
                       Description:  
@@ -144,7 +167,7 @@
           <table class="table">
               <thead>
                   <tr>
-                      <th><strong>Order#</strong></th>
+                      <th><strong>No.</strong></th>
                       <th><strong>Serial number</strong></th>
                       <th><strong>ImportDate</strong></th>
                       <th><strong>Warranty</strong></th>
@@ -157,7 +180,7 @@
               </thead>  
               <tbody>
                   <tr v-bind:key="item.ID" v-for="(item, index) in toDisplayEquipmentItem" v-on:click="setSelectedItem(item.ID)">
-                      <td>{{ 10*(currentPageEquipmentItem -1) + (index + 1) }}</td>   
+                      <td style="text-align:center">{{ 10*(currentPageEquipmentItem -1) + (index + 1) }}</td>   
                       <td>{{item.SerialNumber}}</td>
                       <td>{{item.ImportDate}}</td>
                       <td>{{item.WarrantyDuration}}</td>
@@ -294,14 +317,14 @@
                                                                                       editItemMode = false;
                                                                                     }" animation="slideUp"> -->
           <!-- <equipment-detail-popup :equipment="selectedItem" class="" v-show="selectedItem != null"></equipment-detail-popup> -->
-      <modal v-model="detailPopUp"  :closable="false">
+      <modal v-model="detailPopUp" :width="580" :closable="false">
          <div v-if="selectedItem!=null" > 
            <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
           <div slot="header">
-              <div class="field" style=" display: grid; grid-template-columns: 85% 10%; height:3rem">
+              <div class="field" style=" display: grid; grid-template-columns: 85% 15%; height:3rem">
                 <div style="margin-top:0.25rem"><strong style="padding-top:0.25rem; margin-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a;padding-left: 0.4rem">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong></div>
-                <div class="" v-if="currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation &&currentsttName != workingstt) ">
-                  <div class="" v-if="!editItemMode && authUser.Role=='Equipment Staff'"><button class="btn-edit" v-on:click="editItemMode = !editItemMode" style="font-size: 16px;">Edit</button></div>  
+                <div class="" style="text-align: right; width: 100%" v-if="authUser.Role=='Equipment Staff' && (currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation &&currentsttName != workingstt)) ">
+                  <div style="text-align: right; width: 100%" class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode" style="font-size: 16px;">Edit</button></div>  
                 </div>
                 <!-- <div class="" v-else><button class="btn-edit" style="color: white; border-bottom: 1px solid black;background-color: #26a69a; border-radius: 5px" disabled="disabled">Edit</button></div>   -->
               </div>
@@ -321,13 +344,13 @@
                   <div  class="">
                     <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode: * is required, please input these fields</span>
                   <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
+                    <div class="titleDetail"  >
                         Serial Number:  
                     </div>
                       <input  v-model="selectedItem.Item.SerialNumber" class="input col-7 " type="text" disabled="disabled"> 
                   </div>
                   <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
+                    <div class="titleDetail"  >
                         Price:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
                     </div>
                     <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" >  
@@ -348,7 +371,7 @@
                     </div>
                   </div>
                   <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
+                    <div class="titleDetail" >
                         Warranty:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
                     </div>
                     <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" > 
@@ -362,7 +385,7 @@
                     </div>
                   </div>
                   <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
+                    <div class="titleDetail">
                         Warehouse:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
                     </div>
                       <input v-if="!editItemMode" v-model="selectedItem.Item.Warehouse" class="input col-7 " type="text" disabled="disabled"> 
@@ -375,26 +398,26 @@
                       </div>
                   </div>
                   <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
+                    <div class="titleDetail" >
                         Import-Date:  
                     </div>
                       <input  v-model="selectedItem.Item.ImportDate" class="input col-7 " type="text" disabled="disabled"> 
                   </div>
                   <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
+                    <div class="titleDetail" >
                         Last-MaintainDate:  
                     </div>
                       <input v-model="selectedItem.Item.LastMaintainDate" class="input col-7 " type="text" disabled="disabled">
                   </div>
                   <div class="rowpu" style="height: 36px" >
-                    <div class="" style="margin-top:0.5rem" >
+                    <div class="titleDetail" >
                         Next-MaintainDate:  
                     </div>
                       <input v-if="!editItemMode" v-model="selectedItem.Item.NextMaintainDate" class="input col-7 " type="text" disabled="disabled"> 
                       <input v-else v-model="selectedItem.Item.NextMaintainDate" class="input col-7 " type="date">
                   </div>
-                  <div class="rowpu" style="margin-left: 0.5rem;margin-top: 0.75rem;margin-right: 1rem; display: grid; grid-template-columns: 40% 60%; width: 100; height:50px" >
-                    <div class="" style="margin-top:0.5rem" >
+                  <div class="rowpu" style="margin-left: 0.5rem;margin-top: 0.75rem;margin-right: 1rem; display: grid; grid-template-columns: 40% 50%; width: 100; height:50px" >
+                    <div class="titleDetail">
                         Description:  
                     </div>
                       <textarea v-if="!editItemMode" v-model="selectedItem.Item.Description" cols="7" rows="3" disabled="disabled" style="border-style:solid; border-color:#b0bec5; padding-left:0.5rem"> </textarea>
@@ -410,7 +433,7 @@
                   <div>
                     <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode * is required, please input these fields</span>
                     <div class="rowpu" style="display: grid; grid-template-columns: 20% 80%;" >
-                      <div class="" style="margin-top:0.5rem;" >
+                      <div class="" style="margin-top:0.2rem;margin-left:1.5rem" >
                         Status:  
                       </div>
                       
@@ -431,7 +454,7 @@
                       </div> 
                     </div>
                     <div v-if="editItemMode" class="rowpu" style="display: grid; grid-template-columns: 20% 80%;" >
-                      <div class="" style="margin-top:0.5rem" >
+                      <div class="" style="margin-top:0.2rem;margin-left:1.5rem" >
                           Note:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
                       </div>
                       <textarea v-model="changeItemSttDescription" cols="7" rows="3" style="border-style:solid; border-color:#b0bec5;" placeholder="Why do you change into this status?"> </textarea>
@@ -446,22 +469,22 @@
                         <table class="mytable">
                             <thead>
                               <tr>
-                                <th><strong>Order#</strong></th>                            
+                                <th><strong>No.</strong></th>                            
                                 <th><strong>From</strong></th>
                                 <th><strong>To</strong></th>
-                                <th><strong>By_User</strong></th>
+                                <th><strong>User</strong></th>
                                 <th><strong>Date</strong></th>
                                 <th><strong>Note</strong></th>
                               </tr>
                             </thead>  
                             <tbody >
                               <tr v-for="(history, index) in statusHistories" style="font-size=16">
-                                <td width=5% style="font-size=14;">{{index + 1}}</td>
-                                <td width=22% style="font-size=14;">{{history.OldStatus.Name}}</td>    
-                                <td width=22% style="font-size=14;">{{history.NewStatus.Name}}</td>  
-                                <td width=17% style="font-size=14;">{{history.Fullname}}</td>  
-                                <td width=19% style="font-size=14;">{{history.Date}}</td>
-                                <td width=15% style="font-size=14;">{{history.Description}}</td>    
+                                <td width=5% style="font-size=14;text-align:center">{{index + 1}}</td>
+                                <td width=20% style="font-size=14;">{{history.OldStatus.Name}}</td>    
+                                <td width=20% style="font-size=14;">{{history.NewStatus.Name}}</td>  
+                                <td width=16% style="font-size=14;">{{history.Fullname}}</td>  
+                                <td width=16% style="font-size=14;">{{history.Date}}</td>
+                                <td width=23% style="font-size=14;">{{history.Description}}</td>    
                               </tr>
                             </tbody>
                         </table>
@@ -544,7 +567,7 @@
                         <div  style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem" disable="disable">
                             <select  class=""  v-model="selectedItem.Item.LocationID" disabled="disabled">
                               <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
-                                v-bind:value="location.Id">{{location.Address}}</option>
+                                v-bind:value="location.Id">{{location.Address| truncate(53)}}</option>
                             </select>
                           </div>
                       </div>
@@ -622,7 +645,7 @@
                         <table class="mytable">
                           <thead>
                               <tr>
-                                <th><strong>Order#</strong></th>                            
+                                <th><strong>No.</strong></th>                            
                                 <th><strong>Name</strong></th>
                                 <th><strong>RequestUser</strong></th>
                                 <th><strong>StartDate</strong></th>
@@ -632,7 +655,7 @@
                             </thead>  
                             <tbody>
                               <tr v-for="(workorder, index) in allworkorder" style="font-size=16">
-                                <td width=3% style="font-size=14;">{{index + 1}}</td>    
+                                <td width=3% style="font-size=14;text-align:center">{{index + 1}}</td>    
                                 <td width=33% style="font-size=14;">{{workorder.Name | truncate(30)}}</td>    
                                 <td width=18% style="font-size=14;">{{workorder.RequestUser}}</td>
                                 <td width=17% style="font-size=14;">{{workorder.StartDate}}</td>  
@@ -651,7 +674,7 @@
                 <div v-else-if="currentViewMode ==  viewModes.RunTime">
                   <div class="">
                     <div class="rowpu" style="height: 36px" >
-                      <div class="" style="margin-top:0.5rem" >
+                      <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
                           Import-Date:  
                       </div>
                       <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
@@ -659,7 +682,7 @@
                       </div>
                     </div>
                     <div class="rowpu" style="height: 36px" >
-                      <div class="" style="margin-top:0.5rem" >
+                      <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
                           Run-times:  
                       </div>
                       <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;" >  
@@ -668,7 +691,7 @@
                       </div>
                     </div>
                     <div class="rowpu" style="height: 36px" >
-                      <div class="" style="margin-top:0.5rem" >
+                      <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
                           Performance:  
                       </div>
                       <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
@@ -677,7 +700,7 @@
                       </div>
                     </div>
                     <div class="rowpu" style="height: 36px" >
-                      <div class="" style="margin-top:0.5rem" >
+                      <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
                           Downtime:  
                       </div>
                       <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
@@ -691,7 +714,7 @@
                         <table class="mytable">
                           <thead>
                               <tr>
-                                <th><strong>Order#</strong></th>                            
+                                <th><strong>No.</strong></th>                            
                                 <th><strong>Name</strong></th>
                                 <th><strong>Maintainer</strong></th>
                                 <th><strong>StartDate</strong></th>
@@ -701,7 +724,7 @@
                             </thead>  
                             <tbody>
                               <tr v-for="(workorder, index) in allMaintainWorkorder" style="font-size=16">
-                                <td width=3% style="font-size=14;">{{index + 1}}</td>    
+                                <td width=3% style="font-size=14;text-align:center">{{index + 1}}</td>    
                                 <td width=33% style="font-size=14;">{{workorder.Name | truncate(30)}}</td>    
                                 <td width=18% style="font-size=14;">{{workorder.RequestUser}}</td>
                                 <td width=17% style="font-size=14;">{{workorder.StartDate}}</td>  
@@ -804,6 +827,7 @@ export default {
           this.equipmentVendorId = this.EquimentByID.VendorId;
           this.equipmentCategoryId = this.EquimentByID.CategoryId;
           this.equipmentUnitId = this.EquimentByID.UnitID;
+          this.newStatus = this.EquimentByID.Status;
         });
       });
 
@@ -967,6 +991,7 @@ export default {
   },
   data() {
     return {
+      newStatus: "",
       currentPageEquipmentItem: 1,
       toDisplayEquipmentItem: [],
       Eitem: [],
@@ -1527,60 +1552,80 @@ export default {
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
-        // }else if (this.EquimentByID.Description.trim().length >250) {
-        //   let obj = {
-        //     message: "Description can be contained 250 characters",
-        //     type: "warning"
-        //   };
-        //   this.$refs.simplert.openSimplert(obj);
+      } else if (this.EquimentByID.Description.trim().length > 250) {
+        let obj = {
+          message: "Description can be contained 250 characters",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
       } else {
-        this.imageUrl = this.EquimentByID.Image;
-        if (this.files[0] && this.files[0].name) {
-          let formData = new FormData();
-          formData.append("api_key", "982394881563116");
-          formData.append("file", this.files[0]);
-          formData.append("public_id", this.files[0].name);
-          formData.append("timestamp", moment().valueOf());
-          formData.append("upload_preset", "ursbvd4a");
-          let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
-          try {
-            let uploadRespose = await this.axios.post(url, formData);
-            if (uploadRespose.status == 200) {
-              this.imageUrl = uploadRespose.data.url;
+        let numOfArchiveLost = 0;
+        if (!this.EquimentByID.Status) {
+          for (var i = 0; i < this.toDisplayEquipmentItem.length; i++) {
+            if (
+              this.toDisplayEquipmentItem[i].Status != "Archived" ||
+              this.toDisplayEquipmentItem[i].Status != "Lost"
+            ) {
+              numOfArchiveLost = numOfArchiveLost + 1;
             }
-          } catch (error) {
-            console.log(error);
           }
         }
-        // alert(this.selectedCategory.value);
-        let context = this;
-        context.axios
-          .put("http://localhost:3000/api/equipment/" + context.equipmentId, {
-            id: context.equipmentId,
-            name: context.EquimentByID.Name,
-            vendorid: context.EquimentByID.VendorId,
-            image: context.imageUrl,
-            madein: context.EquimentByID.MadeIn,
-            categoryid: context.EquimentByID.CategoryId,
-            description: context.EquimentByID.Description,
-            unitid: context.EquimentByID.UnitID,
-            maintenanceDurationid: context.EquimentByID.MaintenanceDurationID
-          })
-          .then(async function(respone) {
-            let obj = {
-              message: "Update successfully",
-              type: "success",
-              hideAllButton: true,
-              showXclose: false
-            };
-            context.$refs.simplert.openSimplert(obj);
-            await Utils.sleep(1000);
-            location.reload();
-            context.editMode = !context.editMode;
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+        if (numOfArchiveLost > 0) {
+          let obj = {
+            message: "Cannot change status to InActive!!!",
+            type: "warning"
+          };
+          this.$refs.simplert.openSimplert(obj);
+        } else {
+          this.imageUrl = this.EquimentByID.Image;
+          if (this.files[0] && this.files[0].name) {
+            let formData = new FormData();
+            formData.append("api_key", "982394881563116");
+            formData.append("file", this.files[0]);
+            formData.append("public_id", this.files[0].name);
+            formData.append("timestamp", moment().valueOf());
+            formData.append("upload_preset", "ursbvd4a");
+            let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+            try {
+              let uploadRespose = await this.axios.post(url, formData);
+              if (uploadRespose.status == 200) {
+                this.imageUrl = uploadRespose.data.url;
+              }
+            } catch (error) {
+              console.log(error);
+            }
+          }
+          // alert(this.selectedCategory.value);
+          let context = this;
+          context.axios
+            .put("http://localhost:3000/api/equipment/" + context.equipmentId, {
+              id: context.equipmentId,
+              name: context.EquimentByID.Name,
+              vendorid: context.EquimentByID.VendorId,
+              image: context.imageUrl,
+              madein: context.EquimentByID.MadeIn,
+              categoryid: context.EquimentByID.CategoryId,
+              description: context.EquimentByID.Description,
+              unitid: context.EquimentByID.UnitID,
+              maintenanceDurationid: context.EquimentByID.MaintenanceDurationID,
+              status: context.EquimentByID.Status
+            })
+            .then(async function(respone) {
+              let obj = {
+                message: "Update successfully",
+                type: "success",
+                hideAllButton: true,
+                showXclose: false
+              };
+              context.$refs.simplert.openSimplert(obj);
+              await Utils.sleep(1000);
+              location.reload();
+              context.editMode = !context.editMode;
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }
       }
     },
     async updatePositionItem() {
@@ -2373,7 +2418,7 @@ export default {
   margin-top: 0.75rem;
   margin-right: 0.2rem;
   display: grid;
-  grid-template-columns: 20% 80%;
+  grid-template-columns: 18% 82%;
 }
 
 .rowpu {
@@ -2381,7 +2426,7 @@ export default {
   margin-top: 0.5rem;
   margin-right: 1rem;
   display: grid;
-  grid-template-columns: 40% auto;
+  grid-template-columns: 40% 50%;
 }
 .rowstt {
   margin-left: 0.5rem;
@@ -2481,5 +2526,10 @@ tr:hover {
 }
 .wrap-table {
   padding-top: 0.75rem !important;
+}
+.titleDetail{
+  margin-left: 4rem;
+  font-size: 16px;
+  margin-top:0.4rem;
 }
 </style>

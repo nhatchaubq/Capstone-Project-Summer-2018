@@ -39,9 +39,9 @@
             </div>
             <div class="form-field">
                 <div class="form-field-title">
-                   <span><strong> Equipment Name (required) 
-                  </strong></span><span v-if="CreateEquipmentErrors.NoName != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoName }}</span></span>
-                  </strong></span><span v-if="CreateEquipmentErrors.NameLength != ''">. <span class="error-text">{{ CreateEquipmentErrors.NameLength }}</span></span>
+                   <span><strong> Equipment Name (required) </strong></span>
+                   <span v-if="CreateEquipmentErrors.NoName != ''">. <span class="error-text">{{ CreateEquipmentErrors.NoName }}</span></span>
+                    <span v-if="CreateEquipmentErrors.NameLength != ''">. <span class="error-text">{{ CreateEquipmentErrors.NameLength }}</span></span>
                 </div>
                 <div class="form-field-input" >
                   <!-- <Autocomplete :items="equipmentOptions"
@@ -638,7 +638,10 @@ export default {
       if (this.form.EquipmentName.trim() === "") {
         this.CreateEquipmentErrors.NoName = this.ErrorStrings.NoName;
       }
-      if (this.form.EquipmentName.trim().length < 5) {
+      if (
+        this.form.EquipmentName.trim().length < 5 ||
+        this.form.EquipmentName.trim().length > 250
+      ) {
         this.CreateEquipmentErrors.NameLength = this.ErrorStrings.NameLength;
       }
       if (this.selectedVendor.value === "") {
@@ -653,7 +656,7 @@ export default {
       if (this.form.Unit === "") {
         this.CreateEquipmentErrors.NoMaintenanceDuration = this.ErrorStrings.NoMaintenanceDuration;
       }
-      if (this.form.MadeIn.trim().length > 250) {
+      if (this.form.MadeIn.trim().length > 50) {
         this.CreateEquipmentErrors.MadeInTooLong = this.ErrorStrings.MadeInTooLong;
       }
       if (this.form.Description.trim().length > 250) {
@@ -688,6 +691,7 @@ export default {
         this.CreateEquipmentErrors.NoCategory === "" &&
         this.CreateEquipmentErrors.NoVendor === "" &&
         this.CreateEquipmentErrors.NoUnit === "" &&
+        this.CreateEquipmentErrors.NameLength === "" &&
         this.CreateEquipmentErrors.NoMaintenanceDuration === ""
       ) {
         for (var i = 0; i < context.equipments.length; i++) {
@@ -843,13 +847,8 @@ export default {
       }
       if (
         this.form.EquipmentName.trim().length >= 5 &&
-        this.CreateEquipmentErrors.NameLength != ""
-      ) {
-        this.CreateEquipmentErrors.NameLength = "";
-      }
-      if (
-        this.form.EquipmentName.trim().length < 250 &&
-        this.CreateEquipmentErrors.NameLength != ""
+        this.CreateEquipmentErrors.NameLength != "" &&
+        this.form.EquipmentName.trim().length < 250
       ) {
         this.CreateEquipmentErrors.NameLength = "";
       }
