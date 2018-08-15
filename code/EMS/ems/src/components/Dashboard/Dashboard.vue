@@ -25,7 +25,7 @@
                       Completed work orders chart in the past 11 months to the current moment.
                     </div>
                     <div v-else>
-                      Damaged and lost equipments chart in the past 11 months to the current moment.
+                      Damaged and lost equipment chart in the past 11 months to the current moment.
                     </div>  
                   </div> 
 
@@ -37,7 +37,7 @@
                   Maintenance Calendar
                 </div>       
                 <div>
-                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width:356.5px !important; height:288px">
+                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width: 100% !important; height:332px">
                     
                   </v-calendar>
                 </div>                       
@@ -121,7 +121,7 @@
 
                         <div style="width:100%" class="Chart1">
                             <strong>Equipment items by status</strong>  
-                            <pie-chart styles="height: 40vh" :data="pieChartData" :option="myoption" ></pie-chart>
+                            <pie-chart styles="height: 16rem" :data="pieChartData" :option="myoption" ></pie-chart>
                         </div>
                   
                         </div>
@@ -247,7 +247,7 @@
             </div>
             <modal v-model="addPopUp" v-if="this.maintainItems.length > 0">
               <div slot="header" class="title-modal"> 
-                List Of Maintain Equipments: {{this.selectedDay.day}}-{{this.selectedDay.month}}-{{this.selectedDay.year}}
+                List Of Maintain Equipment: {{this.selectedDay.day}}-{{this.selectedDay.month}}-{{this.selectedDay.year}}
               </div>
               <div>
                 <table style="width:100%"> 
