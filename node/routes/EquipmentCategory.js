@@ -18,9 +18,9 @@ router.get("/getAllItems", (req, res) => {
   req
     .sql(
       "select distinct ec.Id as 'CategoryId',ec.Name as 'CategoryName'" +
-        " from EquipmentCategory as ec join Equipment as e on ec.Id = e.CategoryID " +
-        "							 join EquipmentItem as ei on ei.EquipmentID = e.Id " +
-        " for json path "
+      " from EquipmentCategory as ec join Equipment as e on ec.Id = e.CategoryID " +
+      "							 join EquipmentItem as ei on ei.EquipmentID = e.Id " +
+      " for json path "
     )
     .into(res);
 });
@@ -29,7 +29,7 @@ router.put("/editCategory", (request, respone) => {
   request
     .sql(
       "Update [EquipmentCategory] set Name = @name, Description = @description " +
-        "where Id = @categoryId"
+      "where Id = @categoryId"
     )
     .param("categoryId", request.body.newCategory.id, TYPES.Int)
     .param("name", request.body.newCategory.name, TYPES.NVarChar)
