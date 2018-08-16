@@ -1,27 +1,22 @@
 {
     "createWorkOrder": {
-        "maximumWorkOrderDuration": 2,
+        "maximumWorkOrderDuration": 1,
         "maximumWorkOrderDurationType": "year",
-        "maximumConflictWorkOrders": 2,
+        "maximumConflictWorkOrders": 1,
         "presets": [
             {
                 "name": "Normal",
-                "workOrderDuration": 0,
-                "workOrderDurationType": "year",
                 "durationFromCreateDate": 0,
                 "durationFromCreateDateType": "month",
-                "durationFactor": 0.2,
-                "distanceFactor": 0.8
+                "runtimeFactor": 0.8,
+                "distanceFactor": 0.2
             },
             {
                 "name": "Urgent",
-                "workOrderDuration": 6,
-                "workOrderDurationType": "month",
-                "durationFromCreateDate": 6,
-                "durationFromCreateDateType": "year",
-                "operandDaysFromCreateDate": "lesser",
-                "durationFactor": 1,
-                "distanceFactor": 0
+                "durationFromCreateDate": 1,
+                "durationFromCreateDateType": "day",
+                "runtimeFactor": 0.3,
+                "distanceFactor": 0.7
             }
         ]
     }

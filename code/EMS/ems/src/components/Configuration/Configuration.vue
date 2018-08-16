@@ -9,6 +9,13 @@
                                     || errorPresetNameCantBeNormalIndex.length > 0
                                     || errorPresetNameOfCreateOrderConfigIndex.length > 0
                                     || tobeErrorPresetNameOfCreateOrderConfigIndex.length > 0
+                                    || errorDurationFromCreateDateIndex.length > 0
+                                    || tobeErrorDurationFromCreateDateIndex.length > 0
+                                    || errorDurationIsGreaterThanMaximumIndex.length > 0
+                                    || errorRuntimeFactorIndex.length > 0
+                                    || tobeErrorRuntimeFactorIndex.length > 0
+                                    || errorDistanceFactorIndex.length > 0
+                                    || tobeErrorDistanceFactorIndex.length > 0
                                     || !isCreateOrderConfigChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
                             v-on:click="() => {
                                 for (let i = 0; i < this.configOriginal.createWorkOrder.presets.length; i++) {
@@ -18,7 +25,47 @@
                                     && errorPresetNameCantBeNormalIndex.length == 0
                                     && errorPresetNameOfCreateOrderConfigIndex.length == 0
                                     && tobeErrorPresetNameOfCreateOrderConfigIndex.length == 0
-                                    && isCreateOrderConfigChanged) {                                        
+                                    && errorDurationFromCreateDateIndex.length == 0
+                                    && tobeErrorDurationFromCreateDateIndex.length == 0
+                                    && errorDurationIsGreaterThanMaximumIndex.length == 0
+                                    && errorRuntimeFactorIndex.length == 0
+                                    && tobeErrorRuntimeFactorIndex.length == 0
+                                    && errorDistanceFactorIndex.length == 0
+                                    && tobeErrorDistanceFactorIndex.length == 0
+                                    && isCreateOrderConfigChanged) {
+                                    for (let i = 1; i < configOriginal.createWorkOrder.presets.length; i++) {
+                                        for (let j = 1 ; j < configOriginal.createWorkOrder.presets.length - 1; j++) {
+                                            const preset1 = configOriginal.createWorkOrder.presets[j];
+                                            const preset2 = configOriginal.createWorkOrder.presets[j + 1];
+                                            let preset1Duration = preset1.durationFromCreateDate;
+                                            switch (preset1.durationFromCreateDateType) {
+                                                case 'month': {
+                                                    preset1Duration *= 30;
+                                                    break;
+                                                } case 'year': {
+                                                    preset1Duration *= 30 * 12;
+                                                    break;
+                                                }
+                                            }
+                                            let preset2Duration = preset2.durationFromCreateDate;
+                                            switch (preset2.durationFromCreateDateType) {
+                                                case 'month': {
+                                                    preset2Duration *= 30;
+                                                    break;
+                                                } case 'year': {
+                                                    preset2Duration *= 30 * 12;
+                                                    break;
+                                                }
+                                            }
+                                            if (preset1Duration > preset2Duration) {
+                                                let temp = JSON.stringify(preset1);
+                                                temp = JSON.parse(temp);
+                                                configOriginal.createWorkOrder.presets[j] = JSON.stringify(configOriginal.createWorkOrder.presets[j + 1]);
+                                                configOriginal.createWorkOrder.presets[j] = JSON.parse(configOriginal.createWorkOrder.presets[j]);
+                                                configOriginal.createWorkOrder.presets[j + 1] = temp;
+                                            }
+                                        }
+                                    }
                                     configCopy = JSON.stringify(configOriginal);
                                     configCopy = JSON.parse(configCopy);
                                     $socket.emit('CONFIGURATION_CHANGED', configOriginal);
@@ -33,6 +80,7 @@
                             let configJson = JSON.stringify(configCopy.createWorkOrder)
                             configOriginal.createWorkOrder = JSON.parse(configJson);
                             editingCreateWorkOrderConfig = false;
+                            isCreateOrderConfigChanged = false;
                         }">cancel</a>
                     </span>
                 </span>
@@ -57,20 +105,24 @@
                             }
                             configOriginal.createWorkOrder.maximumWorkOrderDuration = parseInt(configOriginal.createWorkOrder.maximumWorkOrderDuration);
                             checkCreateOrderConfigChanged();
+                            checkValidDurationFromCreateDate();
                         }"/>
                         <span v-if="!editingCreateWorkOrderConfig" style="position: relative; top: .5rem;"> {{ configOriginal.createWorkOrder.maximumWorkOrderDurationType }}<span v-if="configOriginal.createWorkOrder.maximumWorkOrderDuration > 1">s</span></span>
                         <span v-if="editingCreateWorkOrderConfig" style="margin-left: .5rem; position: relative; top: .5rem;"> 
                             <label class="radio"><input style="position: relative; top: .1rem;" class="radio" type="radio" name="maximumWorkOrderDurationType" :checked="configOriginal.createWorkOrder.maximumWorkOrderDurationType == 'year'" v-on:input="() => {
                                 configOriginal.createWorkOrder.maximumWorkOrderDurationType = 'year';
                                 checkCreateOrderConfigChanged();
+                                checkValidDurationFromCreateDate();
                             }"/> year<span v-if="configOriginal.createWorkOrder.maximumWorkOrderDuration > 1">s</span></label>
                             <label class="radio"><input style="position: relative; top: .1rem;" class="radio" type="radio" name="maximumWorkOrderDurationType" :checked="configOriginal.createWorkOrder.maximumWorkOrderDurationType == 'month'" v-on:input="() => {
                                 configOriginal.createWorkOrder.maximumWorkOrderDurationType = 'month';
                                 checkCreateOrderConfigChanged();
+                                checkValidDurationFromCreateDate();
                             }"/> month<span v-if="configOriginal.createWorkOrder.maximumWorkOrderDuration > 1">s</span></label>
                             <label class="radio"><input style="position: relative; top: .1rem;" class="radio" type="radio" name="maximumWorkOrderDurationType" :checked="configOriginal.createWorkOrder.maximumWorkOrderDurationType == 'day'" v-on:input="() => {
                                 configOriginal.createWorkOrder.maximumWorkOrderDurationType = 'day';
                                 checkCreateOrderConfigChanged();
+                                checkValidDurationFromCreateDate();
                             }"/> day<span v-if="configOriginal.createWorkOrder.maximumWorkOrderDuration > 1">s</span></label>
                         </span></div>
                     </div>
@@ -79,11 +131,9 @@
                             checkValidPresetName(1);
                             configOriginal.createWorkOrder.presets.push({
                                 name: '',
-                                workOrderDuration: 0,
-                                workOrderDurationType: 'day',
                                 durationFromCreateDate: 0,
                                 durationFromCreateDateType: 'day',
-                                durationFactor: 0.5,
+                                runtimeFactor: 0.5,
                                 distanceFactor: 0.5
                             });
                             isCreateOrderConfigChanged = true;
@@ -107,89 +157,116 @@
                                             }"/> 
                                     <a style="margin-left: .3rem; position: relative; top: .5rem" v-if="editingCreateWorkOrderConfig && index > 0" v-on:click="() => {
                                         configOriginal.createWorkOrder.presets.splice(index, 1);
-                                        checkValidPresetName(index);
+                                        errorPresetNameCantBeEmptyIndex = errorPresetNameCantBeEmptyIndex.filter(i => i != index);
+                                        errorPresetNameCantBeNormalIndex = errorPresetNameCantBeNormalIndex.filter(i => i != index);
+                                        checkValidPresetName(1);
                                         checkCreateOrderConfigChanged();
                                     }"><i class="fa fa-minus-circle"></i> remove</a>
                                 </span>
                             </div>
-                            <div class="error-text" v-if="errorPresetNameCantBeNormalIndex.length > 0 || errorPresetNameCantBeNormalIndex.length > 0 || errorPresetNameOfCreateOrderConfigIndex.length > 0">
-                                <div v-if="errorPresetNameCantBeEmptyIndex.includes(index) ">{{ErrorStrings.ErrorEmptyPresetName}}</div>
+                            <div class="error-text" v-if="errorPresetNameCantBeEmptyIndex.length > 0 || errorPresetNameCantBeNormalIndex.length > 0 || errorPresetNameCantBeNormalIndex.length > 0 || errorPresetNameOfCreateOrderConfigIndex.length > 0">
+                                <div v-if="errorPresetNameCantBeEmptyIndex.includes(index)">{{ErrorStrings.ErrorEmptyPresetName}}</div>
                                 <div v-else-if="errorPresetNameCantBeNormalIndex.includes(index)">{{ErrorStrings.ErrorPresetNameCantBeNormal}}</div>
-                                <div v-if="errorPresetNameOfCreateOrderConfigIndex.includes(index)">{{ErrorStrings.ErrorPresetNameIsDuplicated}}</div>
+                                <div v-else-if="errorPresetNameOfCreateOrderConfigIndex.includes(index) || tobeErrorPresetNameOfCreateOrderConfigIndex.includes(index)">{{ErrorStrings.ErrorPresetNameIsDuplicated}}</div>
                             </div>
                         </div>
                         <div class="is-horizontal" :style="editingCreateWorkOrderConfig ? 'margin: .5rem 0;' : ''">
-                            <span style="position: relative; top: .5rem">- Duration of work order: <span v-if="!editingCreateWorkOrderConfig">{{ preset.workOrderDuration }}</span></span>
-                            <input style="width: 7%; text-align: right;" v-if="editingCreateWorkOrderConfig" v-model.number="preset.workOrderDuration" class="input" type="number" min="0" step="1" v-on:input="() => {
-                                if (preset.workOrderDuration < 0 || preset.workOrderDuration == '') {
-                                    preset.workOrderDuration = 0;
-                                }
-                                preset.workOrderDuration = parseInt(preset.workOrderDuration);
-                                checkCreateOrderConfigChanged();
-                            }"/>
-                            <span style="position: relative; top: .5rem" v-if="!editingCreateWorkOrderConfig && preset.workOrderDuration > 0"> {{ preset.workOrderDurationType }}<span v-if="preset.workOrderDuration > 1">s</span></span>
-                            <span v-if="editingCreateWorkOrderConfig && preset.workOrderDuration > 0" style="margin-left: .3rem; position: relative; top: .5rem">
-                                <label class="radio"><input style="position: relative; top: .1rem;" class="radio" type="radio" :name="'workOrderDurationType' + index" :checked="preset.workOrderDurationType == 'year'" v-on:input="() => {
-                                    preset.workOrderDurationType = 'year';
-                                    checkCreateOrderConfigChanged();
-                                }"/> year<span v-if="preset.workOrderDuration > 1">s</span></label>
-                                <label class="radio"><input style="position: relative; top: .1rem;" class="radio" type="radio" :name="'workOrderDurationType' + index" :checked="preset.workOrderDurationType == 'month'" v-on:input="() => {
-                                    preset.workOrderDurationType = 'month';
-                                    checkCreateOrderConfigChanged();
-                                }"/> month<span v-if="preset.workOrderDuration > 1">s</span></label>
-                                <label class="radio"><input style="position: relative; top: .1rem;" class="radio" type="radio" :name="'workOrderDurationType' + index" :checked="preset.workOrderDurationType == 'day'" v-on:input="() => {
-                                    preset.workOrderDurationType = 'day';
-                                    checkCreateOrderConfigChanged();
-                                }"/> day<span v-if="preset.workOrderDuration > 1">s</span></label>
-                            </span>
-                        </div>
-                        <div class="is-horizontal" :style="editingCreateWorkOrderConfig ? 'margin: .5rem 0;' : ''">
-                            <span style="position: relative; top: .5rem">- Days from created date: <span v-if="!editingCreateWorkOrderConfig">{{ preset.durationFromCreateDate }}</span></span><input style="width: 7%; text-align: right;" v-if="editingCreateWorkOrderConfig" v-model.number="preset.durationFromCreateDate" class="input" type="number" min="0" step="1" v-on:input="() => {
+                            <span style="position: relative; top: .5rem">- Duration from created date: </span>
+                            <!-- <span style="position: relative; top: .5rem" v-if="!editingCreateWorkOrderConfig && preset.durationFromCreateDate > 0"> {{ preset.durationFromCreateDateOperand }}</span>
+                            <span style="position: relative; top: .5rem" v-if="editingCreateWorkOrderConfig && preset.durationFromCreateDate > 0">
+                                <label class="radio">
+                                    <input class="radio" type="radio" :name="'durationFromCreateDateOperand' + index " :checked="preset.durationFromCreateDateOperand == 'before'" v-on:input="() => {
+                                        preset.durationFromCreateDateOperand = 'before';
+                                        checkCreateOrderConfigChanged();
+                                    }"/> before
+                                </label>
+                                <label class="radio">
+                                    <input class="radio" type="radio" :name="'durationFromCreateDateOperand' + index" :checked="preset.durationFromCreateDateOperand == 'from'" v-on:input="() => {
+                                        preset.durationFromCreateDateOperand = 'from';
+                                        checkCreateOrderConfigChanged();
+                                    }"/> from 
+                                </label>
+                            </span> -->
+                            <span style="position: relative; top: .5rem" v-if="!editingCreateWorkOrderConfig"> {{ preset.durationFromCreateDate }}</span>
+                            <input style="margin-left: .3rem; width: 7%; text-align: right;" 
+                                    :style="errorDurationFromCreateDateIndex.includes(index)
+                                            || tobeErrorDurationFromCreateDateIndex.includes(index)
+                                            || errorDurationIsGreaterThanMaximumIndex.includes(index) ? 'border: 1px solid var(--danger-color)' : ''"
+                                    :disabled="preset.name == 'Normal'"
+                                    v-if="editingCreateWorkOrderConfig" v-model.number="preset.durationFromCreateDate" 
+                                    class="input" type="number" min="0" step="1" 
+                                    v-on:input="() => {
                                 if (preset.durationFromCreateDate < 0 || preset.durationFromCreateDate == '') {
                                     preset.durationFromCreateDate = 0;
                                 }
                                 preset.durationFromCreateDate = parseInt(preset.durationFromCreateDate);
                                 checkCreateOrderConfigChanged();
-                            }"/>                            
+                                checkValidDurationFromCreateDate();
+                            }"/>
                             <span style="position: relative; top: .5rem" v-if="!editingCreateWorkOrderConfig && preset.durationFromCreateDate > 0"> {{ preset.durationFromCreateDateType }}<span v-if="preset.durationFromCreateDate > 1">s</span></span>
                             <span v-if="editingCreateWorkOrderConfig && preset.durationFromCreateDate > 0" style="margin-left: .3rem; position: relative; top: .5rem">
                                 <label class="radio"><input style="position: relative; top: .1rem;" class="radio" type="radio" :name="'durationFromCreateDateType' + index" :checked="preset.durationFromCreateDateType == 'year'" v-on:input="() => {
                                     preset.durationFromCreateDateType = 'year';
                                     checkCreateOrderConfigChanged();
+                                    checkValidDurationFromCreateDate();
                                 }"/> year<span v-if="preset.durationFromCreateDate > 1">s</span></label>
                                 <label class="radio"><input style="position: relative; top: .1rem;" class="radio" type="radio" :name="'durationFromCreateDateType' + index" :checked="preset.durationFromCreateDateType == 'month'" v-on:input="() => {
                                     preset.durationFromCreateDateType = 'month';
                                     checkCreateOrderConfigChanged();
+                                    checkValidDurationFromCreateDate();
                                 }"/> month<span v-if="preset.durationFromCreateDate > 1">s</span></label>
                                 <label class="radio"><input style="position: relative; top: .1rem;" class="radio" type="radio" :name="'durationFromCreateDateType' + index" :checked="preset.durationFromCreateDateType == 'day'" v-on:input="() => {
                                     preset.durationFromCreateDateType = 'day';
                                     checkCreateOrderConfigChanged();
+                                    checkValidDurationFromCreateDate();
                                 }"/> day<span v-if="preset.durationFromCreateDate > 1">s</span></label>
                             </span>
+                            <div class="error-text" v-if="errorDurationFromCreateDateIndex.includes(index) || tobeErrorDurationFromCreateDateIndex.includes(index) || errorDurationIsGreaterThanMaximumIndex.includes(index)">
+                                <div v-if="errorDurationFromCreateDateIndex.includes(index) || tobeErrorDurationFromCreateDateIndex.includes(index)">{{ ErrorStrings.ErrorConfigDuplicated }}</div>
+                                <div v-if="errorDurationIsGreaterThanMaximumIndex.includes(index)">{{ ErrorStrings.ErrorPresetDurationIsGreaterThanMaximum }}</div>
+                            </div>
                         </div>
                         <div class="is-horizontal" :style="editingCreateWorkOrderConfig ? 'margin: .5rem 0;' : ''">
-                            <span style="position: relative; top: .5rem">- Work order duration factor: <span v-if="!editingCreateWorkOrderConfig">{{ preset.durationFactor }}</span></span><input style="width: 7%; text-align: right;" v-if="editingCreateWorkOrderConfig" v-model.number="preset.durationFactor" class="input" type="number" min="0" max="1" step="0.1" v-on:input="() => {
-                                if (preset.durationFactor < 0 || preset.durationFactor == '') {
-                                    preset.durationFactor = 0;
-                                } else if (preset.durationFactor > 1) {
-                                    preset.durationFactor = 1;
+                            <span style="position: relative; top: .5rem">- Equipment's runtime duration factor: <span v-if="!editingCreateWorkOrderConfig">{{ preset.runtimeFactor }}</span></span>
+                            <input style="width: 7%; text-align: right;" v-if="editingCreateWorkOrderConfig"
+                                    :style="errorRuntimeFactorIndex.includes(index) || tobeErrorRuntimeFactorIndex.includes(index) ? 'border: 1px solid var(--danger-color)' : ''"
+                                    v-model.number="preset.runtimeFactor" class="input" type="number" 
+                                    min="0" max="1" step="0.1" 
+                                    v-on:input="() => {
+                                if (preset.runtimeFactor < 0 || preset.runtimeFactor == '') {
+                                    preset.runtimeFactor = 0;
+                                } else if (preset.runtimeFactor > 1) {
+                                    preset.runtimeFactor = 1;
                                 }
-                                preset.durationFactor = parseFloat(preset.durationFactor.toFixed(2));
-                                preset.distanceFactor = parseFloat((1 - preset.durationFactor).toFixed(2));
+                                preset.runtimeFactor = parseFloat(preset.runtimeFactor.toFixed(2));
+                                preset.distanceFactor = parseFloat((1 - preset.runtimeFactor).toFixed(2));
                                 checkCreateOrderConfigChanged();
+                                checkValidRuntimeFactor();
                             }"/><span style="position: relative; top: .5rem">%</span>
+                            <div class="error-text" v-if="errorRuntimeFactorIndex.includes(index) || tobeErrorRuntimeFactorIndex.includes(index)">
+                                <span>{{ ErrorStrings.ErrorConfigDuplicated }}</span>
+                            </div>
                         </div>
                         <div class="is-horizontal" style="margin-bottom: .5rem;">
-                            <span style="position: relative; top: .5rem;">- Distance from warehouse factor: <span v-if="!editingCreateWorkOrderConfig">{{ preset.distanceFactor }}</span></span><input style="width: 7%; text-align: right;" v-if="editingCreateWorkOrderConfig" v-model.number="preset.distanceFactor" class="input" type="number" min="0" max="1" step="0.1" v-on:input="() => {
+                            <span style="position: relative; top: .5rem;">- Distance from warehouse factor: <span v-if="!editingCreateWorkOrderConfig">{{ preset.distanceFactor }}</span></span>
+                            <input style="width: 7%; text-align: right;" 
+                                    :style="errorDistanceFactorIndex.includes(index) || tobeErrorDistanceFactorIndex.includes(index) ? 'border: 1px solid var(--danger-color)' : ''"
+                                    v-if="editingCreateWorkOrderConfig" v-model.number="preset.distanceFactor" 
+                                    class="input" type="number" min="0" max="1" step="0.1"
+                                    v-on:input="() => {
                                 if (preset.distanceFactor < 0 || preset.distanceFactor == '') {
                                     preset.distanceFactor = 0;
                                 } else if (preset.distanceFactor > 1) {
                                     preset.distanceFactor = 1;
                                 }
                                 preset.distanceFactor = parseFloat(preset.distanceFactor.toFixed(2));
-                                preset.durationFactor = parseFloat((1 - preset.distanceFactor).toFixed(2));
+                                preset.runtimeFactor = parseFloat((1 - preset.distanceFactor).toFixed(2));
                                 checkCreateOrderConfigChanged();
+                                checkValidDistanceFactor();
                             }"/><span style="position: relative; top: .5rem">%</span>
+                            <div class="error-text" v-if="errorDistanceFactorIndex.includes(index) || tobeErrorDistanceFactorIndex.includes(index)">
+                                <span>{{ ErrorStrings.ErrorConfigDuplicated }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -215,9 +292,11 @@ export default {
     data() {
         return {
             ErrorStrings: {
-                ErrorPresetNameCantBeNormal: 'Preset\'s name can not be \"Normal\"',
-                ErrorEmptyPresetName: 'Preset\'s name cant not be empty',
+                ErrorPresetNameCantBeNormal: 'Preset\'s name can not be "Normal"',
+                ErrorEmptyPresetName: 'Preset\'s name can not be empty',
                 ErrorPresetNameIsDuplicated: 'This name is duplicated with other presets',
+                ErrorConfigDuplicated: 'Configuration is duplicated, it may cause unexpected result of the sorting algorithm',
+                ErrorPresetDurationIsGreaterThanMaximum: 'The work order duration is greater than the maximum duration',
             },
             CreateOrderErrors: {
                 ErrorPresetNameCantBeNormal: '',
@@ -230,6 +309,13 @@ export default {
             errorPresetNameCantBeNormalIndex: [],
             errorPresetNameOfCreateOrderConfigIndex: [],
             tobeErrorPresetNameOfCreateOrderConfigIndex: [],
+            errorDurationFromCreateDateIndex: [],
+            tobeErrorDurationFromCreateDateIndex: [],
+            errorRuntimeFactorIndex: [],
+            tobeErrorRuntimeFactorIndex: [],
+            errorDistanceFactorIndex: [],
+            tobeErrorDistanceFactorIndex: [],
+            errorDurationIsGreaterThanMaximumIndex: [],
             isCreateOrderConfigChanged: false,
             editingCreateWorkOrderConfig: false,
         }
@@ -244,37 +330,133 @@ export default {
         }
     },
     methods: {
-        checkValidPresetName(index) {
-            if (index > 0 && index < this.configOriginal.createWorkOrder.presets.length) {
-                let presets = this.configOriginal.createWorkOrder.presets;
-                if (presets[index].name == '') {
-                    this.errorPresetNameCantBeEmptyIndex.push(index);
+        checkValidPresetName() {
+            let presets = this.configOriginal.createWorkOrder.presets;
+            for (let i = 1; i < presets.length; i++) {
+                if (presets[i].name == '') {
+                    this.errorPresetNameCantBeEmptyIndex.push(i);
                 } else {
-                    this.errorPresetNameCantBeEmptyIndex.splice(index, 1);
-                    if (presets[index].name.toLowerCase() == 'normal') {
-                        if (!this.errorPresetNameCantBeNormalIndex.includes(index)) {
-                            this.errorPresetNameCantBeNormalIndex.push(index);
+                    if (this.errorPresetNameCantBeEmptyIndex.includes(i)) {
+                        this.errorPresetNameCantBeEmptyIndex = this.errorPresetNameCantBeEmptyIndex.filter(index => i != index);
+                    }
+                    if (presets[i].name.toLowerCase() == 'normal') {
+                        if (!this.errorPresetNameCantBeNormalIndex.includes(i)) {
+                            this.errorPresetNameCantBeNormalIndex.push(i);
                         }
                     } else {
-                        this.errorPresetNameCantBeNormalIndex.splice(index, 1);
-                        let toCheckPreset = presets[index];
+                        if (this.errorPresetNameCantBeNormalIndex.includes(i)) {
+                            this.errorPresetNameCantBeNormalIndex = this.errorPresetNameCantBeNormalIndex.filter(index => i != index);
+                        }
                         this.errorPresetNameOfCreateOrderConfigIndex = [];
                         this.tobeErrorPresetNameOfCreateOrderConfigIndex = [];
-                        for (let i = 1; index > presets.length; i++) {
-                            if (index != i) {
-                                let tobeCheckedPreset = presets[i];
-                                if (toCheckPreset.name == tobeCheckedPreset.name) {
-                                    if (!this.errorPresetNameOfCreateOrderConfigIndex.includes(index)) {
-                                        this.errorPresetNameOfCreateOrderConfigIndex.push(index);
-                                    }
-                                    if (!this.tobeErrorPresetNameOfCreateOrderConfigIndex.includes(i)) {
-                                        this.tobeErrorPresetNameOfCreateOrderConfigIndex.push(i);
-                                    }
+                        for (let j = i + 1; j < presets.length && i < presets.length - 1; j++) {
+                            let toCheckPreset = presets[i];
+                            let tobeCheckedPreset = presets[j];
+                            if (toCheckPreset.name.toLowerCase() == tobeCheckedPreset.name.toLowerCase()) {
+                                if (!this.errorPresetNameOfCreateOrderConfigIndex.includes(i)) {
+                                    this.errorPresetNameOfCreateOrderConfigIndex.push(i);
+                                }
+                                if (!this.tobeErrorPresetNameOfCreateOrderConfigIndex.includes(j)) {
+                                    this.tobeErrorPresetNameOfCreateOrderConfigIndex.push(j);
                                 }
                             }
                         }
                     }
-                }                
+                }      
+            }
+        },
+        checkValidDurationFromCreateDate() {
+            let maximumDuration = this.configOriginal.createWorkOrder.maximumWorkOrderDuration;
+            switch (this.configOriginal.createWorkOrder.maximumWorkOrderDurationType) {
+                case 'month': {
+                    maximumDuration *= 30;
+                    break;
+                }
+                case 'year': {
+                    maximumDuration *= 30 * 12;
+                    break;
+                }
+            }            
+            const presets = this.configOriginal.createWorkOrder.presets;
+            this.errorDurationIsGreaterThanMaximumIndex = [];
+            this.errorDurationFromCreateDateIndex = [];
+            this.tobeErrorDurationFromCreateDateIndex = [];
+            for (let i = 0; i < presets.length; i++) {
+                let presetDuration = presets[i].durationFromCreateDate;
+                switch (presets[i].durationFromCreateDateType) {
+                    case 'month': {
+                        presetDuration *= 30;
+                        break;
+                    }
+                    case 'year': {
+                        presetDuration *= 30 * 12;
+                        break;
+                    }
+                }
+                if (presetDuration > maximumDuration) {
+                    this.errorDurationIsGreaterThanMaximumIndex.push(i);
+                }
+                for (let j = 0; j < presets.length; j++) {
+                    if (i != j) {
+                        const toCheckPreset = presets[i];
+                        const tobeCheckedPreset = presets[j];
+                        if (toCheckPreset.durationFromCreateDate == tobeCheckedPreset.durationFromCreateDate
+                            && toCheckPreset.durationFromCreateDateType == tobeCheckedPreset.durationFromCreateDateType) {
+                            if (!this.errorDurationFromCreateDateIndex.includes(i)) {
+                                this.errorDurationFromCreateDateIndex.push(i);
+                            }
+                            if (!this.tobeErrorDurationFromCreateDateIndex.includes(j)) {
+                                this.tobeErrorDurationFromCreateDateIndex.push(j);
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        checkValidRuntimeFactor() {
+            const presets = this.configOriginal.createWorkOrder.presets;
+            this.errorDistanceFactorIndex = [];
+            this.tobeErrorDistanceFactorIndex = [];
+            this.errorRuntimeFactorIndex = [];
+            this.tobeErrorRuntimeFactorIndex = [];
+            for (let i = 0; i < presets.length; i++) {
+                for (let j = 0; j < presets.length; j++) {
+                    if (i != j) {
+                        const toCheckPreset = presets[i];
+                        const tobeCheckedPreset = presets[j];
+                        if (toCheckPreset.runtimeFactor == tobeCheckedPreset.runtimeFactor) {
+                            if (!this.errorRuntimeFactorIndex.includes(i)) {
+                                this.errorRuntimeFactorIndex.push(i);
+                            }
+                            if (!this.tobeErrorRuntimeFactorIndex.includes(j)) {
+                                this.tobeErrorRuntimeFactorIndex.push(j);
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        checkValidDistanceFactor() {
+            const presets = this.configOriginal.createWorkOrder.presets;
+            this.errorDistanceFactorIndex = [];
+            this.tobeErrorDistanceFactorIndex = [];
+            this.errorRuntimeFactorIndex = [];
+            this.tobeErrorRuntimeFactorIndex = [];
+            for (let i = 0; i < presets.length; i++) {
+                for (let j = 0; j < presets.length; j++) {
+                    if (i != j) {
+                        const toCheckPreset = presets[i];
+                        const tobeCheckedPreset = presets[j];
+                        if (toCheckPreset.distanceFactor == tobeCheckedPreset.distanceFactor) {
+                            if (!this.errorDistanceFactorIndex.includes(i)) {
+                                this.errorDistanceFactorIndex.push(i);
+                            }
+                            if (!this.tobeErrorDistanceFactorIndex.includes(j)) {
+                                this.tobeErrorDistanceFactorIndex.push(j);
+                            }
+                        }
+                    }
+                }
             }
         },
         checkCreateOrderConfigChanged() {
@@ -290,12 +472,10 @@ export default {
                         if (createWorkOrderConfigOriginal.presets.length == createWorkOrderConfigCopy.presets.length) {
                             const createWorkOrderConfigOriginalPreset = createWorkOrderConfigOriginal.presets[i];
                             const createWorkOrderConfigCopyPreset = createWorkOrderConfigCopy.presets[i];
-                            this.isCreateOrderConfigChanged = createWorkOrderConfigOriginalPreset.name != createWorkOrderConfigCopyPreset.name
-                                    ||createWorkOrderConfigOriginalPreset.workOrderDuration != createWorkOrderConfigCopyPreset.workOrderDuration
-                                    ||createWorkOrderConfigOriginalPreset.workOrderDurationType != createWorkOrderConfigCopyPreset.workOrderDurationType
-                                    ||createWorkOrderConfigOriginalPreset.durationFromCreateDate != createWorkOrderConfigCopyPreset.durationFromCreateDate
+                            this.isCreateOrderConfigChanged = createWorkOrderConfigOriginalPreset.durationFromCreateDate != createWorkOrderConfigCopyPreset.durationFromCreateDate
                                     ||createWorkOrderConfigOriginalPreset.durationFromCreateDateType != createWorkOrderConfigCopyPreset.durationFromCreateDateType
-                                    ||createWorkOrderConfigOriginalPreset.durationFactor != createWorkOrderConfigCopyPreset.durationFactor
+                                    ||createWorkOrderConfigOriginalPreset.durationFromCreateDateOperand != createWorkOrderConfigCopyPreset.durationFromCreateDateOperand
+                                    ||createWorkOrderConfigOriginalPreset.runtimeFactor != createWorkOrderConfigCopyPreset.runtimeFactor
                                     ||createWorkOrderConfigOriginalPreset.distanceFactor != createWorkOrderConfigCopyPreset.distanceFactor;
                             if (this.isCreateOrderConfigChanged) break;
                         } else {
