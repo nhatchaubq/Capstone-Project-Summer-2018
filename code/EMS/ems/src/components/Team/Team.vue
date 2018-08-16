@@ -46,6 +46,7 @@
                 <th><strong>Leader </strong></th>
                 <th><strong>Members </strong></th>
                 <th><strong>Create date </strong></th>
+                <th><strong>Status </strong></th>
 
 
                 <!-- <th><strong>Department</strong></th> -->
@@ -61,6 +62,7 @@
               <!-- </router-link> -->
               <td>{{team.Members.Quantity? team.Members.Quantity: 'N/A'}}</td>
               <td>{{getDate(team.CreatedDate)}}</td>
+              <td :style="{color: team.Status ? 'var(--primary-color)' : '#607D8B'}">{{team.Status ? "Active" : "Inactive"}}</td>
 
             </tr>
         </tbody>

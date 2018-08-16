@@ -18,7 +18,7 @@ var connection = {
   server: "localhost",
   userName: "sa",
   
-  password: "cCS94@bcnq836894",
+  password: "123456",
   
   port: "1433",
   options: {
@@ -31,7 +31,7 @@ var connection = {
 
 app.use(bodyParser.json());
 
-app.use(function (request, respones, next) {
+app.use(function(request, respones, next) {
   request.sql = tediousExpress(connection);
   // respones.header('Access-Control-Allow-Origin', '*');
   // respones.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -48,14 +48,14 @@ io.on("connection", function (socket) {
   socket.on("NEW_WORK_ORDER_CREATED", function (data) {
     socket.broadcast.emit("NEW_WORK_ORDER_CREATED", data);
   });
-  socket.on("NEW_NOTIFICATION", function (data) {
+  socket.on("NEW_NOTIFICATION", function(data) {
     socket.broadcast.emit("NEW_NOTIFICATION", data);
   });
-  socket.on("ORDER_STATUS_CHANGED", function (data) {
+  socket.on("ORDER_STATUS_CHANGED", function(data) {
     socket.broadcast.emit("ORDER_STATUS_CHANGED", data);
   });
-  socket.on('CLOSE_WORK_ORDER_DETAIL', function (data) {
-    socket.broadcast.emit('ORDER_STATUS_CHANGED', data);
+  socket.on("CLOSE_WORK_ORDER_DETAIL", function(data) {
+    socket.broadcast.emit("ORDER_STATUS_CHANGED", data);
   });
   socket.on('CONFIGURATION_CHANGED', function(data) {
     fs.writeFile('./web_config/config.json', JSON.stringify(data, null, 4), 'utf8', function(err) {
@@ -92,9 +92,7 @@ app.use(
   "/api/allaccwithout",
   require("./routes/AllAccWithoutMaintainerAndAdmin")
 );
-app.use("/api/changeYourPass",
-  require("./routes/changeYourPass")
-);
+app.use("/api/changeYourPass", require("./routes/changeYourPass"));
 
 app.use("/api/report", require("./routes/report"));
 app.use("/api/block", require("./routes/block"));
@@ -110,7 +108,7 @@ app.use("/api/map", require("./routes/map"));
 // app.use('/api/account/delete/id', require('./routes/'));
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   var err = new Error("Not Found: " + req.method + ":" + req.originalUrl);
   err.status = 404;
   next(err);

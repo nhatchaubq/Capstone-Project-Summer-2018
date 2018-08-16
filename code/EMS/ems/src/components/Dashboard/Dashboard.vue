@@ -25,7 +25,7 @@
                       Completed work orders chart from the past 11 months
                     </div>
                     <div v-else>
-                      Damaged and lost equipment chart from the past 11 months
+                      Damaged and lost equipment chart in the past 11 months to the current moment.
                     </div>  
                   </div> 
 
@@ -37,8 +37,7 @@
                   Maintenance Calendar
                 </div>       
                 <div>
-                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width: 100%; height:330px">
-                    
+                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width: 100% !important; height:332px">                    
                   </v-calendar>
                 </div>                       
                     <!-- <doughnut-chart :data="doughnutChartData" styles="height: 36vh"></doughnut-chart> -->

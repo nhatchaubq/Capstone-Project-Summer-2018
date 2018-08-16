@@ -34,7 +34,7 @@ router.get("/:id", (req, res) => {
       "ei.WarrantyDuration, ei.RuntimeDays, es.Name as Status, ei.Description " +
       "From EquipmentItem as ei " +
       "JOIN EquipmentStatus as es ON ei.StatusId = es.Id " +
-      "Where ei.EquipmentID = @id ORDER BY es.Name ASC " +
+      "Where ei.EquipmentID = @id ORDER BY ei.SerialNumber ASC " +
       "for json path"
     )
     .param("id", req.params.id, TYPES.Int)

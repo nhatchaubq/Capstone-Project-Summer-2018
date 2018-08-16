@@ -3,7 +3,9 @@ var TYPES = require("tedious").TYPES;
 
 router.get("/getAllCate", (request, response) => {
   request
-    .sql("SELECT * From [EquipmentCategory] order by Name for json path")
+    .sql(
+      "SELECT * From [EquipmentCategory] order by Status desc, Name asc   for json path"
+    )
     .into(response);
 });
 
@@ -18,9 +20,9 @@ router.get("/getAllItems", (req, res) => {
   req
     .sql(
       "select distinct ec.Id as 'CategoryId',ec.Name as 'CategoryName'" +
-      " from EquipmentCategory as ec join Equipment as e on ec.Id = e.CategoryID " +
-      "							 join EquipmentItem as ei on ei.EquipmentID = e.Id " +
-      " for json path "
+        " from EquipmentCategory as ec join Equipment as e on ec.Id = e.CategoryID " +
+        "							 join EquipmentItem as ei on ei.EquipmentID = e.Id " +
+        " for json path "
     )
     .into(res);
 });
@@ -28,19 +30,20 @@ router.get("/getAllItems", (req, res) => {
 router.put("/editCategory", (request, respone) => {
   request
     .sql(
-      "Update [EquipmentCategory] set Name = @name, Description = @description " +
-      "where Id = @categoryId"
+      "Update [EquipmentCategory] set Name = @name, Description = @description, Status = @status " +
+        " where Id = @categoryId"
     )
     .param("categoryId", request.body.newCategory.id, TYPES.Int)
     .param("name", request.body.newCategory.name, TYPES.NVarChar)
     .param("description", request.body.newCategory.description, TYPES.NVarChar)
+    .param("status", request.body.newCategory.status, TYPES.Bit)
     .exec(respone);
 });
 
 router.post("/createCategory", (request, response) => {
   request
     .sql(
-      "INSERT INTO EquipmentCategory (Name, Description) VALUES (@name, @description)"
+      "INSERT INTO EquipmentCategory (Name, Description, Status) VALUES (@name, @description,1)"
     )
     .param("name", request.body.newCategory.name, TYPES.NVarChar)
     .param("description", request.body.newCategory.description, TYPES.NVarChar)
