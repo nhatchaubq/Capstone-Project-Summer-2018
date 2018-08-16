@@ -8,20 +8,21 @@
                 <button id="" class="button" style="margin-right: .6rem"  v-on:click="$router.push('/location')">Cancel</button>
                 <simplert :useRadius="true" :icon="true" ref="simplert"></simplert>
                 <button id="" class="button is-primary"  v-on:click="createLocation()">Create New Location</button>
-          </div>  
+          </div>
+           
         </div>
-        <div class="form-content" >   
-            <div class="form-field" style="padding-top:1.5rem">
+        <div class="form-content" >              
+            <div class="form-field" style="padding-top:1.5rem; padding-bottom: 0 !important;">
                 <div class="form-field-title">
-                    <strong>Name <span style="color:red;">*</span></strong>  <span v-if="CreateLocationErrors.NoName != ''"><span class="error-text">  {{ CreateLocationErrors.NoName }}</span></span>
+                    <strong>Name (required)</strong>  <span v-if="CreateLocationErrors.NoName != ''"><span class="error-text">  {{ CreateLocationErrors.NoName }}</span></span>
                 </div>
                 <div class="form-field-input">
                     <input v-model="newLocation.name" type="text" class="input">
                 </div>
             </div>
-            <div class="form-field">
+            <div class="form-field" style="padding-top: 0 !important;">
                 <div class="form-field-title">
-                    <strong>Address <span style="color:red;">*</span></strong>  <span v-if="CreateLocationErrors.NoAddress != ''"></span> <span class="error-text">  {{ CreateLocationErrors.NoAddress }}</span>
+                    <strong>Address (required)</strong>  <span v-if="CreateLocationErrors.NoAddress != ''"></span> <span class="error-text">  {{ CreateLocationErrors.NoAddress }}</span>
                 </div>
                 <div class="form-field-input">                  
                     <div>                    
@@ -49,15 +50,6 @@
                   </gmap-map>                
                 </div>
             </div>
-            <div class="form-field">
-                <div class="form-field-title">
-                   <strong>Description</strong>
-                </div>
-                <div class="form-field-input">
-                    <!-- <input type="text" class="input" > -->
-                    <textarea id="text-descrip" v-model="newLocation.description"  cols="80" rows="10"></textarea>
-                </div>
-            </div>
             <div class="form-field" style=" display:grid ; grid-template-columns: 7% 20% auto">
                 <div class="form-field-title">
                     <strong>Team</strong>
@@ -75,6 +67,16 @@
                         </label> 
                     </div>
             </div>
+            <div class="form-field">
+                <div class="form-field-title">
+                   <strong>Description</strong>
+                </div>
+                <div class="form-field-input">
+                    <!-- <input type="text" class="input" > -->
+                    <textarea id="text-descrip" v-model="newLocation.description"  cols="80" rows="10"></textarea>
+                </div>
+            </div>
+            
             
         </div>    
     </div>        
@@ -98,6 +100,7 @@ export default {
       teams: [],
       selectedTeam: null,
       tempTeams: [],
+      allLocations: [],
       selectedTeams: [],
       newLocation: {
         name: "",
@@ -120,12 +123,15 @@ export default {
         NoName: "Please enter name!",
         ShortName: "Use 6 characters or more for location's name",
         LongName: "Use 100 characters or fewer for location's name",
-        NoAddress: "Please enter and choose address"
+        NoAddress: "Please enter and choose address",
+        DuplicateAddress: "Both name and address already exists.",
+        DuplicateName: "Both name and address already exists."
       },
       form: {
         Name: "",
         Address: ""
-      }
+      },
+      duplicate: false
     };
   },
   mounted() {
@@ -144,9 +150,12 @@ export default {
       .catch(error => {
         console.log(error);
       });
+    this.getAllLocations();
   },
+
   methods: {
     createLocation() {
+      this.duplicate = false;
       if (this.newLocation.name.trim() == "") {
         this.CreateLocationErrors.NoName = this.ErrorStrings.NoName;
       } else if (this.newLocation.name.trim().length < 6) {
@@ -156,6 +165,50 @@ export default {
       }
       if (!this.currentPlace) {
         this.CreateLocationErrors.NoAddress = this.ErrorStrings.NoAddress;
+      }
+      // this.allLocations.forEach(location => {
+      //   if (
+      //     this.newLocation.name.trim() == location.Name &&
+      //     this.currentPlace.geometry.location.lng() == location.Longitude &&
+      //     this.currentPlace.geometry.location.lat() == location.Latitude
+      //   ) {
+      //     alert(this.newLocation.name.trim());
+      //     alert(location.Name, location.Longitude, location.Latitude);
+      //     this.duplicate = true;
+      //   }
+      // });
+      // if (this.duplicate) {
+      //   this.CreateLocationErrors.NoName = this.ErrorStrings.DuplicateName;
+      //   this.CreateLocationErrors.NoAddress = this.ErrorStrings.DuplicateAddress;
+      // }
+      if (this.currentPlace) {
+        for (const location of this.allLocations) {
+          // alert(
+          //   parseFloat(this.currentPlace.geometry.location.lng()).toFixed(6) +
+          //     " ? " +
+          //     parseFloat(location.Longitude).toFixed(6) +
+          //     "\n" +
+          //     parseFloat(this.currentPlace.geometry.location.lat()).toFixed(6) +
+          //     " ? " +
+          //     parseFloat(location.Latitude).toFixed(6)
+          // );
+
+          if (
+            this.newLocation.name.trim().toUpperCase() == location.Name.toUpperCase() &&
+            parseFloat(this.currentPlace.geometry.location.lng()).toFixed(6) ==
+              parseFloat(location.Longitude).toFixed(6) &&
+            parseFloat(this.currentPlace.geometry.location.lat()).toFixed(6) ==
+              parseFloat(location.Latitude).toFixed(6)
+          ) {
+            this.duplicate = true;
+            break;
+          }
+        }
+      }
+
+      if (this.duplicate) {
+        this.CreateLocationErrors.NoName = this.ErrorStrings.DuplicateName;
+        this.CreateLocationErrors.NoAddress = this.ErrorStrings.DuplicateAddress;
       }
       if (
         this.CreateLocationErrors.NoName == "" &&
@@ -198,6 +251,21 @@ export default {
           });
       }
     },
+    getAllLocations() {
+      let url = "";
+      url = "http://localhost:3000/api/location/";
+      this.axios
+        .get(url)
+        .then(response => {
+          let data = response.data;
+          data.forEach(location => {
+            this.allLocations.push(location);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     removeSelectedTeam(tmpTeam) {
       this.selectedTeams = this.selectedTeams.filter(
         team => team.Id != tmpTeam.Id
@@ -214,25 +282,7 @@ export default {
     setPlace(place) {
       this.currentPlace = place;
       // alert(JSON.stringify(this.currentPlace));
-    },
-    // addMarker() {
-    //   if (this.currentPlace) {
-    //     // const marker = {
-    //     //   lat: this.currentPlace.geometry.location.lat(),
-    //     //   lng: this.currentPlace.geometry.location.lng()
-    //     // };
-    //     const tmpMarker = {
-    //       lat: this.currentPlace.geometry.location.lat(),
-    //       lng: this.currentPlace.geometry.location.lng()
-    //     };
-    //     // this.markers.push({ position: marker });
-    //     this.marker = tmpMarker;
-    //     // this.places.push(this.currentPlace);
-    //     this.place = this.currentPlace;
-    //     this.center = this.marker;
-    //     // this.currentPlace = null;
-    //   }
-    // },
+    },    
     geolocate() {
       navigator.geolocation.getCurrentPosition(position => {
         this.center = {
@@ -245,7 +295,12 @@ export default {
   watch: {
     "newLocation.name": function() {
       if (this.newLocation.name.trim() != "") {
-        this.CreateLocationErrors.NoName = "";
+        if (this.duplicate) {
+          this.CreateLocationErrors.NoName = "";
+          this.CreateLocationErrors.NoAddress = "";
+        } else {
+          this.CreateLocationErrors.NoName = "";
+        }
       }
     },
     selectedTeam: function() {
@@ -260,7 +315,12 @@ export default {
     },
     currentPlace: function() {
       if (this.currentPlace) {
-        this.CreateLocationErrors.NoAddress = "";
+        if (this.duplicate) {
+          this.CreateLocationErrors.NoAddress = "";
+          this.CreateLocationErrors.NoName = "";
+        } else {
+          this.CreateLocationErrors.NoAddress = "";
+        }
       }
       if (this.currentPlace) {
         const tmpMarker = {
@@ -269,7 +329,7 @@ export default {
         };
         this.marker = tmpMarker;
         this.place = this.currentPlace;
-        this.center = marker;
+        this.center = this.marker;
       }
     }
   }

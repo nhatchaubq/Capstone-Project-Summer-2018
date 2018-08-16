@@ -13,10 +13,10 @@
         <div class="form-content" >   
             <div class="form-field" style="padding-top:1.5rem">
                 <div class="form-field-title">
-                    <strong>Name <span style="color:red;">*</span></strong>  <span v-if="CreateCategoryErrors.NoName != ''"><span class="error-text">  {{ CreateCategoryErrors.NoName }}</span></span>
+                    <strong>Name (required)</strong>  <span v-if="CreateCategoryErrors.NoName != ''"><span class="error-text">  {{ CreateCategoryErrors.NoName }}</span></span>
                 </div>
                 <div class="form-field-input">
-                    <input v-model="newCategory.name" type="text" class="input">
+                    <input v-model.trim="newCategory.name" type="text" class="input">
                 </div>
             </div>            
             <div class="form-field">
@@ -25,7 +25,7 @@
                 </div>
                 <div class="form-field-input">
                     <!-- <input type="text" class="input" > -->
-                    <textarea id="text-descrip" v-model="newCategory.description"  cols="80" rows="10"></textarea>
+                    <textarea id="text-descrip" v-model.trim="newCategory.description"  cols="80" rows="10"></textarea>
                 </div>
             </div>                       
         </div>    
@@ -43,6 +43,8 @@ export default {
   },
   data() {
     return {
+      duplicate: false,
+      allCategories: [],
       newCategory: {
         name: "",
         description: ""
@@ -61,6 +63,7 @@ export default {
     };
   },
   created() {
+    this.getAllCategory();
     // this.axios
     //   .get(Server.TEAM_API_PATH + "/getAllTeam")
     //   .then(response => {
@@ -75,19 +78,29 @@ export default {
   },
   methods: {
     createCategory() {
-      if (this.newCategory.name.trim() == "") {
-        this.CreateCategoryErrors.NoName = this.ErrorStrings.NoName;
-      } else if (this.newCategory.name.trim().length < 6) {
-        this.CreateCategoryErrors.NoName = this.ErrorStrings.ShortName;
-      } else if (this.newCategory.name.trim().length > 50) {
-        this.CreateCategoryErrors.NoName = this.ErrorStrings.LongName;
+      for (const cate of this.allCategories) {
+        if (this.newCategory.name.toUpperCase() == cate.Name.toUpperCase()) {
+          this.duplicate = true;
+          break;
+        }
       }
-      if (this.CreateCategoryErrors.NoName == '') {
+
+      if (this.newCategory.name == "") {
+        this.CreateCategoryErrors.NoName = this.ErrorStrings.NoName;
+      } else if (this.newCategory.name.length < 6) {
+        this.CreateCategoryErrors.NoName = this.ErrorStrings.ShortName;
+      } else if (this.newCategory.name.length > 50) {
+        this.CreateCategoryErrors.NoName = this.ErrorStrings.LongName;
+      } else if (this.duplicate) {
+        this.CreateCategoryErrors.NoName = "Name already exists.";
+        this.duplicate = false;
+      }
+      if (this.CreateCategoryErrors.NoName == "") {
         this.axios
           .post(Server.EQUIPMENT_CATEGORY_CREATE_API_PATH, {
             newCategory: {
               name: this.newCategory.name.trim(),
-              description: this.newCategory.description.trim()
+              description: this.newCategory.description
             }
           })
           .then(async res => {
@@ -105,6 +118,20 @@ export default {
             console.log(error);
           });
       }
+    },
+    getAllCategory() {
+      this.axios
+        .get("http://localhost:3000/api/EquipmentCategory/getAllCate")
+        .then(res => {
+          this.allCategories = [];
+          let data = res.data;
+          data.forEach(cate => {
+            this.allCategories.push(cate);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   },
   watch: {

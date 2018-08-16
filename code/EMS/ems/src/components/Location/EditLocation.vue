@@ -15,7 +15,7 @@
         <div class="form-content">
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  New Name<span style="color:red;">*</span> </strong>  <span v-if="NoName != ''"><span class="error-text">  {{ NoName }}</span></span>
+                <strong>  New Name (required) </strong>  <span v-if="NoName != ''"><span class="error-text">  {{ NoName }}</span></span>
                 </div>
                 <div class="form-field-input">
                         <input  class="input " type="text"  v-model="location.Name" >   
@@ -113,38 +113,74 @@ export default {
       teams: [],
       woTeams: [],
       newTeams: [],
-      NoName: ""
+      NoName: "",
+      sameAddressLocations: [],
+      duplicate: false
     };
   },
-  created() {
+  async created() {
     let url = `${Server.LOCATION_UPDATE_API_PATH}/${this.$route.params.id}`;
-    this.axios
+    await this.axios
       .get(url)
-      .then(response => {
+      .then(async response => {
         let data = response.data[0];
         this.location = data;
         this.woTeams = this.location.TeamWithWorkOrdering;
         this.unselectedTeams = this.teams;
         if (this.location.Team) {
           this.selectedTeams = this.location.Team;
-
-          this.selectedTeams.forEach(team => {
+          for (const team of this.selectedTeams) {
             this.unselectedTeams = this.unselectedTeams.filter(
               unteam => unteam.Id != team.Id
             );
-          });
+          }
         }
       })
       .catch(error => {
         console.log(error);
       });
     this.getAllTeam();
+    await this.getSameAddressLocations();
 
+    // alert(this.sameAddressLocations.length);
     // this.unselectedTeams = this.unselectedTeams.filter(
     //   team => !this.location.Team.includes(team)
     // );
   },
   methods: {
+    async getSameAddressLocations() {
+      let url = "";
+      url = "http://localhost:3000/api/location/";
+      await this.axios
+        .get(url)
+        .then(async response => {
+          let data = response.data;
+          for (const tmpLocation of data) {
+            // alert(
+            //   parseFloat(tmpLocation.Longitude).toFixed(6) +
+            //     " " +
+            //     parseFloat(this.location.Longitude).toFixed(6) +
+            //     "\n" +
+            //     parseFloat(tmpLocation.Latitude).toFixed(6) +
+            //   " " +
+            //   parseFloat(this.location.Latitude).toFixed(6)
+            // );
+            if (
+              parseFloat(tmpLocation.Longitude).toFixed(6) ==
+                parseFloat(this.location.Longitude).toFixed(6) &&
+              parseFloat(tmpLocation.Latitude).toFixed(6) ==
+                parseFloat(this.location.Latitude).toFixed(6) &&
+              tmpLocation.Id != this.location.Id
+            ) {
+              // alert("add zo");
+              this.sameAddressLocations.push(tmpLocation);
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     getAllTeam() {
       this.axios
         .get(Server.TEAM_API_PATH + "/getAllTeam")
@@ -159,8 +195,20 @@ export default {
         });
     },
     async updateLocation() {
+      for (const tmpLocation of this.sameAddressLocations) {
+        if (
+          this.location.Name.trim().toUpperCase() ==
+          tmpLocation.Name.toUpperCase()
+        ) {
+          this.duplicate = true;
+        }
+      }
+
       if (this.location.Name.trim() == "") {
         this.NoName = "Please enter new name!";
+      } else if (this.duplicate) {
+        this.NoName = "Both name and address already exists.";
+        this.duplicate = false;
       } else if (this.location.Name.trim().length < 6) {
         this.NoName = "Use 6 characters or more for location's name";
       } else if (this.location.Name.trim().length > 100) {
