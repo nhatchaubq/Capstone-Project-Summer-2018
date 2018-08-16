@@ -63,7 +63,7 @@
             <div >
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span><span v-if="CreateAccountErrors.UserNameTrim != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UserNameTrim }}</span></span> <span class="error-text" v-if="CreateAccountErrors.duplicateUsername != ''"> {{ CreateAccountErrors.duplicateUsername }}</span>
+                    <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span><span v-if="CreateAccountErrors.UserNameTrim != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UserNameTrim }}</span></span> <span class="error-text" v-if="CreateAccountErrors.duplicateUsername != ''"> {{ CreateAccountErrors.duplicateUsername }}</span> <span class="error-text" v-if="CreateAccountErrors.ValidUsername != ''"> {{ CreateAccountErrors.ValidUsername }}</span>
                     <!-- <span v-if="CreateWorkOrderErrors.NoTitle != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoTitle }}</span></span> -->
                     </div>
                     <div class="control has-icons-right" style="padding:8px">
@@ -104,7 +104,7 @@
                     <div class="form-field-title">
                         <strong>
                             Fullname (required)
-                        </strong>     <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span>
+                        </strong>     <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span><span v-if="CreateAccountErrors.ValidFullName != ''"> <span class="error-text">{{ CreateAccountErrors.ValidFullName }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control  has-icons-right" style="padding:8px">
@@ -128,11 +128,11 @@
                         <strong>
                             Phone (required)
 
-                        </strong>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>
+                        </strong>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span><span v-if="CreateAccountErrors.validPhone != ''"> <span class="error-text">{{ CreateAccountErrors.validPhone }}</span></span><span v-if="CreateAccountErrors.duplicatePhone != ''"> <span class="error-text">{{ CreateAccountErrors.duplicatePhone }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.phone" class="input " type="text" placeholder="(+84)123456789" name="phone" id="phone">
+                        <input v-model.trim="account.phone" class="input " type="text" placeholder="(078)7898908" name="phone" id="phone">
                             <!-- <span class="icon is-small is-left">
                             <i class="fa fa-mobile"></i>
                             </span> -->
@@ -151,7 +151,7 @@
                     <div class="form-field-title">
                         <strong>
                             Email (required) 
-                        </strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span><span v-if="CreateAccountErrors.validEmail != ''"> <span class="error-text">{{ CreateAccountErrors.validEmail }}</span></span>
+                        </strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span><span v-if="CreateAccountErrors.validEmail != ''"> <span class="error-text">{{ CreateAccountErrors.validEmail }}</span></span><span v-if="CreateAccountErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateAccountErrors.duplicateEmail }}</span></span>
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-right" style="padding:8px">
@@ -290,30 +290,35 @@ export default {
         // NoUsername: "You must provide username for this account",
         // NoPassword: "You must provide password for this account",
         // fullname-start
-        FullNameMax: " Use from 6 to 50 characters for your full name",
-        FullNameMin: " Use from 6 to 50 characters for your full name",
+        FullNameMax: " Use from 6 to 50 characters for your full name ",
+        FullNameMin: " Use from 6 to 50 characters for your full name ",
         // NoFullname: "You must provide full name for this account",
         // fullname-end
         // NoPhone: "You must provide phone number for this account",
         // username-start
-        UsernameMax: " Use from 6 to 50 characters for your  username",
-        UsernameMin: " Use from 6 to 50 characters for your username",
+        UsernameMax: " Use from 6 to 50 characters for your  username ",
+        UsernameMin: " Use from 6 to 50 characters for your username ",
         // UserNameTrim: " No Space Allowed",
         // username-end
         //password
-        MaxPassword: " Use from 6 to 50 characters for your password",
-        WeakAccount: " Use from 6 to 50 characters for your password",
+        MaxPassword: " Use from 6 to 50 characters for your password ",
+        WeakAccount: " Use from 6 to 50 characters for your password ",
         //password-end
 
         // phone-start
-        PhoneMin: " Use from 9 to 13 characters for your phonenumber",
-        PhoneMax: " Use from 9 to 13 characters for your phonenumber",
+        PhoneMin: " Use from 9 to 20 characters for your phonenumber ",
+        PhoneMax: " Use from 9 to 20 characters for your phonenumber ",
         // phone-end
         NoEmail: " Enter email ",
-        NoRole: " Select role",
-        NoImage: "You must choose an image",
-        validEmail: "Valid email required",
-        duplicateUsername: "The username already exists "
+        NoRole: " Select role ",
+        NoImage: "You must choose an image ",
+        validEmail: "Valid email required ",
+        validPhone: "Valid phone required ",
+        duplicateUsername: "Duplicate username.",
+        duplicatePhone: "Duplicate phone number.",
+        duplicateEmail: "Duplicate email.",
+        ValidUsername: "Valid characters required ",
+        ValidFullName: "Valid characters required "
       },
       CreateAccountErrors: {
         // NoUsername: "",
@@ -333,7 +338,12 @@ export default {
         NoRole: "",
         NoImage: "",
         validEmail: "",
-        duplicateUsername: ""
+        validPhone: "",
+        duplicateUsername: "",
+        duplicatePhone: "",
+        duplicateEmail: "",
+        ValidUsername: "",
+        ValidFullName: ""
       },
       account: {
         username: "",
@@ -353,7 +363,11 @@ export default {
       //   if (this.account.username === "") {
       //     this.CreateAccountErrors.NoUsername = this.ErrorStrings.NoUsername;
       //   }
+
+      let phoneRegex = /^(\([0-9]{3}\)\s*|[0-9]{3}\-)([0-9]{7}|[0-9]{8}|[0-9]{9})$/;
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      let UsernameRegex = /^[^~`!#$%()@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*.[\s{1,}]*?$/;
+      let FullNameRegex = /^[^~`!#$%()0-9@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*.[\s{1,}]*?$/;
       if (!this.files[0]) {
         this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
       }
@@ -378,6 +392,16 @@ export default {
       // if (this.account.fullname === "") {
       //   this.CreateAccountErrors.NoFullname = this.ErrorStrings.NoFullname;
       // }
+      if (!UsernameRegex.test(this.account.username)) {
+        this.CreateAccountErrors.ValidUsername = this.ErrorStrings.ValidUsername;
+      } else {
+        this.CreateAccountErrors.ValidUsername = "";
+      }
+      if (!FullNameRegex.test(this.account.fullname)) {
+        this.CreateAccountErrors.ValidFullName = this.ErrorStrings.ValidFullName;
+      } else {
+        this.CreateAccountErrors.ValidFullName = "";
+      }
       if (this.account.fullname.length < 6) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
@@ -390,7 +414,7 @@ export default {
       if (this.account.phone.length < 9) {
         this.CreateAccountErrors.PhoneMin = this.ErrorStrings.PhoneMin;
       }
-      if (this.account.phone.length > 13) {
+      if (this.account.phone.length > 20) {
         this.CreateAccountErrors.PhoneMax = this.ErrorStrings.PhoneMax;
       }
       if (this.account.email === "") {
@@ -403,6 +427,18 @@ export default {
           break;
         }
       }
+      for (const account of this.accounts) {
+        if (account.Phone == this.account.phone) {
+          this.CreateAccountErrors.duplicatePhone = this.ErrorStrings.duplicatePhone;
+          break;
+        }
+      }
+      for (const account of this.accounts) {
+        if (account.Email == this.account.email) {
+          this.CreateAccountErrors.duplicateEmail = this.ErrorStrings.duplicateEmail;
+          break;
+        }
+      }
 
       if (!this.account.roleid || this.account.roleid == "") {
         this.CreateAccountErrors.NoRole = this.ErrorStrings.NoRole;
@@ -411,6 +447,11 @@ export default {
         this.CreateAccountErrors.validEmail = this.ErrorStrings.validEmail;
       } else {
         this.CreateAccountErrors.validEmail = "";
+      }
+      if (!phoneRegex.test(this.account.phone)) {
+        this.CreateAccountErrors.validPhone = this.ErrorStrings.validPhone;
+      } else {
+        this.CreateAccountErrors.validPhone = "";
       }
 
       if (this.validateAccount()) {
@@ -472,18 +513,23 @@ export default {
         // this.CreateAccountErrors.NoPhone === "" &&
         this.CreateAccountErrors.UsernameMax === "" &&
         this.CreateAccountErrors.UsernameMin === "" &&
+        this.CreateAccountErrors.ValidUsername == "" &&
+        this.CreateAccountErrors.duplicateUsername == "" &&
         // this.CreateAccountErrors.UserNameTrim === "" &&
         this.CreateAccountErrors.MaxPassword === "" &&
         this.CreateAccountErrors.WeakAccount === "" &&
         this.CreateAccountErrors.FullNameMax === "" &&
         this.CreateAccountErrors.FullNameMin === "" &&
+        this.CreateAccountErrors.ValidFullName == "" &&
         this.CreateAccountErrors.PhoneMax === "" &&
         this.CreateAccountErrors.PhoneMin === "" &&
+        this.CreateAccountErrors.duplicatePhone == "" &&
+        this.CreateAccountErrors.validPhone == "" &&
         this.CreateAccountErrors.NoEmail === "" &&
-        this.CreateAccountErrors.NoRole === "" &&
-        this.CreateAccountErrors.NoImage == "" &&
         this.CreateAccountErrors.validEmail == "" &&
-        this.CreateAccountErrors.duplicateUsername == ""
+        this.CreateAccountErrors.duplicateEmail == "" &&
+        this.CreateAccountErrors.NoRole === "" &&
+        this.CreateAccountErrors.NoImage == ""
       );
     }
   },
@@ -508,6 +554,14 @@ export default {
       if (!isDupUsername) {
         this.CreateAccountErrors.duplicateUsername = "";
       }
+
+      if (this.account.username == this.UsernameRegex) {
+        this.CreateAccountErrors.ValidUsername = "";
+      }
+      if (this.account.fullname == this.FullNameRegex) {
+        this.CreateAccountErrors.ValidFullName = "";
+      }
+
       // if (this.username && this.account.username.length > 0) {
       //   let tmpAccounts = [];
       //   for (const account of this.account.username) {
@@ -543,8 +597,21 @@ export default {
       if (this.account.phone.length > 8) {
         this.CreateAccountErrors.PhoneMin = "";
       }
-      if (this.account.phone.length < 14) {
+      if (this.account.phone.length < 21) {
         this.CreateAccountErrors.PhoneMax = "";
+      }
+      if (this.account.phone == this.phoneRegex) {
+        this.CreateAccountErrors.validPhone = "";
+      }
+      let isDupPhone = false;
+      for (const account in this.accounts) {
+        if (account.Phone == this.account.phone) {
+          isDupPhone = true;
+          break;
+        }
+      }
+      if (!isDupPhone) {
+        this.CreateAccountErrors.duplicatePhone = "";
       }
     },
     "account.email": function() {
@@ -553,6 +620,16 @@ export default {
       }
       if (this.account.email == this.emailRegex) {
         this.CreateAccountErrors.validEmail = "";
+      }
+      let isDupEmail = false;
+      for (const account in this.accounts) {
+        if (account.Email == this.account.email) {
+          isDupEmail = true;
+          break;
+        }
+      }
+      if (!isDupEmail) {
+        this.CreateAccountErrors.duplicateEmail = "";
       }
     },
     files: function() {
