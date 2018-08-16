@@ -450,11 +450,11 @@ export default {
       } else {
         this.CreateAccountErrors.validEmail = "";
       }
-      if (!phoneRegex.test(this.account.phone)) {
-        this.CreateAccountErrors.validPhone = this.ErrorStrings.validPhone;
-      } else {
-        this.CreateAccountErrors.validPhone = "";
-      }
+      // if (!phoneRegex.test(this.account.phone)) {
+      //   this.CreateAccountErrors.validPhone = this.ErrorStrings.validPhone;
+      // } else {
+      //   this.CreateAccountErrors.validPhone = "";
+      // }
 
       if (this.validateAccount()) {
         this.CreateAccountErrors.NoImage = "";
@@ -602,9 +602,9 @@ export default {
       if (this.account.phone.length < 14) {
         this.CreateAccountErrors.PhoneMax = "";
       }
-      if (this.account.phone == this.phoneRegex) {
-        this.CreateAccountErrors.validPhone = "";
-      }
+      // if (this.account.phone == this.phoneRegex) {
+      //   this.CreateAccountErrors.validPhone = "";
+      // }
       let isDupPhone = false;
       for (const account in this.accounts) {
         if (account.Phone == this.account.phone) {
