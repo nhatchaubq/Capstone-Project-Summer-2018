@@ -42,7 +42,7 @@
               Contact name 
 
             </strong>
-            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span> <span v-if="CreateVendorErrors.validContactName != ''"> <span class="error-text">{{ CreateVendorErrors.validContactName }}</span></span> </span>
+            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span> <span v-if="CreateVendorErrors.validContactName != ''"> <span class="error-text">{{ CreateVendorErrors.validContactName }}</span></span></span>
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D point" disabled="disabled">
@@ -53,7 +53,7 @@
               Contact email 
 
             </strong>
-            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span></span>      
+            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateVendorErrors.duplicateEmail }}</span></span></span>      
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="dpoint@gmail.com" disabled="disabled">
@@ -63,8 +63,8 @@
             <strong>
               Phone 
 
-            </strong>
-            <span v-if="editMode"> (required)</span>
+            </strong><span v-if="editMode"> (required)</span><span v-if="CreateVendorErrors.PhoneMin != ''"> <span class="error-text">{{ CreateVendorErrors.PhoneMin }}</span></span><span v-if="CreateVendorErrors.duplicatePhone != ''"> <span class="error-text">{{ CreateVendorErrors.duplicatePhone }}</span></span>
+            
           </div>
         </div>
          <input v-if="!editMode" v-model.trim="Vendor.Phone" class="input col-7 " type="number"  placeholder="123456789" disabled="disabled">
@@ -408,6 +408,7 @@
 </template>
 
 <script>
+import Server from "@/config/config.js";
 export default {
   computed: {
     authUser() {
@@ -415,6 +416,10 @@ export default {
     }
   },
   created() {
+    let url = Server.VENDOR_API_PATH;
+    this.axios.get(url).then(res => {
+      this.Vendors = res.data;
+    });
     let URL = `http://localhost:3000/api/vendor/${this.$route.params.id}`;
     this.axios.get(URL).then(response => {
       let data = response.data;
@@ -442,7 +447,10 @@ export default {
         DesMax: " Use 500 characters or fewer for your description",
         validEmail: "Valid email required",
         validWeb: "Valid website required",
-        validContactName: "Valid characters required"
+        validContactName: "Valid characters required",
+        PhoneMin: "Use from 9 to 13 characters for your phonenumber",
+        duplicatePhone: "Duplicate phone number.",
+        duplicateEmail: "Duplicate email."
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -457,7 +465,10 @@ export default {
         DesMax: "",
         validEmail: "",
         validWeb: "",
-        validContactName: ""
+        validContactName: "",
+        PhoneMin: "",
+        duplicatePhone: "",
+        duplicateEmail: ""
       },
       Vendor: null,
       checkedActive: [],
@@ -472,7 +483,7 @@ export default {
       let webRegex = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%\^&*:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       // let contactNameRegex = /^[a-zA-Z]+$/;
-      let contactNameRegex = /^[^~`!#$%()0-9@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*.[\s{1,}]*?$/;
+      let contactNameRegex = /^[^~`!#$%@0-9()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/;
 
       if (
         !this.Vendor.BusinessAddress ||
@@ -515,6 +526,24 @@ export default {
       }
       if (this.Vendor.Website && this.Vendor.Website.length > 200) {
         this.CreateVendorErrors.WebMax = this.ErrorStrings.WebMax;
+      }
+      if (this.Vendor.Phone.length < 9 || this.Vendor.Phone.length > 13) {
+        this.CreateVendorErrors.PhoneMin = this.ErrorStrings.PhoneMin;
+      }
+      for (const Vendor of this.Vendors) {
+        if (Vendor.Id != this.Vendor.Id && Vendor.Phone == this.Vendor.Phone) {
+          this.CreateVendorErrors.duplicatePhone = this.ErrorStrings.duplicatePhone;
+          break;
+        }
+      }
+      for (const Vendor of this.Vendors) {
+        if (
+          Vendor.Id != this.Vendor.Id &&
+          Vendor.ContactEmail == this.Vendor.ContactEmail
+        ) {
+          this.CreateVendorErrors.duplicateEmail = this.ErrorStrings.duplicateEmail;
+          break;
+        }
       }
       if (this.Vendor.Description && this.Vendor.Description.length > 500) {
         this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
@@ -574,7 +603,10 @@ export default {
         this.CreateVendorErrors.NoEmail === "" &&
         this.CreateVendorErrors.validEmail == "" &&
         this.CreateVendorErrors.validWeb == "" &&
-        this.CreateVendorErrors.validContactName == ""
+        this.CreateVendorErrors.validContactName == "" &&
+        this.CreateVendorErrors.PhoneMin == "" &&
+        this.CreateVendorErrors.duplicatePhone == "" &&
+        this.CreateVendorErrors.duplicateEmail == ""
       );
     },
     gotoDetail(EquipmentId) {
@@ -616,6 +648,19 @@ export default {
       if (this.Vendor.ContactEmail == this.emailRegex) {
         this.CreateVendorErrors.validEmail = "";
       }
+      let isDupEmail = false;
+      for (const Vendor of this.Vendors) {
+        if (
+          Vendor.Id != this.Vendor.Id &&
+          Vendor.ContactEmail == this.Vendor.ContactEmail
+        ) {
+          isDupEmail = true;
+          break;
+        }
+      }
+      if (!isDupEmail) {
+        this.CreateVendorErrors.duplicateEmail = "";
+      }
     },
     "Vendor.Website": function() {
       if (this.Vendor.Website.length < 201) {
@@ -628,6 +673,24 @@ export default {
     "Vendor.Description": function() {
       if (this.Vendor.Description.length < 501) {
         this.CreateVendorErrors.DesMax = "";
+      }
+    },
+    "Vendor.Phone": function() {
+      if (this.Vendor.Phone.length > 8) {
+        this.CreateVendorErrors.PhoneMin = "";
+      }
+      if (this.Vendor.Phone.length < 14) {
+        this.CreateVendorErrors.PhoneMin = "";
+      }
+      let isDupPhone = false;
+      for (const Vendor of this.Vendors) {
+        if (Vendor.Id != this.Vendor.Id && Vendor.Phone == this.Vendor.Phone) {
+          isDupPhone = true;
+          break;
+        }
+      }
+      if (!isDupPhone) {
+        this.CreateVendorErrors.duplicatePhone = "";
       }
     }
   }
