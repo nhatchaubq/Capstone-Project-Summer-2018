@@ -16,16 +16,16 @@
                       <input type="radio" name="status" style="padding-right:0.5rem" :checked="linechartOption"> Completed Work Orders
                     </label>
                     <label class="radio" v-on:click="linechartOption = false">
-                      <input type="radio" name="status" style="padding-right:0.5rem" :checked="!linechartOption"> Damaged and Lost Equipment Items
+                      <input type="radio" name="status" style="padding-right:0.5rem" :checked="!linechartOption"> Damaged and Lost Equipment
                     </label>
                   </div>
                     <bar-chart :chartData="lineChartData" ref="lineChart" styles="height: 40vh"  ></bar-chart>
-                  <div style="font-size:12px; text-align:center;font-style: italic;">
+                  <div style="margin-top: 1rem; color: #424242; font-size: 1rem; text-align: center; font-style: italic;">
                     <div v-if="linechartOption">
-                      Completed work orders chart in the past 11 months to the current moment.
+                      Completed work orders chart from the past 11 months
                     </div>
                     <div v-else>
-                      Damaged and lost equipments chart in the past 11 months to the current moment.
+                      Damaged and lost equipment chart in the past 11 months to the current moment.
                     </div>  
                   </div> 
 
@@ -37,8 +37,7 @@
                   Maintenance Calendar
                 </div>       
                 <div>
-                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width:356.5px !important; height:288px">
-                    
+                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width: 100% !important; height:332px">                    
                   </v-calendar>
                 </div>                       
                     <!-- <doughnut-chart :data="doughnutChartData" styles="height: 36vh"></doughnut-chart> -->
@@ -120,22 +119,22 @@
                                 </div> -->
 
                         <div style="width:100%" class="Chart1">
-                            <strong>Equipment items by status</strong>  
-                            <pie-chart styles="height: 40vh" :data="pieChartData" :option="myoption" ></pie-chart>
+                            <strong>Equipment by status</strong>  
+                            <pie-chart styles="height: 16rem" :data="pieChartData" :option="myoption" ></pie-chart>
                         </div>
                   
                         </div>
                 </div>                
-                <div class=" row"  >
-                  <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Working</strong></div>
-                  <div class="col-6" style="padding-left: 2rem; margin-bottom: 0rem"><strong>Maintenance</strong></div>
+                <div class=" row" style="margin-top: 1.5rem">
+                  <div class="col-6" style="margin-bottom: 0rem"><strong>Working</strong></div>
+                  <div class="col-6" style="padding-left: 0; margin-bottom: 0rem"><strong>Maintenance</strong></div>
                   <div class="divrow3 columns " style="margin-right:0rem !important">
                     <div class="col-6" style="padding: 0 1rem 0 0.7rem  !important; margin-right: 0rem ">
                               <div class=" material-shadow-animate1" style="margin-bottom: 1rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
                                       <div class="column is-9">
                                           <!-- <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong> -->
-                                          <strong>Today: {{Dashboard.ReturnCountTodayQItem}} equipment items to be returned</strong>
+                                          <strong>Today: {{Dashboard.ReturnCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
                                           <strong>{{Dashboard.ReturnCountToday}}</strong> orders 
@@ -161,7 +160,7 @@
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
                                       <div class=" column is-9">
                                           <!-- <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong> -->
-                                          <strong>Tomorrow: {{Dashboard.ReturnCountTomorrowQItem}} equipment items to be returned</strong>
+                                          <strong>Tomorrow: {{Dashboard.ReturnCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
                                           <strong>{{Dashboard.ReturnCountTomorrow}}</strong> orders 
@@ -194,7 +193,7 @@
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
                                       <div class="column is-9">
                                           <!-- <strong>Today: {{Dashboard.MaintainCountToday}} order to be returned</strong> -->
-                                          <strong>Today: {{Dashboard.MaintainCountTodayQItem}} equipment items to be returned</strong>
+                                          <strong>Today: {{Dashboard.MaintainCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
                                           <strong>{{Dashboard.MaintainCountToday}}</strong> orders 
@@ -219,7 +218,7 @@
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
                                       <div class="column is-9">
                                           <!-- <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} order to be returned</strong> -->
-                                          <strong>Tomorrow: {{Dashboard.MaintainCountTomorrowQItem}} equipment items to be returned</strong>
+                                          <strong>Tomorrow: {{Dashboard.MaintainCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
                                           <strong>{{Dashboard.MaintainCountTomorrow}}</strong> orders
@@ -247,7 +246,7 @@
             </div>
             <modal v-model="addPopUp" v-if="this.maintainItems.length > 0">
               <div slot="header" class="title-modal"> 
-                List Of Maintain Equipments: {{this.selectedDay.day}}-{{this.selectedDay.month}}-{{this.selectedDay.year}}
+                List Of Maintain Equipment: {{this.selectedDay.day}}-{{this.selectedDay.month}}-{{this.selectedDay.year}}
               </div>
               <div>
                 <table style="width:100%"> 

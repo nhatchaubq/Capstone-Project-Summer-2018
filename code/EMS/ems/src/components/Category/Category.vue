@@ -7,7 +7,8 @@
           <!-- <th><strong>ID</strong></th> -->
           <th ><strong>#</strong></th>
           <th ><strong>Category Name</strong></th>
-          <th ><strong>Decription</strong></th>       
+          <th ><strong>Decription</strong></th>
+          <th ><strong>Status</strong></th>       
           <th colspan="2" style="text-align:center"><strong>Action</strong></th>                   
           <!-- <th><strong>Department</strong></th> -->
         </tr>
@@ -18,6 +19,7 @@
             <td >{{ 10*(currentPage -1) + (index + 1) }}</td>
             <td >{{cate.Name}}</td>
             <td >{{cate.Description}}</td>
+            <strong><td :style="{color: cate.Status? 'var(--primary-color)' : '#607D8B'}" >{{cate.Status? "Active" : "Inactive" }}</td></strong>
             <td width=6% v-on:click="editShow(cate)"><button class="button" style="padding:0px 5px 0px 5px ">Edit</button></td>
             <td width=6%><button class="button" style="padding:0px 5px 0px 5px " v-on:click="deleteCate(cate)">Delete</button></td>               
           </tr>
@@ -40,6 +42,7 @@
                 <button v-if="authUser.Role =='Equipment Staff'" id="btn-add-category" class="button btn-primary material-shadow-animate">Add Category</button>
             </router-link>        
       </div>
+
       <modal v-model="editPopup" >
                 
           <div slot="header" style=" font-size: 24px; font-weight: bold"> 
@@ -52,16 +55,37 @@
                     <span v-if="CreateCategoryErrors.NoName != ''"><span class="error-text">  {{ CreateCategoryErrors.NoName }}</span></span>
                 </div>
                 <div class="form-field-input">
-                    <input v-model="tmpCategory.Name" type="text" class="input">
+                    <input v-model.trim="tmpCategory.Name" type="text" class="input">
                 </div>
-            </div>            
+            </div>
+
+            <div class="form-field" >
+              <div>
+                <div class="form-field-title">
+                <strong> Status </strong> <span v-if="changeStatus" class="error-text"> (You can not change status the category that is being used.)</span>
+                </div>
+                <div class="form-field-input" style="padding-left:30px;padding-top:10px;">
+                  <label class="radio" v-on:click="isActive = true" style="margin-right:25px;">
+                    <input type="radio" name="status" style="margin-right:0.5rem"  :checked="tmpCategory.Status">Active
+                  </label>
+                  <label class="radio" v-on:click="() => {
+                      if (!changeStatus) {
+                        isActive = false
+                      }
+                    }">
+                    <input type="radio" name="status" style="margin-right:0.5rem" :disabled="changeStatus" :checked="!tmpCategory.Status">Inactive
+                  </label>                                                  
+                </div>
+              </div>            
+            </div>
+
             <div class="form-field">
                 <div class="form-field-title">
                    <strong>New Description</strong>
                 </div>
                 <div class="form-field-input">
                     <!-- <input type="text" class="input" > -->
-                    <textarea id="text-descrip" v-model="tmpCategory.Description"  cols="80" rows="10"></textarea>
+                    <textarea id="text-descrip" v-model.trim="tmpCategory.Description"  cols="70" rows="8"></textarea>
                 </div>
             </div>                       
         </div> 
@@ -70,6 +94,7 @@
                 <button id="" class="button" style="margin-right: .6rem"  v-on:click="editPopup = false">Cancel</button>             
         </div>        
         </modal>
+
         <modal v-model="deletePopup">                          
           <div slot="header" style=" font-size: 24px; font-weight: bold"> 
             Delete A Category 
@@ -103,6 +128,8 @@ export default {
   },
   data() {
     return {
+      duplicate: false,
+      changeStatus: false,
       deleteFlag: false,
       deletePopup: false,
       editPopup: false,
@@ -157,24 +184,49 @@ export default {
         });
     },
     editShow(category) {
-      this.editPopup = true;
+      this.changeStatus = false;
       this.tmpCategory = category;
+      if (this.tmpCategory) {
+        for (const item of this.allItems) {
+          if (this.tmpCategory.Id == item.CategoryId) {
+            this.changeStatus = true;
+            break;
+          }
+        }
+      }
+
+      this.editPopup = true;
     },
     editCategory() {
+      for (const cate of this.allCategories) {
+        if (
+          this.tmpCategory.Name.trim().toUpperCase() ==
+            cate.Name.toUpperCase() &&
+          this.tmpCategory.Id != cate.Id
+        ) {
+          this.duplicate = true;
+          break;
+        }
+      }
+
       if (this.tmpCategory.Name.trim() == "") {
         this.CreateCategoryErrors.NoName = this.ErrorStrings.NoName;
       } else if (this.tmpCategory.Name.trim().length < 6) {
         this.CreateCategoryErrors.NoName = this.ErrorStrings.ShortName;
       } else if (this.tmpCategory.Name.trim().length > 50) {
         this.CreateCategoryErrors.NoName = this.ErrorStrings.LongName;
+      } else if (this.duplicate) {
+        this.CreateCategoryErrors.NoName = "Name already exists.";
+        this.duplicate = false;
       }
       if (this.CreateCategoryErrors.NoName == "") {
         this.axios
           .put(Server.EQUIPMENT_CATEGORY_UPDATE_API_PATH, {
             newCategory: {
               id: this.tmpCategory.Id,
-              name: this.tmpCategory.Name.trim(),
-              description: this.tmpCategory.Description.trim()
+              name: this.tmpCategory.Name,
+              description: this.tmpCategory.Description,
+              status: this.isActive
             }
           })
           .then(async res => {
@@ -185,6 +237,7 @@ export default {
               type: "success"
             };
             this.$refs.simplert.openSimplert(obj);
+            this.getAllCategory();
             await Utils.sleep(2000);
             // this.$router.push("/category");
           })
@@ -198,6 +251,7 @@ export default {
       for (const item of this.allItems) {
         if (cate.Id == item.CategoryId) {
           this.deleteFlag = true;
+          break;
         }
       }
       if (this.deleteFlag) {

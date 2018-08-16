@@ -52,14 +52,17 @@
             </div> <!-- select team from selected location -->
             <div class="form-field">
                 <div class="form-field-title">
-                    Choose a start date and close date for this Work Order<span v-if="CreateWorkOrderErrors.NoWorkOrderDateRange != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoWorkOrderDateRange }}</span></span>
+                    Choose a start date and close date for this Work Order  <span v-if="config" style="font-style: italic;" :style="errorOrderDurationIsLongerThanMaximum ? 'color: var(--danger-color)' : ''">(maximum duration is {{ config.createWorkOrder.maximumWorkOrderDuration }} {{ config.createWorkOrder.maximumWorkOrderDurationType }}<span v-if="config.createWorkOrder.maximumWorkOrderDuration > 1">s</span>)</span><span v-if="CreateWorkOrderErrors.NoWorkOrderDateRange != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoWorkOrderDateRange }}</span></span>
                 </div>
                 <div class="form-field-input">
                     <date-picker v-model="workOrderDateRange" :not-before="new Date()" :editable="false" 
                               style="width: 40%; font-size: 1rem" :shortcuts="false" range lang="en" format="MM/DD/YYYY" 
                               range-separator="-" 
-                              :style="CreateWorkOrderErrors.NoWorkOrderDateRange != '' ? 'border: 1px solid var(--danger-color); border-radius: 5px' : ''"></date-picker>
+                              :style="(CreateWorkOrderErrors.NoWorkOrderDateRange != '' || errorOrderDurationIsLongerThanMaximum) ? 'border: 1px solid var(--danger-color); border-radius: 5px' : ''"></date-picker>
                 </div>
+            </div>
+            <div v-if="currentCreateOrderConfigPreset && currentCreateOrderConfigPreset.runtimeFactor != currentCreateOrderConfigPreset.distanceFactor" class="form-field" style="padding-bottom: 0 !important">
+                <span style="font-style: italic; font-weight: 500">* Base on the expecting start date, equipment that has <span v-if="currentCreateOrderConfigPreset.runtimeFactor > currentCreateOrderConfigPreset.distanceFactor">fewer runtime days</span><span v-if="currentCreateOrderConfigPreset.runtimeFactor < currentCreateOrderConfigPreset.distanceFactor">a shorter distance from its warehouse to work order location</span> would have more priority in the equipment list.</span>
             </div>
             <!-- select equipments - start -->
             <div class="form-field" style="padding-bottom: 0 !important">
@@ -128,9 +131,11 @@
                                       selectedEquipment.conflictItems = [];
                                       selectedEquipment.unableSelectItems = [];
                                       selectedEquipment.itemIdConflictNextMaintenanceDate = [];
+                                      selectedEquipment.itemIdMaximumConflictWorkOrder = [];
                                       checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList, 
                                                                 selectedEquipment.conflictItems, selectedEquipment.unableSelectItems,
-                                                                selectedEquipment.itemIdConflictNextMaintenanceDate, 
+                                                                selectedEquipment.itemIdConflictNextMaintenanceDate,
+                                                                selectedEquipment.itemIdMaximumConflictWorkOrder,
                                                                 selectedEquipment.addEquipmentWarnings);
                                       selectedEquipment.indeterminate = false;
                                       selectedEquipment.checkAllItems = false;
@@ -164,9 +169,11 @@
                                       selectedEquipment.conflictItems = [];
                                       selectedEquipment.unableSelectItems = [];
                                       selectedEquipment.itemIdConflictNextMaintenanceDate = [];
+                                      selectedEquipment.itemIdMaximumConflictWorkOrder = [];
                                       checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList, 
                                                                 selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
-                                                                selectedEquipment.itemIdConflictNextMaintenanceDate, 
+                                                                selectedEquipment.itemIdConflictNextMaintenanceDate,
+                                                                selectedEquipment.itemIdMaximumConflictWorkOrder,
                                                                 selectedEquipment.addEquipmentWarnings);
                                     }          
                                   //}
@@ -194,6 +201,9 @@
                     <div v-if="selectedEquipment.addEquipmentWarnings.ConflictMaintenanceDate != ''" 
                             class="error-text" v-html="selectedEquipment.addEquipmentWarnings.ConflictMaintenanceDate">
                     </div>
+                    <div v-if="selectedEquipment.addEquipmentWarnings.ErrorMaximumConflictWorkOrder != ''" class="error-text" >
+                        {{ selectedEquipment.addEquipmentWarnings.ErrorMaximumConflictWorkOrder }}
+                    </div>
                 </div> <!-- display warning -->
                 <!-- display equipment item table for editing -->
                 <div v-if="selectedEquipment.editMode" style="margin-bottom: 2rem">
@@ -218,18 +228,22 @@
                                     selectedEquipment.conflictItems = [];
                                     selectedEquipment.unableSelectItems = [];
                                     selectedEquipment.itemIdConflictNextMaintenanceDate = [];
+                                    selectedEquipment.itemIdMaximumConflictWorkOrder = [];
                                     checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList, 
                                                             selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
-                                                            selectedEquipment.itemIdConflictNextMaintenanceDate, 
+                                                            selectedEquipment.itemIdConflictNextMaintenanceDate,
+                                                            selectedEquipment.itemIdMaximumConflictWorkOrder,
                                                             selectedEquipment.addEquipmentWarnings);
                                 } else {
                                     selectedEquipment.equipmentItemIds = [];
                                     selectedEquipment.conflictItems = [];
                                     selectedEquipment.unableSelectItems = [];
                                     selectedEquipment.itemIdConflictNextMaintenanceDate = [];
+                                    selectedEquipment.itemIdMaximumConflictWorkOrder = [];
                                     checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList, 
                                                             selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
-                                                            selectedEquipment.itemIdConflictNextMaintenanceDate, 
+                                                            selectedEquipment.itemIdConflictNextMaintenanceDate,
+                                                            selectedEquipment.itemIdMaximumConflictWorkOrder,
                                                             selectedEquipment.addEquipmentWarnings);
                                     selectedEquipment.quantity = 0;
                                     //selectedEquipment.addEquipmentWarnings.SelectedDateConflictWorkOrders = '';
@@ -274,9 +288,11 @@
                                 selectedEquipment.conflictItems = [];
                                 selectedEquipment.unableSelectItems = [];
                                 selectedEquipment.itemIdConflictNextMaintenanceDate = [];
+                                selectedEquipment.itemIdMaximumConflictWorkOrder = [];
                                 checkItemsIsSafeToSelect(selectedEquipment.equipmentItemIds, selectedEquipment.equipmentItemList,
                                                             selectedEquipment.conflictItems, selectedEquipment.unableSelectItems, 
                                                             selectedEquipment.itemIdConflictNextMaintenanceDate, 
+                                                            selectedEquipment.itemIdMaximumConflictWorkOrder, 
                                                             selectedEquipment.addEquipmentWarnings);
                               //}
                             }" :class="{'row-even': (itemIndex + 1) % 2 == 0,
@@ -302,7 +318,9 @@
                             :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
                                  'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, selectedEquipment.conflictItems)),
                                  'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems)),
-                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems))}"> <!-- work order name -->
+                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, selectedEquipment.unableSelectItems)),
+                                 'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemExcessMaximumConflictWorkOrder(equipmentItem.Id, selectedEquipment.itemIdMaximumConflictWorkOrder)),
+                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemExcessMaximumConflictWorkOrder(equipmentItem.Id, selectedEquipment.itemIdMaximumConflictWorkOrder))}"> <!-- work order name -->
                           {{ editWorkOrder.Id == workOrder.Id ? 'This work order' : workOrder.Name }}
                           <span>[{{ workOrder.Status }}]</span>
                         </td>
@@ -383,7 +401,7 @@
                         type="number" :disabled="selectedEquipment.totalQuantity == 0" min="0" :max="selectedEquipment.totalQuantity" class="input" v-model.trim="selectedEquipmentQuantity">
                 </div>
                 <div>
-                  <button v-on:click="addEquipment(false, selectedEquipment, selectedEquipmentQuantity, selectedEquipmentItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, AddEquipmentWarnings)" style="margin-left: .5rem; border-radius: 50% !important;" class="button btn-primary material-shadow-animate"><i class="fa fa-plus"></i></button>
+                  <button v-on:click="addEquipment(false, selectedEquipment, selectedEquipmentQuantity, selectedEquipmentItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, itemIdMaximumConflictWorkOrder, AddEquipmentWarnings)" style="margin-left: .5rem; border-radius: 50% !important;" class="button btn-primary material-shadow-animate"><i class="fa fa-plus"></i></button>
                   <button v-on:click="() => {
                       selectedEquipment = {
                         text: '',
@@ -408,16 +426,19 @@
             </div> <!-- add equipment panel -->
             <!-- select equipments - end -->            
             <div style="padding-top: 0; padding-bottom: 0; background: #eee;" class="form-field">
-              <div v-if="AddEquipmentWarnings.SelectedEquipmentQuantityIsZero != ''" class="strong-warning-text">{{ AddEquipmentWarnings.SelectedEquipmentQuantityIsZero }}</div>
-              <div v-if="AddEquipmentWarnings.SelectedDateConflictWorkOrders != ''" 
-                  class="warning-text" v-html="AddEquipmentWarnings.SelectedDateConflictWorkOrders">
-              </div>
-              <div v-if="AddEquipmentWarnings.UnableToSelectItem != ''" class="error-text">
-                  {{ AddEquipmentWarnings.UnableToSelectItem }}
-              </div>
-              <div v-if="AddEquipmentWarnings.ConflictMaintenanceDate != ''" 
-                  class="error-text" v-html="AddEquipmentWarnings.ConflictMaintenanceDate">
-              </div>
+                <div v-if="AddEquipmentWarnings.SelectedEquipmentQuantityIsZero != ''" class="strong-warning-text">{{ AddEquipmentWarnings.SelectedEquipmentQuantityIsZero }}</div>
+                <div v-if="AddEquipmentWarnings.SelectedDateConflictWorkOrders != ''" 
+                    class="warning-text" v-html="AddEquipmentWarnings.SelectedDateConflictWorkOrders">
+                </div>
+                <div v-if="AddEquipmentWarnings.UnableToSelectItem != ''" class="error-text">
+                    {{ AddEquipmentWarnings.UnableToSelectItem }}
+                </div>
+                <div v-if="AddEquipmentWarnings.ConflictMaintenanceDate != ''" 
+                    class="error-text" v-html="AddEquipmentWarnings.ConflictMaintenanceDate">
+                </div>
+                <div v-if="AddEquipmentWarnings.ErrorMaximumConflictWorkOrder != ''" class="error-text">
+                    {{ AddEquipmentWarnings.ErrorMaximumConflictWorkOrder }}
+                </div>
             </div>
 
             <!-- display equipment items table to let user pick the desire item -->
@@ -466,7 +487,9 @@
                         :class="{'row-warning-light': (((itemIndex + 1) % 2 != 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
                                  'row-warning-dark': (((itemIndex + 1) % 2 == 0) && isItemConflicted(equipmentItem.Id, workOrder.Id, conflictItems)),
                                  'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems)),
-                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems))}"> <!-- work order name -->
+                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemUnableToSelect(equipmentItem.Id, workOrder.Id, unableSelectItems)),
+                                 'row-danger-light': (((itemIndex + 1) % 2 != 0) && isItemExcessMaximumConflictWorkOrder(equipmentItem.Id, itemIdMaximumConflictWorkOrder)),
+                                 'row-danger-dark': (((itemIndex + 1) % 2 == 0) && isItemExcessMaximumConflictWorkOrder(equipmentItem.Id, unableSelectItems))}"> <!-- work order name -->
                       {{ editWorkOrder.Id == workOrder.Id ? 'This work order' : workOrder.Name }}
                       <span>[{{ workOrder.Status }}]</span>
                     </td>
@@ -543,6 +566,7 @@ import moment from "moment";
 import { ModelSelect } from "vue-search-select";
 import Simplert from "vue2-simplert";
 import DatePicker from 'vue2-datepicker';
+import { sync } from 'vuex-pathify';
 
 export default {
     components: {
@@ -574,6 +598,7 @@ export default {
                 SelectedDateConflictWorkOrders: '',
                 UnableToSelectItem: '',
                 ConflictMaintenanceDate: '',
+                ErrorMaximumConflictWorkOrder: '',
             },
             CreateWorkOrderErrors: {
                 NoTitle: '',
@@ -617,6 +642,9 @@ export default {
             description: '',
 
             itemIdConflictNextMaintenanceDate: [],
+            itemIdMaximumConflictWorkOrder: [],
+            errorOrderDurationIsLongerThanMaximum: false,
+            currentCreateOrderConfigPreset: null,
 
             itemsLoading: false,
             distancesCache: [],
@@ -633,6 +661,7 @@ export default {
                 return 'Maintain'; // maintain order
             }
         },
+        config: sync('config'),
     },
     async created() {
         //get work order to edit
@@ -757,14 +786,16 @@ export default {
                                                 SelectedDateConflictWorkOrders: '',
                                                 UnableToSelectItem: '',
                                                 ConflictMaintenanceDate: '',
+                                                ErrorMaximumConflictWorkOrder: '',
                                             };
                                             // check if from date conflicts any item in work orders - start
                                             let conflictItems = [];
                                             let unableSelectItems = [];
                                             let itemIdConflictNextMaintenanceDate = [];
-                                            context.checkItemsIsSafeToSelect(selectedItemIds, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                            let itemIdMaximumConflictWorkOrder = [];
+                                            context.checkItemsIsSafeToSelect(selectedItemIds, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, itemIdMaximumConflictWorkOrder, addEquipmentWarnings);
                                             
-                                            context.addEquipment(true, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings);
+                                            context.addEquipment(true, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, itemIdMaximumConflictWorkOrder, addEquipmentWarnings);
                                         }
                                         context.loadEditOrder = false;
                                     }
@@ -779,7 +810,7 @@ export default {
         cancel() {
             this.$router.push("/work_order");
         },
-        addEquipment(editOrder, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings) {
+        addEquipment(editOrder, equipmentOption, itemQuantity, selectedItemIds, indeterminate, checkAllItems, equipmentTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, itemIdMaximumConflictWorkOrder, addEquipmentWarnings) {
             if (equipmentOption.value == "") {
                 this.AddEquipmentWarnings.MustSelectEquipment = this.ErrorStrings.MustSelectEquipment;
             } 
@@ -812,6 +843,7 @@ export default {
                             conflictItems: conflictItems,                            
                             unableSelectItems: unableSelectItems,
                             itemIdConflictNextMaintenanceDate: itemIdConflictNextMaintenanceDate,
+                            itemIdMaximumConflictWorkOrder: itemIdMaximumConflictWorkOrder,
                             addEquipmentWarnings: warningOb,
                             maintenancePeriodInMonths: equipmentOption.maintenancePeriodInMonths,
                         };
@@ -967,7 +999,8 @@ export default {
         },
         validateAddEquipment() {
             return this.AddEquipmentWarnings.MustSelectEquipment === '' && this.AddEquipmentWarnings.AvailableQuantityIsZero === '' 
-                    && this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero === '' && this.AddEquipmentWarnings.UnableToSelectItem === '';
+                    && this.AddEquipmentWarnings.SelectedEquipmentQuantityIsZero === '' && this.AddEquipmentWarnings.UnableToSelectItem === ''
+                    && this.AddEquipmentWarnings.ErrorMaximumConflictWorkOrder === '';
         },
         validateUpdateOrder() {  
             var checkSelectedItems = true; // check if currently there is no error messages of items are displaying
@@ -975,7 +1008,8 @@ export default {
                 let selectedEquipment = this.selectedEquipments[i];
                 if (selectedEquipment.addEquipmentWarnings.SelectedEquipmentQuantityIsZero != ''
                         || selectedEquipment.addEquipmentWarnings.UnableToSelectItem != ''
-                        || selectedEquipment.addEquipmentWarnings.ConflictMaintenanceDate != '') {
+                        || selectedEquipment.addEquipmentWarnings.ConflictMaintenanceDate != ''
+                        || selectedEquipment.addEquipmentWarnings.ErrorMaximumConflictWorkOrder != '') {
                 checkSelectedItems = false;
                 selectedEquipment.editMode = true;
                 }
@@ -983,7 +1017,7 @@ export default {
             return this.CreateWorkOrderErrors.NoEquipmentSelected === ''
                     && this.CreateWorkOrderErrors.NoLocation === '' && this.CreateWorkOrderErrors.NoTeam === ''
                     && this.CreateWorkOrderErrors.NoWorkOrderDateRange === ''
-                    && checkSelectedItems;
+                    && checkSelectedItems && !this.errorOrderDurationIsLongerThanMaximum;
         },
         getMilis(date) {
             return moment(date).startOf('day').valueOf();
@@ -1087,7 +1121,10 @@ export default {
             }
             return false;
         },
-        checkSelectedItemDateConflict(items, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate) {
+        isItemExcessMaximumConflictWorkOrder(itemId, itemIdMaximumConflictWorkOrder) {
+            return itemIdMaximumConflictWorkOrder.includes(itemId);
+        },
+        checkSelectedItemDateConflict(items, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, itemIdMaximumConflictWorkOrder) {
             if (items.length > 0 && (this.workOrderDateRange[0] && this.workOrderDateRange[1])) {
                 let workOrderStartDate = moment(this.workOrderDateRange[0]).format('YYYY-MM-DD').valueOf();
                 let workOrderCloseDate = moment(this.workOrderDateRange[1]).format('YYYY-MM-DD').valueOf();
@@ -1098,6 +1135,7 @@ export default {
                         itemIdConflictNextMaintenanceDate.push(item.Id);
                     }
                     if (item.WorkOrders) {
+                        let numOfConflictOrders = 0;
                         item.WorkOrders.forEach(order => {
                             let itemFromDate = moment(order.ExpectingStartDate).format('YYYY-MM-DD').valueOf();
                             let itemToDate = moment(order.ExpectingCloseDate).format('YYYY-MM-DD').valueOf();
@@ -1105,10 +1143,15 @@ export default {
                                 && ((workOrderStartDate >= itemFromDate && workOrderStartDate <= itemToDate)  
                                     || (workOrderCloseDate >= itemFromDate && workOrderCloseDate <= itemToDate)
                                     || (workOrderStartDate < itemFromDate && workOrderCloseDate > itemToDate))) {
-                                if (order.Status == 'Approved' || order.Status == 'In Progress') {
-                                    unableSelectItems.push({itemId: item.Id, workOrderId: order.Id});
+                                ++numOfConflictOrders;
+                                if (numOfConflictOrders > this.config.createWorkOrder.maximumConflictWorkOrders) {
+                                    itemIdMaximumConflictWorkOrder.push(item.Id);
                                 } else {
-                                    conflictItems.push({itemId: item.Id, workOrderId: order.Id});
+                                    if (order.Status == 'Approved' || order.Status == 'In Progress') {
+                                        unableSelectItems.push({itemId: item.Id, workOrderId: order.Id});
+                                    } else {
+                                        conflictItems.push({itemId: item.Id, workOrderId: order.Id});
+                                    }
                                 }
                             }
                         });
@@ -1116,7 +1159,7 @@ export default {
                 });
             }
         },
-        checkItemsIsSafeToSelect(itemIds, itemTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, addEquipmentWarnings) {
+        checkItemsIsSafeToSelect(itemIds, itemTable, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, itemIdMaximumConflictWorkOrder, addEquipmentWarnings) {
             // check if from date conflicts any item in work orders
             let tempItems = [];
             // get the selected items in equipmentTable to tempItems
@@ -1126,7 +1169,7 @@ export default {
                 );
             });
             // get the selected items in equipmentTable to tempItems          
-            this.checkSelectedItemDateConflict(tempItems, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate);
+            this.checkSelectedItemDateConflict(tempItems, conflictItems, unableSelectItems, itemIdConflictNextMaintenanceDate, itemIdMaximumConflictWorkOrder);
             if (conflictItems.length == 0) {
                 addEquipmentWarnings.SelectedDateConflictWorkOrders = "";
             } else {
@@ -1142,17 +1185,59 @@ export default {
             } else {
                 addEquipmentWarnings.ConflictMaintenanceDate = this.ErrorStrings.ConflictMaintenanceDate;
             }
+            if (itemIdMaximumConflictWorkOrder.length == 0) {
+                addEquipmentWarnings.ErrorMaximumConflictWorkOrder = '';
+            } else {
+                if (this.config.createWorkOrder.maximumConflictWorkOrders == 0) {
+                    addEquipmentWarnings.ErrorMaximumConflictWorkOrder = 'You cannot select equipment that is currently in another work order';
+                } else {
+                    addEquipmentWarnings.ErrorMaximumConflictWorkOrder = `You cannot select equipment that is currently in more than ${this.config.createWorkOrder.maximumConflictWorkOrders} other order${this.config.createWorkOrder.maximumConflictWorkOrders > 1 ? 's' : ''}`;
+                }
+            }
         },
         sortItems(items) {
             let context = this;
-            // let maintenancePeriodInDays = maintenancePeriodInMonths * 30;
-            let workOrderDuration = moment(this.workOrderDateRange[1]).diff(moment(this.workOrderDateRange[0]), 'days');
-            var factorA = 0.7;
-            var factorB = 0.3;
-            if (workOrderDuration > 30) {
-                factorA = 0.3;
-                factorB = 0.7;
-            }
+            // determine sorting preset - start
+            const durationFromCreateDate = moment(this.workOrderDateRange[0]).diff(moment(), 'days') + 1;
+            this.currentCreateOrderConfigPreset = this.config.createWorkOrder.presets.filter(preset => preset.name == 'Normal')[0];
+            if (this.workOrderDateRange[0]) {
+                const presets = this.config.createWorkOrder.presets;
+                for (let i = 1; i < presets.length; i++) {
+                let durationFromCreatePreset1 = presets[i].durationFromCreateDate;
+                switch (presets[i].durationFromCreateDateType) {
+                    case 'month': {
+                    durationFromCreatePreset1 *= 30;
+                    break;
+                    }
+                    case 'year': {
+                    durationFromCreatePreset1 *= 30 * 12;
+                    break;
+                    }
+                }
+                if (i < presets.length - 1) {
+                    let durationFromCreatePreset2 = presets[i + 1].durationFromCreateDate;
+                    switch (presets[i + 1].durationFromCreateDateType) {
+                    case 'month': {
+                        durationFromCreatePreset2 *= 30;
+                        break;
+                    }
+                    case 'year': {
+                        durationFromCreatePreset2 *= 30 * 12;
+                        break;
+                    }
+                    }
+                    if (durationFromCreateDate <= durationFromCreatePreset1 && durationFromCreateDate <= durationFromCreatePreset2) {
+                    this.currentCreateOrderConfigPreset = presets[i];
+                    break;
+                    }
+                } else if (i == presets.length - 1) {
+                    if (durationFromCreateDate <= durationFromCreatePreset1) {
+                    this.currentCreateOrderConfigPreset = presets[i];
+                    break;
+                    }
+                }
+                } 
+            } // determine sorting preset - end
             return items.sort(function(item1, item2) {
                 var notAllowFactor_Item1 = 1;
                 var notAllowFactor_Item2 = 1;
@@ -1166,15 +1251,15 @@ export default {
                     notAllowFactor_Item2 = 0.0000001;
                 }
 
-                let B0_Item1 = moment().diff(moment(item1.ImportDate), 'days');
-                let B_Item1 = item1.RuntimeDays;
-                let C_Item1 = item1.Distance.value / 1000;
+                let A0_Item1 = Math.abs(moment(item1.ImportDate).diff(moment(), 'days')) + 1;
+                let A_Item1 = parseFloat(item1.RuntimeDays);
+                let B_Item1 = parseFloat(item1.Distance.value) / 1000;
 
-                let B0_Item2 = moment().diff(moment(item2.ImportDate), 'days');
-                let B_Item2 = item2.RuntimeDays;
-                let C_Item2 = item2.Distance.value / 1000;
+                let A0_Item2 = Math.abs(moment(item2.ImportDate).diff(moment(), 'days')) + 1;
+                let A_Item2 = parseFloat(item2.RuntimeDays);
+                let B_Item2 = parseFloat(item2.Distance.value) / 1000;
 
-                var D_Item1 = 0;
+                var C_Item1 = 0;
                 if (item1.WorkOrders) {
                     for (const order of item1.WorkOrders) {
                         if (context.editWorkOrder.Id != order.Id
@@ -1184,16 +1269,20 @@ export default {
                                     && context.getMilis(context.workOrderDateRange[1]) <= context.getMilis(order.ExpectingCloseDate))
                                 || (context.getMilis(context.workOrderDateRange[0]) < context.getMilis(order.ExpectingStartDate)
                                     && context.getMilis(context.workOrderDateRange[1]) > context.getMilis(order.ExpectingCloseDate)))) {
-                            ++D_Item1;
-                            if (order.Status == 'Requested' || order.Status == 'Checked') {
-                                notAllowFactor_Item1 = 0.000002;
-                            } else if (order.Status == 'Approved' || order.Status == 'In Progress') {
+                            ++C_Item1;
+                            if (C_Item1 > context.config.createWorkOrder.maximumConflictWorkOrders) {
                                 notAllowFactor_Item1 = 0.0000001;
+                            } else {
+                                if (order.Status == 'Requested' || order.Status == 'Checked') {
+                                    notAllowFactor_Item1 = 0.0000005;
+                                } else if (order.Status == 'Approved' || order.Status == 'In Progress') {
+                                    notAllowFactor_Item1 = 0.0000001;
+                                }
                             }
                         }
                     }
                 }
-                var D_Item2 = 0;
+                var C_Item2 = 0;
                 if (item2.WorkOrders) {
                     for (const order of item2.WorkOrders) {
                         if (context.editWorkOrder.Id != order.Id
@@ -1203,19 +1292,22 @@ export default {
                                     && context.getMilis(context.workOrderDateRange[1]) <= context.getMilis(order.ExpectingCloseDate))
                                 || (context.getMilis(context.workOrderDateRange[0]) < context.getMilis(order.ExpectingStartDate)
                                     && context.getMilis(context.workOrderDateRange[1]) > context.getMilis(order.ExpectingCloseDate)))) {
-                            ++D_Item2;
-                            if (order.Status == 'Requested' || order.Status == 'Checked') {
-                                notAllowFactor_Item2 = 0.000002;
-                            } else if (order.Status == 'Approved' || order.Status == 'In Progress') {
+                            ++C_Item2;
+                            if (C_Item2 > context.config.createWorkOrder.maximumConflictWorkOrders) {
                                 notAllowFactor_Item2 = 0.0000001;
+                            } else {
+                                if (order.Status == 'Requested' || order.Status == 'Checked') {
+                                notAllowFactor_Item2 = 0.0000005;
+                                } else if (order.Status == 'Approved' || order.Status == 'In Progress') {
+                                notAllowFactor_Item2 = 0.0000001;
+                                }
                             }
                         }
                     }
                 }
-                let result1 = notAllowFactor_Item1 * (factorA*((B0_Item1 - B_Item1)/B0_Item1) + factorB*(Math.abs(Math.sin(Math.sqrt(C_Item1)/2.5) / (Math.sqrt(C_Item1 + 0.1)/2.5)))) * (1 / (D_Item1 + 1));
-        let result2 = notAllowFactor_Item2 * (factorA*((B0_Item2 - B_Item2)/B0_Item2) + factorB*(Math.abs(Math.sin(Math.sqrt(C_Item2)/2.5) / (Math.sqrt(C_Item2 + 0.1)/2.5)))) * (1 / (D_Item2 + 1));
-
-                var result = result2 - result1;
+                let result1 = notAllowFactor_Item1 * (context.currentCreateOrderConfigPreset.runtimeFactor*((A0_Item1 - A_Item1)/A0_Item1) + context.currentCreateOrderConfigPreset.distanceFactor*(Math.abs(Math.sin(Math.sqrt(B_Item1)/2.5) / (Math.sqrt(B_Item1 + 0.1)/2.5)))) * (1 / (C_Item1 + 1));
+                let result2 = notAllowFactor_Item2 * (context.currentCreateOrderConfigPreset.runtimeFactor*((A0_Item2 - A_Item2)/A0_Item2) + context.currentCreateOrderConfigPreset.distanceFactor*(Math.abs(Math.sin(Math.sqrt(B_Item2)/2.5) / (Math.sqrt(B_Item2 + 0.1)/2.5)))) * (1 / (C_Item2 + 1));
+                const result = result2 - result1;
                 return result;
             });
         },
@@ -1371,6 +1463,23 @@ export default {
         'workOrderDateRange': function() {
             if (this.workOrderDateRange[0] && this.workOrderDateRange[1]) {
                 this.CreateWorkOrderErrors.NoWorkOrderDateRange = '';
+                const workOrderDuration = moment(this.workOrderDateRange[1]).diff(moment(this.workOrderDateRange[0]), 'days') + 1;
+                let maximumDurationFromConfig = this.config.createWorkOrder.maximumWorkOrderDuration;
+                switch(this.config.createWorkOrder.maximumWorkOrderDurationType) {
+                    case 'month': {
+                        maximumDurationFromConfig *= 30;
+                        break;
+                    }
+                    case 'year': {
+                        maximumDurationFromConfig *= 30 * 12;
+                        break;
+                    }
+                }
+                if (workOrderDuration > maximumDurationFromConfig) {
+                    this.errorOrderDurationIsLongerThanMaximum = true;
+                } else {
+                    this.errorOrderDurationIsLongerThanMaximum = false;
+                }
                 if (this.authUser.Role == 'Staff') {
                     this.equipmentTable = this.sortItems(this.equipmentTable);
                 }
@@ -1378,8 +1487,10 @@ export default {
                     this.conflictItems = [];
                     this.unableSelectItems = [];
                     this.itemIdConflictNextMaintenanceDate = [];
+                    this.itemIdMaximumConflictWorkOrder = [];
                     this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, 
-                                        this.conflictItems, this.unableSelectItems, this.itemIdConflictNextMaintenanceDate, 
+                                        this.conflictItems, this.unableSelectItems, this.itemIdConflictNextMaintenanceDate,
+                                        this.itemIdMaximumConflictWorkOrder,
                                         this.AddEquipmentWarnings);
                 }
                 if (this.selectedEquipments.length > 0) {
@@ -1390,8 +1501,10 @@ export default {
                         eq.conflictItems = [];
                         eq.unableSelectItems = [];
                         eq.itemIdConflictNextMaintenanceDate = [];
+                        eq.itemIdMaximumConflictWorkOrder = [];
                         this.checkItemsIsSafeToSelect(eq.equipmentItemIds, eq.equipmentItemList, 
                                         eq.conflictItems, eq.unableSelectItems, eq.itemIdConflictNextMaintenanceDate, 
+                                        eq.itemIdMaximumConflictWorkOrder,
                                         eq.addEquipmentWarnings);
                         if (eq.conflictItems.length > 0 || eq.unableSelectItems.length > 0 || eq.itemIdConflictNextMaintenanceDate.length > 0) {
                             eq.editMode = true;
@@ -1471,11 +1584,78 @@ export default {
                 this.conflictItems = [];
                 this.unableSelectItems = [];
                 this.itemIdConflictNextMaintenanceDate = [];
+                this.itemIdMaximumConflictWorkOrder = [];
                 this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, 
                                             this.conflictItems, this.unableSelectItems, this.itemIdConflictNextMaintenanceDate,
+                                            this.itemIdMaximumConflictWorkOrder,
                                             this.AddEquipmentWarnings);
             }
-        }
+        },
+        'config': function() {
+            if (this.authUser.Role == 'Staff') {
+                if (this.config) {
+                    let obj = {
+                        title: "Website's configuration has been changed",
+                        message: "The display order of equipment may be different",
+                        type: "warning",
+                    };
+                    this.$refs.simplert.openSimplert(obj);
+                    if (this.currentCreateOrderConfigPreset) {
+                        if (this.authUser.Role == 'Staff') {
+                            this.equipmentTable = this.sortItems(this.equipmentTable);
+                        }
+                        if (this.selectedEquipmentItemIds.length > 0) {
+                            this.conflictItems = [];
+                            this.unableSelectItems = [];
+                            this.itemIdConflictNextMaintenanceDate = [];
+                            this.itemIdMaximumConflictWorkOrder = [];
+                            this.checkItemsIsSafeToSelect(this.selectedEquipmentItemIds, this.equipmentTable, 
+                                                this.conflictItems, this.unableSelectItems, this.itemIdConflictNextMaintenanceDate,
+                                                this.itemIdMaximumConflictWorkOrder,
+                                                this.AddEquipmentWarnings);
+                        }
+                        if (this.selectedEquipments.length > 0) {
+                            for (const eq of this.selectedEquipments) {
+                                if (this.authUser.Role == 'Staff') {
+                                eq.equipmentItemList = this.sortItems(eq.equipmentItemList);
+                                }
+                                eq.conflictItems = [];
+                                eq.unableSelectItems = [];
+                                eq.itemIdConflictNextMaintenanceDate = [];
+                                eq.itemIdMaximumConflictWorkOrder = [];
+                                this.checkItemsIsSafeToSelect(eq.equipmentItemIds, eq.equipmentItemList, 
+                                                eq.conflictItems, eq.unableSelectItems, eq.itemIdConflictNextMaintenanceDate, 
+                                                eq.itemIdMaximumConflictWorkOrder,
+                                                eq.addEquipmentWarnings);
+                                if (eq.conflictItems.length > 0 || eq.unableSelectItems.length > 0) {
+                                eq.editMode = true;
+                                }
+                            }
+                        }
+                    }
+                    // check valid maximum conflict work order
+
+                    // check valid work order duration
+                    const workOrderDuration = moment(this.workOrderDateRange[1]).diff(moment(this.workOrderDateRange[0]), 'days') + 1;
+                    let maximumDurationFromConfig = this.config.createWorkOrder.maximumWorkOrderDuration;
+                    switch(this.config.createWorkOrder.maximumWorkOrderDurationType) {
+                        case 'month': {
+                            maximumDurationFromConfig *= 30;
+                            break;
+                        }
+                        case 'year': {
+                            maximumDurationFromConfig *= 30 * 12;
+                            break;
+                        }
+                    }
+                    if (workOrderDuration > maximumDurationFromConfig) {
+                        this.errorOrderDurationIsLongerThanMaximum = true;
+                    } else {
+                        this.errorOrderDurationIsLongerThanMaximum = false;
+                    }
+                }
+            }
+        },
     }
 };
 </script>
