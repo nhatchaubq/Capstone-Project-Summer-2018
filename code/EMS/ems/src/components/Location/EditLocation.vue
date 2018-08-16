@@ -15,7 +15,7 @@
         <div class="form-content">
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  New Name<span style="color:red;">*</span> </strong>  <span v-if="NoName != ''"><span class="error-text">  {{ NoName }}</span></span>
+                <strong>  New Name (required) </strong>  <span v-if="NoName != ''"><span class="error-text">  {{ NoName }}</span></span>
                 </div>
                 <div class="form-field-input">
                         <input  class="input " type="text"  v-model="location.Name" >   
