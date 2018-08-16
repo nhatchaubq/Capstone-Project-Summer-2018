@@ -644,6 +644,7 @@ export default {
             itemIdConflictNextMaintenanceDate: [],
             itemIdMaximumConflictWorkOrder: [],
             errorOrderDurationIsLongerThanMaximum: false,
+            currentCreateOrderConfigPreset: null,
 
             itemsLoading: false,
             distancesCache: [],
