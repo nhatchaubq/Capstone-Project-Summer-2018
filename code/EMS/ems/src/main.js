@@ -67,9 +67,9 @@ router.beforeEach((to, from, next) => {
   let authUser = JSON.parse(window.localStorage.getItem("user"));
   if (authUser) {
     if (to.name == "login") {
-      next("/");
+      next("/500");
     } else if (to.name == 'work_order' && authUser.Role == 'Admin') {
-      next('/');
+      next('/500');
     } else if (
       to.name == "create_work_order" &&
       authUser.Role != "Staff" &&
@@ -79,7 +79,7 @@ router.beforeEach((to, from, next) => {
     } else if (to.name == "create_location" && authUser.Role != "Manager") {
       next("/location");
     } else if (to.name == "edit_location" && authUser.Role != "Manager") {
-      next("/");
+      next("/500");
     } else if (to.name == "allVendor" && authUser.Role != "Equipment Staff") {
       next("/500");
     } else if (to.name == "addVendor" && authUser.Role != "Equipment Staff") {
@@ -102,7 +102,7 @@ router.beforeEach((to, from, next) => {
       authUser.Role != "Manager" &&
       authUser.Role != "Equipment Staff"
     ) {
-      next("/");
+      next("/500");
     } else if (
       to.name == "edit_order" &&
       (authUser.Role != "Staff" && authUser.Role != "Maintainer") &&

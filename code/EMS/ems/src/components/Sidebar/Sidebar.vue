@@ -24,11 +24,11 @@
           </router-link>
         </li>
         <li v-if="authUser.Role != 'Admin'">
-          <router-link to='/calendar'>
-            <div class="sidebar-list-content" :class="isActive(menu.Calendar)">
-            <i class="material-icons">event</i>            
-            {{ menu.Schedule }}
-          </div>
+          <router-link to='/schedule'>
+            <div class="sidebar-list-content" :class="isActive(menu.Schedule)">
+              <i class="material-icons">event</i>            
+              {{ menu.Schedule }}
+            </div>
           </router-link>
         </li>
         <li v-if="false">
@@ -49,7 +49,7 @@
           </div>
           </router-link>
         </li>
-        <li>
+        <li v-if="false">
           <router-link to='/category'>
             <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
             <i class="material-icons">build</i>
@@ -118,7 +118,6 @@ export default {
   name: "sidebar",
   computed: {
     currentSelected: sync("title"),
-
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
     }
