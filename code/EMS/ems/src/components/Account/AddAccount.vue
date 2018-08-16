@@ -4,7 +4,7 @@
  
          
          <!-- <form @submit.prevent="createAccount1()"> -->
-            <div class="form-title">
+            <div class="form-title" >
                 <div class="form-title-start ">
                   <div>
                     Add New Account
@@ -132,7 +132,7 @@
                     </div>
                     <div class="form-field-input">
                     <div class="control has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.phone" class="input " type="text" placeholder="(078)7898908" name="phone" id="phone">
+                        <input v-model.trim="account.phone" class="input " type="number" placeholder="0633824936" name="phone" id="phone">
                             <!-- <span class="icon is-small is-left">
                             <i class="fa fa-mobile"></i>
                             </span> -->
@@ -229,7 +229,7 @@
                         </strong><span v-if="CreateAccountErrors.NoRole != ''"> <span class="error-text">{{ CreateAccountErrors.NoRole }}</span></span>
                     </div> 
                     <div class="field is-horizontal" >
-                        <model-select style="width: 100% !important" :options="roleOptions" v-model="account.roleid" placeholder="Select a role"></model-select>  
+                        <model-select style="width: 100% !important; margin-bottom:12rem" :options="roleOptions" v-model="account.roleid" placeholder="Select a role"></model-select>  
                         
                     </div>
 <!-- /tien -->      
@@ -306,8 +306,8 @@ export default {
         //password-end
 
         // phone-start
-        PhoneMin: " Use from 9 to 20 characters for your phonenumber ",
-        PhoneMax: " Use from 9 to 20 characters for your phonenumber ",
+        PhoneMin: " Use from 9 to 13 characters for your phonenumber ",
+        PhoneMax: " Use from 9 to 13 characters for your phonenumber ",
         // phone-end
         NoEmail: " Enter email ",
         NoRole: " Select role ",
@@ -364,10 +364,12 @@ export default {
       //     this.CreateAccountErrors.NoUsername = this.ErrorStrings.NoUsername;
       //   }
 
-      let phoneRegex = /^(\([0-9]{3}\)\s*|[0-9]{3}\-)([0-9]{7}|[0-9]{8}|[0-9]{9})$/;
+      // let phoneRegex = /^(\([0-9]{3}\)\s*|[0-9]{3}\-)([0-9]{7}|[0-9]{8}|[0-9]{9})$/;
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      let UsernameRegex = /^[^~`!#$%()@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*.[\s{1,}]*?$/;
-      let FullNameRegex = /^[^~`!#$%()0-9@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*.[\s{1,}]*?$/;
+      // let UsernameRegex = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g;
+      // let UsernameRegex = /^[^~`!#$%@()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*.[\s{1,}]*?$/;
+      let UsernameRegex = /^[^~`!#$%@()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/;
+      let FullNameRegex = /^[^~`!#$%@0-9()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/;
       if (!this.files[0]) {
         this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
       }
@@ -414,7 +416,7 @@ export default {
       if (this.account.phone.length < 9) {
         this.CreateAccountErrors.PhoneMin = this.ErrorStrings.PhoneMin;
       }
-      if (this.account.phone.length > 20) {
+      if (this.account.phone.length > 13) {
         this.CreateAccountErrors.PhoneMax = this.ErrorStrings.PhoneMax;
       }
       if (this.account.email === "") {
@@ -597,7 +599,7 @@ export default {
       if (this.account.phone.length > 8) {
         this.CreateAccountErrors.PhoneMin = "";
       }
-      if (this.account.phone.length < 21) {
+      if (this.account.phone.length < 14) {
         this.CreateAccountErrors.PhoneMax = "";
       }
       if (this.account.phone == this.phoneRegex) {
