@@ -53,7 +53,7 @@
               Contact email 
 
             </strong>
-            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateVendorErrors.duplicateEmail }}</span></span></span>      
+            <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateVendorErrors.duplicateEmail }}</span></span> <span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span></span>      
           </div>
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="dpoint@gmail.com" disabled="disabled">
@@ -518,6 +518,7 @@ export default {
       } else {
         this.CreateVendorErrors.validContactName = "";
       }
+
       if (
         !this.Vendor.ContactEmail ||
         (this.Vendor.ContactEmail && this.Vendor.ContactEmail == "")
