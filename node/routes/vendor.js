@@ -9,7 +9,7 @@ router.get("/", (request, response) => {
     "Join EquipmentItem as ei ON ei.EquipmentID =e.Id " +
     "where e.VendorID = v.Id for json path, without_array_wrapper)) as [Vendor.Quantityitems]     " +
     "FROM [Vendor] as v " +
-    "ORDER BY v.BusinessName ASC " +
+    "ORDER BY v.Status DESC, v.BusinessName ASC " +
     "for json path ").into(response);
 });
 // router.get("/", (request, response) => {
@@ -62,7 +62,7 @@ router.get("/:id", (request, response) => {
 router.post("/", (request, response) => {
   request
     .sql(
-      "INSERT INTO [Vendor](BusinessName, BusinessAddress, Website, ContactName, ContactEmail, Description) VALUES(@BusinessName, @BusinessAddress, @Website, @ContactName, @ContactEmail, @Description)"
+      "INSERT INTO [Vendor](BusinessName, BusinessAddress, Website, ContactName, ContactEmail, Description, Status, Phone ) VALUES(@BusinessName, @BusinessAddress, @Website, @ContactName, @ContactEmail, @Description, 'True', @Phone )"
     )
     .param("BusinessName", request.body.Vendor.BusinessName, TYPES.NVarChar)
     .param(
@@ -74,6 +74,8 @@ router.post("/", (request, response) => {
     .param("ContactName", request.body.Vendor.ContactName, TYPES.NVarChar)
     .param("ContactEmail", request.body.Vendor.ContactEmail, TYPES.NVarChar)
     .param("Description", request.body.Vendor.Description, TYPES.NVarChar)
+    // .param("Status", request.body.Vendor.Status, TYPES.NVarChar)
+    .param("Phone", request.body.Vendor.Phone, TYPES.NVarChar)
     .exec(response);
 });
 router.post("/vendorName/", (request, response) => {
@@ -87,7 +89,7 @@ router.post("/vendorName/", (request, response) => {
 router.put("/:id", (request, response) => {
   request
     .sql(
-      "update [Vendor] set BusinessName = @BusinessName, BusinessAddress = @BusinessAddress, Website = @Website, ContactName = @ContactName, ContactEmail = @ContactEmail, Description =@Description  where Id = @id"
+      "update [Vendor] set BusinessName = @BusinessName, BusinessAddress = @BusinessAddress, Website = @Website, ContactName = @ContactName, ContactEmail = @ContactEmail, Description =@Description, Phone = @Phone, Status = @Status  where Id = @id"
     )
     .param("id", request.params.id, TYPES.Int)
     .param("BusinessName", request.body.Vendor.BusinessName, TYPES.NVarChar)
@@ -100,6 +102,8 @@ router.put("/:id", (request, response) => {
     .param("ContactName", request.body.Vendor.ContactName, TYPES.NVarChar)
     .param("ContactEmail", request.body.Vendor.ContactEmail, TYPES.NVarChar)
     .param("Description", request.body.Vendor.Description, TYPES.NVarChar)
+    .param("Phone", request.body.Vendor.Phone, TYPES.NVarChar)
+    .param("Status", request.body.Vendor.Status, TYPES.NVarChar)
     .exec(response);
 });
 router.put("/edit/id");
