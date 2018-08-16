@@ -45,8 +45,8 @@
             <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span> <span v-if="CreateVendorErrors.validContactName != ''"> <span class="error-text">{{ CreateVendorErrors.validContactName }}</span></span> </span>
           </div>
         </div>
-          <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D-point" disabled="disabled">
-          <input v-else v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D-point" >
+          <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D point" disabled="disabled">
+          <input v-else v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D point" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem"  >
             <strong>

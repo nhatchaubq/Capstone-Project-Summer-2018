@@ -37,15 +37,20 @@
         <!-- <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> -->
         
       </div>
-      <!-- <div class="row" style="margin: 0 0 0.5rem 0">
-        <button v-if="editMode" class="button btn-confirm-edit btn-primary material-shadow-animate" style="margin: 0 0 1rem 1rem" v-on:click="editTeam()">Save changes</button>
-        <button v-if="editMode" id=" btn-cancel" class="button btn-confirm-edit material-shadow-animate" style="margin:0 0 1rem 1rem" v-on:click="() => {
-          this.$router.go(this.$router.currentRoute)
-      }">Cancel</button>
-      </div> -->
+
 
         <h2> <strong>Create date: </strong>  {{getDate(team.CreatedDate)}} </h2>
-
+        <div v-if="editMode"> 
+          <strong>Status: </strong>
+          <label style="margin-right: 0rem; margin-left: 1rem" class="radio"  >
+            <input type="radio" name="active" v-on:change="team.Status = true" :checked="team.Status" :disabled="!editMode">
+            Active
+          </label>
+          <label class="radio">
+            <input type="radio" style="margin-top: 0.5rem" name="active" v-on:change="team.Status = false" :checked="!team.Status" :disabled="!editMode">
+            Inactive
+          </label>
+        </div>
     <strong v-if="editMode">Add new members: </strong>
     <div class="field is-horizontal">
       <multi-select  v-if="editMode" style="width: 44rem !important; height:36px; margin-right: 1rem"  :options="memberOptions" :selected-options="selectedMemberList" @select="onSelect" placeholder="Select a member"></multi-select> 

@@ -4,7 +4,7 @@ var TYPES = require("tedious").TYPES;
 router.get("/:id", (request, response) => {
   request
     .sql(
-      "SELECT t.id as 'team.Id', t.Name as 'team.Name', t.CreatedDate as 'team.CreatedDate',    " +
+      "SELECT t.id as 'team.Id', t.Name as 'team.Name', t.CreatedDate as 'team.CreatedDate', t.Status as 'team.Status',    " +
       "json_query((SELECT a.*,ta.TeamRoleID FROM [TeamAccount] as ta JOIN [Account] as a ON ta.AccountID = a.Id WHERE ta.TeamID =t.Id and ta.TeamRoleID =1 for json path, without_array_wrapper)) as 'team.LeaderAccount',     " +
       "(SELECT a.*,ta.TeamRoleID FROM [TeamAccount] as ta JOIN [Account] as a ON ta.AccountID = a.Id WHERE ta.TeamID =t.Id and ta.TeamRoleID =2 ORDER BY a.IsActive DESC, a.Username  ASC for json path) as 'team.MemberAccounts',     " +
       "json_query((select l.* from [TeamLocation] as tl JOIN [Location] as l ON tl.LocationID =l.Id  WHERE tl.TeamID =t.Id ORDER BY l.IsActive DESC, l.Name ASC for json path))  as 'team.Location'     " +
