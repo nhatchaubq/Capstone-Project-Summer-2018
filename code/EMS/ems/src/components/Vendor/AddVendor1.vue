@@ -102,7 +102,7 @@
                 <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span>    
+                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-if="CreateVendorErrors.duplicateEmail != ''"> {{ CreateVendorErrors.duplicateEmail }}</span>    
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
@@ -124,7 +124,7 @@
         <div>
             <div class="form-field" >
                 <div class="form-field-title ">
-                     <strong>Description</strong>
+                     <strong>Description </strong>
                 </div>   <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
                     <textarea  id="text-descrip" rows="4" cols="55" v-model.trim="Vendor.Description"   >
                     </textarea>
@@ -132,6 +132,17 @@
             </div>
             
         </div>
+        <!-- test -->
+        <!-- <div>
+            <div class="form-field" >
+                <div class="form-field-title " v-bind:key="Vendor.Id" v-for="Vendor in Vendors">
+                     <div>{{Vendor.ContactEmail}} </div>
+                </div>   
+
+            </div>
+            
+        </div> -->
+        <!-- test-end -->
 
         <!-- <div class="form-title-end" style="margin-bottom:2rem">
 
@@ -151,7 +162,16 @@
 </template>
 
 <script>
+import Server from "@/config/config.js";
 export default {
+  created() {
+    let url = Server.VENDOR_API_PATH;
+    this.axios.get(url).then(res => {
+      let data = res.data;
+      this.Vendors = data;
+      // alert();
+    });
+  },
   data() {
     return {
       sending: false,
@@ -174,7 +194,8 @@ export default {
         NoEmail: " Enter email ",
         validEmail: "Valid email required",
         validWeb: "Valid website required",
-        validContactName: "Enter alphabet characters"
+        validContactName: "Valid characters required",
+        duplicateEmail: "The email already exists"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -192,7 +213,8 @@ export default {
         DesMax: "",
         validEmail: "",
         validWeb: "",
-        validContactName: ""
+        validContactName: "",
+        duplicateEmail: ""
       },
       Vendor: {
         BusinessName: "",
@@ -209,7 +231,9 @@ export default {
       // let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       let webRegex = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
-      let contactNameRegex = /^[a-zA-Z]+$/;
+      // let contactNameRegex = /^[^~`!#$%()0-9@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*\s*?$/;
+      let contactNameRegex = /^[^~`!#$%()0-9@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*.[\s{1,}]*?$/;
+      // let contactNameRegex = /^[a-zA-Z-a-eghik-vxyàáâãèéêìíòóôõùúýỳỹỷỵựửữừứưụủũợởỡờớơộổỗồốọỏịỉĩệểễềếẹẻẽặẳẵằắăậẩẫầấạảđ₫]+$/;
       if (this.Vendor.BusinessName.length < 6) {
         this.CreateVendorErrors.BusinessNameMin = this.ErrorStrings.BusinessNameMin;
       }
@@ -245,9 +269,18 @@ export default {
       if (this.Vendor.Description.length > 500) {
         this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
       }
-      if (this.Vendor.ContactEmail === "") {
+      if (this.Vendor.ContactEmail == "") {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
+      // test
+      for (const Vendor of this.Vendors) {
+        if (Vendor.ContactEmail == this.Vendor.ContactEmail) {
+          this.CreateVendorErrors.duplicateEmail = this.ErrorStrings.duplicateEmail;
+          break;
+        }
+      }
+
+      // test-end
       if (!emailRegex.test(this.Vendor.ContactEmail)) {
         this.CreateVendorErrors.validEmail = this.ErrorStrings.validEmail;
       } else {
@@ -267,6 +300,7 @@ export default {
             this.$router.push("/vendor");
           });
     },
+
     validateVendor() {
       return (
         // this.CreateVendorErrors.NoBusinessName === "" &&
@@ -283,7 +317,8 @@ export default {
         this.CreateVendorErrors.NoEmail === "" &&
         this.CreateVendorErrors.validEmail == "" &&
         this.CreateVendorErrors.validWeb == "" &&
-        this.CreateVendorErrors.validContactName == ""
+        this.CreateVendorErrors.validContactName == "" &&
+        this.CreateVendorErrors.duplicateEmail == ""
       );
     }
   },
@@ -331,6 +366,16 @@ export default {
       }
       if (this.Vendor.ContactEmail == this.emailRegex) {
         this.CreateVendorErrors.validEmail = "";
+      }
+      let isDupEmail = false;
+      for (const Vendor in this.Vendors) {
+        if (Vendor.ContactEmail == this.Vendor.ContactEmail) {
+          isDupEmail = true;
+          break;
+        }
+      }
+      if (!isDupEmail) {
+        this.CreateVendorErrors.duplicateEmail = "";
       }
     },
     "Vendor.Website": function() {

@@ -63,7 +63,7 @@
             <div >
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span><span v-if="CreateAccountErrors.UserNameTrim != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UserNameTrim }}</span></span>
+                    <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span><span v-if="CreateAccountErrors.UserNameTrim != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UserNameTrim }}</span></span> <span class="error-text" v-if="CreateAccountErrors.duplicateUsername != ''"> {{ CreateAccountErrors.duplicateUsername }}</span>
                     <!-- <span v-if="CreateWorkOrderErrors.NoTitle != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoTitle }}</span></span> -->
                     </div>
                     <div class="control has-icons-right" style="padding:8px">
@@ -282,6 +282,7 @@ export default {
 
   data() {
     return {
+      newAccount: "",
       files: [],
       accounts: [],
       sending: false,
@@ -311,7 +312,8 @@ export default {
         NoEmail: " Enter email ",
         NoRole: " Select role",
         NoImage: "You must choose an image",
-        validEmail: "Valid email required"
+        validEmail: "Valid email required",
+        duplicateUsername: "The username already exists "
       },
       CreateAccountErrors: {
         // NoUsername: "",
@@ -330,7 +332,8 @@ export default {
         NoEmail: "",
         NoRole: "",
         NoImage: "",
-        validEmail: ""
+        validEmail: "",
+        duplicateUsername: ""
       },
       account: {
         username: "",
@@ -392,6 +395,13 @@ export default {
       }
       if (this.account.email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+
+      for (const account of this.accounts) {
+        if (account.Username == this.account.username) {
+          this.CreateAccountErrors.duplicateUsername = this.ErrorStrings.duplicateUsername;
+          break;
+        }
       }
 
       if (!this.account.roleid || this.account.roleid == "") {
@@ -472,7 +482,8 @@ export default {
         this.CreateAccountErrors.NoEmail === "" &&
         this.CreateAccountErrors.NoRole === "" &&
         this.CreateAccountErrors.NoImage == "" &&
-        this.CreateAccountErrors.validEmail == ""
+        this.CreateAccountErrors.validEmail == "" &&
+        this.CreateAccountErrors.duplicateUsername == ""
       );
     }
   },
@@ -486,6 +497,16 @@ export default {
       }
       if (this.account.username.length < 51) {
         this.CreateAccountErrors.UsernameMax = "";
+      }
+      let isDupUsername = false;
+      for (const account in this.accounts) {
+        if (account.Username == this.account.username) {
+          isDupUsername = true;
+          break;
+        }
+      }
+      if (!isDupUsername) {
+        this.CreateAccountErrors.duplicateUsername = "";
       }
       // if (this.username && this.account.username.length > 0) {
       //   let tmpAccounts = [];
