@@ -232,11 +232,13 @@ export default {
       .then(response => {
         let data = response.data;
         data.forEach(category => {
-          let option = {
-            text: category.Name,
-            value: category.Id
-          };
-          this.categoryOptions.push(option);
+          if (category.Status) {
+            let option = {
+              text: category.Name,
+              value: category.Id
+            };
+            this.categoryOptions.push(option);
+          }
         });
       })
       .catch(error => {
@@ -262,11 +264,13 @@ export default {
       .then(response => {
         let data = response.data;
         data.forEach(vendor => {
-          let option = {
-            text: vendor.BusinessName,
-            value: vendor.Id
-          };
-          this.vendorOptions.push(option);
+          if (vendor.Status) {
+            let option = {
+              text: vendor.BusinessName,
+              value: vendor.Id
+            };
+            this.vendorOptions.push(option);
+          }
         });
       })
       .catch(error => {
@@ -698,13 +702,7 @@ export default {
           if (
             context.form.EquipmentName.toUpperCase() ===
               context.equipments[i].Name.toUpperCase() &&
-            context.selectedVendor.value == context.equipments[i].VendorId &&
-            context.form.Category == context.equipments[i].CategoryId &&
-            context.form.Unit == context.equipments[i].UnitId &&
-            context.form.MaintenanceDuration ==
-              context.equipments[i].MaintenanceDurationId &&
-            context.form.MadeIn.toUpperCase() ===
-              context.equipments[i].MadeIn.toUpperCase()
+            context.selectedVendor.value == context.equipments[i].VendorId
           ) {
             exist = exist + 1;
           }
@@ -740,7 +738,9 @@ export default {
             });
         } else {
           let obj = {
-            message: "This equipment is existed!!!",
+            title: "Existed",
+            message:
+              "This equipment was supplied by " + context.selectedVendor.text,
             type: "warning",
             // hideAllButton: true,
             showXclose: false
@@ -757,13 +757,13 @@ export default {
         for (var i = 0; i < this.quantity; i++) {
           var number = "";
           if (0 < this.form.Category && this.form.Category < 10) {
-            number = "000" + this.form.Category;
-          } else if (10 <= this.form.Category && this.form.Category < 100) {
             number = "00" + this.form.Category;
-          } else if (100 <= this.form.Category && this.form.Category < 1000) {
+          } else if (10 <= this.form.Category && this.form.Category < 100) {
             number = "0" + this.form.Category;
-          } else {
-            number = this.form.Category;
+          } else if (100 <= this.form.Category && this.form.Category < 1000) {
+            number =   this.form.Category;
+          } else{
+            number = "000";
           }
           number = number + Math.floor(Math.random() * 900000000 + 100000000);
           this.randomNumbers.push(number);
