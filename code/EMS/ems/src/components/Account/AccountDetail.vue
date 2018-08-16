@@ -129,11 +129,12 @@
   <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com" disabled="disabled">
   <input v-else v-model.trim="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com">
 <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Phone</strong> <span v-if="editMode"><strong style="color:red"> *</strong> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>   <span v-if="CreateAccountErrors.validPhone != ''"> <span class="error-text">{{ CreateAccountErrors.validPhone }}</span></span><span v-if="CreateAccountErrors.duplicatePhone != ''"> <span class="error-text">{{ CreateAccountErrors.duplicatePhone }}</span></span></span></div>
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Phone</strong> <span v-if="editMode"><strong style="color:red"> *</strong> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.duplicatePhone != ''"> <span class="error-text">{{ CreateAccountErrors.duplicatePhone }}</span></span></span></div>
+  <!-- <div class="col-12" style="margin-top:0.5rem"> <strong>Phone</strong> <span v-if="editMode"><strong style="color:red"> *</strong> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span>   <span v-if="CreateAccountErrors.validPhone != ''"> <span class="error-text">{{ CreateAccountErrors.validPhone }}</span></span><span v-if="CreateAccountErrors.duplicatePhone != ''"> <span class="error-text">{{ CreateAccountErrors.duplicatePhone }}</span></span></span></div> -->
 
 </div>
-  <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789" disabled="disabled">
-  <input v-else v-model.trim="account.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789">
+  <input v-if="!editMode" v-model="account.Phone" class="input col-7 " type="number"  placeholder="123456789" disabled="disabled">
+  <input v-else v-model.trim="account.Phone" class="input col-7 " type="number"  placeholder="123456789">
 
  <div v-if="editMode">
 
@@ -310,31 +311,31 @@ export default {
       ErrorStrings: {
         // NoUsername: 'You must provide username for this account',
         // NoFullname: "You must provide full name for this account",
-        FullNameMax: " Use from 6 to 50 characters for your full name",
-        FullNameMin: " Use from 6 to 50 characters for your full name",
+        FullNameMax: " Use from 6 to 50 characters for your full name ",
+        FullNameMin: " Use from 6 to 50 characters for your full name ",
         ValidFullName: "Valid characters required ",
 
         // NoPassword: "You must provide password for this account",
-        MaxPassword: " Use from 6 to 50 characters for your password",
-        WeakAccount: " Use from 6 to 50 characters for your password",
+        MaxPassword: " Use from 6 to 50 characters for your password ",
+        WeakAccount: " Use from 6 to 50 characters for your password ",
 
         // NoPhone: "You must provide phone number for this account",
-        PhoneMin: " Use from 9 to 13 characters for your phone number",
-        PhoneMax: " Use from 9 to 13 characters for your phone number",
+        PhoneMin: " Use from 9 to 13 characters for your phone number ",
+        PhoneMax: " Use from 9 to 13 characters for your phone number ",
         duplicatePhone: "Duplicate phone number.",
         validPhone: "Valid phone required ",
 
         NoEmail: " Enter email ",
-        validEmail: "Valid email required",
+        validEmail: "Valid email required ",
         duplicateEmail: "Duplicate email.",
 
-        NotSameOldPass: "Enter correct current password",
-        MinMaxNewPass: "Use from 6 to 50 characters for your new password",
+        NotSameOldPass: "Enter correct current password ",
+        MinMaxNewPass: "Use from 6 to 50 characters for your new password ",
 
         // NoImage: "You must choose an image",
         // NoRole: "You must provide role for this account"
         // NotSamePass: "pass not the same",
-        NotSameValueRe: "Please enter the same value again."
+        NotSameValueRe: "Please enter the same value again. "
       },
       CreatePassErrors: {
         NotSameOldPass: "",
@@ -387,9 +388,9 @@ export default {
       // if (!this.files[0]) {
       //   this.CreateAccountErrors.NoImage = this.ErrorStrings.NoImage;
       // }
-      let phoneRegex = /^(\([0-9]{3}\)\s*|[0-9]{3}\-)([0-9]{7}|[0-9]{8}|[0-9]{9})$/;
+      // let phoneRegex = /^(\([0-9]{3}\)\s*|[0-9]{3}\-)([0-9]{7}|[0-9]{8}|[0-9]{9})$/;
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      let FullNameRegex = /^[^~`!#$%()0-9@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*.[\s{1,}]*?$/;
+      let FullNameRegex = /^[^~`!#$%@0-9()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/;
       if (this.account.Fullname.length < 6) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
@@ -436,11 +437,11 @@ export default {
       } else {
         this.CreateAccountErrors.validEmail = "";
       }
-      if (!phoneRegex.test(this.account.Phone)) {
-        this.CreateAccountErrors.validPhone = this.ErrorStrings.validPhone;
-      } else {
-        this.CreateAccountErrors.validPhone = "";
-      }
+      // if (!phoneRegex.test(this.account.Phone)) {
+      //   this.CreateAccountErrors.validPhone = this.ErrorStrings.validPhone;
+      // } else {
+      //   this.CreateAccountErrors.validPhone = "";
+      // }
       if (this.account.Phone.length < 9) {
         this.CreateAccountErrors.PhoneMin = this.ErrorStrings.PhoneMin;
       }
@@ -457,6 +458,8 @@ export default {
 
       if (this.validateAccount()) {
         // this.CreateAccountErrors.NoImage = "";
+        // this.imageUrl = this.Account.AvatarImage;
+        // if (this.files[0] && this.files[0].name) {
         let formData = new FormData();
         formData.append("api_key", "982394881563116");
         formData.append("file", this.files[0]);
@@ -483,6 +486,7 @@ export default {
                   if (res.status == 200) {
                     this.editMode = false;
                     this.getAccountDetail(this.$route.params.id);
+                    alert("update successfully");
                   }
                 });
             }
@@ -491,6 +495,7 @@ export default {
             console.log(error);
           });
       }
+      // }
     },
     inputFileChange() {
       this.files = this.$refs.fileInput.files;
@@ -662,9 +667,9 @@ export default {
       if (this.account.Phone.length < 14) {
         this.CreateAccountErrors.PhoneMax = "";
       }
-      if (this.account.Phone == this.phoneRegex) {
-        this.CreateAccountErrors.validPhone = "";
-      }
+      // if (this.account.Phone == this.phoneRegex) {
+      //   this.CreateAccountErrors.validPhone = "";
+      // }
       let isDupPhone = false;
       for (const account of this.accounts) {
         if (

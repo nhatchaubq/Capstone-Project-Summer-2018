@@ -67,8 +67,8 @@
             <span v-if="editMode"> (required)</span>
           </div>
         </div>
-         <input v-if="!editMode" v-model.trim="Vendor.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789" disabled="disabled">
-          <input v-else v-model.trim="Vendor.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789" >
+         <input v-if="!editMode" v-model.trim="Vendor.Phone" class="input col-7 " type="number"  placeholder="123456789" disabled="disabled">
+          <input v-else v-model.trim="Vendor.Phone" class="input col-7 " type="number"  placeholder="123456789" >
           <div v-if="editMode"> 
           <strong>Status: </strong>
           <label style="margin-right: 0rem; margin-left: 1rem" class="radio"  >
