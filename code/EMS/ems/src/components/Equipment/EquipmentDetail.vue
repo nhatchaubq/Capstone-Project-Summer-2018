@@ -130,8 +130,8 @@
                   <div class="" style="margin-top:0.5rem" >
                       Description:  
                   </div>
-                  <input v-if="!editMode" v-model="this.EquimentByID.Description" class="input col-7 " type="text" disabled="disabled"> 
-                  <input v-else v-model="EquimentByID.Description" class="input col-7 " type="text" >
+                  <input v-if="!editMode" v-model.trim="EquimentByID.Description" class="input col-7 " type="text" disabled="disabled"> 
+                  <input v-else v-model.trim="EquimentByID.Description" class="input col-7 " type="text" >
               </div>
               
               <div class="row" style="height:30px" v-if="editMode">
@@ -855,11 +855,13 @@ export default {
       .then(response => {
         let data = response.data;
         data.forEach(vendor => {
+          if (vendor.Status) {
+            this.vendorOptions.push(vendor);
+          }
           // let option = {
           //   text: vendor.BusinessName,
           //   value: vendor.Id
           // };
-          this.vendorOptions.push(vendor);
           // alert(this.vendorOptions.length);
         });
       })
@@ -871,11 +873,13 @@ export default {
       .then(response => {
         let data = response.data;
         data.forEach(warehouse => {
+          if (warehouse.IsActive) {
+            this.warehouseOptions.push(warehouse);
+          }
           // let option = {
           //   text: vendor.BusinessName,
           //   value: vendor.Id
           // };
-          this.warehouseOptions.push(warehouse);
           // alert(this.vendorOptions.length);
         });
       })
@@ -888,11 +892,13 @@ export default {
       .then(response => {
         let data = response.data;
         data.forEach(category => {
+          if (category.Status) {
+            this.categoryOptions.push(category);
+          }
           // let option = {
           //   text: category.Name,
           //   value: category.Id
           // };
-          this.categoryOptions.push(category);
         });
       })
       .catch(error => {
@@ -915,11 +921,13 @@ export default {
       .then(response => {
         let data = response.data;
         data.forEach(location => {
+          if (location.IsActive) {
+            this.locationOptions.push(location);
+          }
           // let option = {
           //   text: location.Name,
           //   value: location.Id
           // };
-          this.locationOptions.push(location);
         });
       })
       .catch(error => {
@@ -968,15 +976,31 @@ export default {
       .then(response => {
         let data = response.data;
         data.forEach(location => {
-          let option = {
-            text: location.Name,
-            value: location.Id
-          };
-          this.locationModalSelect.push(option);
+          if (location.IsActive) {
+            let option = {
+              text: location.Name,
+              value: location.Id
+            };
+            this.locationModalSelect.push(option);
+          }
         });
       })
       .catch(error => {
         alert(error);
+      });
+    let URL = "http://localhost:3000/api/equipment";
+    this.axios
+      .get(URL)
+      .then(response => {
+        let data = response.data;
+        // alert('in');
+        data.forEach(element => {
+          let equipment = element.Equipment;
+          this.equipments.push(equipment);
+        });
+      })
+      .catch(error => {
+        console.log(error);
       });
   },
   // data() {
@@ -994,6 +1018,7 @@ export default {
       newStatus: "",
       currentPageEquipmentItem: 1,
       toDisplayEquipmentItem: [],
+      equipments: [],
       Eitem: [],
       CreateItemErrors: {
         NoQuantity: "",
@@ -1261,15 +1286,16 @@ export default {
             result = false;
           }
         });
-        await Utils.sleep(1300);
+        await Utils.sleep(1500);
         if (result) {
+          let context = this;
           let obj = {
-            message: "Create new " + this.quantity + " item(s) successfully",
+            message: "Create new " + context.quantity + " item(s) successfully",
             type: "success",
             hideAllButton: true,
             showXclose: false
           };
-          this.$refs.simplert.openSimplert(obj);
+          context.$refs.simplert.openSimplert(obj);
           await Utils.sleep(1500);
           location.reload();
         } else {
@@ -1300,24 +1326,41 @@ export default {
             0 < this.EquimentByID.CategoryId &&
             this.EquimentByID.CategoryId < 10
           ) {
-            number = "000" + this.EquimentByID.CategoryId;
+            number = "00" + this.EquimentByID.CategoryId;
           } else if (
             10 <= this.EquimentByID.CategoryId &&
             this.EquimentByID.CategoryId < 100
           ) {
-            number = "00" + this.EquimentByID.CategoryId;
+            number = "0" + this.EquimentByID.CategoryId;
           } else if (
             100 <= this.EquimentByID.CategoryId &&
             this.EquimentByID.CategoryId < 1000
           ) {
-            number = "0" + this.EquimentByID.CategoryId;
-          } else {
             number = this.EquimentByID.CategoryId;
+          } else {
+            number = "000";
+          }
+          if (0 < this.EquimentByID.Id && this.EquimentByID.Id < 10) {
+            number = number + "000" + this.EquimentByID.Id;
+          } else if (10 <= this.EquimentByID.Id && this.EquimentByID.Id < 100) {
+            number = number + "00" + this.EquimentByID.Id;
+          } else if (
+            100 <= this.EquimentByID.Id &&
+            this.EquimentByID.Id < 1000
+          ) {
+            number = number + "0" + this.EquimentByID.CategoryId;
+          } else {
+            number = number + "0000";
           }
           var exist = 0;
-          number = number + Math.floor(Math.random() * 900000000 + 100000000);
+          number = number + Math.floor(Math.random() * 900000 + 100000);
           for (var j = 0; j < this.serialNumbers.length; j++) {
             if (number == this.serialNumbers[i]) {
+              exist = exist + 1;
+            }
+          }
+          for (var k = 0; k < this.randomNumbers.length; k++) {
+            if (number == this.randomNumbers[k]) {
               exist = exist + 1;
             }
           }
@@ -1552,7 +1595,10 @@ export default {
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
-      } else if (this.EquimentByID.Description.trim().length > 250) {
+      } else if (
+        this.EquimentByID.Description != null &&
+        this.EquimentByID.Description.length > 250
+      ) {
         let obj = {
           message: "Description can be contained 250 characters",
           type: "warning"
@@ -1577,54 +1623,86 @@ export default {
           };
           this.$refs.simplert.openSimplert(obj);
         } else {
-          this.imageUrl = this.EquimentByID.Image;
-          if (this.files[0] && this.files[0].name) {
-            let formData = new FormData();
-            formData.append("api_key", "982394881563116");
-            formData.append("file", this.files[0]);
-            formData.append("public_id", this.files[0].name);
-            formData.append("timestamp", moment().valueOf());
-            formData.append("upload_preset", "ursbvd4a");
-            let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
-            try {
-              let uploadRespose = await this.axios.post(url, formData);
-              if (uploadRespose.status == 200) {
-                this.imageUrl = uploadRespose.data.url;
+          let existed = 0;
+          for (var j = 0; j < this.equipments.length; j++) {
+            if (
+              this.EquimentByID.Name == this.equipments[j].Name &&
+              this.EquimentByID.VendorId == this.equipments[j].VendorId
+            ) {
+              if (
+                this.EquimentByID.Name != this.equipmentName &&
+                this.equipmentID.VendorId != this.equipmentVendorId
+              ) {
+                existed = existed + 1;
               }
-            } catch (error) {
-              console.log(error);
             }
           }
-          // alert(this.selectedCategory.value);
-          let context = this;
-          context.axios
-            .put("http://localhost:3000/api/equipment/" + context.equipmentId, {
-              id: context.equipmentId,
-              name: context.EquimentByID.Name,
-              vendorid: context.EquimentByID.VendorId,
-              image: context.imageUrl,
-              madein: context.EquimentByID.MadeIn,
-              categoryid: context.EquimentByID.CategoryId,
-              description: context.EquimentByID.Description,
-              unitid: context.EquimentByID.UnitID,
-              maintenanceDurationid: context.EquimentByID.MaintenanceDurationID,
-              status: context.EquimentByID.Status
-            })
-            .then(async function(respone) {
-              let obj = {
-                message: "Update successfully",
-                type: "success",
-                hideAllButton: true,
-                showXclose: false
-              };
-              context.$refs.simplert.openSimplert(obj);
-              await Utils.sleep(1000);
-              location.reload();
-              context.editMode = !context.editMode;
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
+          if (existed == 0) {
+            this.imageUrl = this.EquimentByID.Image;
+            if (this.files[0] && this.files[0].name) {
+              let formData = new FormData();
+              formData.append("api_key", "982394881563116");
+              formData.append("file", this.files[0]);
+              formData.append("public_id", this.files[0].name);
+              formData.append("timestamp", moment().valueOf());
+              formData.append("upload_preset", "ursbvd4a");
+              let url =
+                "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+              try {
+                let uploadRespose = await this.axios.post(url, formData);
+                if (uploadRespose.status == 200) {
+                  this.imageUrl = uploadRespose.data.url;
+                }
+              } catch (error) {
+                console.log(error);
+              }
+            }
+            // alert(this.selectedCategory.value);
+            let context = this;
+            context.axios
+              .put(
+                "http://localhost:3000/api/equipment/" + context.equipmentId,
+                {
+                  id: context.equipmentId,
+                  name: context.EquimentByID.Name,
+                  vendorid: context.EquimentByID.VendorId,
+                  image: context.imageUrl,
+                  madein: context.EquimentByID.MadeIn,
+                  categoryid: context.EquimentByID.CategoryId,
+                  description: context.EquimentByID.Description,
+                  unitid: context.EquimentByID.UnitID,
+                  maintenanceDurationid:
+                    context.EquimentByID.MaintenanceDurationID,
+                  status: context.EquimentByID.Status
+                }
+              )
+              .then(async function() {
+                let obj = {
+                  message: "Update successfully",
+                  type: "success",
+                  hideAllButton: true,
+                  showXclose: false
+                };
+                context.$refs.simplert.openSimplert(obj);
+                await Utils.sleep(1000);
+                location.reload();
+                context.editMode = !context.editMode;
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          } else {
+            let obj = {
+              title: "Existed",
+              message:
+                "This equipment was supplied by " +
+                this.EquimentByID.Vendor.Name,
+              type: "warning",
+              // hideAllButton: true,
+              showXclose: false
+            };
+            this.$refs.simplert.openSimplert(obj);
+          }
         }
       }
     },
@@ -2527,9 +2605,9 @@ tr:hover {
 .wrap-table {
   padding-top: 0.75rem !important;
 }
-.titleDetail{
+.titleDetail {
   margin-left: 4rem;
   font-size: 16px;
-  margin-top:0.4rem;
+  margin-top: 0.4rem;
 }
 </style>
