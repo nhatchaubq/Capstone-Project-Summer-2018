@@ -45,8 +45,8 @@
             <span v-if="editMode"> (required)<span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span> <span v-if="CreateVendorErrors.validContactName != ''"> <span class="error-text">{{ CreateVendorErrors.validContactName }}</span></span> </span>
           </div>
         </div>
-          <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D-point" disabled="disabled">
-          <input v-else v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D-point" >
+          <input v-if="!editMode" v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D point" disabled="disabled">
+          <input v-else v-model.trim="Vendor.ContactName" class="input col-7 " type="text"  placeholder="D point" >
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem"  >
             <strong>
@@ -58,6 +58,29 @@
         </div>
           <input v-if="!editMode" v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="dpoint@gmail.com" disabled="disabled">
           <input v-else v-model.trim="Vendor.ContactEmail" class="input col-7 " type="email"  placeholder="dpoint@gmail.com" >
+        <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
+          <div class="col-12" style="margin-top:0.5rem"  >
+            <strong>
+              Phone 
+
+            </strong>
+            <span v-if="editMode"> (required)</span>
+          </div>
+        </div>
+         <input v-if="!editMode" v-model.trim="Vendor.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789" disabled="disabled">
+          <input v-else v-model.trim="Vendor.Phone" class="input col-7 " type="text"  placeholder="(+84)123456789" >
+          <div v-if="editMode"> 
+          <strong>Status: </strong>
+          <label style="margin-right: 0rem; margin-left: 1rem" class="radio"  >
+            <input type="radio" name="active" v-on:change="Vendor.Status = true" :checked="Vendor.Status" :disabled="!editMode">
+            Active
+          </label>
+          <label class="radio">
+            <input type="radio" style="margin-top: 0.5rem" name="active" v-on:change="Vendor.Status = false" :checked="!Vendor.Status" :disabled="!editMode">
+            Inactive
+          </label>
+        </div>
+
         <div  class="row" style="height: 36px; margin-bottom: 0.5rem" >
           <div class="col-12" style="margin-top:0.5rem" >
             <strong>

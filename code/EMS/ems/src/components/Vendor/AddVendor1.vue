@@ -85,7 +85,7 @@
                 </div>
                 <div class="form-field-input">
                 <div class="control  has-icons-right" style="padding:8px">
-                    <input v-model.trim="Vendor.ContactName" class="input " type="text" placeholder="D-point" >
+                    <input v-model.trim="Vendor.ContactName" class="input " type="text" placeholder="D point" >
                         <!-- <span class="icon is-small is-left">
                         <i class="fa fa-address-card"></i>
                         </span> -->
@@ -117,6 +117,26 @@
             </div>
             
         </div>
+        <div>
+            <div class="form-field">
+                <div class="form-field-title">
+                    <!-- <strong>Phone (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-if="CreateVendorErrors.duplicateEmail != ''"> {{ CreateVendorErrors.duplicateEmail }}</span>     -->
+                    <strong>Phone (required)</strong>
+                </div>
+                <div class="form-field-input">
+                <div class="control has-icons-right" style="padding:8px">
+                    <input v-model.trim="Vendor.Phone" class="input" type="text" placeholder="(+84)123456789" >
+                        <!-- <span class="icon is-small is-left">
+                        <i class="fa fa-envelope"></i>
+                        </span> -->
+
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+
        
         <div>
 

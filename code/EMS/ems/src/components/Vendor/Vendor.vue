@@ -13,6 +13,7 @@
           <th ><strong>Address</strong></th>
           <th><strong>Website</strong></th>
           <th ><strong>Contact name</strong></th>
+          <th ><strong>Status</strong></th>
 
           <!-- <th><strong>Department</strong></th> -->
         </tr>
@@ -28,6 +29,9 @@
             <td width=30%>{{vendor.BusinessAddress ? vendor.BusinessAddress : "N/A" }}</td>
             <td width=20%>{{vendor.Website ? vendor.Website : "N/A"}} </td>
             <td width=15%>{{vendor.ContactName ? vendor.ContactName : "N/A"}}</td>
+            <strong>
+              <td :style="{color: vendor.Status? 'var(--primary-color)' : '#607D8B'}">{{vendor.Status? "Active" : "Inactive"}}</td>
+              </strong>
           </tr>
       </tbody>
     </table>
