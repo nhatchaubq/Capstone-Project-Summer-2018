@@ -76,7 +76,7 @@
             <div class="form-field">
                 <div class="form-field-title">
                     <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != '' && CreateVendorErrors.NoEmail == '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-if="CreateVendorErrors.duplicateEmail != '' && CreateVendorErrors.NoEmail == '' && CreateVendorErrors.NoEmail == ''"> {{ CreateVendorErrors.duplicateEmail }}</span>    
-                </div>
+              </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
                     <input v-model.trim="Vendor.ContactEmail" class="input" type="email" placeholder="dpoint@gmail.com" >
