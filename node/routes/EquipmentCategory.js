@@ -4,7 +4,7 @@ var TYPES = require("tedious").TYPES;
 router.get("/getAllCate", (request, response) => {
   request
     .sql(
-      "SELECT * From [EquipmentCategory] order by Status desc, Name asc  for json path"
+      "SELECT * From [EquipmentCategory] order by Status desc, Name asc   for json path"
     )
     .into(response);
 });
@@ -43,7 +43,7 @@ router.put("/editCategory", (request, respone) => {
 router.post("/createCategory", (request, response) => {
   request
     .sql(
-      "INSERT INTO EquipmentCategory (Name, Description) VALUES (@name, @description)"
+      "INSERT INTO EquipmentCategory (Name, Description, Status) VALUES (@name, @description,1)"
     )
     .param("name", request.body.newCategory.name, TYPES.NVarChar)
     .param("description", request.body.newCategory.description, TYPES.NVarChar)
