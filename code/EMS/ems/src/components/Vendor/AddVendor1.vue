@@ -18,7 +18,7 @@
         <div class="form-content">
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  Business name (required)</strong><span v-if="CreateVendorErrors.NoBusinessName != ''"> <span class="error-text">{{ CreateVendorErrors.NoBusinessName }}</span></span> <span v-else-if="CreateVendorErrors.BusinessNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessNameMin }}</span></span> <span v-else-if="CreateVendorErrors.BusinessNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessNameMax }}</span></span>
+                <strong>  Business name (required)</strong>  <span v-if="CreateVendorErrors.BusinessNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessNameMin }}</span></span> <span v-else-if="CreateVendorErrors.BusinessNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessNameMax }}</span></span>
                 </div>
                 <div class="control has-icons-right" style="padding:8px">
                     <input v-model.trim="Vendor.BusinessName" class="input " type="text" placeholder="DPoint Company" >
@@ -32,7 +32,7 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>Business address  (required)</strong><span v-if="CreateVendorErrors.NoBusinessAddress != ''"> <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span> <span v-else-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-else-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
+                <strong>Business address(required)</strong>  <span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-else-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
             <div class="controlhas-icons-right" style="padding:8px">
                     <input v-model.trim="Vendor.BusinessAddress" class="input " type="text" placeholder="160/5 Tan Chanh Hiep, Quan 12, Ho Chi Minh">
 
@@ -45,7 +45,7 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                     <strong>Website</strong> <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span><span v-else-if="CreateVendorErrors.validWeb != ''"> <span class="error-text">{{ CreateVendorErrors.validWeb }}</span></span>
+                     <strong>Website(required)</strong> <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span><span v-else-if="CreateVendorErrors.validWeb != ''"> <span class="error-text">{{ CreateVendorErrors.validWeb }}</span></span>
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
@@ -60,7 +60,7 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                     <strong>Contact name (required)</strong><span v-if="CreateVendorErrors.NoContactName != ''"> <span class="error-text">{{ CreateVendorErrors.NoContactName }}</span></span> <span v-else-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-else-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span> <span v-else-if="CreateVendorErrors.validContactName != ''"> <span class="error-text">{{ CreateVendorErrors.validContactName }}</span></span>
+                     <strong>Contact name (required)</strong>  <span v-if="CreateVendorErrors.ContactNameMin != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMin }}</span></span> <span v-else-if="CreateVendorErrors.ContactNameMax != ''"> <span class="error-text">{{ CreateVendorErrors.ContactNameMax }}</span></span> <span v-else-if="CreateVendorErrors.validContactName != ''"> <span class="error-text">{{ CreateVendorErrors.validContactName }}</span></span>
                 </div>
                 <div class="form-field-input">
                 <div class="control  has-icons-right" style="padding:8px">
@@ -75,7 +75,7 @@
                 <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-esle-if="CreateVendorErrors.validEmail != '' && CreateVendorErrors.NoEmail == '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-if="CreateVendorErrors.duplicateEmail != '' && CreateVendorErrors.NoEmail == '' && CreateVendorErrors.NoEmail == ''"> {{ CreateVendorErrors.duplicateEmail }}</span>    
+                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-else-if="CreateVendorErrors.validEmail != '' && CreateVendorErrors.NoEmail == '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-if="CreateVendorErrors.duplicateEmail != '' && CreateVendorErrors.NoEmail == '' && CreateVendorErrors.NoEmail == ''"> {{ CreateVendorErrors.duplicateEmail }}</span>    
               </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
@@ -236,7 +236,7 @@ export default {
       if (
         !this.Vendor.Phone ||
         (this.Vendor.Phone &&
-          (this.Vendor.Phone.length < 10 || this.Vendor.Phone.length > 17))
+          (this.Vendor.Phone.length < 10 && this.Vendor.Phone.length > 17))
       ) {
         this.CreateVendorErrors.PhoneMin = this.ErrorStrings.PhoneMin;
       }
@@ -259,10 +259,7 @@ export default {
       if (this.Vendor.Website.length > 200) {
         this.CreateVendorErrors.WebMax = this.ErrorStrings.WebMax;
       }
-      if (
-        !this.Vendor.Description ||
-        (this.Vendor.Description && this.Vendor.Description.length > 500)
-      ) {
+      if (this.Vendor.Description.length > 500) {
         this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
       }
       if (this.Vendor.ContactEmail == "") {
@@ -394,10 +391,7 @@ export default {
       }
     },
     "Vendor.Description": function() {
-      if (
-        !this.Vendor.Description ||
-        (this.Vendor.Description && this.Vendor.Description.length < 501)
-      ) {
+      if (this.Vendor.Description.length < 501) {
         this.CreateVendorErrors.DesMax = "";
       }
     },
