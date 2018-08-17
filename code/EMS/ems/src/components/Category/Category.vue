@@ -1,30 +1,30 @@
 <template>
     <div v-if="allCategories">        
         <div style="padding-left:10rem; padding-right: 10rem">
-        <table class="mytable">
-      <thead>
-        <tr>
-          <!-- <th><strong>ID</strong></th> -->
-          <th ><strong>#</strong></th>
-          <th ><strong>Category Name</strong></th>
-          <th ><strong>Decription</strong></th>
-          <th ><strong>Status</strong></th>       
-          <th colspan="2" style="text-align:center"><strong>Action</strong></th>                   
-          <!-- <th><strong>Department</strong></th> -->
-        </tr>
-        
-      </thead>  
-      <tbody>
-          <tr v-bind:key="cate.Id" v-for="(cate, index) in tmpCategories" class="txtText" >          
-            <td >{{ 10*(currentPage -1) + (index + 1) }}</td>
-            <td >{{cate.Name}}</td>
-            <td >{{cate.Description}}</td>
-            <strong><td :style="{color: cate.Status? 'var(--primary-color)' : '#607D8B'}" >{{cate.Status? "Active" : "Inactive" }}</td></strong>
-            <td width=6% v-on:click="editShow(cate)"><button class="button" style="padding:0px 5px 0px 5px ">Edit</button></td>
-            <td width=6%><button class="button" style="padding:0px 5px 0px 5px " v-on:click="deleteCate(cate)">Delete</button></td>               
-          </tr>
-      </tbody>
-    </table>        
+          <table class="mytable">
+            <thead>
+              <tr>
+                <!-- <th><strong>ID</strong></th> -->
+                <th ><strong>#</strong></th>
+                <th ><strong>Category Name</strong></th>
+                <th ><strong>Decription</strong></th>
+                <th ><strong>Status</strong></th>       
+                <th colspan="2" style="text-align:center"><strong>Action</strong></th>                   
+                <!-- <th><strong>Department</strong></th> -->
+              </tr>
+              
+            </thead>  
+            <tbody>
+                <tr v-bind:key="cate.Id" v-for="(cate, index) in tmpCategories" class="txtText" >          
+                  <td >{{ 10*(currentPage -1) + (index + 1) }}</td>
+                  <td >{{cate.Name}}</td>
+                  <td >{{cate.Description}}</td>
+                  <strong><td :style="{color: cate.Status? 'var(--primary-color)' : '#607D8B'}" >{{cate.Status? "Active" : "Inactive" }}</td></strong>
+                  <td width=6% v-on:click="editShow(cate)"><button class="button" style="padding:0px 5px 0px 5px ">Edit</button></td>
+                  <td width=6%><button class="button" style="padding:0px 5px 0px 5px " v-on:click="deleteCate(cate)">Delete</button></td>               
+                </tr>
+            </tbody>
+          </table>        
         </div>        
         <div v-if="allCategories.length >9" class="number-page" style="padding-left:10rem; padding-right: 10rem"> 
           <Page :current="currentPage" :total="allCategories.length" show-elevator 
@@ -93,7 +93,7 @@
                 <button id="" class="button is-primary"  v-on:click="editCategory()">Save changes</button>                       
                 <button id="" class="button" style="margin-right: .6rem"  v-on:click="editPopup = false">Cancel</button>             
         </div>        
-        </modal>
+      </modal>
 
         <modal v-model="deletePopup">                          
           <div slot="header" style=" font-size: 24px; font-weight: bold"> 
