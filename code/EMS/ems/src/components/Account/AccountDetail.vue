@@ -87,14 +87,14 @@
 
   <div  class="row " style="height: 36px" >
       <div class="col-12" style="margin-top:0.5rem" >
-      <strong>Full name</strong>  <span v-if="editMode"><strong style="color:red">*</strong></span> <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-else-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span><span v-else-if="CreateAccountErrors.ValidFullName != ''"> <span class="error-text">{{ CreateAccountErrors.ValidFullName }}</span></span>
+      <strong>Full name</strong>  <span v-if="editMode"><strong style="color:red">*</strong> <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-else-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span><span v-else-if="CreateAccountErrors.ValidFullName != ''"> <span class="error-text">{{ CreateAccountErrors.ValidFullName }}</span></span> </span>
       </div>  
   </div>
   <input v-if="!editMode" disabled v-model="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole"/>
   <input v-else :disabled="authUser.Role != 'Admin'" v-model.trim="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole" >
   <div v-if="authUser.Role == 'Admin'">
     <div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
-        <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
+        <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong><span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span></span>  </div> 
     </div>
       <input v-if="editMode" v-model.trim ="account.Password" class="input col-7 " type="password"  placeholder="Chow@321">
   </div>
