@@ -266,13 +266,13 @@ export default {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
       // test
-      for (const Vendor of this.Vendors) {
+      for (const Vendor in this.Vendors) {
         if (Vendor.ContactEmail == this.Vendor.ContactEmail) {
           this.CreateVendorErrors.duplicateEmail = this.ErrorStrings.duplicateEmail;
           break;
         }
       }
-      for (const Vendor of this.Vendors) {
+      for (const Vendor in this.Vendors) {
         if (Vendor.Phone == this.Vendor.Phone) {
           this.CreateVendorErrors.duplicatePhone = this.ErrorStrings.duplicatePhone;
           break;
