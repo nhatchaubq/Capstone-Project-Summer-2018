@@ -13,9 +13,13 @@
             <div class="">
               <div class="field" style=" display: grid; grid-template-columns: 70% 20% 10%;">
                   <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{equipmentName}}</strong>
-                  <button v-if="!addItemMode && authUser.Role=='Equipment Staff'" class="btn-Add"   v-on:click="addItem">Add Item</button>
+                  <div>
+                    <button v-if="!addItemMode && authUser.Role=='Equipment Staff' && EquimentByID.Status" class="btn-Add"   v-on:click="addItem">Add Item</button>
+                  </div>
                   <!-- <div class="" v-else ><button  class="btn-Add" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" >Add Item</button></div> -->
-                  <button v-if="!editMode && authUser.Role=='Equipment Staff'" class="btn-edit"  v-on:click="editMode = !editMode">Edit</button> 
+                  <div>
+                    <button v-if="!editMode && authUser.Role=='Equipment Staff'" class="btn-edit"  v-on:click="editMode = !editMode">Edit</button> 
+                  </div>
                   <!-- <div class="" v-else><button class="btn-edit" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" :class="{'is-active-option': editMode}">Edit</button> </div> -->
              </div>
               <span v-if="editMode"  style="color:red; font-size:14px">* is required, please input these fields</span>
@@ -60,11 +64,13 @@
                   </div>
               </div>
               <div class="row" style=" display: grid;grid-template-columns: 50% 50%;">
-                <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 40% 60%;" >
+                <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 36% 64%;" >
                   <div class="" style="padding-top:0.25rem; " >
                       Quantity:  
                   </div>
-                  <input v-model="this.Items.length" class="input col-5 " type="text" disabled="disabled"> 
+                  <div>
+                    <input v-model="this.Items.length" class="input col-5 " type="text" disabled="disabled"> 
+                  </div>
                 </div>
                 <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 20% 80%; padding-left:2rem " >
                   <div class="" style="padding-top:0.25rem;" >
@@ -84,11 +90,11 @@
                   <div class="" style="margin-top:0.5rem" >
                       Schedule:  <span v-if="editMode" style="color:red; font-size:18px">*</span>
                   </div>
-                  <div class="is-horizontal" v-if="!editMode" style="height:36px; display: grid;grid-template-columns: 38% 60%;">
+                  <div class="is-horizontal" v-if="!editMode" style="height:36px; display: grid;grid-template-columns: 40% 60%;">
                     <input  v-model="EquimentByID.MaintenanceDuration.Months" class="input col-7 " type="text" disabled="disabled"> 
                     <label style=" margin-top: 0.75rem;margin-left: 0.2rem;padding-left:1rem">months/time maintenance</label>
                   </div>
-                  <div class="is-horizontal" v-else style="height:36px; display: grid;grid-template-columns: 30% 70%;">
+                  <div class="is-horizontal" v-else style="height:36px; display: grid;grid-template-columns: 40% 60%;">
                     <div class="select" >
                       <select class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width:100%"  v-model="EquimentByID.MaintenanceDurationID">
                                 <option :key="'duration' + duration.Id" v-for="duration in maintenanceDurationOptions"
@@ -160,35 +166,43 @@
               </div>
             </div>       
         </div>
-        <div class="equipmentItem" style="padding-top:1rem;">
-          <table class="table">
-              <thead>
-                  <tr>
-                      <th><strong>No.</strong></th>
-                      <th><strong>Serial number</strong></th>
-                      <th><strong>ImportDate</strong></th>
-                      <th><strong>Warranty</strong></th>
-                      <th><strong>Runtime Days</strong></th>
-                      <th><strong>Last-MaintainDate</strong></th>
-                      <th><strong>Next-MaintainDate</strong></th>
-                      <th><strong>Status</strong></th>
-                      <th><strong>Description</strong></th>
-                  </tr>
-              </thead>  
-              <tbody>
-                  <tr v-bind:key="item.ID" v-for="(item, index) in toDisplayEquipmentItem" v-on:click="setSelectedItem(item.ID)">
-                      <td style="text-align:center">{{ 10*(currentPageEquipmentItem -1) + (index + 1) }}</td>   
-                      <td>{{item.SerialNumber}}</td>
-                      <td>{{item.ImportDate}}</td>
-                      <td>{{item.WarrantyDuration}}</td>
-                      <td>{{item.RuntimeDays}}</td>
-                      <td>{{item.LastMaintainDate}}</td>
-                      <td>{{item.NextMaintainDate}}</td>
-                      <td>{{item.Status}}</td>
-                      <td>{{item.Description ? item.Description : 'N/A' }}</td>    
-                  </tr>
-              </tbody>
-          </table>
+        <div class="equipmentItem" style="padding-top:0.5rem;">
+          <div class="wrapper-table" v-if="toDisplayEquipmentItem && toDisplayEquipmentItem.length >0">
+            <div class="" style="padding-left:0.4rem;font-style: italic;font-size:16px">
+              Table: List item of the equipment
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><strong>No.</strong></th>
+                        <th><strong>Serial number</strong></th>
+                        <th><strong>ImportDate</strong></th>
+                        <th><strong>Warranty</strong></th>
+                        <th><strong>Runtime Days</strong></th>
+                        <th><strong>Last-MaintainDate</strong></th>
+                        <th><strong>Next-MaintainDate</strong></th>
+                        <th><strong>Status</strong></th>
+                        <th><strong>Description</strong></th>
+                    </tr>
+                </thead>  
+                <tbody>
+                    <tr v-bind:key="item.ID" v-for="(item, index) in toDisplayEquipmentItem" v-on:click="setSelectedItem(item.ID)">
+                        <td style="text-align:center">{{ 10*(currentPageEquipmentItem -1) + (index + 1) }}</td>   
+                        <td>{{item.SerialNumber}}</td>
+                        <td>{{item.ImportDate}}</td>
+                        <td>{{item.WarrantyDuration}}</td>
+                        <td>{{item.RuntimeDays}}</td>
+                        <td>{{item.LastMaintainDate}}</td>
+                        <td>{{item.NextMaintainDate}}</td>
+                        <td>{{item.Status}}</td>
+                        <td>{{item.Description ? item.Description : 'N/A' }}</td>    
+                    </tr>
+                </tbody>
+            </table>
+          </div>
+          <div class="" v-else style="padding-top: 0,75rem;padding-left:0.4rem;font-style: italic;font-size:16px">
+            This equipment has no item
+          </div>
         </div>
            <!-- dien-start -->
         <div v-if="Eitem.length > 9" class="">
