@@ -639,14 +639,17 @@ export default {
       // alert(this.files[0].name);
       let context = this;
       var exist = 0;
-      if (this.form.EquipmentName.trim() === "") {
-        this.CreateEquipmentErrors.NoName = this.ErrorStrings.NoName;
-      }
+
       if (
         this.form.EquipmentName.trim().length < 5 ||
         this.form.EquipmentName.trim().length > 250
       ) {
-        this.CreateEquipmentErrors.NameLength = this.ErrorStrings.NameLength;
+        if (this.form.EquipmentName.trim() === "") {
+          this.CreateEquipmentErrors.NoName = this.ErrorStrings.NoName;
+          this.CreateEquipmentErrors.NameLength = "";
+        } else {
+          this.CreateEquipmentErrors.NameLength = this.ErrorStrings.NameLength;
+        }
       }
       if (this.selectedVendor.value === "") {
         this.CreateEquipmentErrors.NoVendor = this.ErrorStrings.NoVendor;
@@ -761,8 +764,8 @@ export default {
           } else if (10 <= this.form.Category && this.form.Category < 100) {
             number = "0" + this.form.Category;
           } else if (100 <= this.form.Category && this.form.Category < 1000) {
-            number =   this.form.Category;
-          } else{
+            number = this.form.Category;
+          } else {
             number = "000";
           }
           number = number + Math.floor(Math.random() * 900000000 + 100000000);
@@ -900,11 +903,11 @@ export default {
     },
     files: function() {
       if (
-        !this.files[0] &&
-        !this.files[0].name &&
+        this.files[0] &&
+        this.files[0].name &&
         this.CreateEquipmentErrors.NoImage != ""
       ) {
-        this.CreateEquipmentErrors.Image = "";
+        this.CreateEquipmentErrors.NoImage = "";
       }
     },
     selectedLocation: function() {

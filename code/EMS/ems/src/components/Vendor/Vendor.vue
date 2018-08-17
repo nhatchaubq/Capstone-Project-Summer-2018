@@ -37,7 +37,7 @@
     </table>
 
 <!-- test1 -->
-  <div v-if="totalVendor > 9" class="">
+  <div v-if="totalVendor > 9" style="margin-top: 1.5rem">
     <Page :current="currentPage" :total="totalVendor" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage =newPageNumber

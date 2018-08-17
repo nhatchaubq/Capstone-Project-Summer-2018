@@ -202,6 +202,9 @@ let router = new Router({
       beforeEnter: (to, from, next) => {
         store.set("title", menu.TeamDetails);
         next();
+      },
+      meta: {
+        showSearchBar: false,
       }
     },
     {
@@ -292,7 +295,7 @@ let router = new Router({
         next();
       },
       meta: {
-        showSearchBar: true
+        showSearchBar: false
       }
     },
     // {
