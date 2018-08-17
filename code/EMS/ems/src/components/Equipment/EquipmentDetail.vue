@@ -787,6 +787,7 @@
           </div>
         </div> 
       <div slot="footer" style="display: relative; align-items: right; justify-content: right;">
+        <simplert :useRadius="true" :useIcon="true" ref="simplert3"></simplert>
         <button class="btn-CancelItem" v-on:click="cancelPositionEQTLost">Cancel</button>
         <button  class="btn-UpdateItem" v-on:click="updatePositionEQTLost">Save changes</button>
       </div>
@@ -817,42 +818,14 @@ export default {
     // jsbarcode
   },
   created() {
-    this.equipmentId = this.$route.params.id;
-    this.axios
-      .get("http://localhost:3000/api/equipment/" + this.equipmentId)
-      .then(response => {
-        let data = response.data;
-        data.forEach(element => {
-          this.EquimentByID = element.Equipment;
-          this.equipmentName = this.EquimentByID.Name;
-          this.equipmentDescription = this.EquimentByID.Description;
-          this.equipmentMadein = this.EquimentByID.MadeIn;
-          this.equipmentVendorId = this.EquimentByID.VendorId;
-          this.equipmentCategoryId = this.EquimentByID.CategoryId;
-          this.equipmentUnitId = this.EquimentByID.UnitID;
-          this.newStatus = this.EquimentByID.Status;
-        });
-      });
+    this.getEquipmentDetail();
 
     // this.axios
     //   .get("http://localhost:3000/api/equipmentItem/" + equipmentId)
     //   .then(response => {
     //     this.quality = response.data.Quality;
     //   });
-    this.axios
-      .get("http://localhost:3000/api/equipmentItem/" + this.equipmentId)
-      .then(response => {
-        let data = response.data;
-        this.Eitem = data;
-        this.toDisplayEquipmentItem = this.Eitem.slice(0, 10);
-        data.forEach(element => {
-          this.Items.push(element);
-          // this.totalRuntime = element.RuntimeDays + this.totalRuntime;
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    this.getAllItemOfEquipment();
     this.axios
       .get("http://localhost:3000/api/vendor")
       .then(response => {
@@ -1176,6 +1149,40 @@ export default {
     };
   },
   methods: {
+    getEquipmentDetail(){
+      this.equipmentId = this.$route.params.id;
+      this.axios
+        .get("http://localhost:3000/api/equipment/" + this.equipmentId)
+        .then(response => {
+          let data = response.data;
+          data.forEach(element => {
+            this.EquimentByID = element.Equipment;
+            this.equipmentName = this.EquimentByID.Name;
+            this.equipmentDescription = this.EquimentByID.Description;
+            this.equipmentMadein = this.EquimentByID.MadeIn;
+            this.equipmentVendorId = this.EquimentByID.VendorId;
+            this.equipmentCategoryId = this.EquimentByID.CategoryId;
+            this.equipmentUnitId = this.EquimentByID.UnitID;
+            this.newStatus = this.EquimentByID.Status;
+          });
+        });
+    },
+    getAllItemOfEquipment(){
+      this.axios
+      .get("http://localhost:3000/api/equipmentItem/" + this.equipmentId)
+      .then(response => {
+        let data = response.data;
+        this.Eitem = data;
+        this.toDisplayEquipmentItem = this.Eitem.slice(0, 10);
+        data.forEach(element => {
+          this.Items.push(element);
+          // this.totalRuntime = element.RuntimeDays + this.totalRuntime;
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    },
     getNumberFormattedThousand(str) {
       let value = numeral(str).value();
       return numeral(value).format("0,0");
@@ -1265,7 +1272,7 @@ export default {
         this.CreateItemErrors.NoTile === "" &&
         this.CreateItemErrors.NoQuantity === ""
       ) {
-        var result = false;
+        var result = 0;
         this.randomNumbers.forEach(async number => {
           try {
             let res = await this.axios.post(
@@ -1282,26 +1289,27 @@ export default {
               }
             );
             if (res.status == 200) {
-              result = true;
+              result = result + 1;
             }
           } catch (error) {
             console.log(error);
-            result = false;
+            result = result - 1;
           }
         });
-        await Utils.sleep(1500);
-        if (result) {
+        await Utils.sleep(1000);
+        if (result == this.quantity) {
           let context = this;
           let obj = {
             title: "Successfully!!!",
             message: "Create new " + context.quantity + " item(s) successfully",
             type: "success",
             hideAllButton: true,
-            showXclose: false
+            // showXclose: false
           };
           context.$refs.simplert2.openSimplert(obj);
           await Utils.sleep(1500);
-          location.reload();
+          context.getAllItemOfEquipment();
+          context.addPopUp = !context.addPopUp;
         } else {
           alert("Add failed");
         }
@@ -1577,7 +1585,6 @@ export default {
       }
       this.addPopUp = true;
       this.addItemMode = !this.addItemMode;
-      // this.editMode = !this.addPopUp;
     },
 
     getFilePath(file) {
@@ -1684,12 +1691,11 @@ export default {
                 let obj = {
                   message: "Update successfully",
                   type: "success",
-                  hideAllButton: true,
+                  // hideAllButton: true,
                   showXclose: false
                 };
                 context.$refs.simplert.openSimplert(obj);
-                await Utils.sleep(1000);
-                location.reload();
+                context.getEquipmentDetail();
                 context.editMode = !context.editMode;
               })
               .catch(function(error) {
@@ -1760,7 +1766,7 @@ export default {
           message: "Please choose position for this item",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
+        this.$refs.simplert3.openSimplert(obj);
       } else {
         var result = false;
         try {
@@ -1778,7 +1784,7 @@ export default {
           console.log(error);
           result = false;
         }
-        await Utils.sleep(100);
+        await Utils.sleep(600);
         if (result) {
           var updateSttBool = false;
           try {
@@ -1805,10 +1811,13 @@ export default {
               type: "success",
               showXclose: false
             };
-            this.$refs.simplert.openSimplert(obj);
+            this.$refs.simplert3.openSimplert(obj);
+            await Utils.sleep(900);
             this.changePositonLost = false;
             this.updateNumber = this.updateNumber + 1;
             this.editItemMode = !this.editItemMode;
+            this.setSelectedItem(this.selectedItem.Item.Id);
+            this.getAllItemOfEquipment();
           } else {
             alert("Update failed");
           }
@@ -1890,7 +1899,7 @@ export default {
             console.log(error);
             result = false;
           }
-          await Utils.sleep(50);
+          await Utils.sleep(100);
           if (result) {
             let obj = {
               message: "Update status successfully",
@@ -1902,6 +1911,8 @@ export default {
             this.changeItemSttDescription = "";
             this.updateNumber = this.updateNumber + 1;
             this.editItemMode = !this.editItemMode;
+            this.setSelectedItem(this.selectedItem.Item.Id);
+            this.getAllItemOfEquipment();
             // this.currentsttName = this.selectedItem.Item.Status;
             // this.currentsttId = this.this.selectedItem.Item.StatusID;
           } else {
@@ -1919,6 +1930,10 @@ export default {
       let nextmaintaindate = moment(
         this.selectedItem.Item.NextMaintainDate
       ).valueOf();
+      let nextmaintainYear = moment(
+        this.selectedItem.Item.NextMaintainDate
+      ).format('YYYY');
+      let currentyear = moment().format('YYYY');
       if (
         this.selectedItem.Item.Price === "" ||
         this.selectedItem.Item.Price < 50000
@@ -1943,7 +1958,13 @@ export default {
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
-      } else {
+      } else if ( (nextmaintainYear - currentyear) > 5 ) {
+        let obj = {
+          message: "Next maintain year is invalid",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      }else {
         var result = false;
         try {
           let res = await this.axios.put(
@@ -1984,6 +2005,8 @@ export default {
           this.itemWarehouse = this.selectedItem.Item.WarehouseID;
           this.itemWarranty = this.selectedItem.Item.WarrantyDuration;
           this.itemNextMaintainDate = this.selectedItem.Item.NextMaintainDate;
+          this.setSelectedItem(this.selectedItem.Item.Id);
+          this.getAllItemOfEquipment();
         } else {
           alert("UPdate failed");
         }
@@ -2117,9 +2140,9 @@ export default {
           this.editItemMode = false;
         }
 
-        if (this.updateNumber > 0) {
-          location.reload();
-        }
+        // if (this.updateNumber > 0) {
+        //   location.reload();
+        // }
       }
     },
     quantity: function() {
