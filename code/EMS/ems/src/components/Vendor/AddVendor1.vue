@@ -156,7 +156,8 @@ export default {
         NoEmail: " Enter email ",
         validEmail: "Valid email required",
         validWeb: "Valid website required",
-        validContactName: "Valid characters required",
+        validContactName:
+          "Contact name not accepting special characters and number.",
         duplicateEmail: "The email already exists",
         PhoneMin: " Use from 9 to 13 characters for your phonenumber "
         // PhoneMax: " Use from 9 to 13 characters for your phonenumber (max)"
@@ -277,6 +278,7 @@ export default {
           })
           .then(res => {
             this.$router.push("/vendor");
+            alert("A new vendor is created successfully");
           });
     },
 

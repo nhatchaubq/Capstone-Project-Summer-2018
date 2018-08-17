@@ -102,14 +102,14 @@
 
 
 
-  <div class="row" style="margin-top:0.5rem; height: 36px" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' ">
+  <div class="row" style="margin-top:0.5rem; height: 36px" v-if="authUser.Role =='Admin' ">
     <div class=" col-12" style="margin-top:0.5rem">
       <strong>
         Status 
       </strong>
     </div>
   </div >
-  <div class="col-7" style="padding-left: 0 !important" v-on:click="editMode = !editMode" v-if="authUser.Role =='Admin' ">
+  <div class="col-7" style="padding-left: 0 !important" v-if="authUser.Role =='Admin' ">
       <div style="margin-top:0.5rem" >
         <label style="margin-right: 1rem;" class="radio"  >
           <input type="radio" name="active" v-on:change="account.IsActive = true" :checked="account.IsActive" :disabled="!editMode">
@@ -457,53 +457,52 @@ export default {
       // }
 
       if (this.validateAccount()) {
-        // this.CreateAccountErrors.NoImage = "";
-        // this.imageUrl = this.Account.AvatarImage;
-        // if (this.files[0] && this.files[0].name) {
-        let formData = new FormData();
-        formData.append("api_key", "982394881563116");
-        formData.append("file", this.files[0]);
-        formData.append("public_id", this.files[0].name);
-        formData.append("timestamp", moment().valueOf());
-        formData.append("upload_preset", "ursbvd4a");
+        let imageUrl = this.account.AvatarImage;
 
-        let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+        if (this.files[0] && this.files[0].name) {
+          let formData = new FormData();
+          formData.append("api_key", "982394881563116");
+          formData.append("file", this.files[0]);
+          formData.append("public_id", this.files[0].name);
+          formData.append("timestamp", moment().valueOf());
+          formData.append("upload_preset", "ursbvd4a");
+
+          let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+          await this.axios
+            .post(url, formData)
+            .then(async res => {
+              if (res.status == 200) {
+                imageUrl = res.data.url;
+              }
+            })
+            .catch(error => {
+              this.$router.push("/500");
+              console.log(error);
+            });
+        }
         await this.axios
-          .post(url, formData)
-          .then(response => {
-            if (response.status == 200) {
-              this.imageUrl = response.data.url;
-              this.axios
-                .put(
-                  `http://localhost:3000/api/account/${this.$route.params.id}`,
-                  {
-                    account: this.account,
-                    avatarimage: response.data.url
-                  }
-                )
-                .then(res => {
-                  // this.$router.push("/account");
-                  if (res.status == 200) {
-                    this.editMode = false;
-                    this.getAccountDetail(this.$route.params.id);
-                    alert("update successfully");
-                  }
-                });
-            }
+          .put(`http://localhost:3000/api/account/${this.$route.params.id}`, {
+            account: this.account,
+            avatarimage: imageUrl
           })
-          .catch(error => {
-            console.log(error);
+          .then(async res => {
+            // this.$router.push("/account");
+            if (res.status == 200) {
+              this.editMode = false;
+              await this.getAccountDetail(this.$route.params.id);
+              this.files = [];
+              alert("update successfully");
+            }
           });
       }
-      // }
     },
     inputFileChange() {
       this.files = this.$refs.fileInput.files;
     },
 
-    onFileChanged() {
-      this.selectedFile = this.$refs.file.files[0];
-    },
+    // onFileChanged() {
+    //   this.selectedFile = this.$refs.file.files[0];
+    // },
     getFilePath(file) {
       return window.URL.createObjectURL(file);
     },
