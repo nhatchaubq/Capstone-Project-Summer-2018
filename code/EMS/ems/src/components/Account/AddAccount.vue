@@ -275,7 +275,7 @@ export default {
       }
       if (this.account.phone.length < 10 || this.account.phone.length > 17 ) {
         this.CreateAccountErrors.PhoneMin = this.ErrorStrings.PhoneMin;
-      }else if (!phoneRegex.test(this.account.phone)) {
+      }else if ((this.account.phone.length > 9 && this.account.phone.length < 18) && !phoneRegex.test(this.account.phone)) {
         this.CreateAccountErrors.validPhone = this.ErrorStrings.validPhone;
       }else{
         this.CreateAccountErrors.validPhone = "";
