@@ -236,7 +236,7 @@ export default {
       if (
         !this.Vendor.Phone ||
         (this.Vendor.Phone &&
-          (this.Vendor.Phone.length < 10 && this.Vendor.Phone.length > 17))
+          (this.Vendor.Phone.length < 10 || this.Vendor.Phone.length > 17))
       ) {
         this.CreateVendorErrors.PhoneMin = this.ErrorStrings.PhoneMin;
       }
