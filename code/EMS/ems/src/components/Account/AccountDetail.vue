@@ -87,7 +87,7 @@
 
   <div  class="row " style="height: 36px" >
       <div class="col-12" style="margin-top:0.5rem" >
-      <strong>Full name</strong>   <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-else-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span><span v-else-if="CreateAccountErrors.ValidFullName != ''"> <span class="error-text">{{ CreateAccountErrors.ValidFullName }}</span></span>
+      <strong>Full name</strong>  <span v-if="editMode"><strong style="color:red">*</strong></span> <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-else-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span><span v-else-if="CreateAccountErrors.ValidFullName != ''"> <span class="error-text">{{ CreateAccountErrors.ValidFullName }}</span></span>
       </div>  
   </div>
   <input v-if="!editMode" disabled v-model="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole"/>
@@ -105,7 +105,7 @@
   <div class="row" style="margin-top:0.5rem; height: 36px" v-if="authUser.Role =='Admin' ">
     <div class=" col-12" style="margin-top:0.5rem">
       <strong>
-        Status 
+        Status <span v-if="editMode"><strong style="color:red">*</strong></span> 
       </strong>
     </div>
   </div >
@@ -569,7 +569,7 @@ export default {
       if (
         !this.SelectedMemberPassword1 ||
         (this.SelectedMemberPassword1 &&
-          (this.SelectedMemberPassword1.length < 6 ||
+          (this.SelectedMemberPassword1.length < 6 &&
             this.SelectedMemberPassword1.length > 50))
       ) {
         this.CreatePassErrors.MinMaxNewPass = this.ErrorStrings.MinMaxNewPass;
