@@ -91,7 +91,7 @@
             <div class="form-field">
                 <div class="form-field-title">
                     
-                    <strong>Phone (required)</strong>   <span v-if="CreateVendorErrors.PhoneMin != ''"> <span class="error-text">{{ CreateVendorErrors.PhoneMin }}</span></span><span v-else-if="CreateVendorErrors.PhoneMax != ''"> <span class="error-text">{{ CreateVendorErrors.PhoneMax }}</span></span><span v-else-if="CreateVendorErrors.validPhone != ''"> <span class="error-text">{{ CreateVendorErrors.validPhone }}</span></span><span v-else-if="CreateVendorErrors.duplicatePhone != ''"> <span class="error-text">{{ CreateVendorErrors.duplicatePhone }}</span></span>
+                    <strong>Phone (required)</strong>   <span v-if="CreateVendorErrors.PhoneMin != ''"> <span class="error-text">{{ CreateVendorErrors.PhoneMin }}</span></span> <span v-else-if="CreateVendorErrors.validPhone != ''"> <span class="error-text">{{ CreateVendorErrors.validPhone }}</span></span><span v-else-if="CreateVendorErrors.duplicatePhone != ''"> <span class="error-text">{{ CreateVendorErrors.duplicatePhone }}</span></span>
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
