@@ -1,14 +1,12 @@
 <template>
-<div>
+<div> 
   <div style="padding: 0rem 2rem 0rem 1rem">
     <router-link to='/equipment'>
         <a><span class="fa fa-chevron-left"></span> Back to Equipment </a>
     </router-link>
   </div>
-    <div>
-        <!-- <h1>{{this.EquimentByID.Name}}</h1> -->
+  <div>
         <div class="field" style=" display: grid; grid-template-columns: 45% 55%; width: 100;">
-           
             <div class="left" style="padding-top:0.5rem; padding-left:1rem ">
                 <img :src= "this.EquimentByID.Image" style="width: 400px; height: 400px; ">
             </div>
@@ -61,15 +59,15 @@
                     </select>
                   </div>
               </div>
-               <div class="row" style=" display: grid;grid-template-columns: 50% 50%;">
+              <div class="row" style=" display: grid;grid-template-columns: 50% 50%;">
                 <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 40% 60%;" >
                   <div class="" style="padding-top:0.25rem; " >
                       Quantity:  
                   </div>
                   <input v-model="this.Items.length" class="input col-5 " type="text" disabled="disabled"> 
-               </div>
-               <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 20% 80%; padding-left:2rem " >
-                <div class="" style="padding-top:0.25rem;" >
+                </div>
+                <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 20% 80%; padding-left:2rem " >
+                  <div class="" style="padding-top:0.25rem;" >
                       Unit:  <span v-if="editMode" style="color:red; font-size:18px">*</span>
                   </div>
                   <input v-if="!editMode" v-model="this.EquimentByID.Unit.Name" class="input col-5 " type="text" disabled="disabled"> 
@@ -157,7 +155,6 @@
                 </div>
               </div>
               <div class=" is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editMode" >
-                <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
                 <button class="btn-Cancel" v-on:click="cancelUpdateEquipment">Cancel</button>
                 <button  class="btn-Update" v-on:click="updateEquipment">Save changes</button>
               </div>
@@ -192,90 +189,562 @@
                   </tr>
               </tbody>
           </table>
-           <!-- dien-start -->
-            <div v-if="Eitem.length > 9" class="">
-    <Page :current="currentPageEquipmentItem" :total="Eitem.length" show-elevator 
-      @on-change="(newPageNumber) => {
-        currentPage = newPageNumber;
-        let start = 10 * (newPageNumber - 1);
-        let end = start + 10;
-        
-        toDisplayEquipmentItem = Eitem.slice(start, end);
-      }">
-    </Page>
-  </div>  
-<!-- dien-end -->
         </div>
-        <modal v-model="addPopUp" >
-          <!-- <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert> -->
-          <div slot="header">
-            <h3 style="paddingbtn- Add-top:0.5rem; text-transform: uppercase;  font-size: 20px; color: #26a69a">Add Items</h3>
+           <!-- dien-start -->
+        <div v-if="Eitem.length > 9" class="">
+          <Page :current="currentPageEquipmentItem" :total="Eitem.length" show-elevator 
+            @on-change="(newPageNumber) => {
+              currentPage = newPageNumber;
+              let start = 10 * (newPageNumber - 1);
+              let end = start + 10;
+              
+              toDisplayEquipmentItem = Eitem.slice(start, end);
+            }">
+          </Page>
+        </div>  
+        <!-- dien-end -->
+  </div>
+    <modal v-model="addPopUp" >
+      <simplert :useRadius="true" :useIcon="true" ref="simplert2"></simplert>
+      <div slot="header">
+        <h3 style="paddingbtn- Add-top:0.5rem; text-transform: uppercase;  font-size: 20px; color: #26a69a">Add Items</h3>
+      </div>
+      <div style="font-size: 0.9rem">
+        <div class="" style="padding-top:0.5rem;">
+          <div class="form-field-title">
+            <span><strong>  Quantity (required) </strong></span>
           </div>
-          <div style="font-size: 0.9rem">
-            <div class="" style="padding-top:0.5rem;">
-            <div class="form-field-title">
-              <span><strong>  Quantity (required) </strong></span>
-            </div>
-            <div class="field is-horizontal">
-                <input type="text" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" v-on:input="() => {
-                            if (quantity < 1 || quantity == '') {
-                                quantity = 0;
-                            } else if (quantity > 50) {
-                                quantity = 50;
-                            }
-                            quantity  = getNumberFormattedThousand(quantity);
-                        }" >
-                <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">Create Serial Number</button>
-            </div>
-            <div class="field is-horizontal">
-              <simplert :useRadius="true" :useIcon="false" ref="simplert"></simplert>
-              <span v-if="CreateItemErrors.NoQuantity != ''">. <span class="error-text">{{ CreateItemErrors.NoQuantity }}</span></span>
-              <span v-if="CreateItemErrors.NoBarcode != ''">. <span class="error-text">{{ CreateItemErrors.NoBarcode }}</span></span>
-            </div>
-            <div v-show="showingBarcode" style="max-height: 80px; overflow-y: auto">
-                <ul>
-                    <li v-for="(i,index) in randomNumbers" :key="i"> {{index+1}}. {{i}}</li>
-                </ul>
-            </div>
-            <div class="field" style="display: grid; grid-template-columns: 50% 50%">
-              <div class="">
-                  <div class="form-field-title" >
-                  <span><strong>  Price (required) </strong></span>
-                  </div>
-                  <div class="field is-horizontal" style="margin-right:1rem">
-                    <input type="text" min="50000" style="text-align: right" class="input" placeholder="Price" v-model="form.price" v-on:input="() => {
-                            if (form.price < 0 || form.price == '') {
-                                form.price = 0;
-                            } else if (form.price.length > 14) {
-                                form.price  = '99,999,999,999';
-                            }
-                            form.price  = getNumberFormattedThousand(form.price);
-                        }">
-                    <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">VNĐ</label>
-                  </div>
-                    <span v-if="CreateItemErrors.NoPrice != ''">. <span class="error-text">{{ CreateItemErrors.NoPrice }}</span></span>                  
+        <div class="field is-horizontal">
+            <input type="text" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" v-on:input="() => {
+                        if (quantity < 1 || quantity == '') {
+                            quantity = 0;
+                        } else if (quantity > 50) {
+                            quantity = 50;
+                        }
+                        quantity  = getNumberFormattedThousand(quantity);
+                    }" >
+            <button type="submit" class="button is-primary is-focused" name="GenerateBarcode" v-on:click="getRandomNumber">Create Serial Number</button>
+        </div>
+        <div class="field is-horizontal">
+          <span v-if="CreateItemErrors.NoQuantity != ''">. <span class="error-text">{{ CreateItemErrors.NoQuantity }}</span></span>
+          <span v-if="CreateItemErrors.NoBarcode != ''">. <span class="error-text">{{ CreateItemErrors.NoBarcode }}</span></span>
+        </div>
+        <div v-show="showingBarcode" style="max-height: 80px; overflow-y: auto">
+            <ul>
+                <li v-for="(i,index) in randomNumbers" :key="i"> {{index+1}}. {{i}}</li>
+            </ul>
+        </div>
+        <div class="field" style="display: grid; grid-template-columns: 50% 50%">
+          <div class="">
+              <div class="form-field-title" >
+                <span><strong>  Price (required) </strong></span>
               </div>
-              <div >
-                  <div class="form-field-title">
-                   <span><strong> Warranty (required) </strong></span>
+              <div class="field is-horizontal" style="margin-right:1rem">
+                <input type="text" min="50000" style="text-align: right" class="input" placeholder="Price" v-model="form.price" v-on:input="() => {
+                        if (form.price < 0 || form.price == '') {
+                            form.price = 0;
+                        } else if (form.price.length > 14) {
+                            form.price  = '99,999,999,999';
+                        }
+                        form.price  = getNumberFormattedThousand(form.price);
+                    }">
+                <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">VNĐ</label>
+              </div>
+                <span v-if="CreateItemErrors.NoPrice != ''">. <span class="error-text">{{ CreateItemErrors.NoPrice }}</span></span>                  
+          </div>
+          <div >
+              <div class="form-field-title">
+                <span><strong> Warranty (required) </strong></span>
+              </div>
+              <div class="field is-horizontal" >
+                <input type="text" min="1" style="text-align: right" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration" v-on:input="() => {
+                        if (form.warrantyDuration < 0 || form.warrantyDuration == '') {
+                            form.warrantyDuration = 0;
+                        } else if (form.warrantyDuration > 999) {
+                            form.warrantyDuration = 999;
+                        }
+                        form.warrantyDuration  = getNumberFormattedThousand(form.warrantyDuration);
+                    }">
+                <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Month</label>
+              </div> 
+                <span v-if="CreateItemErrors.NoWarranty != ''">. <span class="error-text">{{ CreateItemErrors.NoWarranty }}</span></span>                  
+          </div>
+        </div>
+        <div class="form-field-title">
+          <span><strong>  Location - Warehouse (required) </strong></span>
+          <span v-if="CreateItemErrors.NoLocation != ''">. <span class="error-text">{{ CreateItemErrors.NoLocation }}</span></span>
+        </div>
+        <div>
+          <model-select style="width: 100% !important" :options="locationModalSelect" v-model="form.selectedLocation" placeholder="Select a location  "></model-select>  
+        </div>
+        <div class="form-field-title">
+          <span><strong>  Block (required) </strong></span>
+          <span v-if="CreateItemErrors.NoBlock != ''">. <span class="error-text">{{ CreateItemErrors.NoBlock }}</span></span>
+        </div>
+        <div>
+          <model-select style="width: 100% !important" :options="blockModalSelect" v-model="form.selectedBlock" placeholder="Select a block  "></model-select>               
+        </div>
+        <div class="form-field-title">
+          <span><strong>  Floor (required) </strong></span>
+          <span v-if="CreateItemErrors.NoFloor != ''">. <span class="error-text">{{ CreateItemErrors.NoFloor }}</span></span>
+        </div>
+        <div>
+          <model-select style="width: 100% !important" :options="floorModalSelect" v-model="form.selectedFloor" placeholder="Select a floor  "></model-select>             
+        </div>
+        <div class="form-field-title">
+          <span><strong>  Tile (required) </strong></span>
+          <span v-if="CreateItemErrors.NoTile != ''">. <span class="error-text">{{ CreateItemErrors.NoTile }}</span></span>
+        </div>
+        <div>
+        <model-select style="width: 100% !important" :options="tileModalSelect" v-model="form.selectedTile" placeholder="Select a tile  "></model-select>  
+        </div>
+        </div>
+      </div>          
+      <div slot="footer">
+        <div class="" style="align-items: center; display: flex; justify-content: center;">
+          <button class="btn-CancelItem" v-on:click="addPopUp = false">Cancel</button>
+          <button id="" class="button is-rounded is-primary" style="border-radius: 8px" v-on:click="createNewEquipentItem">Create New Items</button>  
+        </div>
+      </div>
+    </modal>
+    <modal v-model="detailPopUp" :width="580" :closable="false">
+      <div v-if="selectedItem!=null" > 
+        <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
+        <div slot="header">
+            <div class="field" style=" display: grid; grid-template-columns: 85% 15%; height:3rem">
+              <div style="margin-top:0.25rem"><strong style="padding-top:0.25rem; margin-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a;padding-left: 0.4rem">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong></div>
+              <div class="" style="text-align: right; width: 100%" v-if="authUser.Role=='Equipment Staff' && (currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation &&currentsttName != workingstt)) ">
+                <div style="text-align: right; width: 100%" class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode" style="font-size: 16px;">Edit</button></div>  
+              </div>
+              <!-- <div class="" v-else><button class="btn-edit" style="color: white; border-bottom: 1px solid black;background-color: #26a69a; border-radius: 5px" disabled="disabled">Edit</button></div>   -->
+            </div>
+        </div>
+        <div style="font-size: 0.9rem; font:roboto; padding-top:0.25rem">  
+            <div class="control-mode-item">
+                <div class="field is-grouped view-mode" style="">
+                    <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.Details}' v-on:click="setViewMode(viewModes.Details)">Details</button>
+                    <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.Status}' v-on:click="setViewMode(viewModes.Status)">Status</button>
+                    <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.Position}' v-on:click="setViewMode(viewModes.Position)">Position</button>
+                    <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.WorkOrder}' v-on:click="setViewMode(viewModes.WorkOrder)">Working Order</button>
+                    <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.RunTime}' v-on:click="setViewMode(viewModes.RunTime)">Runtime</button>
+                </div>
+            </div>
+            <div class="content-infor">
+              <div v-if="currentViewMode ==  viewModes.Details">
+                <div  class="">
+                  <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode: * is required, please input these fields</span>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="titleDetail"  >
+                      Serial Number:  
                   </div>
-                  <div class="field is-horizontal" >
-                    <input type="text" min="1" style="text-align: right" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration" v-on:input="() => {
-                            if (form.warrantyDuration < 0 || form.warrantyDuration == '') {
-                                form.warrantyDuration = 0;
-                            } else if (form.warrantyDuration > 999) {
-                                form.warrantyDuration = 999;
-                            }
-                            form.warrantyDuration  = getNumberFormattedThousand(form.warrantyDuration);
-                        }">
-                    <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Month</label>
+                    <input  v-model="selectedItem.Item.SerialNumber" class="input col-7 " type="text" disabled="disabled"> 
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="titleDetail"  >
+                      Price:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                  </div>
+                  <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" >  
+                    <div class="">
+                      <input v-if="!editItemMode" v-model="selectedItem.Item.Price" class="input col-7 " type="text" disabled="disabled"> 
+                      <input v-else v-model="selectedItem.Item.Price" class="input col-7 " type="text" min="50000" v-on:input="() => {
+                          if (selectedItem.Item.Price < 0 || selectedItem.Item.Price == '') {
+                            selectedItem.Item.Price = 0;
+                          } else if (selectedItem.Item.Price.length > 14) {
+                              selectedItem.Item.Price  = '99,999,999,999';
+                          }
+                        selectedItem.Item.Price = getNumberFormattedThousand(selectedItem.Item.Price);
+                      }"> 
+                    </div>
+                    <div class="">
+                      <label style=" margin-top: 0.75rem;margin-left: 0.4rem;">VND</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="titleDetail" >
+                      Warranty:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                  </div>
+                  <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" > 
+                    <div class="">
+                      <input v-if="!editItemMode" v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="text" disabled="disabled"> 
+                      <input v-else v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="number" min="1"> 
+                    </div>
+                    <div class="">
+                      <label style=" margin-top: 0.75rem;margin-left: 0.4rem;">Months</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="titleDetail">
+                      Warehouse:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                  </div>
+                    <input v-if="!editItemMode" v-model="selectedItem.Item.Warehouse" class="input col-7 " type="text" disabled="disabled"> 
+                    <div class="select" v-else>
+                      <select class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width:100%"  v-model="selectedItem.Item.WarehouseID">
+                                <option :key="'equipmentUnit' + warehouse.Id" v-for="warehouse in warehouseOptions"
+                                  :selected="selectedItem.Item.WarehouseID == warehouse.Id "                    
+                                  v-bind:value="warehouse.Id">{{warehouse.Name}}</option>
+                      </select>
+                    </div>
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="titleDetail" >
+                      Import-Date:  
+                  </div>
+                    <input  v-model="selectedItem.Item.ImportDate" class="input col-7 " type="text" disabled="disabled"> 
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="titleDetail" >
+                      Last-MaintainDate:  
+                  </div>
+                    <input v-model="selectedItem.Item.LastMaintainDate" class="input col-7 " type="text" disabled="disabled">
+                </div>
+                <div class="rowpu" style="height: 36px" >
+                  <div class="titleDetail" >
+                      Next-MaintainDate:  
+                  </div>
+                    <input v-if="!editItemMode" v-model="selectedItem.Item.NextMaintainDate" class="input col-7 " type="text" disabled="disabled"> 
+                    <input v-else v-model="selectedItem.Item.NextMaintainDate" class="input col-7 " type="date">
+                </div>
+                <div class="rowpu" style="margin-left: 0.5rem;margin-top: 0.75rem;margin-right: 1rem; display: grid; grid-template-columns: 40% 50%; width: 100; height:50px" >
+                  <div class="titleDetail">
+                      Description:  
+                  </div>
+                    <textarea v-if="!editItemMode" v-model="selectedItem.Item.Description" cols="7" rows="3" disabled="disabled" style="border-style:solid; border-color:#b0bec5; padding-left:0.5rem"> </textarea>
+                    <textarea v-else v-model="selectedItem.Item.Description" cols="7" rows="10" style="border-style:solid; border-color:#b0bec5;padding-left:0.5rem"> </textarea>
+                </div>
+                  <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
+                  <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
+                  <button class="btn-UpdateItem" v-on:click="updateItem">Save changes</button>
+                  </div>
+                </div>
+              </div>
+              <div v-if="currentViewMode ==  viewModes.Status">
+                <div>
+                  <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode * is required, please input these fields</span>
+                  <div class="rowpu" style="display: grid; grid-template-columns: 20% 80%;" >
+                    <div class="" style="margin-top:0.2rem;margin-left:1.5rem" >
+                      Status:  
+                    </div>
+                    
+                    <!-- <div class="" v-if="!editItemMode" ><input v-model="selectedItem.Item.Status" class="input col-7 " type="text" disabled="disabled"></div> -->
+                    <div class="" v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.2rem">
+                      <select  class=""   v-model="selectedItem.Item.StatusID" disabled="disabled">
+                        <option :key="'equipmentItemStatus' + status.Id" v-for="status in statusOptions"
+                          :selected="selectedItem.Item.StatusID == status.Id "                    
+                          v-bind:value="status.Id">{{status.Name}}</option>
+                      </select>
+                    </div>
+                    <div class="select" v-else>
+                      <select  class="" style="border: 1px #9e9e9e solid; width: 100%"  v-model="selectedItem.Item.StatusID">
+                        <option :key="'equipmentItemStatus' + status.Id" v-for="status in statusOptions"
+                          :selected="selectedItem.Item.StatusID == status.Id "                    
+                          v-bind:value="status.Id">{{status.Name}}</option>
+                      </select>
+                    </div> 
+                  </div>
+                  <div v-if="editItemMode" class="rowpu" style="display: grid; grid-template-columns: 20% 80%;" >
+                    <div class="" style="margin-top:0.2rem;margin-left:1.5rem" >
+                        Note:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                    </div>
+                    <textarea v-model="changeItemSttDescription" cols="7" rows="3" style="border-style:solid; border-color:#b0bec5;" placeholder="Why do you change into this status?"> </textarea>
+                  </div>
+                  <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
+                    <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
+                    <button class="btn-UpdateItem" v-on:click="changeItemStatus">Save changes</button>
+                  </div>
+                  <div class="wrap-table" style=" padding-top:0,5rem" v-if="statusHistories && statusHistories.length != 0">
+                    <div><h4 style="font-style: italic">Table: Equipment status history</h4></div>
+                    <div style="max-height: 350px; overflow-y: auto;">
+                      <table class="mytable">
+                          <thead>
+                            <tr>
+                              <th><strong>No.</strong></th>                            
+                              <th><strong>From</strong></th>
+                              <th><strong>To</strong></th>
+                              <th><strong>User</strong></th>
+                              <th><strong>Date</strong></th>
+                              <th><strong>Note</strong></th>
+                            </tr>
+                          </thead>  
+                          <tbody >
+                            <tr v-for="(history, index) in statusHistories" style="font-size=16">
+                              <td width=5% style="font-size=14;text-align:center">{{index + 1}}</td>
+                              <td width=20% style="font-size=14;">{{history.OldStatus.Name}}</td>    
+                              <td width=20% style="font-size=14;">{{history.NewStatus.Name}}</td>  
+                              <td width=16% style="font-size=14;">{{history.Fullname}}</td>  
+                              <td width=16% style="font-size=14;">{{history.Date}}</td>
+                              <td width=23% style="font-size=14;">{{history.Description}}</td>    
+                            </tr>
+                          </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="" v-else style="padding-top: 0,75rem;font-style: italic">
+                    This item has been not change status by someone!
+                  </div>
+                </div>
+              </div>
+              <div v-if="currentViewMode ==  viewModes.Position">
+                <span v-if="editItemMode && authUser.Role=='Equipment Staff' && selectedItem.Item.StatusID"  style="color:red; font-size:14px"> Edit Mode * is required, please input these fields</span>
+                <div class = "" v-if="itemLocationID == lostLocation">
+                  <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                    <div class="" style="margin-top:0.5rem" >
+                        Location: 
+                    </div>
+                    <div class="">
+                      <div class="" ><input v-model="itemLocationID" class="input col-7 " type="text" disabled="disabled"></div>
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                    <div class="" style="margin-top:0.5rem" >
+                        Address:  
+                    </div>
+                    <div class="">
+                      <div class="" ><input v-model="itemLocationID" class="input col-7 " type="text" disabled="disabled"></div>
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                    <div class="" style="margin-top:0.5rem" >
+                        Block: 
+                    </div>
+                    <div class="">
+                      <div class=""><input v-model="itemBlockID" class="input col-7 " type="text" disabled="disabled"></div>
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                    <div class="" style="margin-top:0.5rem" >
+                        Floor:  
+                    </div>
+                    <div class="">
+                      <div class="" ><input v-model="itemFloorID" class="input col-7 " type="text" disabled="disabled"></div>
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                    <div class="" style="margin-top:0.5rem" >
+                        Tile:  
+                    </div>
+                    <div class="">
+                      <div class=""><input v-model="itemTileID" class="input col-7 " type="text" disabled="disabled"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="" v-else>
+                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                      <div class="" style="margin-top:0.25rem;height: 100%" >
+                          Location:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                      </div>
+                      <div class="">
+                        <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
+                          <select  class=""  v-model="selectedItem.Item.LocationID" disabled="disabled">
+                            <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
+                              v-bind:value="location.Id">{{location.Name}}</option>
+                          </select>
+                        </div>
+                      <div v-else class="select" style="width: 100%;height:100%">
+                        <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.LocationID">
+                          <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
+                            v-bind:value="location.Id">{{location.Name}}</option>
+                        </select>
+                      </div> 
+                      </div>
+                    </div>
+                  <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                    <div class="" style="margin-top:0.25rem" >
+                        Address:  
+                    </div>
+                    <div class="">
+                      <div  style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem" disable="disable">
+                          <select  class=""  v-model="selectedItem.Item.LocationID" disabled="disabled">
+                            <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
+                              v-bind:value="location.Id">{{location.Address| truncate(53)}}</option>
+                          </select>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                    <div class="" style="margin-top:0.25rem" >
+                        Block:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                    </div>
+                    <div class="">
+                      <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
+                        <select  class=""  v-model="selectedItem.Item.BlockID" disabled="disabled">
+                            <option :key="'equipmentItemBlock' + block.Id" v-for="block in blockOptions"            
+                              v-bind:value="block.Id">{{block.Name}}</option>
+                          </select>
+                      </div>
+                      <div v-else class="select" style="width: 100%;height:100%">
+                          <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.BlockID">
+                            <option :key="'equipmentItemBlock' + block.Id" v-for="block in blockOptions"            
+                              v-bind:value="block.Id">{{block.Name}}</option>
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                    <div class="" style="margin-top:0.25rem" >
+                        Floor:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                    </div>
+                    <div class="">
+                      <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
+                        <select  class=""   v-model="selectedItem.Item.FloorID" disabled="disabled">
+                            <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"   
+                              :value="floor.Id">{{floor.Name}}
+                            </option>
+                          </select>
+                      </div>
+                      <div v-else class="select" style="width: 100%;height:100%">
+                          <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.FloorID">
+                            <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"   
+                              :value="floor.Id">{{floor.Name}}
+                            </option>
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
+                    <div class="" style="margin-top:0.25rem" >
+                        Tile:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
+                    </div>
+                      <div class="">
+                        <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
+                            <select  class=""   v-model="selectedItem.Item.TileID" disabled="disabled">
+                              <option :key="'equipmentItemTile' + tile.Id" v-for="tile in tileOptions" 
+                                v-bind:value="tile.Id">{{tile.Name}}</option>
+                            </select>
+                        </div>
+                        <div v-else class="select" style="width: 100%;height:100%">
+                            <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.TileID">
+                              <option :key="'equipmentItemTile' + tile.Id" v-for="tile in tileOptions"                 
+                                v-bind:value="tile.Id">{{tile.Name}}</option>
+                            </select>
+                        </div>
+                      </div>
+                  </div>
+                  <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
+                    <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
+                    <button  class="btn-UpdateItem" v-on:click="updatePositionItem">Save changes</button>
+                  </div>
+                </div>
+              </div>
+              <div v-if="currentViewMode ==  viewModes.WorkOrder">
+                <div class="wrap-table"  style="max-height: 300px; overflow-y: auto">
+                  <div class="" v-if="allworkorder && allworkorder.length != 0">
+                    <div><h4 style="font-style: italic">Table: Equipment working order history</h4></div>
+                    <div class="" style="max-height: 350px; overflow-y: auto;">
+                      <table class="mytable">
+                        <thead>
+                            <tr>
+                              <th><strong>No.</strong></th>                            
+                              <th><strong>Name</strong></th>
+                              <th><strong>RequestUser</strong></th>
+                              <th><strong>StartDate</strong></th>
+                              <th><strong>ClosedDate</strong></th>
+                              <th><strong>Status</strong></th>
+                            </tr>
+                          </thead>  
+                          <tbody>
+                            <tr v-for="(workorder, index) in allworkorder" style="font-size=16">
+                              <td width=3% style="font-size=14;text-align:center">{{index + 1}}</td>    
+                              <td width=33% style="font-size=14;">{{workorder.Name | truncate(30)}}</td>    
+                              <td width=18% style="font-size=14;">{{workorder.RequestUser}}</td>
+                              <td width=17% style="font-size=14;">{{workorder.StartDate}}</td>  
+                              <td width=17% style="font-size=14;">{{workorder.Detail[0].ClosedDate ? workorder.Detail[0].ClosedDate : ''}}</td>
+                              <td width=14% style="font-size=14;">{{workorder.Status}}</td>     
+                            </tr>
+                          </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="" v-else style="font-style: italic;">
+                    <h3>This item has no work order</h3>
                   </div> 
-                    <span v-if="CreateItemErrors.NoWarranty != ''">. <span class="error-text">{{ CreateItemErrors.NoWarranty }}</span></span>                  
+                </div>  
               </div>
-            </div>
+              <div v-else-if="currentViewMode ==  viewModes.RunTime">
+                <div class="">
+                  <div class="rowpu" style="height: 36px" >
+                    <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
+                        Import-Date:  
+                    </div>
+                    <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
+                      <input  v-model="selectedItem.Item.ImportDate" class="input col-7 " type="text" disabled="disabled"> 
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px" >
+                    <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
+                        Run-times:  
+                    </div>
+                    <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;" >  
+                      <input  v-model="selectedItem.Item.RuntimeDays" class="input col-7 " type="text" disabled="disabled"> 
+                      <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label> 
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px" >
+                    <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
+                        Performance:  
+                    </div>
+                    <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
+                      <input  v-model="percentRuntime" class="input col-7 " type="text" disabled="disabled">
+                      <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">%</label> 
+                    </div>
+                  </div>
+                  <div class="rowpu" style="height: 36px" >
+                    <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
+                        Downtime:  
+                    </div>
+                    <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
+                      <input  v-model="downtime" class="input col-7 " type="text" disabled="disabled">
+                      <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label>  
+                    </div>
+                  </div>
+                  <div class="" v-if="allMaintainWorkorder && allMaintainWorkorder.length != 0">
+                    <div><h4 style="font-style: italic">Table: Equipment maintaining order history</h4></div>
+                    <div class="" style="max-height: 350px; overflow-y: auto;">
+                      <table class="mytable">
+                        <thead>
+                            <tr>
+                              <th><strong>No.</strong></th>                            
+                              <th><strong>Name</strong></th>
+                              <th><strong>Maintainer</strong></th>
+                              <th><strong>StartDate</strong></th>
+                              <th><strong>ClosedDate</strong></th>
+                              <th><strong>Cost</strong></th>
+                            </tr>
+                          </thead>  
+                          <tbody>
+                            <tr v-for="(workorder, index) in allMaintainWorkorder" style="font-size=16">
+                              <td width=3% style="font-size=14;text-align:center">{{index + 1}}</td>    
+                              <td width=33% style="font-size=14;">{{workorder.Name | truncate(30)}}</td>    
+                              <td width=18% style="font-size=14;">{{workorder.RequestUser}}</td>
+                              <td width=17% style="font-size=14;">{{workorder.StartDate}}</td>  
+                              <td width=17% style="font-size=14;">{{workorder.Detail[0].ClosedDate ? workorder.Detail[0].ClosedDate : ''}}</td>
+                              <td width=14% style="font-size=14;">{{workorder.Detail[0].Cost >= 0 ? getNumberFormattedThousand(workorder.Detail[0].Cost) : 'Maintaining'}}</td>     
+                            </tr>
+                          </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="" v-else style="font-style: italic;">
+                    <h3>This item has no maintaining work order</h3>
+                  </div> 
+                </div>
+              </div>
+            </div>  
+        </div>
+      </div>  
+      <div slot="footer">
+        </div>
+    </modal>
+    <modal v-model="changePositonLost">
+      <div slot="header">
+        <h2>Select position for item</h2>
+      </div>
+        <div style="font-size: 0.9rem">
+          <div class="" style="padding-top:0.5rem;">
             <div class="form-field-title">
-               <span><strong>  Location - Warehouse (required) </strong></span>
-               <span v-if="CreateItemErrors.NoLocation != ''">. <span class="error-text">{{ CreateItemErrors.NoLocation }}</span></span>
+              <span><strong>  Location (required) </strong></span>
+              <span v-if="CreateItemErrors.NoLocation != ''">. <span class="error-text">{{ CreateItemErrors.NoLocation }}</span></span>
             </div>
             <div>
               <model-select style="width: 100% !important" :options="locationModalSelect" v-model="form.selectedLocation" placeholder="Select a location  "></model-select>  
@@ -299,496 +768,16 @@
               <span v-if="CreateItemErrors.NoTile != ''">. <span class="error-text">{{ CreateItemErrors.NoTile }}</span></span>
             </div>
             <div>
-            <model-select style="width: 100% !important" :options="tileModalSelect" v-model="form.selectedTile" placeholder="Select a tile  "></model-select>  
-            </div>
-            </div>
-          </div>          
-          <div slot="footer">
-            <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
-            <div class="" style="align-items: center; display: flex; justify-content: center;">
-              <button class="btn-CancelItem" v-on:click="addPopUp = false">Cancel</button>
-              <button id="" class="button is-rounded is-primary" style="border-radius: 8px" v-on:click="createNewEquipentItem">Create New Items</button>  
+              <model-select style="width: 100% !important" :options="tileModalSelect" v-model="form.selectedTile" placeholder="Select a tile  "></model-select>  
             </div>
           </div>
-        </modal>
-       
-        <!-- <vodal class="no-padding" height="600" width="540" :show="selectedItem != null" :closeButton='false' @hide="() => {
-                                                                                      selectedItem = null;
-                                                                                      editItemMode = false;
-                                                                                    }" animation="slideUp"> -->
-          <!-- <equipment-detail-popup :equipment="selectedItem" class="" v-show="selectedItem != null"></equipment-detail-popup> -->
-      <modal v-model="detailPopUp" :width="580" :closable="false">
-         <div v-if="selectedItem!=null" > 
-           <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
-          <div slot="header">
-              <div class="field" style=" display: grid; grid-template-columns: 85% 15%; height:3rem">
-                <div style="margin-top:0.25rem"><strong style="padding-top:0.25rem; margin-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a;padding-left: 0.4rem">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong></div>
-                <div class="" style="text-align: right; width: 100%" v-if="authUser.Role=='Equipment Staff' && (currentViewMode == 0 || currentViewMode == 1 || (currentViewMode == 2 && itemLocationID != lostLocation &&currentsttName != workingstt)) ">
-                  <div style="text-align: right; width: 100%" class="" v-if="!editItemMode"><button class="btn-edit" v-on:click="editItemMode = !editItemMode" style="font-size: 16px;">Edit</button></div>  
-                </div>
-                <!-- <div class="" v-else><button class="btn-edit" style="color: white; border-bottom: 1px solid black;background-color: #26a69a; border-radius: 5px" disabled="disabled">Edit</button></div>   -->
-              </div>
-          </div>
-          <div style="font-size: 0.9rem; font:roboto; padding-top:0.25rem">  
-              <div class="control-mode-item">
-                  <div class="field is-grouped view-mode" style="">
-                      <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.Details}' v-on:click="setViewMode(viewModes.Details)">Details</button>
-                      <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.Status}' v-on:click="setViewMode(viewModes.Status)">Status</button>
-                      <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.Position}' v-on:click="setViewMode(viewModes.Position)">Position</button>
-                      <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.WorkOrder}' v-on:click="setViewMode(viewModes.WorkOrder)">Working Order</button>
-                      <button class="btn-view-mode-item" :class='{"is-active-item": currentViewMode == viewModes.RunTime}' v-on:click="setViewMode(viewModes.RunTime)">Runtime</button>
-                  </div>
-              </div>
-              <div class="content-infor">
-                <div v-if="currentViewMode ==  viewModes.Details">
-                  <div  class="">
-                    <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode: * is required, please input these fields</span>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="titleDetail"  >
-                        Serial Number:  
-                    </div>
-                      <input  v-model="selectedItem.Item.SerialNumber" class="input col-7 " type="text" disabled="disabled"> 
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="titleDetail"  >
-                        Price:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                    </div>
-                    <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" >  
-                      <div class="">
-                        <input v-if="!editItemMode" v-model="selectedItem.Item.Price" class="input col-7 " type="text" disabled="disabled"> 
-                        <input v-else v-model="selectedItem.Item.Price" class="input col-7 " type="text" min="50000" v-on:input="() => {
-                            if (selectedItem.Item.Price < 0 || selectedItem.Item.Price == '') {
-                               selectedItem.Item.Price = 0;
-                            } else if (selectedItem.Item.Price.length > 14) {
-                                selectedItem.Item.Price  = '99,999,999,999';
-                            }
-                           selectedItem.Item.Price = getNumberFormattedThousand(selectedItem.Item.Price);
-                        }"> 
-                      </div>
-                      <div class="">
-                        <label style=" margin-top: 0.75rem;margin-left: 0.4rem;">VND</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="titleDetail" >
-                        Warranty:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                    </div>
-                    <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" > 
-                      <div class="">
-                        <input v-if="!editItemMode" v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="text" disabled="disabled"> 
-                        <input v-else v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="number" min="1"> 
-                      </div>
-                      <div class="">
-                        <label style=" margin-top: 0.75rem;margin-left: 0.4rem;">Months</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="titleDetail">
-                        Warehouse:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                    </div>
-                      <input v-if="!editItemMode" v-model="selectedItem.Item.Warehouse" class="input col-7 " type="text" disabled="disabled"> 
-                      <div class="select" v-else>
-                        <select class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width:100%"  v-model="selectedItem.Item.WarehouseID">
-                                  <option :key="'equipmentUnit' + warehouse.Id" v-for="warehouse in warehouseOptions"
-                                    :selected="selectedItem.Item.WarehouseID == warehouse.Id "                    
-                                    v-bind:value="warehouse.Id">{{warehouse.Name}}</option>
-                        </select>
-                      </div>
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="titleDetail" >
-                        Import-Date:  
-                    </div>
-                      <input  v-model="selectedItem.Item.ImportDate" class="input col-7 " type="text" disabled="disabled"> 
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="titleDetail" >
-                        Last-MaintainDate:  
-                    </div>
-                      <input v-model="selectedItem.Item.LastMaintainDate" class="input col-7 " type="text" disabled="disabled">
-                  </div>
-                  <div class="rowpu" style="height: 36px" >
-                    <div class="titleDetail" >
-                        Next-MaintainDate:  
-                    </div>
-                      <input v-if="!editItemMode" v-model="selectedItem.Item.NextMaintainDate" class="input col-7 " type="text" disabled="disabled"> 
-                      <input v-else v-model="selectedItem.Item.NextMaintainDate" class="input col-7 " type="date">
-                  </div>
-                  <div class="rowpu" style="margin-left: 0.5rem;margin-top: 0.75rem;margin-right: 1rem; display: grid; grid-template-columns: 40% 50%; width: 100; height:50px" >
-                    <div class="titleDetail">
-                        Description:  
-                    </div>
-                      <textarea v-if="!editItemMode" v-model="selectedItem.Item.Description" cols="7" rows="3" disabled="disabled" style="border-style:solid; border-color:#b0bec5; padding-left:0.5rem"> </textarea>
-                      <textarea v-else v-model="selectedItem.Item.Description" cols="7" rows="10" style="border-style:solid; border-color:#b0bec5;padding-left:0.5rem"> </textarea>
-                  </div>
-                    <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
-                    <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
-                    <button class="btn-UpdateItem" v-on:click="updateItem">Save changes</button>
-                    </div>
-                  </div>
-                </div>
-                <div v-if="currentViewMode ==  viewModes.Status">
-                  <div>
-                    <span v-if="editItemMode"  style="color:red; font-size:14px"> Edit Mode * is required, please input these fields</span>
-                    <div class="rowpu" style="display: grid; grid-template-columns: 20% 80%;" >
-                      <div class="" style="margin-top:0.2rem;margin-left:1.5rem" >
-                        Status:  
-                      </div>
-                      
-                      <!-- <div class="" v-if="!editItemMode" ><input v-model="selectedItem.Item.Status" class="input col-7 " type="text" disabled="disabled"></div> -->
-                      <div class="" v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.2rem">
-                        <select  class=""   v-model="selectedItem.Item.StatusID" disabled="disabled">
-                          <option :key="'equipmentItemStatus' + status.Id" v-for="status in statusOptions"
-                            :selected="selectedItem.Item.StatusID == status.Id "                    
-                            v-bind:value="status.Id">{{status.Name}}</option>
-                        </select>
-                      </div>
-                      <div class="select" v-else>
-                        <select  class="" style="border: 1px #9e9e9e solid; width: 100%"  v-model="selectedItem.Item.StatusID">
-                          <option :key="'equipmentItemStatus' + status.Id" v-for="status in statusOptions"
-                            :selected="selectedItem.Item.StatusID == status.Id "                    
-                            v-bind:value="status.Id">{{status.Name}}</option>
-                        </select>
-                      </div> 
-                    </div>
-                    <div v-if="editItemMode" class="rowpu" style="display: grid; grid-template-columns: 20% 80%;" >
-                      <div class="" style="margin-top:0.2rem;margin-left:1.5rem" >
-                          Note:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                      </div>
-                      <textarea v-model="changeItemSttDescription" cols="7" rows="3" style="border-style:solid; border-color:#b0bec5;" placeholder="Why do you change into this status?"> </textarea>
-                    </div>
-                    <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
-                      <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
-                      <button class="btn-UpdateItem" v-on:click="changeItemStatus">Save changes</button>
-                    </div>
-                    <div class="wrap-table" style=" padding-top:0,5rem" v-if="statusHistories && statusHistories.length != 0">
-                      <div><h4 style="font-style: italic">Table: Equipment status history</h4></div>
-                      <div style="max-height: 350px; overflow-y: auto;">
-                        <table class="mytable">
-                            <thead>
-                              <tr>
-                                <th><strong>No.</strong></th>                            
-                                <th><strong>From</strong></th>
-                                <th><strong>To</strong></th>
-                                <th><strong>User</strong></th>
-                                <th><strong>Date</strong></th>
-                                <th><strong>Note</strong></th>
-                              </tr>
-                            </thead>  
-                            <tbody >
-                              <tr v-for="(history, index) in statusHistories" style="font-size=16">
-                                <td width=5% style="font-size=14;text-align:center">{{index + 1}}</td>
-                                <td width=20% style="font-size=14;">{{history.OldStatus.Name}}</td>    
-                                <td width=20% style="font-size=14;">{{history.NewStatus.Name}}</td>  
-                                <td width=16% style="font-size=14;">{{history.Fullname}}</td>  
-                                <td width=16% style="font-size=14;">{{history.Date}}</td>
-                                <td width=23% style="font-size=14;">{{history.Description}}</td>    
-                              </tr>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="" v-else style="padding-top: 0,75rem;font-style: italic">
-                      This item has been not change status by someone!
-                    </div>
-                  </div>
-                </div>
-                <div v-if="currentViewMode ==  viewModes.Position">
-                  <span v-if="editItemMode && authUser.Role=='Equipment Staff' && selectedItem.Item.StatusID"  style="color:red; font-size:14px"> Edit Mode * is required, please input these fields</span>
-                  <div class = "" v-if="itemLocationID == lostLocation">
-                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                      <div class="" style="margin-top:0.5rem" >
-                          Location: 
-                      </div>
-                      <div class="">
-                        <div class="" ><input v-model="itemLocationID" class="input col-7 " type="text" disabled="disabled"></div>
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                      <div class="" style="margin-top:0.5rem" >
-                          Address:  
-                      </div>
-                      <div class="">
-                        <div class="" ><input v-model="itemLocationID" class="input col-7 " type="text" disabled="disabled"></div>
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                      <div class="" style="margin-top:0.5rem" >
-                          Block: 
-                      </div>
-                      <div class="">
-                        <div class=""><input v-model="itemBlockID" class="input col-7 " type="text" disabled="disabled"></div>
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                      <div class="" style="margin-top:0.5rem" >
-                          Floor:  
-                      </div>
-                      <div class="">
-                        <div class="" ><input v-model="itemFloorID" class="input col-7 " type="text" disabled="disabled"></div>
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                      <div class="" style="margin-top:0.5rem" >
-                          Tile:  
-                      </div>
-                      <div class="">
-                        <div class=""><input v-model="itemTileID" class="input col-7 " type="text" disabled="disabled"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="" v-else>
-                      <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                        <div class="" style="margin-top:0.25rem;height: 100%" >
-                            Location:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                        </div>
-                        <div class="">
-                          <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
-                            <select  class=""  v-model="selectedItem.Item.LocationID" disabled="disabled">
-                              <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
-                                v-bind:value="location.Id">{{location.Name}}</option>
-                            </select>
-                          </div>
-                        <div v-else class="select" style="width: 100%;height:100%">
-                          <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.LocationID">
-                            <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
-                              v-bind:value="location.Id">{{location.Name}}</option>
-                          </select>
-                        </div> 
-                        </div>
-                      </div>
-                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                      <div class="" style="margin-top:0.25rem" >
-                          Address:  
-                      </div>
-                      <div class="">
-                        <div  style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem" disable="disable">
-                            <select  class=""  v-model="selectedItem.Item.LocationID" disabled="disabled">
-                              <option style="" :key="'equipmentItemLocation' + location.Id" v-for="location in locationOptions"                   
-                                v-bind:value="location.Id">{{location.Address| truncate(53)}}</option>
-                            </select>
-                          </div>
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                      <div class="" style="margin-top:0.25rem" >
-                          Block:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                      </div>
-                      <div class="">
-                        <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
-                          <select  class=""  v-model="selectedItem.Item.BlockID" disabled="disabled">
-                              <option :key="'equipmentItemBlock' + block.Id" v-for="block in blockOptions"            
-                                v-bind:value="block.Id">{{block.Name}}</option>
-                            </select>
-                        </div>
-                        <div v-else class="select" style="width: 100%;height:100%">
-                            <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.BlockID">
-                              <option :key="'equipmentItemBlock' + block.Id" v-for="block in blockOptions"            
-                                v-bind:value="block.Id">{{block.Name}}</option>
-                            </select>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                      <div class="" style="margin-top:0.25rem" >
-                          Floor:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                      </div>
-                      <div class="">
-                        <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
-                          <select  class=""   v-model="selectedItem.Item.FloorID" disabled="disabled">
-                              <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"   
-                                :value="floor.Id">{{floor.Name}}
-                              </option>
-                            </select>
-                        </div>
-                        <div v-else class="select" style="width: 100%;height:100%">
-                            <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.FloorID">
-                              <option :key="'equipmentItemFloor' + floor.Id" v-for="floor in floorOptions"   
-                                :value="floor.Id">{{floor.Name}}
-                              </option>
-                            </select>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px; display: grid; grid-template-columns: 18% 82%;" >
-                      <div class="" style="margin-top:0.25rem" >
-                          Tile:  <span v-if="editItemMode" style="color:red; font-size:18px">*</span>
-                      </div>
-                        <div class="">
-                          <div v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.4rem">
-                              <select  class=""   v-model="selectedItem.Item.TileID" disabled="disabled">
-                                <option :key="'equipmentItemTile' + tile.Id" v-for="tile in tileOptions" 
-                                  v-bind:value="tile.Id">{{tile.Name}}</option>
-                              </select>
-                          </div>
-                          <div v-else class="select" style="width: 100%;height:100%">
-                              <select  class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%;height:100%"  v-model="selectedItem.Item.TileID">
-                                <option :key="'equipmentItemTile' + tile.Id" v-for="tile in tileOptions"                 
-                                  v-bind:value="tile.Id">{{tile.Name}}</option>
-                              </select>
-                          </div>
-                        </div>
-                    </div>
-                    <div class="is-horizontal" style="padding-top:0.75rem; padding-bottom: 0.5rem;" v-if="editItemMode" >
-                      <button class="btn-CancelItem" v-on:click="cancelUpdateItem">Cancel</button>
-                      <button  class="btn-UpdateItem" v-on:click="updatePositionItem">Save changes</button>
-                    </div>
-                  </div>
-                </div>
-                <div v-if="currentViewMode ==  viewModes.WorkOrder">
-                  <div class="wrap-table"  style="max-height: 300px; overflow-y: auto">
-                    <div class="" v-if="allworkorder && allworkorder.length != 0">
-                      <div><h4 style="font-style: italic">Table: Equipment working order history</h4></div>
-                      <div class="" style="max-height: 350px; overflow-y: auto;">
-                        <table class="mytable">
-                          <thead>
-                              <tr>
-                                <th><strong>No.</strong></th>                            
-                                <th><strong>Name</strong></th>
-                                <th><strong>RequestUser</strong></th>
-                                <th><strong>StartDate</strong></th>
-                                <th><strong>ClosedDate</strong></th>
-                                <th><strong>Status</strong></th>
-                              </tr>
-                            </thead>  
-                            <tbody>
-                              <tr v-for="(workorder, index) in allworkorder" style="font-size=16">
-                                <td width=3% style="font-size=14;text-align:center">{{index + 1}}</td>    
-                                <td width=33% style="font-size=14;">{{workorder.Name | truncate(30)}}</td>    
-                                <td width=18% style="font-size=14;">{{workorder.RequestUser}}</td>
-                                <td width=17% style="font-size=14;">{{workorder.StartDate}}</td>  
-                                <td width=17% style="font-size=14;">{{workorder.Detail[0].ClosedDate ? workorder.Detail[0].ClosedDate : ''}}</td>
-                                <td width=14% style="font-size=14;">{{workorder.Status}}</td>     
-                              </tr>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="" v-else style="font-style: italic;">
-                      <h3>This item has no work order</h3>
-                    </div> 
-                  </div>  
-                </div>
-                <div v-else-if="currentViewMode ==  viewModes.RunTime">
-                  <div class="">
-                    <div class="rowpu" style="height: 36px" >
-                      <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
-                          Import-Date:  
-                      </div>
-                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
-                        <input  v-model="selectedItem.Item.ImportDate" class="input col-7 " type="text" disabled="disabled"> 
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px" >
-                      <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
-                          Run-times:  
-                      </div>
-                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;" >  
-                        <input  v-model="selectedItem.Item.RuntimeDays" class="input col-7 " type="text" disabled="disabled"> 
-                        <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label> 
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px" >
-                      <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
-                          Performance:  
-                      </div>
-                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
-                        <input  v-model="percentRuntime" class="input col-7 " type="text" disabled="disabled">
-                        <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">%</label> 
-                      </div>
-                    </div>
-                    <div class="rowpu" style="height: 36px" >
-                      <div class="" style="margin-top:0.5rem;margin-left: 4.5rem" >
-                          Downtime:  
-                      </div>
-                      <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 75% auto;">  
-                        <input  v-model="downtime" class="input col-7 " type="text" disabled="disabled">
-                        <label style=" margin-top: 0.75rem;margin-left: 0.2rem;">Day(s)</label>  
-                      </div>
-                    </div>
-                    <div class="" v-if="allMaintainWorkorder && allMaintainWorkorder.length != 0">
-                      <div><h4 style="font-style: italic">Table: Equipment maintaining order history</h4></div>
-                      <div class="" style="max-height: 350px; overflow-y: auto;">
-                        <table class="mytable">
-                          <thead>
-                              <tr>
-                                <th><strong>No.</strong></th>                            
-                                <th><strong>Name</strong></th>
-                                <th><strong>Maintainer</strong></th>
-                                <th><strong>StartDate</strong></th>
-                                <th><strong>ClosedDate</strong></th>
-                                <th><strong>Cost</strong></th>
-                              </tr>
-                            </thead>  
-                            <tbody>
-                              <tr v-for="(workorder, index) in allMaintainWorkorder" style="font-size=16">
-                                <td width=3% style="font-size=14;text-align:center">{{index + 1}}</td>    
-                                <td width=33% style="font-size=14;">{{workorder.Name | truncate(30)}}</td>    
-                                <td width=18% style="font-size=14;">{{workorder.RequestUser}}</td>
-                                <td width=17% style="font-size=14;">{{workorder.StartDate}}</td>  
-                                <td width=17% style="font-size=14;">{{workorder.Detail[0].ClosedDate ? workorder.Detail[0].ClosedDate : ''}}</td>
-                                <td width=14% style="font-size=14;">{{workorder.Detail[0].Cost >= 0 ? getNumberFormattedThousand(workorder.Detail[0].Cost) : 'Maintaining'}}</td>     
-                              </tr>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div class="" v-else style="font-style: italic;">
-                      <h3>This item has no maintaining work order</h3>
-                    </div> 
-                  </div>
-                </div>
-              </div>  
-          </div>
-        </div>  
-        <div slot="footer">
-          </div>
-      </modal>
-      <modal v-model="changePositonLost">
-        <div slot="header">
-          <h2>Select position for item</h2>
-        </div>
-         <div style="font-size: 0.9rem">
-            <div class="" style="padding-top:0.5rem;">
-             <div class="form-field-title">
-               <span><strong>  Location (required) </strong></span>
-               <span v-if="CreateItemErrors.NoLocation != ''">. <span class="error-text">{{ CreateItemErrors.NoLocation }}</span></span>
-              </div>
-              <div>
-                <model-select style="width: 100% !important" :options="locationModalSelect" v-model="form.selectedLocation" placeholder="Select a location  "></model-select>  
-              </div>
-              <div class="form-field-title">
-                <span><strong>  Block (required) </strong></span>
-                <span v-if="CreateItemErrors.NoBlock != ''">. <span class="error-text">{{ CreateItemErrors.NoBlock }}</span></span>
-              </div>
-              <div>
-                <model-select style="width: 100% !important" :options="blockModalSelect" v-model="form.selectedBlock" placeholder="Select a block  "></model-select>               
-              </div>
-              <div class="form-field-title">
-                <span><strong>  Floor (required) </strong></span>
-                <span v-if="CreateItemErrors.NoFloor != ''">. <span class="error-text">{{ CreateItemErrors.NoFloor }}</span></span>
-              </div>
-              <div>
-                <model-select style="width: 100% !important" :options="floorModalSelect" v-model="form.selectedFloor" placeholder="Select a floor  "></model-select>             
-              </div>
-              <div class="form-field-title">
-                <span><strong>  Tile (required) </strong></span>
-                <span v-if="CreateItemErrors.NoTile != ''">. <span class="error-text">{{ CreateItemErrors.NoTile }}</span></span>
-              </div>
-              <div>
-                <model-select style="width: 100% !important" :options="tileModalSelect" v-model="form.selectedTile" placeholder="Select a tile  "></model-select>  
-              </div>
-            </div>
-          </div> 
-        <div slot="footer" style="display: relative; align-items: right; justify-content: right;">
-          <button class="btn-CancelItem" v-on:click="cancelPositionEQTLost">Cancel</button>
-          <button  class="btn-UpdateItem" v-on:click="updatePositionEQTLost">Save changes</button>
-        </div>
-      </modal>
+        </div> 
+      <div slot="footer" style="display: relative; align-items: right; justify-content: right;">
+        <button class="btn-CancelItem" v-on:click="cancelPositionEQTLost">Cancel</button>
+        <button  class="btn-UpdateItem" v-on:click="updatePositionEQTLost">Save changes</button>
       </div>
-  </div>
+    </modal>
+  <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
 </div>  
 </template>
 
@@ -1290,12 +1279,13 @@ export default {
         if (result) {
           let context = this;
           let obj = {
+            title: "Successfully!!!",
             message: "Create new " + context.quantity + " item(s) successfully",
             type: "success",
             hideAllButton: true,
             showXclose: false
           };
-          context.$refs.simplert.openSimplert(obj);
+          context.$refs.simplert2.openSimplert(obj);
           await Utils.sleep(1500);
           location.reload();
         } else {
