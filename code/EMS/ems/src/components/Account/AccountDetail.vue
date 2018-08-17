@@ -87,7 +87,7 @@
 
   <div  class="row " style="height: 36px" >
       <div class="col-12" style="margin-top:0.5rem" >
-      <strong>Full name</strong>  <span v-if="editMode"><strong style="color:red">*</strong></span> <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-else-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span><span v-else-if="CreateAccountErrors.ValidFullName != ''"> <span class="error-text">{{ CreateAccountErrors.ValidFullName }}</span></span>
+      <strong>Full name </strong>  <span v-if="editMode"><strong style="color:red">*</strong></span> <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-else-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span><span v-else-if="CreateAccountErrors.ValidFullName != ''"> <span class="error-text">{{ CreateAccountErrors.ValidFullName }}</span></span>
       </div>  
   </div>
   <input v-if="!editMode" disabled v-model="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole"/>
@@ -317,7 +317,7 @@ export default {
         // NoFullname: "You must provide full name for this account",
         FullNameMax: " Use from 6 to 50 characters for your full name. ",
         FullNameMin: " Use from 6 to 50 characters for your full name. ",
-        ValidFullName: "Invalid full name. ",
+        ValidFullName: "Invalid full name ",
 
         // NoPassword: "You must provide password for this account",
         MaxPassword: " Use from 6 to 50 characters for your password. ",
@@ -326,21 +326,21 @@ export default {
         // NoPhone: "You must provide phone number for this account",
         PhoneMin: " Use from 10 to 17 characters for your phone number. ",
         PhoneMax: " Use from 10 to 17 characters for your phone number. ",
-        duplicatePhone: "This phone number already belongs to another account.",
-        validPhone: "Invalid phone number. ",
+        duplicatePhone: " This phone number already belongs to another account.",
+        validPhone: " Invalid phone number. ",
 
-        NoEmail: "You must provide email. ",
-        validEmail: "Invalid email. ",
+        NoEmail: " You must provide email. ",
+        validEmail: " Invalid email. ",
         duplicateEmail:
-          "This email address already belongs to another account.",
+          " This email address already belongs to another account.",
 
-        NotSameOldPass: "Enter correct current password. ",
-        MinMaxNewPass: "Use from 6 to 50 characters for your new password. ",
+        NotSameOldPass: " Enter correct current password. ",
+        MinMaxNewPass: " Use from 6 to 50 characters for your new password. ",
 
         // NoImage: "You must choose an image",
         // NoRole: "You must provide role for this account"
         // NotSamePass: "pass not the same",
-        NotSameValueRe: "Please enter the same value again. "
+        NotSameValueRe: " Please enter the same value again. "
       },
       CreatePassErrors: {
         NotSameOldPass: "",
@@ -396,11 +396,8 @@ export default {
       // let phoneRegex = /^(\([0-9]{3}\)\s*|[0-9]{3}\-)([0-9]{7}|[0-9]{8}|[0-9]{9})$/;
 
       //  /^?[+]?([0-9]{2,3})?[+]?([0−9]2,3)?[-. ]?([0-9]{3})[-. ]?([0-9]{4,7})$/
-      if (this.account.Fullname.length < 6) {
+      if (this.account.Fullname.length < 6 || this.account.Fullname.length > 50) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
-      }
-      if (this.account.Fullname.length > 50) {
-        this.CreateAccountErrors.FullNameMax = this.ErrorStrings.FullNameMax;
       }
       if (!this.FullNameRegex.test(this.account.Fullname)) {
         this.CreateAccountErrors.ValidFullName = this.ErrorStrings.ValidFullName;
@@ -640,6 +637,7 @@ export default {
       }
     },
     "account.Password": function() {
+      
       if (this.account.Password != "") {
         this.CreateAccountErrors.NoPassword = "";
       }
@@ -651,14 +649,11 @@ export default {
       }
     },
     "account.Fullname": function() {
-      if (this.account.Fullname != "") {
-        this.CreateAccountErrors.NoFullname = "";
-      }
-      if (this.account.Fullname.length > 5) {
+      if (this.FullNameRegex.test(this.account.Fullname && this.CreateAccountErrors.ValidFullName != "")) {
+        this.CreateAccountErrors.ValidFullName = "";
+      } 
+      if (this.account.Fullname.length < 250 && this.account.Fullname.length > 5 && this.CreateAccountErrors.FullNameMin != "") {
         this.CreateAccountErrors.FullNameMin = "";
-      }
-      if (this.account.Fullname.length < 51) {
-        this.CreateAccountErrors.FullNameMax = "";
       }
     },
     "account.Phone": function() {
