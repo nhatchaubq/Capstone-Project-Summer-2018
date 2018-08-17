@@ -14,11 +14,7 @@
             <button id="btn-add"  class="button" v-on:click="createVendor()" >Create Vendor</button>
         </div>
       </div>
-        <!-- <div class="form-title">
-            <div class="form-title-start">
-                Add New Vendor
-            </div>
-        </div> -->
+
         <div class="form-content">
             <div class="form-field">
                 <div class="form-field-title">
@@ -27,12 +23,7 @@
                 <div class="control has-icons-right" style="padding:8px">
                     <input v-model.trim="Vendor.BusinessName" class="input " type="text" placeholder="DPoint Company" >
 
-                        <!-- <span class="icon is-small is-left">
-                        <i class="fa fa-address-card"></i>
-                        </span> -->
-                        <!-- <span class="icon is-small is-right">
-                        <i class="fa fa-check"></i>
-                        </span> -->
+
 
                 </div>
             </div>
@@ -44,13 +35,7 @@
                 <strong>Business address  (required)</strong><span v-if="CreateVendorErrors.NoBusinessAddress != ''"> <span class="error-text">{{ CreateVendorErrors.NoBusinessAddress }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
             <div class="controlhas-icons-right" style="padding:8px">
                     <input v-model.trim="Vendor.BusinessAddress" class="input " type="text" placeholder="160/5 Tan Chanh Hiep, Quan 12, Ho Chi Minh">
-                        <!-- <span class="icon is-small is-left">
-                        <i class="fa fa-address-card"></i>
-                        </span> -->
-                        <!-- <span class="icon is-small is-right">
-                        <i class="fa fa-check"></i>
-                        </span> -->
-                        <!-- {{account.password}} -->
+
                     </div>
                 </div>
 
@@ -65,13 +50,7 @@
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
                     <input v-model.trim="Vendor.Website" class="input " type="text" placeholder="www.d-point.co.jp" >
-                        <!-- <span class="icon is-small is-left">
-                        <i class="fa fa-firefox"></i>
-                        </span> -->
-                        <!-- <span class="icon is-small is-right">
-                        <i class="fa fa-check"></i>
-                        </span> -->
-                        <!-- {{account.fullname}} -->
+
                     </div>
                 </div>
 
@@ -86,13 +65,7 @@
                 <div class="form-field-input">
                 <div class="control  has-icons-right" style="padding:8px">
                     <input v-model.trim="Vendor.ContactName" class="input " type="text" placeholder="D point" >
-                        <!-- <span class="icon is-small is-left">
-                        <i class="fa fa-address-card"></i>
-                        </span> -->
-                        <!-- <span class="icon is-small is-right">
-                        <i class="fa fa-check"></i>
-                        </span> -->
-                        <!-- {{account.phone}} -->
+
                     </div>
                 </div>
 
@@ -102,14 +75,11 @@
                 <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-if="CreateVendorErrors.duplicateEmail != ''"> {{ CreateVendorErrors.duplicateEmail }}</span>    
+                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != '' && CreateVendorErrors.NoEmail == '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-if="CreateVendorErrors.duplicateEmail != '' && CreateVendorErrors.NoEmail == '' && CreateVendorErrors.NoEmail == ''"> {{ CreateVendorErrors.duplicateEmail }}</span>    
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
                     <input v-model.trim="Vendor.ContactEmail" class="input" type="email" placeholder="dpoint@gmail.com" >
-                        <!-- <span class="icon is-small is-left">
-                        <i class="fa fa-envelope"></i>
-                        </span> -->
 
                     </div>
                 </div>
@@ -120,15 +90,12 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <!-- <strong>Phone (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-if="CreateVendorErrors.validEmail != ''"> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-if="CreateVendorErrors.duplicateEmail != ''"> {{ CreateVendorErrors.duplicateEmail }}</span>     -->
-                    <strong>Phone (required)</strong>
+                    
+                    <strong>Phone (required)</strong>   <span v-if="CreateVendorErrors.PhoneMin != ''"> <span class="error-text">{{ CreateVendorErrors.PhoneMin }}</span></span><span v-if="CreateVendorErrors.PhoneMax != ''"> <span class="error-text">{{ CreateVendorErrors.PhoneMax }}</span></span>
                 </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
-                    <input v-model.trim="Vendor.Phone" class="input" type="text" placeholder="(+84)123456789" >
-                        <!-- <span class="icon is-small is-left">
-                        <i class="fa fa-envelope"></i>
-                        </span> -->
+                    <input v-model.trim="Vendor.Phone" class="input" type="number" placeholder="(+84)123456789" >
 
                     </div>
                 </div>
@@ -148,36 +115,13 @@
                 </div>   <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
                     <textarea  id="text-descrip" rows="4" cols="55" v-model.trim="Vendor.Description"   >
                     </textarea>
-                <!-- <h3>{{account.startdate}}</h3> -->
+
             </div>
             
         </div>
-        <!-- test -->
-        <!-- <div>
-            <div class="form-field" >
-                <div class="form-field-title " v-bind:key="Vendor.Id" v-for="Vendor in Vendors">
-                     <div>{{Vendor.ContactEmail}} </div>
-                </div>   
-
-            </div>
-            
-        </div> -->
-        <!-- test-end -->
-
-        <!-- <div class="form-title-end" style="margin-bottom:2rem">
-
-        </div> -->
-
-                <!-- <button id="btn-add" class="button" v-on:click="createAccount()">Create Account</button>
-                <button id="btn-add" class="button" v-on:click="createAccountTrueEnd()">Create Account true end</button> -->
-                <!-- <router-link to='/account/'>
-                <button id="btn-add" class="button">Create Account</button>
-                </router-link> -->
-                
-            <!-- </form> -->
-    <!-- <div>&nbsp</div> -->
+     
       </div>
-    <!-- </form> -->
+
     </div>
 </template>
 
@@ -187,9 +131,7 @@ export default {
   created() {
     let url = Server.VENDOR_API_PATH;
     this.axios.get(url).then(res => {
-      let data = res.data;
-      this.Vendors = data;
-      // alert();
+      this.Vendors = res.data;
     });
   },
   data() {
@@ -215,7 +157,9 @@ export default {
         validEmail: "Valid email required",
         validWeb: "Valid website required",
         validContactName: "Valid characters required",
-        duplicateEmail: "The email already exists"
+        duplicateEmail: "The email already exists",
+        PhoneMin: " Use from 9 to 13 characters for your phonenumber "
+        // PhoneMax: " Use from 9 to 13 characters for your phonenumber (max)"
       },
       CreateVendorErrors: {
         // NoBusinessName: "",
@@ -234,7 +178,9 @@ export default {
         validEmail: "",
         validWeb: "",
         validContactName: "",
-        duplicateEmail: ""
+        duplicateEmail: "",
+        PhoneMin: ""
+        // PhoneMax: ""
       },
       Vendor: {
         BusinessName: "",
@@ -252,7 +198,7 @@ export default {
       let emailRegex = /^(([^<>()\[\]\\.,;!#$%:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       let webRegex = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
       // let contactNameRegex = /^[^~`!#$%()0-9@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*\s*?$/;
-      let contactNameRegex = /^[^~`!#$%()0-9@\^&*+=\-\[\]\\';,/{}|\\":<>\?]*.[\s{1,}]*?$/;
+      let contactNameRegex = /^[^~`!#$%@0-9()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/;
       // let contactNameRegex = /^[a-zA-Z-a-eghik-vxyàáâãèéêìíòóôõùúýỳỹỷỵựửữừứưụủũợởỡờớơộổỗồốọỏịỉĩệểễềếẹẻẽặẳẵằắăậẩẫầấạảđ₫]+$/;
       if (this.Vendor.BusinessName.length < 6) {
         this.CreateVendorErrors.BusinessNameMin = this.ErrorStrings.BusinessNameMin;
@@ -278,6 +224,19 @@ export default {
       if (this.Vendor.ContactName.length > 50) {
         this.CreateVendorErrors.ContactNameMax = this.ErrorStrings.ContactNameMax;
       }
+      if (
+        !this.Vendor.Phone ||
+        (this.Vendor.Phone &&
+          (this.Vendor.Phone.length < 9 || this.Vendor.Phone.length > 13))
+      ) {
+        this.CreateVendorErrors.PhoneMin = this.ErrorStrings.PhoneMin;
+      }
+      // if (
+      //   !this.Vendor.Phone ||
+      //   (this.Vendor.Phone && this.Vendor.Phone.length > 13)
+      // ) {
+      //   this.CreateVendorErrors.PhoneMax = this.ErrorStrings.PhoneMax;
+      // }
       if (!contactNameRegex.test(this.Vendor.ContactName)) {
         this.CreateVendorErrors.validContactName = this.ErrorStrings.validContactName;
       } else {
@@ -338,7 +297,9 @@ export default {
         this.CreateVendorErrors.validEmail == "" &&
         this.CreateVendorErrors.validWeb == "" &&
         this.CreateVendorErrors.validContactName == "" &&
-        this.CreateVendorErrors.duplicateEmail == ""
+        this.CreateVendorErrors.duplicateEmail == "" &&
+        this.CreateVendorErrors.PhoneMin == ""
+        // this.CreateVendorErrors.PhoneMax == ""
       );
     }
   },
@@ -376,7 +337,7 @@ export default {
       if (this.Vendor.ContactName.length < 51) {
         this.CreateVendorErrors.ContactNameMax = "";
       }
-      if (this.Vendor.ContactName == this.contactNameRegex) {
+      if (this.Vendor.ContactName == this.Vendor.contactNameRegex) {
         this.CreateVendorErrors.validContactName = "";
       }
     },
@@ -410,6 +371,26 @@ export default {
       if (this.Vendor.Description.length < 501) {
         this.CreateVendorErrors.DesMax = "";
       }
+    },
+    "Vendor.Phone": function() {
+      // if (
+      //   !this.Vendor.Phone ||
+      //   (this.Vendor.Phone && this.Vendor.Phone.length < 14)
+      // ) {
+      //   this.CreateVendorErrors.PhoneMax = "";
+      // }
+      if (
+        !this.Vendor.Phone ||
+        (this.Vendor.Phone && this.Vendor.Phone.length > 8)
+      ) {
+        this.CreateVendorErrors.PhoneMin = "";
+      }
+      // if (this.Vendor.Phone.length > 8) {
+      //   this.CreateVendorErrors.PhoneMin = "";
+      // }
+      // if (this.Vendor.Phone.length < 14) {
+      //   this.CreateVendorErrors.PhoneMax = "";
+      // }
     }
   }
 };
