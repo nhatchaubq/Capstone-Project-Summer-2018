@@ -94,7 +94,7 @@
   <input v-else :disabled="authUser.Role != 'Admin'" v-model.trim="account.Fullname" class="input col-7 " type="text"  placeholder="James Cole" >
   <div v-if="authUser.Role == 'Admin'">
     <div v-if="editMode" class="row" style="margin-top:0.5rem;  height: 36px">
-        <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong></span> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span> </div> 
+        <div class="col-12" style="margin-top:0.5rem"> <strong>Password</strong>  <span v-if="editMode"><strong style="color:red"> *</strong><span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span></span>  </div> 
     </div>
       <input v-if="editMode" v-model.trim ="account.Password" class="input col-7 " type="password"  placeholder="Chow@321">
   </div>

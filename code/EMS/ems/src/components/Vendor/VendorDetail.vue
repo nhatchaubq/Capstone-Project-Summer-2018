@@ -156,12 +156,15 @@ export default {
   },
   async created() {
     let url = Server.VENDOR_API_PATH;
-    await this.axios.get(url).then(res => {
-      this.vendors = res.data;
-    }).catch(error => {
-      this.$router.push('/500');
-      console.log(error);
-    });
+    await this.axios
+      .get(url)
+      .then(res => {
+        this.vendors = res.data;
+      })
+      .catch(error => {
+        this.$router.push("/500");
+        console.log(error);
+      });
     await this.getVendorDetail(this.$route.params.id);
     this.getItemOfVendor(this.$route.params.id);
   },
@@ -171,13 +174,12 @@ export default {
       toDisplayData: [],
       sending: false,
       ErrorStrings: {
-
         // NoBusinessName: "You must provide business name for this vendor",
         // NoBusinessAddress: "You must provide business address for this vendor",
         BusinessAddressMax:
-          " Use from 6 to 200 characters for your business address",
+          " Use from 6 to 250 characters for your business address",
         BusinessAddressMin:
-          " Use from 6 to 200 characters for your business address",
+          " Use from 6 to 250 characters for your business address",
         // NoContactName: "You must provide contact name for this vendor",
         ContactNameMin: " Use from 6 to 50 characters for your contact name ",
         ContactNameMax: " Use from 6 to 50 characters for your contact name ",
@@ -191,11 +193,10 @@ export default {
         PhoneMin: "Use from 9 to 13 characters for your phonenumber. ",
         duplicatePhone: "Duplicate phone number.",
         duplicateEmail: "Duplicate email."
-
       },
       CreateVendorErrors: {
         InvalidBusinessAddressLength: "",
-        NoContactName: '',
+        NoContactName: "",
         NoBusinessAddress: "",
         InvalidContactName: "",
         NoEmail: "",
@@ -204,7 +205,7 @@ export default {
         InvalidEmail: "",
         InvalidWebsite: "",
         InvalidPhone: "",
-        NoPhoneNumber: '',
+        NoPhoneNumber: "",
         DuplicatePhone: "",
         DuplicateEmail: ""
       },
@@ -214,40 +215,63 @@ export default {
       contactNameRegex: /^[^~`!#$%@0-9()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/,
       emailRegex: /^(([^<>()\[\]\\.,;!#$%\^&*:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
       webRegex: /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/,
-      phoneRegex: /^\(?[+]?([0-9]{2,4})\)?[-. ]?([0-9]{3,4})[-. ]?([0-9]{3,7})$/,
+      phoneRegex: /^\(?[+]?([0-9]{2,4})\)?[-. ]?([0-9]{3,4})[-. ]?([0-9]{3,7})$/
     };
   },
   methods: {
     async updateVendor() {
       if (!this.vendor.BusinessAddress) {
         this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
-      } else if (this.vendor.BusinessAddress && (this.vendor.BusinessAddress.length < 6 || this.vendor.BusinessAddress.length > 200)) {
+      } else if (
+        this.vendor.BusinessAddress &&
+        (this.vendor.BusinessAddress.length < 6 ||
+          this.vendor.BusinessAddress.length > 250)
+      ) {
         this.CreateVendorErrors.InvalidBusinessAddressLength = this.ErrorStrings.InvalidBusinessAddressLength;
       }
       if (!this.vendor.ContactName) {
         this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
-      } else if (this.vendor.ContactName && (this.vendor.ContactName.length < 6 || this.vendor.ContactName.length > 50 || !this.contactNameRegex.test(this.vendor.ContactName))) {
+      } else if (
+        this.vendor.ContactName &&
+        (this.vendor.ContactName.length < 6 ||
+          this.vendor.ContactName.length > 50 ||
+          !this.contactNameRegex.test(this.vendor.ContactName))
+      ) {
         this.CreateVendorErrors.InvalidContactName = this.ErrorStrings.InvalidContactName;
       }
       if (!this.vendor.ContactEmail) {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
-      } else if (this.vendor.ContactEmail && !this.emailRegex.test(this.vendor.ContactEmail)) {
+      } else if (
+        this.vendor.ContactEmail &&
+        !this.emailRegex.test(this.vendor.ContactEmail)
+      ) {
         this.CreateVendorErrors.InvalidEmail = this.ErrorStrings.InvalidEmail;
       } else {
         for (const vendor of this.vendors) {
-          if (vendor.Id != this.vendor.Id && vendor.ContactEmail == this.vendor.ContactEmail) {
+          if (
+            vendor.Id != this.vendor.Id &&
+            vendor.ContactEmail == this.vendor.ContactEmail
+          ) {
             this.CreateVendorErrors.DuplicateEmail = this.ErrorStrings.DuplicateEmail;
             break;
           }
-        }        
+        }
       }
       if (!this.vendor.Phone) {
         this.CreateVendorErrors.NoPhoneNumber = this.ErrorStrings.NoPhoneNumber;
-      } else if (this.vendor.Phone && (this.vendor.Phone.length < 10 || this.vendor.Phone.length > 17 || !this.phoneRegex.test(this.vendor.Phone))) {
+      } else if (
+        this.vendor.Phone &&
+        (this.vendor.Phone.length < 10 ||
+          this.vendor.Phone.length > 17 ||
+          !this.phoneRegex.test(this.vendor.Phone))
+      ) {
         this.CreateVendorErrors.InvalidPhone = this.ErrorStrings.InvalidPhone;
       } else {
         for (const vendor of this.vendors) {
-          if (vendor.Id != this.vendor.Id && vendor.Phone == this.vendor.Phone) {
+          if (
+            vendor.Id != this.vendor.Id &&
+            vendor.Phone == this.vendor.Phone
+          ) {
             this.CreateVendorErrors.DuplicatePhone = this.ErrorStrings.DuplicatePhone;
             break;
           }
@@ -255,54 +279,64 @@ export default {
       }
       if (this.vendor.Website && this.vendor.Website.length > 200) {
         this.CreateVendorErrors.WebsiteMaximum = this.ErrorStrings.WebsiteMaximum;
-      } else if (this.vendor.Website && !this.webRegex.test(this.vendor.Website)) {
+      } else if (
+        this.vendor.Website &&
+        !this.webRegex.test(this.vendor.Website)
+      ) {
         this.CreateVendorErrors.InvalidWebsite = this.ErrorStrings.InvalidWebsite;
       }
       if (this.vendor.Description && this.vendor.Description.length > 500) {
         this.CreateVendorErrors.DescriptionMaximum = this.ErrorStrings.DescriptionMaximum;
-      } 
+      }
       if (this.validateVendor())
         this.axios
           .put(`http://localhost:3000/api/vendor/${this.$route.params.id}`, {
             Vendor: this.vendor
           })
-          .then(async (res) => {
+          .then(async res => {
             // this.$router.push(`/vendor/${this.$route.params.id}`);
             if (res.status == 200) {
               let obj = {
-                  title: "Success",
-                  message: "Vendor has been updated successfully!",
-                  type: "success",
+                title: "Success",
+                message: "Vendor has been updated successfully!",
+                type: "success"
               };
               this.$refs.simplert.openSimplert(obj);
               await this.getVendorDetail(this.$route.params.id);
               this.editMode = false;
             }
-          }).catch(error => {
-            this.$router.push('/500');
+          })
+          .catch(error => {
+            this.$router.push("/500");
             console.log(error);
           });
     },
     async getVendorDetail(vendorId) {
       let URL = `http://localhost:3000/api/vendor/${vendorId}`;
-      return await this.axios.get(URL).then(response => {
-        this.vendor = response.data;
-      }).catch(error => {
-        this.$router.push('/500');
-        console.log(error);
-      });
+      return await this.axios
+        .get(URL)
+        .then(response => {
+          this.vendor = response.data;
+        })
+        .catch(error => {
+          this.$router.push("/500");
+          console.log(error);
+        });
     },
     async getItemOfVendor(vendorId) {
       let URL = `http://localhost:3000/api/vendor/${vendorId}`;
-      return await this.axios.get(URL).then(response => {
-        if (response.data.Equipments && response.data.Equipments.length > 0) {
-          this.vendorItem = response.data.Equipments;
-          this.toDisplayData = this.vendorItem.slice(0, 10);
-        }
-      }).catch(error => {
-        this.$router.push('/500');
-        console.log(error);
-      });
+      return await this.axios
+        .get(URL)
+        .then(response => {
+          if (response.data.Equipments && response.data.Equipments.length > 0) {
+            this.vendorItem = response.data.Equipments;
+            this.toDisplayData = this.vendorItem.slice(0, 10);
+          }
+        })
+        .catch(error => {
+          this.$router.push("/500");
+          console.log(error);
+        });
     },
     getAccountAvatar(equip) {
       return equip.AvatarImage
@@ -338,30 +372,49 @@ export default {
     //   }
     // },
     "vendor.BusinessAddress": function() {
-      if (this.vendor.BusinessAddress && this.CreateVendorErrors.NoBusinessAddress != '') {
-        this.CreateVendorErrors.NoBusinessAddress = '';
+      if (
+        this.vendor.BusinessAddress &&
+        this.CreateVendorErrors.NoBusinessAddress != ""
+      ) {
+        this.CreateVendorErrors.NoBusinessAddress = "";
       }
-      if (this.vendor.BusinessAddress.length <= 6 && this.vendor.BusinessAddress.length >= 200) {
+      if (
+        this.vendor.BusinessAddress.length <= 6 &&
+        this.vendor.BusinessAddress.length >= 250
+      ) {
         this.CreateVendorErrors.InvalidBusinessAddressLength = "";
       }
     },
     "vendor.ContactName": function() {
-      if (this.vendor.ContactName != '' && this.CreateVendorErrors.NoContactName != '') {
-        this.CreateVendorErrors.NoContactName = '';
+      if (
+        this.vendor.ContactName != "" &&
+        this.CreateVendorErrors.NoContactName != ""
+      ) {
+        this.CreateVendorErrors.NoContactName = "";
       }
-      if ((this.vendor.ContactName.length >= 6 && this.vendor.ContactName.length <= 50) 
-          && this.contactNameRegex.test(this.vendor.ContactName) && this.CreateVendorErrors.InvalidContactName != '') {
+      if (
+        this.vendor.ContactName.length >= 6 &&
+        this.vendor.ContactName.length <= 50 &&
+        this.contactNameRegex.test(this.vendor.ContactName) &&
+        this.CreateVendorErrors.InvalidContactName != ""
+      ) {
         this.CreateVendorErrors.InvalidContactName = "";
       }
     },
     "vendor.ContactEmail": function() {
-      if (this.vendor.ContactEmail != "" && this.CreateVendorErrors.NoEmail != '') {
+      if (
+        this.vendor.ContactEmail != "" &&
+        this.CreateVendorErrors.NoEmail != ""
+      ) {
         this.CreateVendorErrors.NoEmail = "";
       }
-      if (this.emailRegex.test(this.vendor.ContactEmail) && this.CreateVendorErrors.InvalidEmail != '') {
+      if (
+        this.emailRegex.test(this.vendor.ContactEmail) &&
+        this.CreateVendorErrors.InvalidEmail != ""
+      ) {
         this.CreateVendorErrors.InvalidEmail = "";
       }
-      if (this.CreateVendorErrors.DuplicateEmail != '') {
+      if (this.CreateVendorErrors.DuplicateEmail != "") {
         let isDupEmail = false;
         for (const vendor of this.vendors) {
           if (
@@ -378,29 +431,49 @@ export default {
       }
     },
     "vendor.Website": function() {
-      if (this.vendor.Website.length <= 200 && this.CreateVendorErrors.WebsiteMaximum != '') {
+      if (
+        this.vendor.Website.length <= 200 &&
+        this.CreateVendorErrors.WebsiteMaximum != ""
+      ) {
         this.CreateVendorErrors.WebsiteMaximum = "";
       }
-      if (this.webRegex.test(this.vendor.Website) && this.CreateVendorErrors.InvalidWebsite != '') {
+      if (
+        this.webRegex.test(this.vendor.Website) &&
+        this.CreateVendorErrors.InvalidWebsite != ""
+      ) {
         this.CreateVendorErrors.InvalidWebsite = "";
       }
     },
     "vendor.Description": function() {
-      if (this.vendor.Description.length <= 500 && this.CreateVendorErrors.DescriptionMaximum != '') {
+      if (
+        this.vendor.Description.length <= 500 &&
+        this.CreateVendorErrors.DescriptionMaximum != ""
+      ) {
         this.CreateVendorErrors.DescriptionMaximum = "";
       }
     },
     "vendor.Phone": function() {
-      if (this.vendor.Phone != '' && this.CreateVendorErrors.NoPhoneNumber != '') {
-        this.CreateVendorErrors.NoPhoneNumber = '';
+      if (
+        this.vendor.Phone != "" &&
+        this.CreateVendorErrors.NoPhoneNumber != ""
+      ) {
+        this.CreateVendorErrors.NoPhoneNumber = "";
       }
-      if (this.vendor.Phone.length >= 10 && this.vendor.Phone.length <= 17 && this.phoneRegex.test(this.vendor.Phone) && this.CreateVendorErrors.InvalidPhone != '') {
+      if (
+        this.vendor.Phone.length >= 10 &&
+        this.vendor.Phone.length <= 17 &&
+        this.phoneRegex.test(this.vendor.Phone) &&
+        this.CreateVendorErrors.InvalidPhone != ""
+      ) {
         this.CreateVendorErrors.InvalidPhone = "";
       }
-      if (this.CreateVendorErrors.DuplicatePhone != '') {
+      if (this.CreateVendorErrors.DuplicatePhone != "") {
         let isDupPhone = false;
         for (const vendor of this.vendors) {
-          if (vendor.Id != this.vendor.Id && vendor.Phone == this.vendor.Phone) {
+          if (
+            vendor.Id != this.vendor.Id &&
+            vendor.Phone == this.vendor.Phone
+          ) {
             isDupPhone = true;
             break;
           }
