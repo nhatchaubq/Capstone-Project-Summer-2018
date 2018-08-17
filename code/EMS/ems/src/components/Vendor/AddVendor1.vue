@@ -144,13 +144,13 @@ export default {
       sending: false,
       ErrorStrings: {
         // NoBusinessName: "You must provide business name for this vendor",
-        BusinessNameMin: "Use from 6 to 50 characters for your business name",
-        BusinessNameMax: "Use from 6 to 50 characters for your business name",
+        BusinessNameMin: "Use from 6 to 250 characters for your business name",
+        BusinessNameMax: "Use from 6 to 250 characters for your business name",
         // NoBusinessAddress: "You must provide business address for this vendor",
         BusinessAddressMax:
-          "Use from 6 to 50 characters for your business address",
+          "Use from 6 to 250 characters for your business address",
         BusinessAddressMin:
-          "Use from 6 to 50 characters for your business address",
+          "Use from 6 to 250 characters for your business address",
         // NoContactName: "You must provide contact name for this vendor",
         ContactNameMin: "Use from 6 to 50 characters for your contact name ",
         ContactNameMax: "Use from 6 to 50 characters for your contact name ",
@@ -212,7 +212,7 @@ export default {
       if (this.Vendor.BusinessName.length < 6) {
         this.CreateVendorErrors.BusinessNameMin = this.ErrorStrings.BusinessNameMin;
       }
-      if (this.Vendor.BusinessName.length > 50) {
+      if (this.Vendor.BusinessName.length > 250) {
         this.CreateVendorErrors.BusinessNameMax = this.ErrorStrings.BusinessNameMax;
       }
       // if (this.Vendor.BusinessAddress === "") {
@@ -221,7 +221,7 @@ export default {
       if (this.Vendor.BusinessAddress.length < 6) {
         this.CreateVendorErrors.BusinessAddressMin = this.ErrorStrings.BusinessAddressMin;
       }
-      if (this.Vendor.BusinessAddress.length > 50) {
+      if (this.Vendor.BusinessAddress.length > 250) {
         this.CreateVendorErrors.BusinessAddressMax = this.ErrorStrings.BusinessAddressMax;
       }
       // if (this.Vendor.ContactName === "") {
@@ -335,7 +335,7 @@ export default {
       if (this.Vendor.BusinessName.length > 5) {
         this.CreateVendorErrors.BusinessNameMin = "";
       }
-      if (this.Vendor.BusinessName.length < 51) {
+      if (this.Vendor.BusinessName.length < 251) {
         this.CreateVendorErrors.BusinessNameMax = "";
       }
     },
@@ -346,7 +346,7 @@ export default {
       if (this.Vendor.BusinessAddress.length > 5) {
         this.CreateVendorErrors.BusinessAddressMin = "";
       }
-      if (this.Vendor.BusinessAddress.length < 51) {
+      if (this.Vendor.BusinessAddress.length < 251) {
         this.CreateVendorErrors.BusinessAddressMax = "";
       }
     },
