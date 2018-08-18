@@ -171,20 +171,26 @@ export default {
       toDisplayData: [],
       sending: false,
       ErrorStrings: {
+
         NoBusinessAddress: 'You must provide business address',
         InvalidBusinessAddressLength:
           "Use from 6 to 200 characters for your business address",
         NoContactName: 'You must provide contact name',
         InvalidContactName: " Use from 6 to 50 alphabetical characters for your contact name",
+
         NoEmail: "You must provide email address",
         WebsiteMaximum: " Use 200 characters or fewer for website",
         DescriptionMaximum: " Use 500 characters or fewer for description",
         InvalidEmail: "Invalid email address",
         InvalidWebsite: "Website address is invalid",
         InvalidPhone: "Invalid phone number",
-        NoPhoneNumber: 'You must provide phone number',
-        DuplicatePhone: "This phone number already belongs to another vendor in the system",
-        DuplicateEmail: "This email address already belongs to another vendor in the system",
+
+        NoPhoneNumber: "You must provide phone number",
+        DuplicatePhone:
+          "This phone number already belongs to another vendor in the system",
+        DuplicateEmail:
+          "This email address already belongs to another vendor in the system"
+
       },
       CreateVendorErrors: {
         InvalidBusinessAddressLength: "",
@@ -214,7 +220,9 @@ export default {
     async updateVendor() {
       if (!this.vendor.BusinessAddress) {
         this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
+
       } else if (this.vendor.BusinessAddress && (this.vendor.BusinessAddress.length < 6 || this.vendor.BusinessAddress.length > 200)) {
+
         this.CreateVendorErrors.InvalidBusinessAddressLength = this.ErrorStrings.InvalidBusinessAddressLength;
       }
       if (!this.vendor.ContactName) {
@@ -334,7 +342,9 @@ export default {
       if (this.vendor.BusinessAddress && this.CreateVendorErrors.NoBusinessAddress != '') {
         this.CreateVendorErrors.NoBusinessAddress = '';
       }
+
       if (this.vendor.BusinessAddress.length <= 6 && this.vendor.BusinessAddress.length >= 200) {
+
         this.CreateVendorErrors.InvalidBusinessAddressLength = "";
       }
     },
