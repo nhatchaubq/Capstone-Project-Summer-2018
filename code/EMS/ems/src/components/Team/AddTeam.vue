@@ -16,7 +16,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Team's name (required)</strong> <span v-if="CreateTeamErrors.TeamNameMax != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMax }}</span></span> <span v-else-if="CreateTeamErrors.TeamNameMin != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMin }}</span></span> <span v-else-if="CreateTeamErrors.ValidName != ''"> <span class="error-text">{{ CreateTeamErrors.ValidName }}</span></span>
+                    <strong>  Team's name (required) </strong> <span v-if="CreateTeamErrors.TeamNameMax != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMax }}</span></span> <span v-else-if="CreateTeamErrors.TeamNameMin != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMin }}</span></span> <span v-else-if="CreateTeamErrors.ValidName != ''"> <span class="error-text">{{ CreateTeamErrors.ValidName }}</span></span> <span v-else-if="CreateTeamErrors.DuplicateName != ''"> <span class="error-text">{{ CreateTeamErrors.DuplicateName }}</span></span>
                     </div>
                     <div class="control has-icons-right col-6" style="padding:8px">
                         <input v-model.trim="team.name" class="input " type="text" placeholder="Dream team" >
@@ -32,6 +32,9 @@
                     </div>
                 
             </div>
+            <!-- <div v-bind:key="team.Id" v-for="team in teams" >
+              <div>{{team.Name}}</div>
+            </div> -->
             
             <!-- <div>
                 <div class="form-field">
@@ -100,16 +103,18 @@ export default {
       sending: false,
       ErrorStrings: {
         // NoTeamName: "You must provide name for this team",
-        TeamNameMax: "Use from 6 to 50 characters for your team name",
-        TeamNameMin: "Use from 6 to 50 characters for your team name",
-        ValidName: " Team's name cannot contain special character "
+        TeamNameMax: "Use from 6 to 50 characters for your team name.",
+        TeamNameMin: "Use from 6 to 50 characters for your team name.",
+        ValidName: " Team's name cannot contain special character. ",
+        DuplicateName: " This team's name already belongs to another team. "
         // NoCreateDate: "You must provide create date for this team"
       },
       CreateTeamErrors: {
         // NoTeamName: "",
         TeamNameMax: "",
         TeamNameMin: "",
-        ValidName: ""
+        ValidName: "",
+        DuplicateName: ""
         // NoCreateDate: ""
       },
       team: {
@@ -123,6 +128,11 @@ export default {
     };
   },
   created() {
+    let url1 = Server.TEAM_API_PATH;
+    this.axios.get(url1).then(response => {
+      this.teams = [];
+      response.data.forEach(value => this.teams.push(value.Team));
+    });
     let url = "http://localhost:3000/api/allaccwithout";
     this.axios
       .get(url)
@@ -154,6 +164,12 @@ export default {
       } else {
         this.CreateTeamErrors.ValidName = "";
       }
+      for (const team of this.teams) {
+        if (team.Name == this.team.name) {
+          this.CreateTeamErrors.DuplicateName = this.ErrorStrings.DuplicateName;
+          break;
+        }
+      }
       // if (this.team.createdDate === "") {
       //   this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
       // }
@@ -183,7 +199,8 @@ export default {
         // this.CreateTeamErrors.NoTeamName === "" &&
         this.CreateTeamErrors.TeamNameMax === "" &&
         this.CreateTeamErrors.TeamNameMin === "" &&
-        this.CreateTeamErrors.ValidName == ""
+        this.CreateTeamErrors.ValidName == "" &&
+        this.CreateTeamErrors.DuplicateName == ""
         // this.CreateTeamErrors.NoCreateDate === ""
       );
     },
@@ -226,6 +243,16 @@ export default {
       }
       if (this.NameRegex.test(this.team.name)) {
         this.CreateTeamErrors.ValidName = "";
+      }
+      let isDupName = false;
+      for (const team in this.teams) {
+        if (team.Name == this.team.name) {
+          isDupName = true;
+          break;
+        }
+      }
+      if (!isDupName) {
+        this.CreateTeamErrors.DuplicateName = "";
       }
     }
     // "team.createdDate": function() {
