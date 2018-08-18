@@ -665,7 +665,7 @@ export default {
         this.CreateTeamErrors.ValidName = "";
       }
       for (const team of this.teams) {
-        if (team.Name == this.team.Name) {
+        if (team.Id != this.team.Id && team.Name == this.team.Name) {
           this.CreateTeamErrors.DuplicateName = this.ErrorStrings.DuplicateName;
           break;
         }
@@ -818,7 +818,7 @@ export default {
       }
       let isDupName = false;
       for (const team in this.teams) {
-        if (team.Name == this.team.Name) {
+        if (team.Id != this.team.Id && team.Name == this.team.Name) {
           isDupName = true;
           break;
         }
