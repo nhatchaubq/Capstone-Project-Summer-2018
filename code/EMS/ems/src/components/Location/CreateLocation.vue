@@ -56,16 +56,16 @@
                 </div>
                 <div class="select form-field-input" style="width: 100% !important" >
                     <select v-model="selectedTeam" style="width:100%">
-                        <option disabled=disabled value=null> -- Choose new team --</option>
+                        <option disabled=disabled :value=null> -- Choose new team --</option>
                         <!-- <option :disabled="selectedTeams.length > 0" v- value="null">Not now</option> -->
                         <option v-bind:key='team.Id' v-for='team in teams' :value="team">{{team.Name}}</option>
                     </select>
                 </div>
-                 <div class="selected-team" style="padding-left:0.5rem">
-                        <label class="lb-team" :key='team.Id' v-for="team in selectedTeams" style="margin-right:0.5rem">
-                        {{team.Name}} <div class="delete" v-on:click="removeSelectedTeam(team)"></div>
-                        </label> 
-                    </div>
+                  <div style="padding-left: 0.5rem">
+                      <label class="lb-team" :key='team.Id' v-for="team in selectedTeams" style="margin-right:0.5rem, padding-left: 2rem;">
+                      {{team.Name}} <span style="font-size: 1rem; margin-left: .5rem;" class="delete" v-on:click="removeSelectedTeam(team)"></span>
+                      </label> 
+                  </div>
             </div>
             <div class="form-field">
                 <div class="form-field-title">
@@ -434,12 +434,6 @@ export default {
 .lb-team {
   border: 0.5px solid;
   border-radius: 5px;
-  padding: 3px;
-}
-
-.delete {
-  position: relative;
-  top: 0.2rem;
-  font-size: 20px;
+  padding: .3rem;
 }
 </style>
