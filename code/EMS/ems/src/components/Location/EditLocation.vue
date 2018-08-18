@@ -23,7 +23,7 @@
             </div> 
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  New Address<span style="color:red;">*</span> </strong>
+                <strong>  New Address (required) </strong>
                 </div>
                 <div class="form-field-input">
                     <input  class="input " type="text"  v-model="location.Address" disabled="disabled" >
@@ -37,14 +37,14 @@
                 </div>
                 <div class="form-field-input" style="padding-left:30px;padding-top:10px;">
                   <label class="radio" v-on:click="location.IsActive = true" style="margin-right:25px;">
-                    <input type="radio" name="status" style="padding-right:0.5rem"  :checked="location.IsActive">&nbsp&nbspActive
+                    <input type="radio" name="status" style="margin-right:0.5rem"  :checked="location.IsActive"> Active
                   </label>
                   <label class="radio" v-on:click="() => {
                       if (!location.Items) {
                         location.IsActive = false
                       }
                     }">
-                    <input type="radio" name="status" style="padding-right:0.5rem" :disabled="location.Items" :checked="!location.IsActive">&nbsp&nbspInactive
+                    <input type="radio" name="status" style="margin-right:0.5rem" :disabled="location.Items" :checked="!location.IsActive">Inactive
                   </label>                                                  
                 </div>
               </div>

@@ -169,40 +169,7 @@ export default {
         locations: null,
     },
     mounted() {
-        if (this.locations) {
-            for(var i = 0; i < this.locations.length; i++) {
-                let cache = {
-                    background: null,
-                }
-                this.imageCache.push(cache);
-            }
-            
-            // let minLongitude = this.locations[0].Longitude;
-            // let maxLongitude = this.locations[0].Longitude;
-            // let minLatitude = this.locations[0].Latitude;
-            // let maxLatitude = this.locations[0].Latitude;
-            const bounds = new this.google.maps.LatLngBounds();
-            this.locations.forEach(location => {
-                alert(`lat: ${location.Latitude}, lng: ${location.Longitude}`)
-                bounds.extend({lat: location.Latitude, lng: location.Longitude});
-                // if (location.Longitude <= minLongitude) {
-                //     minLongitude = location.Longitude;
-                // }
-                // if (location.Longitude > maxLongitude) {
-                //     maxLongitude = location.Longitude;
-                // }
-                // if (location.Latitude <= minLatitude) {
-                //     minLatitude = location.Latitude;
-                // }
-                // if (location.Latitude > maxLatitude) {
-                //     maxLatitude = location.Latitude;
-                // }
-            });
-            console.log(bounds);
-            this.$refs.googlemap.fitBounds(bounds);
-            // this.medianLongitude = (minLongitude + maxLongitude) / 2;
-            // this.medianLatitude = (minLatitude + maxLatitude) / 2;
-        } 
+        
     },
     computed: {
         authUser() {
@@ -256,15 +223,17 @@ export default {
         }
     },
     watch: {
-        'locations': function() {
+        'locations': async function() {
             if (this.locations) {
-                const bounds = new this.google.maps.LatLngBounds();
-                this.locations.forEach(location => {
-                    bounds.extend(new this.google.maps.LatLng(location.Latitude, location.Longitude));
-                });
+                let bounds = this.google.maps.LatLngBounds();
+                for (let location of this.locations) {
+                    bounds.extend(this.google.maps.LatLng(location.Latitude, location.Longitude));
+                }
                 this.bounds = bounds;
-                this.$refs.map.fitBounds(bounds);
-            }
+                alert('alo')
+                alert(bounds);
+                this.$refs.googlemap.fitBounds(bounds);
+            } 
         },
         'selectedLocation': function() {
             this.mapViewSelectedLocation = null;
@@ -275,43 +244,6 @@ export default {
                     .then((res) => {
                         if (res.data) {
                             this.mapViewSelectedLocation = res.data;
-                            if (this.selectedLocation.Image) {
-                                let canvas = this.$refs.floorPlanCanvas;
-                                var background = null;
-                                if (this.imageCache[this.selectedLocationIndex].background) {
-                                    background = this.imageCache[this.selectedLocationIndex].background;
-                                } else {
-                                    background = new Image()
-                                    background.src = this.selectedLocation.Image;
-                                }
-                                let MAX_WIDTH = 460;
-                                let MAX_HEIGHT = 460;
-                                var width = background.width;
-                                var height = background.height;
-
-                                if (width > height) {
-                                    if (width > MAX_WIDTH) {
-                                        height *= MAX_WIDTH / width;
-                                        width = MAX_WIDTH;
-                                    }
-                                } else {
-                                    if (height > MAX_HEIGHT) {
-                                        width *= MAX_HEIGHT / height;
-                                        height = MAX_HEIGHT;
-                                    }
-                                }
-                                canvas.width = width;
-                                canvas.height = height;
-                                let canvasContext = canvas.getContext('2d');
-                                if (this.imageCache[this.selectedLocationIndex].background) {
-                                    canvasContext.drawImage(background, 0, 0, width, height);
-                                } else {
-                                    background.onload = () => {
-                                        canvasContext.drawImage(background, 0, 0, width, height);
-                                        this.imageCache[this.selectedLocationIndex].background = background;
-                                    }
-                                }    
-                            }
                             this.curentBlockIndex = 0;
                         }
                     })
