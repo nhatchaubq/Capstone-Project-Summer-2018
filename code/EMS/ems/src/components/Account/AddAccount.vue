@@ -189,7 +189,7 @@ export default {
       accounts: [],
       sending: false,
       ErrorStrings: {
-        FullNameMax: " Use from 6 to 50 characters for your full name ",
+        FullNameMax: " Use from 6 to 250 characters for your full name ",
         FullNameMin: " Use from 6 to 250 characters for your full name ",
         UsernameMax: " Use from 6 to 50 characters for your  username ",
         UsernameMin: " Use from 6 to 50 characters for your username ",
@@ -271,16 +271,21 @@ export default {
       } else {
         this.CreateAccountErrors.ValidFullName = "";
       }
-      if (this.account.fullname.length < 6 || this.account.fullname.length > 250 ) {
+      if (
+        this.account.fullname.length < 6 ||
+        this.account.fullname.length > 250
+      ) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
       if (this.account.phone.length < 10 || this.account.phone.length > 17) {
         this.CreateAccountErrors.PhoneMin = this.ErrorStrings.PhoneMin;
 
-    //  } else if (!phoneRegex.test(this.account.phone)) {
-
-      }else if ((this.account.phone.length > 9 && this.account.phone.length < 18) && !phoneRegex.test(this.account.phone)) {
-
+        //  } else if (!phoneRegex.test(this.account.phone)) {
+      } else if (
+        this.account.phone.length > 9 &&
+        this.account.phone.length < 18 &&
+        !phoneRegex.test(this.account.phone)
+      ) {
         this.CreateAccountErrors.validPhone = this.ErrorStrings.validPhone;
       } else {
         this.CreateAccountErrors.validPhone = "";
@@ -452,11 +457,13 @@ export default {
         this.CreateAccountErrors.ValidFullName = "";
       }
 
-      if (this.account.fullname.length < 250 && this.account.fullname.length > 5 && this.CreateAccountErrors.FullNameMin != "") {
-
+      if (
+        this.account.fullname.length < 251 &&
+        this.account.fullname.length > 5 &&
+        this.CreateAccountErrors.FullNameMin != ""
+      ) {
         this.CreateAccountErrors.FullNameMin = "";
       }
-     
     },
     "account.phone": function() {
       let phoneRegex = /^\(?[+]?([0-9]{2,4})\)?[-. ]?([0-9]{3,4})[-. ]?([0-9]{3,7})$/;

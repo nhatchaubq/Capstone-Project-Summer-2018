@@ -315,8 +315,8 @@ export default {
       ErrorStrings: {
         // NoUsername: 'You must provide username for this account',
         // NoFullname: "You must provide full name for this account",
-        FullNameMax: " Use from 6 to 50 characters for your full name. ",
-        FullNameMin: " Use from 6 to 50 characters for your full name. ",
+        FullNameMax: " Use from 6 to 250 characters for your full name. ",
+        FullNameMin: " Use from 6 to 250 characters for your full name. ",
         ValidFullName: "Invalid full name ",
 
         // NoPassword: "You must provide password for this account",
@@ -326,7 +326,8 @@ export default {
         // NoPhone: "You must provide phone number for this account",
         PhoneMin: " Use from 10 to 17 characters for your phone number. ",
         PhoneMax: " Use from 10 to 17 characters for your phone number. ",
-        duplicatePhone: " This phone number already belongs to another account.",
+        duplicatePhone:
+          " This phone number already belongs to another account.",
         validPhone: " Invalid phone number. ",
 
         NoEmail: " You must provide email. ",
@@ -396,7 +397,10 @@ export default {
       // let phoneRegex = /^(\([0-9]{3}\)\s*|[0-9]{3}\-)([0-9]{7}|[0-9]{8}|[0-9]{9})$/;
 
       //  /^?[+]?([0-9]{2,3})?[+]?([0−9]2,3)?[-. ]?([0-9]{3})[-. ]?([0-9]{4,7})$/
-      if (this.account.Fullname.length < 6 || this.account.Fullname.length > 50) {
+      if (
+        this.account.Fullname.length < 6 ||
+        this.account.Fullname.length > 250
+      ) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
       if (!this.FullNameRegex.test(this.account.Fullname)) {
@@ -637,7 +641,6 @@ export default {
       }
     },
     "account.Password": function() {
-      
       if (this.account.Password != "") {
         this.CreateAccountErrors.NoPassword = "";
       }
@@ -649,10 +652,18 @@ export default {
       }
     },
     "account.Fullname": function() {
-      if (this.FullNameRegex.test(this.account.Fullname && this.CreateAccountErrors.ValidFullName != "")) {
+      if (
+        this.FullNameRegex.test(
+          this.account.Fullname && this.CreateAccountErrors.ValidFullName != ""
+        )
+      ) {
         this.CreateAccountErrors.ValidFullName = "";
-      } 
-      if (this.account.Fullname.length < 250 && this.account.Fullname.length > 5 && this.CreateAccountErrors.FullNameMin != "") {
+      }
+      if (
+        this.account.Fullname.length < 250 &&
+        this.account.Fullname.length > 5 &&
+        this.CreateAccountErrors.FullNameMin != ""
+      ) {
         this.CreateAccountErrors.FullNameMin = "";
       }
     },
