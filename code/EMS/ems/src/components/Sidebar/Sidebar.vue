@@ -57,7 +57,7 @@
           </div>
           </router-link>
         </li>
-        <li v-if="authUser.Role != 'Admin'">
+        <li>
           <router-link to='/location'>
             <div class="sidebar-list-content" :class="isActive(menu.Location)">
               <i class="material-icons">location_on</i>

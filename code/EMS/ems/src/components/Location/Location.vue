@@ -1,12 +1,11 @@
 <template>  
 <div>
-  <div v-if="authUser.Role == 'Admin'">
-    <div style="font-weight:bold; color:red">
-      Sorry, You can't access this page!!!
-    </div>  
-  </div>
-  <div v-else>
-    <div class="location-page" v-if="locations">
+  
+  <div>
+    <div class="emtpy-text" v-if="locations && locations.length == 0">
+      There is no location to display.
+    </div>
+    <div class="location-page" v-if="locations && locations.length > 0">
       <div class="field is-grouped view-mode" v-if="authUser.Role == 'Manager'">
         <button class="btn-view-mode-left" :class='{"is-active": isListViewMode}' v-on:click="isListViewMode = true">List view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isListViewMode}' v-on:click="isListViewMode = false">Map view</button>
@@ -16,12 +15,14 @@
           <!-- <div class="location-sort">
             <b>Sort By</b>
           </div> -->
-          <div class="location-blocks">
+          <div class="location-blocks" :style="authUser.Role == 'Manager' ? 'max-height: 83%; min-height: 83%' : 'max-height: 90.15%; min-height: 90.15%'">
             <div class="material-box material-shadow-animate" :class="isActive(location.Id)"  :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)" >
-              <div class="location-name" >                
+              <div class="location-name">                
                 <div>{{location.Name}}</div>
-                <div v-if="location.IsActive == 0" class="tag" style="background-color:red;color:white">Inactive</div>
-                <div v-else class="tag" style="background-color:green;color:white">Active</div>
+                <div style="text-align: right; line-height: 1.6rem;">
+                  <div v-if="!location.IsActive" class="tag" style="width: 100%; background-color:var(--danger-color);color:white">Inactive</div>
+                  <div v-else class="tag" style="width: 100%; background-color:var(--success-color);color:white">Active</div>
+                </div>
               </div>
               <div class="location-address">
                 <i class="material-icons">place</i>
@@ -36,19 +37,19 @@
           </router-link> 
         </div>
 
-        <div v-if="selectedLocation != null" class="location-detail material-box material-shadow">  
+        <div v-if="selectedLocation != null" class="location-detail material-box material-shadow"  :style="authUser.Role == 'Manager' ? 'max-height: 81%' : 'max-height: 88%'">  
           <div class="info-location" >
             <div class="header-detail">
               <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>      
-              <div class="btn-edit" >
-              <router-link :to="'/location/edit-location/'+selectedLocation.Id" class="rtl-edit" style="color: #26a69a !important" v-if="authUser.Role == 'Manager'"> Edit <i class="material-icons" style="position: relative;top: 0.43rem;right: 0.3rem;font-size: 25px;">chevron_right</i></router-link> 
+              <div style="display: flex; justify-content: flex-end; align-items: center; ">
+                <a v-if="authUser.Role == 'Manager'" @click="$router.push(`/location/edit-location/${selectedLocation.Id}`)">Edit</a>
+              </div>
             </div>
-          </div>
             
             <div class="location-address">
-              {{selectedLocation.Address}}
+              <i style="position: relative; top: .1rem" class="material-icons">location_on</i> {{selectedLocation.Address}}
             </div>
-            <div>
+            <div v-if="selectedLocation.Description">
               Description: {{selectedLocation.Description}}            
             </div>
 
@@ -117,15 +118,15 @@
             <div v-else-if="currentMode == modes.WORKORDER" style="padding-top:5px">
               <div  v-if="workorders.length > 0">
                 <div v-bind:key='workorder.Id' v-for="workorder in workorders">                           
-                <div style="display: grid; grid-template-columns: 80% auto;border-bottom:0.15px solid;padding-top:1rem" >
+                <div style="display: grid; grid-template-columns: 80% auto;border-bottom:0.15px solid;padding-top:1rem; font-size: 0.95rem" >
                     <div style=" border-right: 0.25px solid">
-                      <div style="font-size: 25px;font-weight: 500">
-                        <div>{{workorder.Name}}</div>                        
+                      <div style="display: grid; grid-template-columns: 80% auto; font-weight: 500; padding: .5rem 0">
+                        <div style="font-size: 1.3rem; margin-top: -.6rem;">{{workorder.Name}}</div>                        
+                        <div style="color: white; margin-top: -.3rem; margin-right:0.5rem" :style="{'background-color':  makeStatusBackground(workorder.Status)}" class="tag"> {{workorder.Status}}</div>
                       </div>
                       <div style="display: grid; grid-template-columns:auto 35% 20%;">                        
-                        <div style="padding-left:1rem">  <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">group</i> {{workorder.Team}} </div> 
-                        <div style="position: relative;top: 0.3rem;"> <i class="fa fa-calendar" style="color:gray;"></i> {{getFormatDate(workorder.CreateDate)}} </div>                                             
-                        <div style="color: white;margin-right:0.5rem" :style="{'background-color':  makeStatusBackground(workorder.Status)}"  class="tag"> {{workorder.Status}}</div>
+                        <div><i class="material-icons" style="color: gray;position: relative;top: 0.3rem;">group</i> {{workorder.Team}} </div> 
+                        <div style="position: relative;top: 0.5rem;"><i class="fa fa-calendar" style="color:gray;"></i> {{getFormatDate(workorder.CreateDate)}}</div>                                             
                       </div>                      
                     </div>                    
                     <div style="text-align:center">
@@ -322,7 +323,8 @@ export default {
     let url = "";
     if (
       JSON.parse(window.localStorage.getItem("user")).Role == "Manager" ||
-      JSON.parse(window.localStorage.getItem("user")).Role == "Equipment Staff"
+      JSON.parse(window.localStorage.getItem("user")).Role == "Equipment Staff" ||
+      JSON.parse(window.localStorage.getItem("user")).Role == 'Admin'
     ) {
       url = "http://localhost:3000/api/location/";
     } else {
@@ -339,7 +341,9 @@ export default {
           this.locations.push(location);
           this.allLocations.push(location);
         });
-        this.setSelectedLocation(data[0]);
+        if (this.locations.length > 0) {
+          this.setSelectedLocation(data[0]);
+        }
       })
       .catch(error => {
         console.log(error);
@@ -483,7 +487,9 @@ export default {
             this.locations.push(location);
             this.allLocations.push(location);
           });
-          this.setSelectedLocation(data[0]);
+          if (this.locations.length > 0) {
+            this.setSelectedLocation(data[0]);
+          } 
         })
         .catch(error => {
           console.log(error);
@@ -642,12 +648,12 @@ export default {
   /* display: grid;
   grid-gap: 10px; */
   position: fixed;
-  height: 88%;
+  /* height: 88%; */
   padding-right: 1rem;
   width: 35%;
   overflow-y: auto;
-  padding-bottom: 2rem;
-  max-height: 83%;
+  padding-bottom: 1rem;
+  /* max-height: 83%; */
 }
 /* .location-blocks-choose {
   position: fixed;
@@ -663,9 +669,13 @@ export default {
   cursor: pointer;
 }
 
+.location-blocks div:last-child {
+  margin-bottom: 0;
+}
+
 .location-name {
   display: grid;
-  grid-template-columns: auto 10%;
+  grid-template-columns: 85% 15%;
   font-size: 1.5rem;
 }
 .location-address {
@@ -694,7 +704,7 @@ export default {
 }
 .header-detail {
   display: grid;
-  grid-template-columns: 80% auto;
+  grid-template-columns: 95% 5%;
 }
 .rtl-edit {
   color: var(--lighten-primary-color);
