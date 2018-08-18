@@ -19,7 +19,7 @@
   <div v-if="team" class="material-box col-12" >
         <div class="row" style="margin: 0 1rem 0 0rem">
           <div class="col-11">
-            <strong style="font-size: 20px; ">Team Name</strong> <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span>
+            <strong style="font-size: 20px; ">Team Name</strong> <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-else-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span> <span v-else-if="CreateTeamErrors.ValidName != ''"> <span class="error-text">{{ CreateTeamErrors.ValidName }}</span></span><span v-else-if="CreateTeamErrors.DuplicateName != ''"> <span class="error-text">{{ CreateTeamErrors.DuplicateName }}</span></span>
 
           </div>
           <div class="col-1" style="display: flex; justify-content: flex-end; padding:0rem" >
@@ -489,6 +489,7 @@
 </template>
 
 <script>
+import Server from "@/config/config.js";
 import { sync } from "vuex-pathify";
 import "vodal/common.css";
 import "vodal/slide-up.css";
@@ -506,6 +507,11 @@ export default {
     moment
   },
   created() {
+    let url1 = Server.TEAM_API_PATH;
+    this.axios.get(url1).then(response => {
+      this.teams = [];
+      response.data.forEach(value => this.teams.push(value.Team));
+    });
     let teamApiUrl = `http://localhost:3000/api/team/id/${
       this.$route.params.id
     }`;
@@ -584,6 +590,7 @@ export default {
 
   data() {
     return {
+      NameRegex: /^[^~`!#$%@()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/,
       currentPageMember: 1,
       toDisplayMember: [],
       currentPageLoca: 1,
@@ -598,11 +605,15 @@ export default {
       sending: false,
       ErrorStrings: {
         NameMax: " Use from 6 to 50 characters for your team name",
-        NameMin: " Use from 6 to 50 characters for your team name"
+        NameMin: " Use from 6 to 50 characters for your team name",
+        ValidName: " Team's name cannot contain special character. ",
+        DuplicateName: " This team's name already belongs to another team. "
       },
       CreateTeamErrors: {
         NameMax: "",
-        NameMin: ""
+        NameMin: "",
+        ValidName: "",
+        DuplicateName: ""
       },
       team: null,
       memberOptions: [],
@@ -648,6 +659,17 @@ export default {
       if (this.team.Name.length > 50) {
         this.CreateTeamErrors.NameMax = this.ErrorStrings.NameMax;
       }
+      if (!this.NameRegex.test(this.team.Name)) {
+        this.CreateTeamErrors.ValidName = this.ErrorStrings.ValidName;
+      } else {
+        this.CreateTeamErrors.ValidName = "";
+      }
+      for (const team of this.teams) {
+        if (team.Name == this.team.Name) {
+          this.CreateTeamErrors.DuplicateName = this.ErrorStrings.DuplicateName;
+          break;
+        }
+      }
       if (this.validateTeam()) {
         var checkName = true;
         var checkAccounts = true;
@@ -692,7 +714,9 @@ export default {
     validateTeam() {
       return (
         this.CreateTeamErrors.NameMax === "" &&
-        this.CreateTeamErrors.NameMin === ""
+        this.CreateTeamErrors.NameMin === "" &&
+        this.CreateTeamErrors.ValidName == "" &&
+        this.CreateTeamErrors.DuplicateName == ""
       );
     },
 
@@ -788,6 +812,19 @@ export default {
       }
       if (this.team.Name.length < 51) {
         this.CreateTeamErrors.NameMax = "";
+      }
+      if (this.NameRegex.test(this.team.Name)) {
+        this.CreateTeamErrors.ValidName = "";
+      }
+      let isDupName = false;
+      for (const team in this.teams) {
+        if (team.Name == this.team.Name) {
+          isDupName = true;
+          break;
+        }
+      }
+      if (!isDupName) {
+        this.CreateTeamErrors.DuplicateName = "";
       }
     }
   }
