@@ -57,8 +57,8 @@ router.get("/getAllTeam", (request, response) => {
 router.post("/", (request, response) => {
   request
     .sql(
-      "insert into [Team](Name, CreatedDate )" +
-      " values(@name, getdate() ) " +
+      "insert into [Team](Name, CreatedDate, Status )" +
+      " values(@name, getdate(), 'True' ) " +
       "select(select SCOPE_IDENTITY()) as [NewTeamId] for json path, without_array_wrapper"
     )
     .param("name", request.body.team.name, TYPES.NVarChar)

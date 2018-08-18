@@ -13,9 +13,13 @@
             <div class="">
               <div class="field" style=" display: grid; grid-template-columns: 70% 20% 10%;">
                   <strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a">{{equipmentName}}</strong>
-                  <button v-if="!addItemMode && authUser.Role=='Equipment Staff'" class="btn-Add"   v-on:click="addItem">Add Item</button>
+                  <div>
+                    <button v-if="!addItemMode && authUser.Role=='Equipment Staff' && EquimentByID.Status" class="btn-Add"   v-on:click="addItem">Add Item</button>
+                  </div>
                   <!-- <div class="" v-else ><button  class="btn-Add" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" >Add Item</button></div> -->
-                  <button v-if="!editMode && authUser.Role=='Equipment Staff'" class="btn-edit"  v-on:click="editMode = !editMode">Edit</button> 
+                  <div>
+                    <button v-if="!editMode && authUser.Role=='Equipment Staff'" class="btn-edit"  v-on:click="editMode = !editMode">Edit</button> 
+                  </div>
                   <!-- <div class="" v-else><button class="btn-edit" style="color: white;border-bottom: 1px solid black;background-color: #26a69a;border-radius: 5px" :class="{'is-active-option': editMode}">Edit</button> </div> -->
              </div>
               <span v-if="editMode"  style="color:red; font-size:14px">* is required, please input these fields</span>
@@ -60,11 +64,13 @@
                   </div>
               </div>
               <div class="row" style=" display: grid;grid-template-columns: 50% 50%;">
-                <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 40% 60%;" >
+                <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 36% 64%;" >
                   <div class="" style="padding-top:0.25rem; " >
                       Quantity:  
                   </div>
-                  <input v-model="this.Items.length" class="input col-5 " type="text" disabled="disabled"> 
+                  <div>
+                    <input v-model="this.Items.length" class="input col-5 " type="text" disabled="disabled"> 
+                  </div>
                 </div>
                 <div  class="is-horizontal" style="height:36px; display: grid;grid-template-columns: 20% 80%; padding-left:2rem " >
                   <div class="" style="padding-top:0.25rem;" >
@@ -84,11 +90,11 @@
                   <div class="" style="margin-top:0.5rem" >
                       Schedule:  <span v-if="editMode" style="color:red; font-size:18px">*</span>
                   </div>
-                  <div class="is-horizontal" v-if="!editMode" style="height:36px; display: grid;grid-template-columns: 38% 60%;">
+                  <div class="is-horizontal" v-if="!editMode" style="height:36px; display: grid;grid-template-columns: 40% 60%;">
                     <input  v-model="EquimentByID.MaintenanceDuration.Months" class="input col-7 " type="text" disabled="disabled"> 
                     <label style=" margin-top: 0.75rem;margin-left: 0.2rem;padding-left:1rem">months/time maintenance</label>
                   </div>
-                  <div class="is-horizontal" v-else style="height:36px; display: grid;grid-template-columns: 30% 70%;">
+                  <div class="is-horizontal" v-else style="height:36px; display: grid;grid-template-columns: 40% 60%;">
                     <div class="select" >
                       <select class="" style="border: 1px #9e9e9e solid; padding-left: 1rem; width:100%"  v-model="EquimentByID.MaintenanceDurationID">
                                 <option :key="'duration' + duration.Id" v-for="duration in maintenanceDurationOptions"
@@ -160,35 +166,43 @@
               </div>
             </div>       
         </div>
-        <div class="equipmentItem" style="padding-top:1rem;">
-          <table class="table">
-              <thead>
-                  <tr>
-                      <th><strong>No.</strong></th>
-                      <th><strong>Serial number</strong></th>
-                      <th><strong>ImportDate</strong></th>
-                      <th><strong>Warranty</strong></th>
-                      <th><strong>Runtime Days</strong></th>
-                      <th><strong>Last-MaintainDate</strong></th>
-                      <th><strong>Next-MaintainDate</strong></th>
-                      <th><strong>Status</strong></th>
-                      <th><strong>Description</strong></th>
-                  </tr>
-              </thead>  
-              <tbody>
-                  <tr v-bind:key="item.ID" v-for="(item, index) in toDisplayEquipmentItem" v-on:click="setSelectedItem(item.ID)">
-                      <td style="text-align:center">{{ 10*(currentPageEquipmentItem -1) + (index + 1) }}</td>   
-                      <td>{{item.SerialNumber}}</td>
-                      <td>{{item.ImportDate}}</td>
-                      <td>{{item.WarrantyDuration}}</td>
-                      <td>{{item.RuntimeDays}}</td>
-                      <td>{{item.LastMaintainDate}}</td>
-                      <td>{{item.NextMaintainDate}}</td>
-                      <td>{{item.Status}}</td>
-                      <td>{{item.Description ? item.Description : 'N/A' }}</td>    
-                  </tr>
-              </tbody>
-          </table>
+        <div class="equipmentItem" style="padding-top:0.5rem;">
+          <div class="wrapper-table" v-if="toDisplayEquipmentItem && toDisplayEquipmentItem.length >0">
+            <div class="" style="padding-left:0.4rem;font-style: italic;font-size:16px">
+              Table: List item of the equipment
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><strong>No.</strong></th>
+                        <th><strong>Serial number</strong></th>
+                        <th><strong>ImportDate</strong></th>
+                        <th><strong>Warranty</strong></th>
+                        <th><strong>Runtime Days</strong></th>
+                        <th><strong>Last-MaintainDate</strong></th>
+                        <th><strong>Next-MaintainDate</strong></th>
+                        <th><strong>Status</strong></th>
+                        <th><strong>Description</strong></th>
+                    </tr>
+                </thead>  
+                <tbody>
+                    <tr v-bind:key="item.ID" v-for="(item, index) in toDisplayEquipmentItem" v-on:click="setSelectedItem(item.ID)">
+                        <td style="text-align:center">{{ 10*(currentPageEquipmentItem -1) + (index + 1) }}</td>   
+                        <td>{{item.SerialNumber}}</td>
+                        <td>{{item.ImportDate}}</td>
+                        <td>{{item.WarrantyDuration}}</td>
+                        <td>{{item.RuntimeDays}}</td>
+                        <td>{{item.LastMaintainDate}}</td>
+                        <td>{{item.NextMaintainDate}}</td>
+                        <td>{{item.Status}}</td>
+                        <td>{{item.Description ? item.Description : 'N/A' }}</td>    
+                    </tr>
+                </tbody>
+            </table>
+          </div>
+          <div class="" v-else style="padding-top: 0,75rem;padding-left:0.4rem;font-style: italic;font-size:16px">
+            This equipment has no item
+          </div>
         </div>
            <!-- dien-start -->
         <div v-if="Eitem.length > 9" class="">
@@ -773,6 +787,7 @@
           </div>
         </div> 
       <div slot="footer" style="display: relative; align-items: right; justify-content: right;">
+        <simplert :useRadius="true" :useIcon="true" ref="simplert3"></simplert>
         <button class="btn-CancelItem" v-on:click="cancelPositionEQTLost">Cancel</button>
         <button  class="btn-UpdateItem" v-on:click="updatePositionEQTLost">Save changes</button>
       </div>
@@ -803,42 +818,14 @@ export default {
     // jsbarcode
   },
   created() {
-    this.equipmentId = this.$route.params.id;
-    this.axios
-      .get("http://localhost:3000/api/equipment/" + this.equipmentId)
-      .then(response => {
-        let data = response.data;
-        data.forEach(element => {
-          this.EquimentByID = element.Equipment;
-          this.equipmentName = this.EquimentByID.Name;
-          this.equipmentDescription = this.EquimentByID.Description;
-          this.equipmentMadein = this.EquimentByID.MadeIn;
-          this.equipmentVendorId = this.EquimentByID.VendorId;
-          this.equipmentCategoryId = this.EquimentByID.CategoryId;
-          this.equipmentUnitId = this.EquimentByID.UnitID;
-          this.newStatus = this.EquimentByID.Status;
-        });
-      });
+    this.getEquipmentDetail();
 
     // this.axios
     //   .get("http://localhost:3000/api/equipmentItem/" + equipmentId)
     //   .then(response => {
     //     this.quality = response.data.Quality;
     //   });
-    this.axios
-      .get("http://localhost:3000/api/equipmentItem/" + this.equipmentId)
-      .then(response => {
-        let data = response.data;
-        this.Eitem = data;
-        this.toDisplayEquipmentItem = this.Eitem.slice(0, 10);
-        data.forEach(element => {
-          this.Items.push(element);
-          // this.totalRuntime = element.RuntimeDays + this.totalRuntime;
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    this.getAllItemOfEquipment();
     this.axios
       .get("http://localhost:3000/api/vendor")
       .then(response => {
@@ -1162,6 +1149,40 @@ export default {
     };
   },
   methods: {
+    getEquipmentDetail(){
+      this.equipmentId = this.$route.params.id;
+      this.axios
+        .get("http://localhost:3000/api/equipment/" + this.equipmentId)
+        .then(response => {
+          let data = response.data;
+          data.forEach(element => {
+            this.EquimentByID = element.Equipment;
+            this.equipmentName = this.EquimentByID.Name;
+            this.equipmentDescription = this.EquimentByID.Description;
+            this.equipmentMadein = this.EquimentByID.MadeIn;
+            this.equipmentVendorId = this.EquimentByID.VendorId;
+            this.equipmentCategoryId = this.EquimentByID.CategoryId;
+            this.equipmentUnitId = this.EquimentByID.UnitID;
+            this.newStatus = this.EquimentByID.Status;
+          });
+        });
+    },
+    getAllItemOfEquipment(){
+      this.axios
+      .get("http://localhost:3000/api/equipmentItem/" + this.equipmentId)
+      .then(response => {
+        let data = response.data;
+        this.Eitem = data;
+        this.toDisplayEquipmentItem = this.Eitem.slice(0, 10);
+        data.forEach(element => {
+          this.Items.push(element);
+          // this.totalRuntime = element.RuntimeDays + this.totalRuntime;
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    },
     getNumberFormattedThousand(str) {
       let value = numeral(str).value();
       return numeral(value).format("0,0");
@@ -1251,7 +1272,7 @@ export default {
         this.CreateItemErrors.NoTile === "" &&
         this.CreateItemErrors.NoQuantity === ""
       ) {
-        var result = false;
+        var result = 0;
         this.randomNumbers.forEach(async number => {
           try {
             let res = await this.axios.post(
@@ -1268,26 +1289,27 @@ export default {
               }
             );
             if (res.status == 200) {
-              result = true;
+              result = result + 1;
             }
           } catch (error) {
             console.log(error);
-            result = false;
+            result = result - 1;
           }
         });
-        await Utils.sleep(1500);
-        if (result) {
+        await Utils.sleep(1000);
+        if (result == this.quantity) {
           let context = this;
           let obj = {
             title: "Successfully!!!",
             message: "Create new " + context.quantity + " item(s) successfully",
             type: "success",
             hideAllButton: true,
-            showXclose: false
+            // showXclose: false
           };
           context.$refs.simplert2.openSimplert(obj);
           await Utils.sleep(1500);
-          location.reload();
+          context.getAllItemOfEquipment();
+          context.addPopUp = !context.addPopUp;
         } else {
           alert("Add failed");
         }
@@ -1563,7 +1585,6 @@ export default {
       }
       this.addPopUp = true;
       this.addItemMode = !this.addItemMode;
-      // this.editMode = !this.addPopUp;
     },
 
     getFilePath(file) {
@@ -1670,12 +1691,11 @@ export default {
                 let obj = {
                   message: "Update successfully",
                   type: "success",
-                  hideAllButton: true,
+                  // hideAllButton: true,
                   showXclose: false
                 };
                 context.$refs.simplert.openSimplert(obj);
-                await Utils.sleep(1000);
-                location.reload();
+                context.getEquipmentDetail();
                 context.editMode = !context.editMode;
               })
               .catch(function(error) {
@@ -1746,7 +1766,7 @@ export default {
           message: "Please choose position for this item",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
+        this.$refs.simplert3.openSimplert(obj);
       } else {
         var result = false;
         try {
@@ -1764,7 +1784,7 @@ export default {
           console.log(error);
           result = false;
         }
-        await Utils.sleep(100);
+        await Utils.sleep(600);
         if (result) {
           var updateSttBool = false;
           try {
@@ -1791,10 +1811,13 @@ export default {
               type: "success",
               showXclose: false
             };
-            this.$refs.simplert.openSimplert(obj);
+            this.$refs.simplert3.openSimplert(obj);
+            await Utils.sleep(900);
             this.changePositonLost = false;
             this.updateNumber = this.updateNumber + 1;
             this.editItemMode = !this.editItemMode;
+            this.setSelectedItem(this.selectedItem.Item.Id);
+            this.getAllItemOfEquipment();
           } else {
             alert("Update failed");
           }
@@ -1876,7 +1899,7 @@ export default {
             console.log(error);
             result = false;
           }
-          await Utils.sleep(50);
+          await Utils.sleep(100);
           if (result) {
             let obj = {
               message: "Update status successfully",
@@ -1888,6 +1911,8 @@ export default {
             this.changeItemSttDescription = "";
             this.updateNumber = this.updateNumber + 1;
             this.editItemMode = !this.editItemMode;
+            this.setSelectedItem(this.selectedItem.Item.Id);
+            this.getAllItemOfEquipment();
             // this.currentsttName = this.selectedItem.Item.Status;
             // this.currentsttId = this.this.selectedItem.Item.StatusID;
           } else {
@@ -1905,6 +1930,10 @@ export default {
       let nextmaintaindate = moment(
         this.selectedItem.Item.NextMaintainDate
       ).valueOf();
+      let nextmaintainYear = moment(
+        this.selectedItem.Item.NextMaintainDate
+      ).format('YYYY');
+      let currentyear = moment().format('YYYY');
       if (
         this.selectedItem.Item.Price === "" ||
         this.selectedItem.Item.Price < 50000
@@ -1929,7 +1958,13 @@ export default {
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
-      } else {
+      } else if ( (nextmaintainYear - currentyear) > 5 ) {
+        let obj = {
+          message: "Next maintain year is invalid",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      }else {
         var result = false;
         try {
           let res = await this.axios.put(
@@ -1970,6 +2005,8 @@ export default {
           this.itemWarehouse = this.selectedItem.Item.WarehouseID;
           this.itemWarranty = this.selectedItem.Item.WarrantyDuration;
           this.itemNextMaintainDate = this.selectedItem.Item.NextMaintainDate;
+          this.setSelectedItem(this.selectedItem.Item.Id);
+          this.getAllItemOfEquipment();
         } else {
           alert("UPdate failed");
         }
@@ -2103,9 +2140,9 @@ export default {
           this.editItemMode = false;
         }
 
-        if (this.updateNumber > 0) {
-          location.reload();
-        }
+        // if (this.updateNumber > 0) {
+        //   location.reload();
+        // }
       }
     },
     quantity: function() {
