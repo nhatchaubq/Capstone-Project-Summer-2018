@@ -32,7 +32,7 @@
         <div>
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>Business address(required)</strong>  <span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-else-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
+                <strong>Business address (required)</strong>  <span v-if="CreateVendorErrors.BusinessAddressMin != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMin }}</span></span> <span v-else-if="CreateVendorErrors.BusinessAddressMax != ''"> <span class="error-text">{{ CreateVendorErrors.BusinessAddressMax }}</span></span>
             <div class="controlhas-icons-right" style="padding:8px">
                     <input v-model.trim="Vendor.BusinessAddress" class="input " type="text" placeholder="160/5 Tan Chanh Hiep, Quan 12, Ho Chi Minh">
 
@@ -40,23 +40,8 @@
                 </div>
 
             </div>
-            
         </div>
-        <div>
-            <div class="form-field">
-                <div class="form-field-title">
-                     <strong>Website(required)</strong> <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span><span v-else-if="CreateVendorErrors.validWeb != ''"> <span class="error-text">{{ CreateVendorErrors.validWeb }}</span></span>
-                </div>
-                <div class="form-field-input">
-                <div class="control has-icons-right" style="padding:8px">
-                    <input v-model.trim="Vendor.Website" class="input " type="text" placeholder="www.d-point.co.jp" >
-
-                    </div>
-                </div>
-
-            </div>
-            
-        </div>
+        
         <div>
             <div class="form-field">
                 <div class="form-field-title">
@@ -75,7 +60,7 @@
                 <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-else-if="CreateVendorErrors.validEmail != '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-else-if="CreateVendorErrors.duplicateEmail != '' "> {{ CreateVendorErrors.duplicateEmail }}</span>    
+                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-else-if="CreateVendorErrors.validEmail != '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-else-if="CreateVendorErrors.duplicateEmail != '' "> {{ CreateVendorErrors.duplicateEmail }}</span><span class="error-text" v-else-if="CreateVendorErrors.EmailMax != '' "> {{ CreateVendorErrors.EmailMax }}</span>        
               </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
@@ -109,9 +94,24 @@
 
         </div>
         <div>
+            <div class="form-field">
+                <div class="form-field-title">
+                     <strong>Website (optional)</strong> <span v-if="CreateVendorErrors.WebMax != ''"> <span class="error-text">{{ CreateVendorErrors.WebMax }}</span></span><span v-else-if="CreateVendorErrors.validWeb != ''"> <span class="error-text">{{ CreateVendorErrors.validWeb }}</span></span>
+                </div>
+                <div class="form-field-input">
+                <div class="control has-icons-right" style="padding:8px">
+                    <input v-model.trim="Vendor.Website" class="input " type="text" placeholder="www.d-point.co.jp" >
+
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+        <div>
             <div class="form-field" >
                 <div class="form-field-title ">
-                     <strong>Description </strong>  <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
+                     <strong>Description (optional)</strong>  <span v-if="CreateVendorErrors.DesMax != ''"> <span class="error-text">{{ CreateVendorErrors.DesMax }}</span></span>  
                 </div> 
                     <textarea  id="text-descrip" rows="4" cols="55" v-model.trim="Vendor.Description"   >
                     </textarea>
@@ -146,6 +146,7 @@ export default {
         // NoBusinessName: "You must provide business name for this vendor",
         BusinessNameMin: " Use from 6 to 250 characters for your business name",
         BusinessNameMax: " Use from 6 to 250 characters for your business name",
+        EmailMax: "Use 250 characters or fewer for your email ",
         // NoBusinessAddress: "You must provide business address for this vendor",
         BusinessAddressMax:
           " Use from 6 to 250 characters for your business address",
@@ -155,8 +156,8 @@ export default {
         ContactNameMin: " Use from 6 to 50 characters for your contact name ",
         ContactNameMax: " Use from 6 to 50 characters for your contact name ",
 
-        WebMax: " Use 200 characters or fewer for your website",
-        DesMax: " Use 500 characters or fewer for your description",
+        WebMax: " Use 250 characters or fewer for your website",
+        DesMax: " Use 250 characters or fewer for your description",
 
         NoEmail: " You must provide email address ",
         validEmail: " Invalid email address ",
@@ -180,6 +181,7 @@ export default {
         BusinessAddressMax: "",
 
         WebMax: "",
+        EmailMax: "",
         // NoContactName: "",
         ContactNameMin: "",
         ContactNameMax: "",
@@ -214,6 +216,9 @@ export default {
       }
       if (this.Vendor.BusinessName.length > 250) {
         this.CreateVendorErrors.BusinessNameMax = this.ErrorStrings.BusinessNameMax;
+      }
+      if (this.Vendor.ContactEmail.length > 250) {
+        this.CreateVendorErrors.EmailMax = this.ErrorStrings.EmailMax;
       }
       // if (this.Vendor.BusinessAddress === "") {
       //   this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
@@ -256,10 +261,10 @@ export default {
       } else {
         this.CreateVendorErrors.validPhone = "";
       }
-      if (this.Vendor.Website.length > 200) {
+      if (this.Vendor.Website.length > 250) {
         this.CreateVendorErrors.WebMax = this.ErrorStrings.WebMax;
       }
-      if (this.Vendor.Description.length > 500) {
+      if (this.Vendor.Description.length > 250) {
         this.CreateVendorErrors.DesMax = this.ErrorStrings.DesMax;
       }
       if (this.Vendor.ContactEmail == "") {
@@ -285,7 +290,10 @@ export default {
       } else {
         this.CreateVendorErrors.validEmail = "";
       }
-      if (!this.webRegex.test(this.Vendor.Website)) {
+      if (
+        !this.webRegex.test(this.Vendor.Website) &&
+        this.Vendor.Website != ""
+      ) {
         this.CreateVendorErrors.validWeb = this.ErrorStrings.validWeb;
       } else {
         this.CreateVendorErrors.validWeb = "";
@@ -306,6 +314,7 @@ export default {
         // this.CreateVendorErrors.NoBusinessName === "" &&
         this.CreateVendorErrors.BusinessNameMin === "" &&
         this.CreateVendorErrors.BusinessNameMax === "" &&
+        this.CreateVendorErrors.EmailMax === "" &&
         // this.CreateVendorErrors.NoBusinessAddress === "" &&
         this.CreateVendorErrors.BusinessAddressMin === "" &&
         this.CreateVendorErrors.BusinessAddressMax === "" &&
@@ -368,6 +377,9 @@ export default {
       if (this.Vendor.ContactEmail != "") {
         this.CreateVendorErrors.NoEmail = "";
       }
+      if (this.Vendor.ContactEmail != "") {
+        this.CreateVendorErrors.EmailMax = "";
+      }
       if (this.emailRegex.test(this.Vendor.ContactEmail)) {
         this.CreateVendorErrors.validEmail = "";
       }
@@ -383,15 +395,18 @@ export default {
       }
     },
     "Vendor.Website": function() {
-      if (this.Vendor.Website.length < 201) {
+      if (this.Vendor.Website.length < 251) {
         this.CreateVendorErrors.WebMax = "";
       }
-      if (this.webRegex.test(this.Vendor.Website)) {
+      if (
+        this.webRegex.test(this.Vendor.Website) &&
+        this.Vendor.Website != ""
+      ) {
         this.CreateVendorErrors.validWeb = "";
       }
     },
     "Vendor.Description": function() {
-      if (this.Vendor.Description.length < 501) {
+      if (this.Vendor.Description.length < 251) {
         this.CreateVendorErrors.DesMax = "";
       }
     },
@@ -419,7 +434,10 @@ export default {
       if (!isDupPhone) {
         this.CreateVendorErrors.duplicatePhone = "";
       }
-      if (this.phoneRegex.test(this.Vendor.Phone) && this.CreateVendorErrors.validPhone != "") {
+      if (
+        this.phoneRegex.test(this.Vendor.Phone) &&
+        this.CreateVendorErrors.validPhone != ""
+      ) {
         this.CreateVendorErrors.validPhone = "";
       }
       // if (this.Vendor.Phone.length > 8) {

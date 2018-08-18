@@ -123,7 +123,7 @@
   </div>
   
   <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"> <strong style="color:red"> *</strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>  <span v-else-if="CreateAccountErrors.validEmail != ''"> <span  class="error-text">{{ CreateAccountErrors.validEmail }}</span></span> <span v-else-if="CreateAccountErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateAccountErrors.duplicateEmail }}</span></span> </span>  </div> 
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"> <strong style="color:red"> *</strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>  <span v-else-if="CreateAccountErrors.validEmail != ''"> <span  class="error-text">{{ CreateAccountErrors.validEmail }}</span></span> <span v-else-if="CreateAccountErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateAccountErrors.duplicateEmail }}</span></span> <span v-if="CreateAccountErrors.EmailMax != ''"> <span class="error-text">{{ CreateAccountErrors.EmailMax }}</span></span> </span>  </div> 
   
 </div>
   <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com" disabled="disabled">
@@ -315,8 +315,8 @@ export default {
       ErrorStrings: {
         // NoUsername: 'You must provide username for this account',
         // NoFullname: "You must provide full name for this account",
-        FullNameMax: " Use from 6 to 50 characters for your full name. ",
-        FullNameMin: " Use from 6 to 50 characters for your full name. ",
+        FullNameMax: " Use from 6 to 250 characters for your full name. ",
+        FullNameMin: " Use from 6 to 250 characters for your full name. ",
         ValidFullName: "Invalid full name ",
 
         // NoPassword: "You must provide password for this account",
@@ -326,7 +326,8 @@ export default {
         // NoPhone: "You must provide phone number for this account",
         PhoneMin: " Use from 10 to 17 characters for your phone number. ",
         PhoneMax: " Use from 10 to 17 characters for your phone number. ",
-        duplicatePhone: " This phone number already belongs to another account.",
+        duplicatePhone:
+          " This phone number already belongs to another account.",
         validPhone: " Invalid phone number. ",
 
         NoEmail: " You must provide email. ",
@@ -340,7 +341,8 @@ export default {
         // NoImage: "You must choose an image",
         // NoRole: "You must provide role for this account"
         // NotSamePass: "pass not the same",
-        NotSameValueRe: " Please enter the same value again. "
+        NotSameValueRe: " Please enter the same value again. ",
+        EmailMax: "Use 250 characters or fewer for your email "
       },
       CreatePassErrors: {
         NotSameOldPass: "",
@@ -367,7 +369,8 @@ export default {
 
         NoEmail: "",
         validEmail: "",
-        duplicateEmail: ""
+        duplicateEmail: "",
+        EmailMax: ""
         // NoImage: ""
         // NoRole: ""
       },
@@ -396,7 +399,10 @@ export default {
       // let phoneRegex = /^(\([0-9]{3}\)\s*|[0-9]{3}\-)([0-9]{7}|[0-9]{8}|[0-9]{9})$/;
 
       //  /^?[+]?([0-9]{2,3})?[+]?([0−9]2,3)?[-. ]?([0-9]{3})[-. ]?([0-9]{4,7})$/
-      if (this.account.Fullname.length < 6 || this.account.Fullname.length > 50) {
+      if (
+        this.account.Fullname.length < 6 ||
+        this.account.Fullname.length > 250
+      ) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
       if (!this.FullNameRegex.test(this.account.Fullname)) {
@@ -452,6 +458,9 @@ export default {
       }
       if (this.account.Email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
+      }
+      if (this.account.Email.length > 250) {
+        this.CreateAccountErrors.EmailMax = this.ErrorStrings.EmailMax;
       }
 
       //       if (this.account.Password != this.SelectedMemberPassword) {
@@ -534,7 +543,8 @@ export default {
         this.CreateAccountErrors.duplicateEmail == "" &&
         //&& this.CreateAccountErrors.NoRole === ""
         this.CreateAccountErrors.WeakAccount === "" &&
-        this.CreateAccountErrors.MaxPassword === ""
+        this.CreateAccountErrors.MaxPassword === "" &&
+        this.CreateAccountErrors.EmailMax === ""
 
         // this.CreateAccountErrors.NoImage == ""
 
@@ -637,7 +647,6 @@ export default {
       }
     },
     "account.Password": function() {
-      
       if (this.account.Password != "") {
         this.CreateAccountErrors.NoPassword = "";
       }
@@ -649,10 +658,18 @@ export default {
       }
     },
     "account.Fullname": function() {
-      if (this.FullNameRegex.test(this.account.Fullname && this.CreateAccountErrors.ValidFullName != "")) {
+      if (
+        this.FullNameRegex.test(
+          this.account.Fullname && this.CreateAccountErrors.ValidFullName != ""
+        )
+      ) {
         this.CreateAccountErrors.ValidFullName = "";
-      } 
-      if (this.account.Fullname.length < 250 && this.account.Fullname.length > 5 && this.CreateAccountErrors.FullNameMin != "") {
+      }
+      if (
+        this.account.Fullname.length < 250 &&
+        this.account.Fullname.length > 5 &&
+        this.CreateAccountErrors.FullNameMin != ""
+      ) {
         this.CreateAccountErrors.FullNameMin = "";
       }
     },
@@ -720,6 +737,9 @@ export default {
       }
       if (!isDupEmail) {
         this.CreateAccountErrors.duplicateEmail = "";
+      }
+      if (this.account.Email != "") {
+        this.CreateAccountErrors.EmailMax = "";
       }
     }
     // "account.roleid": function() {
