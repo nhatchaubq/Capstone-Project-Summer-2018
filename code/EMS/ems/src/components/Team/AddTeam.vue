@@ -16,7 +16,7 @@
             <div>
                 <div class="form-field">
                     <div class="form-field-title">
-                    <strong>  Team's name (required)</strong> <span v-if="CreateTeamErrors.TeamNameMax != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMax }}</span></span> <span v-if="CreateTeamErrors.TeamNameMin != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMin }}</span></span>
+                    <strong>  Team's name (required)</strong> <span v-if="CreateTeamErrors.TeamNameMax != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMax }}</span></span> <span v-else-if="CreateTeamErrors.TeamNameMin != ''"> <span class="error-text">{{ CreateTeamErrors.TeamNameMin }}</span></span> <span v-else-if="CreateTeamErrors.ValidName != ''"> <span class="error-text">{{ CreateTeamErrors.ValidName }}</span></span>
                     </div>
                     <div class="control has-icons-right col-6" style="padding:8px">
                         <input v-model.trim="team.name" class="input " type="text" placeholder="Dream team" >
@@ -96,17 +96,20 @@ import Server from "@/config/config.js";
 export default {
   data() {
     return {
+      NameRegex: /^[^~`!#$%@()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/,
       sending: false,
       ErrorStrings: {
         // NoTeamName: "You must provide name for this team",
         TeamNameMax: "Use from 6 to 50 characters for your team name",
-        TeamNameMin: "Use from 6 to 50 characters for your team name"
+        TeamNameMin: "Use from 6 to 50 characters for your team name",
+        ValidName: " Team's name cannot contain special character "
         // NoCreateDate: "You must provide create date for this team"
       },
       CreateTeamErrors: {
         // NoTeamName: "",
         TeamNameMax: "",
-        TeamNameMin: ""
+        TeamNameMin: "",
+        ValidName: ""
         // NoCreateDate: ""
       },
       team: {
@@ -146,6 +149,11 @@ export default {
       if (this.team.name.length < 6) {
         this.CreateTeamErrors.TeamNameMin = this.ErrorStrings.TeamNameMin;
       }
+      if (!this.NameRegex.test(this.team.name)) {
+        this.CreateTeamErrors.ValidName = this.ErrorStrings.ValidName;
+      } else {
+        this.CreateTeamErrors.ValidName = "";
+      }
       // if (this.team.createdDate === "") {
       //   this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
       // }
@@ -174,7 +182,8 @@ export default {
       return (
         // this.CreateTeamErrors.NoTeamName === "" &&
         this.CreateTeamErrors.TeamNameMax === "" &&
-        this.CreateTeamErrors.TeamNameMin === ""
+        this.CreateTeamErrors.TeamNameMin === "" &&
+        this.CreateTeamErrors.ValidName == ""
         // this.CreateTeamErrors.NoCreateDate === ""
       );
     },
@@ -214,6 +223,9 @@ export default {
       }
       if (this.team.name.length < 51) {
         this.CreateTeamErrors.TeamNameMax = "";
+      }
+      if (this.NameRegex.test(this.team.name)) {
+        this.CreateTeamErrors.ValidName = "";
       }
     }
     // "team.createdDate": function() {
