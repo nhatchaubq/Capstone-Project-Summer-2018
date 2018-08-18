@@ -419,7 +419,7 @@ export default {
       if (!isDupPhone) {
         this.CreateVendorErrors.duplicatePhone = "";
       }
-      if (this.phoneRegex.test(this.Vendor.Phone)) {
+      if (this.phoneRegex.test(this.Vendor.Phone) && this.CreateVendorErrors.validPhone != "") {
         this.CreateVendorErrors.validPhone = "";
       }
       // if (this.Vendor.Phone.length > 8) {
