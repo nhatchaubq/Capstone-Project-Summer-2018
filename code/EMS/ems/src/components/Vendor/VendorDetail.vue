@@ -184,7 +184,6 @@ export default {
       toDisplayData: [],
       sending: false,
       ErrorStrings: {
-<<<<<<< HEAD
         NoVendorName: 'You must provide vendor name',
         InvalidVendorNameLength: 'Use from 6 to 250 characters for vendor name',
         NoBusinessAddress: 'You must provide business address',
@@ -194,34 +193,14 @@ export default {
         InvalidContactName: " Use from 6 to 250 alphabetical characters for contact name",
         NoEmail: "You must provide email address",
         WebsiteMaximum: " Use 200 characters or fewer for website",
-=======
-        NoBusinessAddress: "You must provide business address",
-        InvalidBusinessAddressLength:
-          "Use from 6 to 200 characters for your business address",
-        NoContactName: "You must provide contact name",
-        InvalidContactName:
-          " Use from 6 to 50 alphabetical characters for your contact name",
-
-        NoEmail: "You must provide email address",
-        WebsiteMaximum: " Use 250 characters or fewer for website",
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
         DescriptionMaximum: " Use 250 characters or fewer for description",
         InvalidEmail: "Invalid email address",
         InvalidWebsite: "Website address is invalid",
         InvalidPhone: "Invalid phone number",
-<<<<<<< HEAD
         NoPhoneNumber: 'You must provide phone number',
         DuplicatePhone: "This phone number already belongs to another vendor in the system",
         DuplicateEmail: "This email address already belongs to another vendor in the system",
         InvalidEmailLength: 'Email address must not exceed 250 characters',
-=======
-
-        NoPhoneNumber: "You must provide phone number",
-        DuplicatePhone:
-          "This phone number already belongs to another vendor in the system",
-        DuplicateEmail:
-          "This email address already belongs to another vendor in the system"
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
       },
       CreateVendorErrors: {
         NoVendorName: '',
@@ -262,55 +241,20 @@ export default {
       // address
       if (!this.vendor.BusinessAddress) {
         this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
-<<<<<<< HEAD
       }
       if (this.vendor.BusinessAddress.length < 6 || this.vendor.BusinessAddress.length > 250) {
-=======
-      } else if (
-        this.vendor.BusinessAddress &&
-        (this.vendor.BusinessAddress.length < 6 ||
-          this.vendor.BusinessAddress.length > 200)
-      ) {
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
         this.CreateVendorErrors.InvalidBusinessAddressLength = this.ErrorStrings.InvalidBusinessAddressLength;
       }
       // contact name
       if (!this.vendor.ContactName) {
         this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
-<<<<<<< HEAD
       }
       if (this.vendor.ContactName.length < 6 || this.vendor.ContactName.length > 250 || !this.contactNameRegex.test(this.vendor.ContactName)) {
-=======
-      } else if (
-        this.vendor.ContactName &&
-        (this.vendor.ContactName.length < 6 ||
-          this.vendor.ContactName.length > 50 ||
-          !this.contactNameRegex.test(this.vendor.ContactName))
-      ) {
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
         this.CreateVendorErrors.InvalidContactName = this.ErrorStrings.InvalidContactName;
       }
       // email
       if (!this.vendor.ContactEmail) {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
-<<<<<<< HEAD
-=======
-      } else if (
-        this.vendor.ContactEmail &&
-        !this.emailRegex.test(this.vendor.ContactEmail)
-      ) {
-        this.CreateVendorErrors.InvalidEmail = this.ErrorStrings.InvalidEmail;
-      } else {
-        for (const vendor of this.vendors) {
-          if (
-            vendor.Id != this.vendor.Id &&
-            vendor.ContactEmail == this.vendor.ContactEmail
-          ) {
-            this.CreateVendorErrors.DuplicateEmail = this.ErrorStrings.DuplicateEmail;
-            break;
-          }
-        }
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
       }
       if (this.vendor.ContactEmail && this.vendor.ContactEmail.length > 250) {
         this.CreateVendorErrors.InvalidEmailLength = this.ErrorStrings.InvalidEmailLength;
@@ -327,7 +271,6 @@ export default {
       // phone
       if (!this.vendor.Phone) {
         this.CreateVendorErrors.NoPhoneNumber = this.ErrorStrings.NoPhoneNumber;
-<<<<<<< HEAD
       }
       if (this.vendor.Phone.length < 10 || this.vendor.Phone.length > 17 || !this.phoneRegex.test(this.vendor.Phone)) {
         this.CreateVendorErrors.InvalidPhone = this.ErrorStrings.InvalidPhone;
@@ -346,34 +289,6 @@ export default {
         this.CreateVendorErrors.InvalidWebsite = this.ErrorStrings.InvalidWebsite;
       }
       // description
-=======
-      } else if (
-        this.vendor.Phone &&
-        (this.vendor.Phone.length < 10 ||
-          this.vendor.Phone.length > 17 ||
-          !this.phoneRegex.test(this.vendor.Phone))
-      ) {
-        this.CreateVendorErrors.InvalidPhone = this.ErrorStrings.InvalidPhone;
-      } else {
-        for (const vendor of this.vendors) {
-          if (
-            vendor.Id != this.vendor.Id &&
-            vendor.Phone == this.vendor.Phone
-          ) {
-            this.CreateVendorErrors.DuplicatePhone = this.ErrorStrings.DuplicatePhone;
-            break;
-          }
-        }
-      }
-      if (this.vendor.Website && this.vendor.Website.length > 250) {
-        this.CreateVendorErrors.WebsiteMaximum = this.ErrorStrings.WebsiteMaximum;
-      } else if (
-        this.vendor.Website &&
-        !this.webRegex.test(this.vendor.Website)
-      ) {
-        this.CreateVendorErrors.InvalidWebsite = this.ErrorStrings.InvalidWebsite;
-      }
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
       if (this.vendor.Description && this.vendor.Description.length > 250) {
         this.CreateVendorErrors.DescriptionMaximum = this.ErrorStrings.DescriptionMaximum;
       }
@@ -466,53 +381,23 @@ export default {
       }
     },
     "vendor.BusinessAddress": function() {
-<<<<<<< HEAD
       if (this.vendor.BusinessAddress) {
         this.CreateVendorErrors.NoBusinessAddress = '';
       }
       if (this.vendor.BusinessAddress.length >= 6 && this.vendor.BusinessAddress.length <= 250 && this.CreateVendorErrors.InvalidBusinessAddressLength) {
-=======
-      if (
-        this.vendor.BusinessAddress &&
-        this.CreateVendorErrors.NoBusinessAddress != ""
-      ) {
-        this.CreateVendorErrors.NoBusinessAddress = "";
-      }
-
-      if (
-        this.vendor.BusinessAddress.length <= 6 &&
-        this.vendor.BusinessAddress.length >= 200
-      ) {
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
         this.CreateVendorErrors.InvalidBusinessAddressLength = "";
       }
     },
     "vendor.ContactName": function() {
-<<<<<<< HEAD
       if (this.vendor.ContactName && this.CreateVendorErrors.NoContactName) {
         this.CreateVendorErrors.NoContactName = '';
       }
       if ((this.vendor.ContactName.length >= 6 && this.vendor.ContactName.length <= 250 && this.CreateVendorErrors.InvalidContactName) 
           && this.contactNameRegex.test(this.vendor.ContactName) && this.CreateVendorErrors.InvalidContactName) {
-=======
-      if (
-        this.vendor.ContactName != "" &&
-        this.CreateVendorErrors.NoContactName != ""
-      ) {
-        this.CreateVendorErrors.NoContactName = "";
-      }
-      if (
-        this.vendor.ContactName.length >= 6 &&
-        this.vendor.ContactName.length <= 50 &&
-        this.contactNameRegex.test(this.vendor.ContactName) &&
-        this.CreateVendorErrors.InvalidContactName != ""
-      ) {
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
         this.CreateVendorErrors.InvalidContactName = "";
       }
     },
     "vendor.ContactEmail": function() {
-<<<<<<< HEAD
       if (this.vendor.ContactEmail != "" && this.CreateVendorErrors.NoEmail) {
         this.CreateVendorErrors.NoEmail = "";
       }
@@ -523,21 +408,6 @@ export default {
         this.CreateVendorErrors.InvalidEmail = "";
       }
       if (this.CreateVendorErrors.DuplicateEmail) {
-=======
-      if (
-        this.vendor.ContactEmail != "" &&
-        this.CreateVendorErrors.NoEmail != ""
-      ) {
-        this.CreateVendorErrors.NoEmail = "";
-      }
-      if (
-        this.emailRegex.test(this.vendor.ContactEmail) &&
-        this.CreateVendorErrors.InvalidEmail != ""
-      ) {
-        this.CreateVendorErrors.InvalidEmail = "";
-      }
-      if (this.CreateVendorErrors.DuplicateEmail != "") {
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
         let isDupEmail = false;
         for (const vendor of this.vendors) {
           if (
@@ -554,40 +424,19 @@ export default {
       }
     },
     "vendor.Website": function() {
-<<<<<<< HEAD
       if (this.vendor.Website.length <= 200 && this.CreateVendorErrors.WebsiteMaximum) {
         this.CreateVendorErrors.WebsiteMaximum = "";
       }
       if (this.webRegex.test(this.vendor.Website) && this.CreateVendorErrors.InvalidWebsite) {
-=======
-      if (
-        this.vendor.Website.length <= 250 &&
-        this.CreateVendorErrors.WebsiteMaximum != ""
-      ) {
-        this.CreateVendorErrors.WebsiteMaximum = "";
-      }
-      if (
-        this.webRegex.test(this.vendor.Website) &&
-        this.CreateVendorErrors.InvalidWebsite != ""
-      ) {
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
         this.CreateVendorErrors.InvalidWebsite = "";
       }
     },
     "vendor.Description": function() {
-<<<<<<< HEAD
       if (this.vendor.Description.length <= 250 && this.CreateVendorErrors.DescriptionMaximum) {
-=======
-      if (
-        this.vendor.Description.length <= 250 &&
-        this.CreateVendorErrors.DescriptionMaximum != ""
-      ) {
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
         this.CreateVendorErrors.DescriptionMaximum = "";
       }
     },
     "vendor.Phone": function() {
-<<<<<<< HEAD
       if (this.vendor.Phone && this.CreateVendorErrors.NoPhoneNumber) {
         this.CreateVendorErrors.NoPhoneNumber = '';
       }
@@ -595,23 +444,6 @@ export default {
         this.CreateVendorErrors.InvalidPhone = "";
       }
       if (this.CreateVendorErrors.DuplicatePhone) {
-=======
-      if (
-        this.vendor.Phone != "" &&
-        this.CreateVendorErrors.NoPhoneNumber != ""
-      ) {
-        this.CreateVendorErrors.NoPhoneNumber = "";
-      }
-      if (
-        this.vendor.Phone.length >= 10 &&
-        this.vendor.Phone.length <= 17 &&
-        this.phoneRegex.test(this.vendor.Phone) &&
-        this.CreateVendorErrors.InvalidPhone != ""
-      ) {
-        this.CreateVendorErrors.InvalidPhone = "";
-      }
-      if (this.CreateVendorErrors.DuplicatePhone != "") {
->>>>>>> 5711cb6619b46968209d42c6b9bdccbf41af7f8d
         let isDupPhone = false;
         for (const vendor of this.vendors) {
           if (
