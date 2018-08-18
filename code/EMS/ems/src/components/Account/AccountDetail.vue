@@ -123,7 +123,7 @@
   </div>
   
   <div class="row" style="margin-top:0.5rem; height: 36px">
-  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"> <strong style="color:red"> *</strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>  <span v-else-if="CreateAccountErrors.validEmail != ''"> <span  class="error-text">{{ CreateAccountErrors.validEmail }}</span></span> <span v-else-if="CreateAccountErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateAccountErrors.duplicateEmail }}</span></span> </span>  </div> 
+  <div class="col-12" style="margin-top:0.5rem"> <strong>Email</strong> <span v-if="editMode"> <strong style="color:red"> *</strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span>  <span v-else-if="CreateAccountErrors.validEmail != ''"> <span  class="error-text">{{ CreateAccountErrors.validEmail }}</span></span> <span v-else-if="CreateAccountErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateAccountErrors.duplicateEmail }}</span></span> <span v-if="CreateAccountErrors.EmailMax != ''"> <span class="error-text">{{ CreateAccountErrors.EmailMax }}</span></span> </span>  </div> 
   
 </div>
   <input v-if="!editMode" v-model="account.Email" class="input col-7 " type="email"  placeholder="DPoint@gmail.com" disabled="disabled">
@@ -341,7 +341,8 @@ export default {
         // NoImage: "You must choose an image",
         // NoRole: "You must provide role for this account"
         // NotSamePass: "pass not the same",
-        NotSameValueRe: " Please enter the same value again. "
+        NotSameValueRe: " Please enter the same value again. ",
+        EmailMax: "Use 250 characters or fewer for your email "
       },
       CreatePassErrors: {
         NotSameOldPass: "",
@@ -368,7 +369,8 @@ export default {
 
         NoEmail: "",
         validEmail: "",
-        duplicateEmail: ""
+        duplicateEmail: "",
+        EmailMax: ""
         // NoImage: ""
         // NoRole: ""
       },
@@ -457,6 +459,9 @@ export default {
       if (this.account.Email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
+      if (this.account.Email.length > 250) {
+        this.CreateAccountErrors.EmailMax = this.ErrorStrings.EmailMax;
+      }
 
       //       if (this.account.Password != this.SelectedMemberPassword) {
       //   this.CreateAccountErrors.NotSamePass = this.ErrorStrings.NotSamePass;
@@ -538,7 +543,8 @@ export default {
         this.CreateAccountErrors.duplicateEmail == "" &&
         //&& this.CreateAccountErrors.NoRole === ""
         this.CreateAccountErrors.WeakAccount === "" &&
-        this.CreateAccountErrors.MaxPassword === ""
+        this.CreateAccountErrors.MaxPassword === "" &&
+        this.CreateAccountErrors.EmailMax === ""
 
         // this.CreateAccountErrors.NoImage == ""
 
@@ -731,6 +737,9 @@ export default {
       }
       if (!isDupEmail) {
         this.CreateAccountErrors.duplicateEmail = "";
+      }
+      if (this.account.Email != "") {
+        this.CreateAccountErrors.EmailMax = "";
       }
     }
     // "account.roleid": function() {
