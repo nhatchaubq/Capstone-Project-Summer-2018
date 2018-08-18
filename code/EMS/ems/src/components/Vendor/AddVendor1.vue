@@ -75,7 +75,7 @@
                 <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-else-if="CreateVendorErrors.validEmail != '' && CreateVendorErrors.NoEmail == '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-if="CreateVendorErrors.duplicateEmail != '' && CreateVendorErrors.NoEmail == '' && CreateVendorErrors.NoEmail == ''"> {{ CreateVendorErrors.duplicateEmail }}</span>    
+                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-else-if="CreateVendorErrors.validEmail != '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-else-if="CreateVendorErrors.duplicateEmail != '' "> {{ CreateVendorErrors.duplicateEmail }}</span>    
               </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
@@ -144,31 +144,31 @@ export default {
       sending: false,
       ErrorStrings: {
         // NoBusinessName: "You must provide business name for this vendor",
-        BusinessNameMin: "Use from 6 to 250 characters for your business name",
-        BusinessNameMax: "Use from 6 to 250 characters for your business name",
+        BusinessNameMin: " Use from 6 to 250 characters for your business name",
+        BusinessNameMax: " Use from 6 to 250 characters for your business name",
         // NoBusinessAddress: "You must provide business address for this vendor",
         BusinessAddressMax:
-          "Use from 6 to 250 characters for your business address",
+          " Use from 6 to 250 characters for your business address",
         BusinessAddressMin:
-          "Use from 6 to 250 characters for your business address",
+          " Use from 6 to 250 characters for your business address",
         // NoContactName: "You must provide contact name for this vendor",
-        ContactNameMin: "Use from 6 to 50 characters for your contact name ",
-        ContactNameMax: "Use from 6 to 50 characters for your contact name ",
+        ContactNameMin: " Use from 6 to 50 characters for your contact name ",
+        ContactNameMax: " Use from 6 to 50 characters for your contact name ",
 
-        WebMax: "Use 200 characters or fewer for your website",
-        DesMax: "Use 500 characters or fewer for your description",
+        WebMax: " Use 200 characters or fewer for your website",
+        DesMax: " Use 500 characters or fewer for your description",
 
-        NoEmail: "You must provide email address ",
-        validEmail: "Invalid email address",
-        validWeb: "Website address is invalid",
+        NoEmail: " You must provide email address ",
+        validEmail: " Invalid email address ",
+        validWeb: " Invalid Website address ",
         validContactName:
-          "Contact name not accepting special characters and digits.",
-        validPhone: "Invalid phone number.",
+          " Contact name not accepting special characters and digits.",
+        validPhone: " Invalid phone number.",
         duplicateEmail:
-          "This email already belongs to another vendor in the system",
+          " This email already belongs to another vendor in the system",
         PhoneMin: " Use from 10 to 17 digits for your phonenumber ",
         duplicatePhone:
-          "This phone number already belongs to another vendor in the system"
+          " This phone number already belongs to another vendor in the system"
         // PhoneMax: " Use from 9 to 13 characters for your phonenumber (max)"
       },
       CreateVendorErrors: {
@@ -266,13 +266,13 @@ export default {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
       }
       // test
-      for (const Vendor in this.Vendors) {
+      for (const Vendor of this.Vendors) {
         if (Vendor.ContactEmail == this.Vendor.ContactEmail) {
           this.CreateVendorErrors.duplicateEmail = this.ErrorStrings.duplicateEmail;
           break;
         }
       }
-      for (const Vendor in this.Vendors) {
+      for (const Vendor of this.Vendors) {
         if (Vendor.Phone == this.Vendor.Phone) {
           this.CreateVendorErrors.duplicatePhone = this.ErrorStrings.duplicatePhone;
           break;
