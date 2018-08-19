@@ -1,5 +1,6 @@
 <template>
 <div> 
+  <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
   <div style="padding: 0rem 2rem 0rem 1rem">
     <router-link to='/equipment'>
         <a><span class="fa fa-chevron-left"></span> Back to Equipment </a>
@@ -323,7 +324,7 @@
     </modal>
     <modal v-model="detailPopUp" :width="580" :closable="false">
       <div v-if="selectedItem!=null" > 
-        <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
+        <simplert :useRadius="true" :useIcon="true" ref="simplert1"></simplert>
         <div slot="header">
             <div class="field" style=" display: grid; grid-template-columns: 85% 15%; height:3rem">
               <div style="margin-top:0.25rem"><strong style="padding-top:0.25rem; margin-top:0.25rem; text-transform: uppercase;  font-size: 18px; color: #26a69a;padding-left: 0.4rem">{{EquimentByID.Name}} - {{selectedItem.Item.SerialNumber}}</strong></div>
@@ -381,7 +382,14 @@
                   <div class="" style="margin-right:1rem; display: grid;grid-template-columns: 85% auto;" > 
                     <div class="">
                       <input v-if="!editItemMode" v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="text" disabled="disabled"> 
-                      <input v-else v-model="selectedItem.Item.WarrantyDuration" class="input col-7 " type="number" min="1"> 
+                      <input v-else type="text"  class="input" v-model="selectedItem.Item.WarrantyDuration" v-on:input="() => {
+                        if (selectedItem.Item.WarrantyDuration < 0 || selectedItem.Item.WarrantyDuration == '') {
+                            selectedItem.Item.WarrantyDuration = 0;
+                        } else if (selectedItem.Item.WarrantyDuration > 999) {
+                            selectedItem.Item.WarrantyDuration = 999;
+                        }
+                        selectedItem.Item.WarrantyDuration  = getNumberFormattedThousand(selectedItem.Item.WarrantyDuration);
+                    }">
                     </div>
                     <div class="">
                       <label style=" margin-top: 0.75rem;margin-left: 0.4rem;">Months</label>
@@ -440,7 +448,6 @@
                     <div class="" style="margin-top:0.2rem;margin-left:1.5rem" >
                       Status:  
                     </div>
-                    
                     <!-- <div class="" v-if="!editItemMode" ><input v-model="selectedItem.Item.Status" class="input col-7 " type="text" disabled="disabled"></div> -->
                     <div class="" v-if="!editItemMode" style="border: 1px #9e9e9e solid; padding-left: 1rem; width: 100%; height: 100%; padding-top:0.2rem">
                       <select  class=""   v-model="selectedItem.Item.StatusID" disabled="disabled">
@@ -792,7 +799,7 @@
         <button  class="btn-UpdateItem" v-on:click="updatePositionEQTLost">Save changes</button>
       </div>
     </modal>
-  <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
+  
 </div>  
 </template>
 
@@ -807,6 +814,7 @@ import moment from "moment";
 import Utils from "@/utils.js";
 import Simplert from "vue2-simplert";
 import numeral from "numeral";
+import { sync } from "vuex-pathify";
 export default {
   // name: "ConditionalModal",
 
@@ -817,14 +825,8 @@ export default {
     EquipmentDetailPopup
     // jsbarcode
   },
-  created() {
-    this.getEquipmentDetail();
-
-    // this.axios
-    //   .get("http://localhost:3000/api/equipmentItem/" + equipmentId)
-    //   .then(response => {
-    //     this.quality = response.data.Quality;
-    //   });
+  async created() {
+    await this.getEquipmentDetail();
     this.getAllItemOfEquipment();
     this.axios
       .get("http://localhost:3000/api/vendor")
@@ -834,11 +836,9 @@ export default {
           if (vendor.Status) {
             this.vendorOptions.push(vendor);
           }
-          // let option = {
-          //   text: vendor.BusinessName,
-          //   value: vendor.Id
-          // };
-          // alert(this.vendorOptions.length);
+          if (!vendor.Status && vendor.Id == this.equipmentVendorId) {
+            this.vendorOptions.push(vendor);
+          }
         });
       })
       .catch(error => {
@@ -871,10 +871,9 @@ export default {
           if (category.Status) {
             this.categoryOptions.push(category);
           }
-          // let option = {
-          //   text: category.Name,
-          //   value: category.Id
-          // };
+          if (!category.Status && category.Id == this.equipmentCategoryId) {
+            this.categoryOptions.push(category);
+          }
         });
       })
       .catch(error => {
@@ -987,7 +986,8 @@ export default {
   computed: {
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
-    }
+    },
+    config: sync("config")
   },
   data() {
     return {
@@ -1149,9 +1149,9 @@ export default {
     };
   },
   methods: {
-    getEquipmentDetail(){
+    async getEquipmentDetail() {
       this.equipmentId = this.$route.params.id;
-      this.axios
+      return await this.axios
         .get("http://localhost:3000/api/equipment/" + this.equipmentId)
         .then(response => {
           let data = response.data;
@@ -1167,21 +1167,21 @@ export default {
           });
         });
     },
-    getAllItemOfEquipment(){
+    getAllItemOfEquipment() {
       this.axios
-      .get("http://localhost:3000/api/equipmentItem/" + this.equipmentId)
-      .then(response => {
-        let data = response.data;
-        this.Eitem = data;
-        this.toDisplayEquipmentItem = this.Eitem.slice(0, 10);
-        data.forEach(element => {
-          this.Items.push(element);
-          // this.totalRuntime = element.RuntimeDays + this.totalRuntime;
+        .get("http://localhost:3000/api/equipmentItem/" + this.equipmentId)
+        .then(response => {
+          let data = response.data;
+          this.Eitem = data;
+          this.toDisplayEquipmentItem = this.Eitem.slice(0, 10);
+          data.forEach(element => {
+            this.Items.push(element);
+            // this.totalRuntime = element.RuntimeDays + this.totalRuntime;
+          });
+        })
+        .catch(error => {
+          console.log(error);
         });
-      })
-      .catch(error => {
-        console.log(error);
-      });
     },
     getNumberFormattedThousand(str) {
       let value = numeral(str).value();
@@ -1198,6 +1198,7 @@ export default {
       this.EquimentByID.CategoryId = this.equipmentCategoryId;
       this.EquimentByID.UnitID = this.equipmentUnitId;
       this.EquimentByID.Description = this.equipmentDescription;
+      this.EquimentByID.Status = this.newStatus;
       this.files = [];
     },
     cancelUpdateItem() {
@@ -1303,7 +1304,7 @@ export default {
             title: "Successfully!!!",
             message: "Create new " + context.quantity + " item(s) successfully",
             type: "success",
-            hideAllButton: true,
+            hideAllButton: true
             // showXclose: false
           };
           context.$refs.simplert2.openSimplert(obj);
@@ -1594,6 +1595,7 @@ export default {
       this.files = this.$refs.fileInput.files;
     },
     async updateEquipment() {
+      let madeInRegex = /^[^~`!#$%@0-9()\^=\-\[\]\\';,/{}|\\"<>\?]*?$/;
       if (this.EquimentByID.Name.trim().length < 5) {
         let obj = {
           message: "Equipment Name can be contained from 5 to 250 characters",
@@ -1603,6 +1605,16 @@ export default {
       } else if (this.EquimentByID.MadeIn.trim().length > 50) {
         let obj = {
           message: "MadeIn can be contained 50 characters",
+          type: "warning"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      } else if (
+        this.EquimentByID.MadeIn.trim().length < 50 &&
+        this.EquimentByID.MadeIn.trim() != "" &&
+        !madeInRegex.test(this.EquimentByID.MadeIn.trim())
+      ) {
+        let obj = {
+          message: "MadeIn can not contain special character and number",
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
@@ -1722,7 +1734,7 @@ export default {
           message: "Please choose position for this item",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
+        this.$refs.simplert1.openSimplert(obj);
       } else {
         var result = false;
         try {
@@ -1747,7 +1759,7 @@ export default {
             type: "success",
             showXclose: false
           };
-          this.$refs.simplert.openSimplert(obj);
+          this.$refs.simplert1.openSimplert(obj);
           this.updateNumber = this.updateNumber + 1;
           this.editItemMode = !this.editItemMode;
           this.itemLocationID = this.selectedItem.Item.LocationID;
@@ -1843,7 +1855,7 @@ export default {
           message: "Please choose new status to update !!!",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
+        this.$refs.simplert1.openSimplert(obj);
       } else if (
         statusName.toUpperCase() == workingApproved.toUpperCase() ||
         statusName.toUpperCase() == working.toUpperCase() ||
@@ -1854,7 +1866,7 @@ export default {
           message: "Cannot change to " + statusName + " !!!",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
+        this.$refs.simplert1.openSimplert(obj);
       } else if (
         this.currentsttName.toUpperCase() == workingApproved.toUpperCase() ||
         this.currentsttName.toUpperCase() == working.toUpperCase() ||
@@ -1867,7 +1879,7 @@ export default {
             "Cannot change from " + this.currentsttName + " to other status!!!",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
+        this.$refs.simplert1.openSimplert(obj);
       } else if (
         this.changeItemSttDescription.trim().length > 250 ||
         this.changeItemSttDescription.trim().length < 5
@@ -1876,7 +1888,7 @@ export default {
           message: "Please enter note from 5 to 250 characters !!!",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
+        this.$refs.simplert1.openSimplert(obj);
       } else {
         if (this.currentsttName.toUpperCase() == "LOST") {
           this.changePositonLost = true;
@@ -1906,7 +1918,7 @@ export default {
               type: "success",
               showXclose: false
             };
-            this.$refs.simplert.openSimplert(obj);
+            this.$refs.simplert1.openSimplert(obj);
             this.oldstt = this.selectedItem.Item.StatusID;
             this.changeItemSttDescription = "";
             this.updateNumber = this.updateNumber + 1;
@@ -1932,8 +1944,8 @@ export default {
       ).valueOf();
       let nextmaintainYear = moment(
         this.selectedItem.Item.NextMaintainDate
-      ).format('YYYY');
-      let currentyear = moment().format('YYYY');
+      ).format("YYYY");
+      let currentyear = moment().format("YYYY");
       if (
         this.selectedItem.Item.Price === "" ||
         this.selectedItem.Item.Price < 50000
@@ -1942,7 +1954,7 @@ export default {
           message: "Price must be bigger than 50000!",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
+        this.$refs.simplert1.openSimplert(obj);
       } else if (
         this.selectedItem.Item.WarrantyDuration === "" ||
         this.selectedItem.Item.WarrantyDuration < 1
@@ -1951,20 +1963,23 @@ export default {
           message: "Warranty must be bigger than 1",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
+        this.$refs.simplert1.openSimplert(obj);
       } else if (nextmaintaindate < currentdate) {
         let obj = {
           message: "Next maintain date must be BIGGER than current date",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
-      } else if ( (nextmaintainYear - currentyear) > 5 ) {
+        this.$refs.simplert1.openSimplert(obj);
+      } else if (
+        nextmaintainYear - currentyear >
+        this.config.nextMaintainYear.maximumValue
+      ) {
         let obj = {
           message: "Next maintain year is invalid",
           type: "warning"
         };
-        this.$refs.simplert.openSimplert(obj);
-      }else {
+        this.$refs.simplert1.openSimplert(obj);
+      } else {
         var result = false;
         try {
           let res = await this.axios.put(
@@ -1997,7 +2012,7 @@ export default {
             message: "Update successfully",
             type: "success"
           };
-          this.$refs.simplert.openSimplert(obj);
+          this.$refs.simplert1.openSimplert(obj);
           this.updateNumber = this.updateNumber + 1;
           this.editItemMode = !this.editItemMode;
           this.itemPrice = this.selectedItem.Item.Price;

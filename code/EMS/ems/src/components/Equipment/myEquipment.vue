@@ -11,41 +11,69 @@
         </div>
     </div>
     <div v-if="displayOrders && displayOrders.length != 0"> 
-      <table class="table" >
-          <thead>
-                <tr>
-                    <th rowspan="2"><strong>Location</strong></th>
-                    <th rowspan="2"><strong>Work Order</strong></th>
-                    <th rowspan="2"><strong>Start Date</strong></th>
-                    <th rowspan="2"><strong>Expect Close</strong></th>
-                    <th rowspan="2"><strong>Equipment</strong></th>
-                    <th rowspan="2"><strong>Serial number</strong></th>
-                    <th colspan="3"><strong>Position</strong></th>
-                    <th rowspan="2"><strong>Update Position</strong></th>
-                </tr>
-                <tr>
-                    <th ><strong>Block</strong></th>
-                    <th ><strong>Floor</strong></th>
-                    <th ><strong>Tile</strong></th>
-                </tr>
-          </thead>  
-          <tbody style="font-size:14px"   v-bind:key="index" v-for="(order, index) in displayOrders">
-                <tr>
-                    <td style="margin-top:0.5rem" width=10% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Location}}</td> 
-                    <td :style=" {color: period[index]<3? 'red' : 'black'}" width=20% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Name}}</td>
-                    <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.StartDate)}}</td>
-                    <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.ExpectingCloseDate)}}</td>
-                </tr>
-                <tr :key="detail.EquipmentItemID" v-for="detail in order.WorkorderDetail">                  
-                    <td class="detail" width=20%>{{detail.Name}}</td>
-                    <td class="detail" width=10%>{{detail.SerialNumber}}</td>
-                    <td class="detail" width=8%>{{detail.Block}}</td>
-                    <td class="detail" width=6%>{{detail.Floor}}</td>
-                    <td class="detail" width=6%>{{detail.Tile}}</td>
-                    <td class="detail"><a v-on:click="showChangePosition(detail.EquipmentItemID)">Update positon</a></td>
-                </tr>
-          </tbody>
-      </table>
+      <div class = "" v-if="authUser.Role == 'Staff'">
+        <table class="table" >
+            <thead>
+                  <tr>
+                      <th rowspan="2"><strong>Location</strong></th>
+                      <th rowspan="2"><strong>Work Order</strong></th>
+                      <th rowspan="2"><strong>Start Date</strong></th>
+                      <th rowspan="2"><strong>Expect Close</strong></th>
+                      <th rowspan="2"><strong>Equipment</strong></th>
+                      <th rowspan="2"><strong>Serial number</strong></th>
+                      <th colspan="3"><strong>Position</strong></th>
+                      <th rowspan="2"><strong>Update Position</strong></th>
+                  </tr>
+                  <tr>
+                      <th ><strong>Block</strong></th>
+                      <th ><strong>Floor</strong></th>
+                      <th ><strong>Tile</strong></th>
+                  </tr>
+            </thead>  
+            <tbody style="font-size:14px"   v-bind:key="index" v-for="(order, index) in displayOrders">
+                  <tr>
+                      <td style="margin-top:0.5rem" width=10% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Location}}</td> 
+                      <td :style=" {color: period[index]<3? 'red' : 'black'}" width=20% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Name}}</td>
+                      <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.StartDate)}}</td>
+                      <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.ExpectingCloseDate)}}</td>
+                  </tr>
+                  <tr :key="detail.EquipmentItemID" v-for="detail in order.WorkorderDetail">                  
+                      <td class="detail" width=20%>{{detail.Name}}</td>
+                      <td class="detail" width=10%>{{detail.SerialNumber}}</td>
+                      <td class="detail" width=8%>{{detail.Block}}</td>
+                      <td class="detail" width=6%>{{detail.Floor}}</td>
+                      <td class="detail" width=6%>{{detail.Tile}}</td>
+                      <td class="detail"><a v-on:click="showChangePosition(detail.EquipmentItemID)">Update positon</a></td>
+                  </tr>
+            </tbody>
+        </table>
+      </div>
+      <div class="" v-else>
+        <table class="table" >
+            <thead >
+                  <tr style="height: 3rem !important;">
+                      <th ><strong>No. </strong></th>
+                      <th ><strong>Work Order</strong></th>
+                      <th ><strong>Start Date</strong></th>
+                      <th ><strong>Expect Close</strong></th>
+                      <th ><strong>Equipment</strong></th>
+                      <th ><strong>Serial number</strong></th>
+                  </tr>
+            </thead>  
+            <tbody style="font-size:14px"   v-bind:key="index" v-for="(order, index) in displayOrders">
+                  <tr>
+                      <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{index+1}}</td>
+                      <td :style=" {color: period[index]<3? 'red' : 'black'}" width=20% :rowspan="`${order.WorkorderDetail.length + 1}`">{{order.Name}}</td>
+                      <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.StartDate)}}</td>
+                      <td style="margin-top:0.5rem" width=4% :rowspan="`${order.WorkorderDetail.length + 1}`">{{getDate(order.ExpectingCloseDate)}}</td>
+                  </tr>
+                  <tr :key="detail.EquipmentItemID" v-for="detail in order.WorkorderDetail">                  
+                      <td class="detail" width=20%>{{detail.Name}}</td>
+                      <td class="detail" width=10%>{{detail.SerialNumber}}</td>
+                  </tr>
+            </tbody>
+        </table>
+      </div>
       <modal v-model="changePosition" style="font-family: Roboto">
         <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
         <div slot="header" style="font-weight: bold">
@@ -149,41 +177,11 @@ export default {
     // EquipmentCard
   },
   created() {
-    let authUser = JSON.parse(window.localStorage.getItem("user"));
-    this.axios
-      .get(
-        "http://localhost:3000/api/work_order/workorderbyUserId/" + authUser.Id
-      )
-      .then(response => {
-        let data = response.data;
-        this.displayOrders = data;
-        for (var i = 0; i < this.displayOrders.length; i++) {
-          this.period[i] = Math.abs(
-            moment(this.displayOrders[i].ExpectingCloseDate).valueOf() -
-              moment().valueOf()
-          );
-
-          this.period[i] = Math.floor(this.period[i] / (1000 * 3600 * 24));
-          if (
-            moment().valueOf() >
-            moment(this.displayOrders[i].ExpectingCloseDate).valueOf()
-          ) {
-            this.period[i] = -this.period[i];
-          }
-          for (
-            var j = 0;
-            j < this.displayOrders[i].WorkorderDetail.length;
-            j++
-          ) {
-            this.displayOrderDetail.push(
-              this.displayOrders[i].WorkorderDetail[j]
-            );
-          }
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    if (this.authUser.Role == "Staff") {
+      this.getAllInProgressWorkOrderOfTeamlead();
+    } else if (this.authUser.Role == "Maintainer") {
+      this.getAllInProgressWorkOrderOfMaintainer();
+    }
     this.axios
       .get("http://localhost:3000/api/location")
       .then(response => {
@@ -244,6 +242,80 @@ export default {
     };
   },
   methods: {
+    getAllInProgressWorkOrderOfTeamlead() {
+      this.axios
+        .get(
+          "http://localhost:3000/api/work_order/workorderbyUserId/" +
+            this.authUser.Id
+        )
+        .then(response => {
+          let data = response.data;
+          this.displayOrders = data;
+          for (var i = 0; i < this.displayOrders.length; i++) {
+            this.period[i] = Math.abs(
+              moment(this.displayOrders[i].ExpectingCloseDate).valueOf() -
+                moment().valueOf()
+            );
+
+            this.period[i] = Math.floor(this.period[i] / (1000 * 3600 * 24));
+            if (
+              moment().valueOf() >
+              moment(this.displayOrders[i].ExpectingCloseDate).valueOf()
+            ) {
+              this.period[i] = -this.period[i];
+            }
+            for (
+              var j = 0;
+              j < this.displayOrders[i].WorkorderDetail.length;
+              j++
+            ) {
+              this.displayOrderDetail.push(
+                this.displayOrders[i].WorkorderDetail[j]
+              );
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getAllInProgressWorkOrderOfMaintainer() {
+      this.axios
+        .get(
+          "http://localhost:3000/api/work_order/workorderbyMaintainerId/" +
+            this.authUser.Id
+        )
+        .then(response => {
+          let data = response.data;
+          this.displayOrders = data;
+          for (var i = 0; i < this.displayOrders.length; i++) {
+            this.period[i] = Math.abs(
+              moment(this.displayOrders[i].ExpectingCloseDate).valueOf() -
+                moment().valueOf()
+            );
+
+            this.period[i] = Math.floor(this.period[i] / (1000 * 3600 * 24));
+            if (
+              moment().valueOf() >
+              moment(this.displayOrders[i].ExpectingCloseDate).valueOf()
+            ) {
+              this.period[i] = -this.period[i];
+            }
+            for (
+              var j = 0;
+              j < this.displayOrders[i].WorkorderDetail.length;
+              j++
+            ) {
+              this.displayOrderDetail.push(
+                this.displayOrders[i].WorkorderDetail[j]
+              );
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     async showChangePosition(itemId) {
       for (var i = 0; i < this.displayOrders.length; i++) {
         for (var j = 0; j < this.displayOrders[i].WorkorderDetail.length; j++) {
