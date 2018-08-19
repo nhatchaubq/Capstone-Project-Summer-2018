@@ -62,7 +62,7 @@
               <!-- </router-link> -->
               <td>{{team.Members.Quantity? team.Members.Quantity: 'N/A'}}</td>
               <td>{{getDate(team.CreatedDate)}}</td>
-              <td :style="{color: team.Status ? 'var(--primary-color)' : '#607D8B'}">{{team.Status ? "Active" : "Inactive"}}</td>
+              <strong><td :style="{color: team.Status ? 'var(--primary-color)' : '#607D8B'}">{{team.Status ? "Active" : "Inactive"}}</td></strong>
 
             </tr>
         </tbody>

@@ -121,7 +121,7 @@
                   <div class="form-field-title">
                       <strong>
                           Email (required) 
-                      </strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span><span v-if="CreateAccountErrors.validEmail != ''"> <span class="error-text">{{ CreateAccountErrors.validEmail }}</span></span><span v-if="CreateAccountErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateAccountErrors.duplicateEmail }}</span></span>
+                      </strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span><span v-if="CreateAccountErrors.validEmail != ''"> <span class="error-text">{{ CreateAccountErrors.validEmail }}</span></span><span v-if="CreateAccountErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateAccountErrors.duplicateEmail }}</span></span> <span v-if="CreateAccountErrors.EmailMax != ''"> <span class="error-text">{{ CreateAccountErrors.EmailMax }}</span></span>
                   </div>
                   <div class="form-field-input">
                       <div class="control has-icons-right" style="padding:8px">
@@ -189,7 +189,7 @@ export default {
       accounts: [],
       sending: false,
       ErrorStrings: {
-        FullNameMax: " Use from 6 to 50 characters for your full name ",
+        FullNameMax: " Use from 6 to 250 characters for your full name ",
         FullNameMin: " Use from 6 to 250 characters for your full name ",
         UsernameMax: " Use from 6 to 50 characters for your  username ",
         UsernameMin: " Use from 6 to 50 characters for your username ",
@@ -199,14 +199,16 @@ export default {
         PhoneMax: " Use from 10 to 17 characters for your phone number",
         NoEmail: " Please enter email ",
         NoRole: " Please select role ",
-        NoImage: "You must choose an image ",
-        validEmail: "Email is not correct ",
-        validPhone: "Phone number is not correct",
-        duplicateUsername: "Duplicate username.",
-        duplicatePhone: " Duplicate phone number.",
-        duplicateEmail: " Duplicate email.",
+        NoImage: " You must choose an image ",
+        validEmail: " Email is invalid",
+        validPhone: " Phone number is invalid",
+        duplicateUsername: "This username already belongs to another account.",
+        duplicatePhone:
+          " This phone number already belongs to another account.",
+        duplicateEmail: " This email already belongs to another account.",
         ValidUsername: " Username cannot contain special character ",
-        ValidFullName: " Fullname cannot contain special character "
+        ValidFullName: " Fullname cannot contain special character ",
+        EmailMax: "Use 250 characters or fewer for your email "
       },
       CreateAccountErrors: {
         UsernameMax: "",
@@ -227,7 +229,8 @@ export default {
         duplicatePhone: "",
         duplicateEmail: "",
         ValidUsername: "",
-        ValidFullName: ""
+        ValidFullName: "",
+        EmailMax: ""
       },
       account: {
         username: "",
@@ -270,20 +273,32 @@ export default {
       } else {
         this.CreateAccountErrors.ValidFullName = "";
       }
-      if (this.account.fullname.length < 6 || this.account.fullname.length > 250 ) {
+      if (
+        this.account.fullname.length < 6 ||
+        this.account.fullname.length > 250
+      ) {
         this.CreateAccountErrors.FullNameMin = this.ErrorStrings.FullNameMin;
       }
-      if (this.account.phone.length < 10 || this.account.phone.length > 17 ) {
+      if (this.account.phone.length < 10 || this.account.phone.length > 17) {
         this.CreateAccountErrors.PhoneMin = this.ErrorStrings.PhoneMin;
-      }else if ((this.account.phone.length > 9 && this.account.phone.length < 18) && !phoneRegex.test(this.account.phone)) {
+
+        //  } else if (!phoneRegex.test(this.account.phone)) {
+      } else if (
+        this.account.phone.length > 9 &&
+        this.account.phone.length < 18 &&
+        !phoneRegex.test(this.account.phone)
+      ) {
         this.CreateAccountErrors.validPhone = this.ErrorStrings.validPhone;
-      }else{
+      } else {
         this.CreateAccountErrors.validPhone = "";
-        this.CreateAccountErrors.PhoneMin= "";
+        this.CreateAccountErrors.PhoneMin = "";
+      }
+      if (this.account.email.length > 250) {
+        this.CreateAccountErrors.EmailMax = this.ErrorStrings.EmailMax;
       }
       if (this.account.email === "") {
         this.CreateAccountErrors.NoEmail = this.ErrorStrings.NoEmail;
-      }else if (!emailRegex.test(this.account.email)) {
+      } else if (!emailRegex.test(this.account.email)) {
         this.CreateAccountErrors.validEmail = this.ErrorStrings.validEmail;
       } else {
         this.CreateAccountErrors.validEmail = "";
@@ -319,8 +334,7 @@ export default {
           formData.append("public_id", this.files[0].name);
           formData.append("timestamp", moment().valueOf());
           formData.append("upload_preset", "ursbvd4a");
-          let url =
-            "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
+          let url = "https://api.cloudinary.com/v1_1/dmlopvmdy/image/upload";
           try {
             let uploadRespose = await this.axios.post(url, formData);
             if (uploadRespose.status == 200) {
@@ -336,14 +350,14 @@ export default {
             avatarimage: this.imageUrl
           })
           .then(async res => {
-             let obj = {
-                message: "Create new account successfully",
-                type: "success",
-                hideAllButton: true,
-                showXclose: false
-              };
-              this.$refs.simplert2.openSimplert(obj);
-              await Utils.sleep(1300);
+            let obj = {
+              message: "Create new account successfully",
+              type: "success",
+              hideAllButton: true,
+              showXclose: false
+            };
+            this.$refs.simplert2.openSimplert(obj);
+            await Utils.sleep(1300);
             this.$router.push("/account");
           });
       }
@@ -392,7 +406,8 @@ export default {
         this.CreateAccountErrors.validEmail == "" &&
         this.CreateAccountErrors.duplicateEmail == "" &&
         this.CreateAccountErrors.NoRole === "" &&
-        this.CreateAccountErrors.NoImage == ""
+        this.CreateAccountErrors.NoImage == "" &&
+        this.CreateAccountErrors.EmailMax == ""
       );
     }
   },
@@ -402,7 +417,10 @@ export default {
       //   this.CreateAccountErrors.UserNameTrim = "";
       // }
       let UsernameRegex = /^[^~`!#$%@()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/;
-      if (UsernameRegex.test(this.account.username) && this.CreateAccountErrors.ValidUsername != "") {
+      if (
+        UsernameRegex.test(this.account.username) &&
+        this.CreateAccountErrors.ValidUsername != ""
+      ) {
         this.CreateAccountErrors.ValidUsername = "";
       }
       if (this.account.username.length > 5) {
@@ -438,23 +456,36 @@ export default {
       //   this.CreateAccountErrors.NoFullname = "";
       // }
       let FullNameRegex = /^[^~`!#$%@0-9()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/;
-      if (FullNameRegex.test(this.account.fullname) && this.CreateAccountErrors.ValidFullName != "") {
+      if (
+        FullNameRegex.test(this.account.fullname) &&
+        this.CreateAccountErrors.ValidFullName != ""
+      ) {
         this.CreateAccountErrors.ValidFullName = "";
       }
-      if (this.account.fullname.length < 250 && this.account.fullname.length > 5 && this.CreateAccountErrors.FullNameMin != "") {
+
+      if (
+        this.account.fullname.length < 251 &&
+        this.account.fullname.length > 5 &&
+        this.CreateAccountErrors.FullNameMin != ""
+      ) {
         this.CreateAccountErrors.FullNameMin = "";
       }
-     
     },
     "account.phone": function() {
-     let phoneRegex= /^\(?[+]?([0-9]{2,4})\)?[-. ]?([0-9]{3,4})[-. ]?([0-9]{3,7})$/;
+      let phoneRegex = /^\(?[+]?([0-9]{2,4})\)?[-. ]?([0-9]{3,4})[-. ]?([0-9]{3,7})$/;
 
-      if (phoneRegex.test(this.account.phone) && this.CreateAccountErrors.validPhone != "") {
+      if (
+        phoneRegex.test(this.account.phone) &&
+        this.CreateAccountErrors.validPhone != ""
+      ) {
         this.CreateAccountErrors.validPhone = "";
       }
-      if (this.account.phone.length > 9 && this.account.phone.length < 18  && this.CreateAccountErrors.PhoneMin != "") {
+      if (
+        this.account.phone.length > 9 &&
+        this.account.phone.length < 18 &&
+        this.CreateAccountErrors.PhoneMin != ""
+      ) {
         this.CreateAccountErrors.PhoneMin = "";
-        
       }
       let isDupPhone = false;
       for (const account in this.accounts) {
@@ -472,7 +503,10 @@ export default {
       if (this.account.email != "") {
         this.CreateAccountErrors.NoEmail = "";
       }
-      if (emailRegex.test(this.account.email) && this.CreateAccountErrors.validEmail != "" ) {
+      if (
+        emailRegex.test(this.account.email) &&
+        this.CreateAccountErrors.validEmail != ""
+      ) {
         this.CreateAccountErrors.validEmail = "";
       }
       let isDupEmail = false;
@@ -484,6 +518,9 @@ export default {
       }
       if (!isDupEmail) {
         this.CreateAccountErrors.duplicateEmail = "";
+      }
+      if (this.account.email != "") {
+        this.CreateAccountErrors.EmailMax = "";
       }
     },
     "account.roleid": function() {
@@ -529,7 +566,7 @@ export default {
   /* display: flex;
         flex-direction: column;  */
 }
-.error-text{
+.error-text {
   font-size: 14px;
 }
 #btn-cancel {

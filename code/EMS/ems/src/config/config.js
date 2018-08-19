@@ -29,6 +29,20 @@ const EQUIPMENTITEM_API_PATH = SERVER_DEFAULT + "/equipmentItem";
 const EQUIPMENTITEM_BY_ID_LOCATION_API_PATH = SERVER_DEFAULT + "/equipmentItem";
 // equipmentitem api section - end
 
+// equipment unit api -start
+const EQUIPMENT_UNIT_CREATE_API_PATH = SERVER_DEFAULT + "/unit/createUnit";
+const EQUIPMENT_UNIT_UPDATE_API_PATH = SERVER_DEFAULT + "/unit/editUnit";
+
+//equipment unit api - end
+
+// equipment duration api -start
+const EQUIPMENT_MAINTENANCE_DURATION_CREATE_API_PATH =
+  SERVER_DEFAULT + "/duration/createDuration";
+const EQUIPMENT_MAINTENANCE_DURATION_UPDATE_API_PATH =
+  SERVER_DEFAULT + "/duration/editDuration";
+
+//equipment duration api - end
+
 // work order api section - start
 const WORKORDER_API_PATH = SERVER_DEFAULT + "/work_order";
 const WORKORDER_DETAIL_API_PATH = WORKORDER_API_PATH + "/detail";
@@ -62,7 +76,8 @@ const TEAM_LOCATION_CREATE_API_PATH =
 //team api section - start
 const TEAM_API_PATH = SERVER_DEFAULT + "/team";
 const TEAM_BY_LOCATION_ID_API_PATH = TEAM_API_PATH + "/getTeamByLocation";
-const TEAM_ACCOUNT_CREATE_API_PATH = SERVER_DEFAULT + "/team_account/createTeamAccount";
+const TEAM_ACCOUNT_CREATE_API_PATH =
+  SERVER_DEFAULT + "/team_account/createTeamAccount";
 const TEAM_SEARCH_API_PATH = TEAM_API_PATH + "/search";
 //team api section - end
 
@@ -151,5 +166,11 @@ export default {
   NOTIFICATION_API_PATH,
 
   EQUIPMENT_CATEGORY_CREATE_API_PATH,
-  EQUIPMENT_CATEGORY_UPDATE_API_PATH
+  EQUIPMENT_CATEGORY_UPDATE_API_PATH,
+
+  EQUIPMENT_UNIT_CREATE_API_PATH,
+  EQUIPMENT_UNIT_UPDATE_API_PATH,
+
+  EQUIPMENT_MAINTENANCE_DURATION_CREATE_API_PATH,
+  EQUIPMENT_MAINTENANCE_DURATION_UPDATE_API_PATH
 };

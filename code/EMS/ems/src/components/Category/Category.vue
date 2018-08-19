@@ -1,30 +1,32 @@
 <template>
     <div v-if="allCategories">        
         <div style="padding-left:10rem; padding-right: 10rem">
-          <table class="mytable">
-            <thead>
-              <tr>
-                <!-- <th><strong>ID</strong></th> -->
-                <th ><strong>#</strong></th>
-                <th ><strong>Category Name</strong></th>
-                <th ><strong>Decription</strong></th>
-                <th ><strong>Status</strong></th>       
-                <th colspan="2" style="text-align:center"><strong>Action</strong></th>                   
-                <!-- <th><strong>Department</strong></th> -->
-              </tr>
-              
-            </thead>  
-            <tbody>
-                <tr v-bind:key="cate.Id" v-for="(cate, index) in tmpCategories" class="txtText" >          
-                  <td >{{ 10*(currentPage -1) + (index + 1) }}</td>
-                  <td >{{cate.Name}}</td>
-                  <td >{{cate.Description}}</td>
-                  <strong><td :style="{color: cate.Status? 'var(--primary-color)' : '#607D8B'}" >{{cate.Status? "Active" : "Inactive" }}</td></strong>
-                  <td width=6% v-on:click="editShow(cate)"><button class="button" style="padding:0px 5px 0px 5px ">Edit</button></td>
-                  <td width=6%><button class="button" style="padding:0px 5px 0px 5px " v-on:click="deleteCate(cate)">Delete</button></td>               
-                </tr>
-            </tbody>
-          </table>        
+
+        <table class="mytable">
+      <thead>
+        <tr>
+          <!-- <th><strong>ID</strong></th> -->
+          <th ><strong>#</strong></th>
+          <th ><strong>Category Name</strong></th>
+          <th ><strong>Description</strong></th>
+          <th ><strong>Status</strong></th>       
+          <th colspan="2" style="text-align:center"><strong>Action</strong></th>                   
+          <!-- <th><strong>Department</strong></th> -->
+        </tr>
+        
+      </thead>  
+      <tbody>
+          <tr v-bind:key="cate.Id" v-for="(cate, index) in tmpCategories" class="txtText" >          
+            <td >{{ 10*(currentPage -1) + (index + 1) }}</td>
+            <td >{{cate.Name}}</td>
+            <td >{{cate.Description}}</td>
+            <strong><td :style="{color: cate.Status? 'var(--primary-color)' : '#607D8B'}" >{{cate.Status? "Active" : "Inactive" }}</td></strong>
+            <td width=6% v-on:click="editShow(cate)"><button class="button" style="padding:0px 5px 0px 5px ">Edit</button></td>
+            <td width=6%><button class="button" style="padding:0px 5px 0px 5px " v-on:click="deleteCate(cate)">Delete</button></td>               
+          </tr>
+      </tbody>
+    </table>        
+
         </div>        
         <div v-if="allCategories.length >9" class="number-page" style="padding-left:10rem; padding-right: 10rem"> 
           <Page :current="currentPage" :total="allCategories.length" show-elevator 
@@ -37,10 +39,8 @@
             }">
           </Page>
         </div> 
-        <div>
-            <router-link to='/createCategory'>
-                <button v-if="authUser.Role =='Equipment Staff'" id="btn-add-category" class="button btn-primary material-shadow-animate">Add Category</button>
-            </router-link>        
+        <div>            
+                <button v-if="authUser.Role =='Equipment Staff'" id="btn-add-category" class="button btn-primary material-shadow-animate" v-on:click="createShow()">Add Category</button>
       </div>
 
       <modal v-model="editPopup" >
@@ -108,6 +108,37 @@
                 <button id="" class="button"   v-on:click="deletePopup = false">Cancel</button>             
           </div>
         </modal>
+
+        <modal v-model="createPopup">          
+          <div slot="header" style=" font-size: 24px; font-weight: bold" >
+              Add New Category
+            </div>
+          <div class="form-content" v-if="newCategory">   
+              <div class="form-field" style="padding-top:1.5rem">
+                  <div class="form-field-title">
+                      <strong>Name (required)</strong>  <span v-if="CreateCategoryErrors.NoName != ''"><span class="error-text">  {{ CreateCategoryErrors.NoName }}</span></span>
+                  </div>
+                  <div class="form-field-input">
+                      <input v-model.trim="newCategory.name" type="text" class="input">
+                  </div>
+              </div>            
+              <div class="form-field">
+                  <div class="form-field-title">
+                    <strong>Description</strong>
+                  </div>
+                  <div class="form-field-input">
+                      <!-- <input type="text" class="input" > -->
+                      <textarea id="text-descrip" v-model.trim="newCategory.description"  cols="70" rows="8"></textarea>
+                  </div>
+              </div>                       
+          </div>
+          <div slot="footer">
+              <div class="form-title-end">                              
+                <button id="" class="button is-primary"  v-on:click="createCate()">Add New Category</button>
+                <button id="" class="button"  v-on:click="createPopup = false">Cancel</button>                                   
+            </div> 
+          </div>                
+        </modal>
     <simplert :useRadius="true" :icon="true" ref="simplert"></simplert>          
     </div>
 </template>
@@ -131,6 +162,7 @@ export default {
       duplicate: false,
       changeStatus: false,
       deleteFlag: false,
+      createPopup: false,
       deletePopup: false,
       editPopup: false,
       sure: false,
@@ -146,6 +178,10 @@ export default {
         NoName: "Please enter name of category!",
         ShortName: "Use 6 characters or more for category's name",
         LongName: "Use 50 characters or fewer for category's name"
+      },
+      newCategory: {
+        name: "",
+        description: ""
       }
     };
   },
@@ -185,7 +221,8 @@ export default {
     },
     editShow(category) {
       this.changeStatus = false;
-      this.tmpCategory = category;
+      this.tmpCategory = JSON.stringify(category);
+      this.tmpCategory = JSON.parse(this.tmpCategory);
       if (this.tmpCategory) {
         for (const item of this.allItems) {
           if (this.tmpCategory.Id == item.CategoryId) {
@@ -290,12 +327,71 @@ export default {
             this.$router.push("/500");
           });
       }
+    },
+    createShow() {
+      this.createPopup = true;
+    },
+    createCate() {
+      for (const cate of this.allCategories) {
+        if (this.newCategory.name.toUpperCase() == cate.Name.toUpperCase()) {
+          this.duplicate = true;
+          break;
+        }
+      }
+
+      if (this.newCategory.name == "") {
+        this.CreateCategoryErrors.NoName = this.ErrorStrings.NoName;
+      } else if (this.newCategory.name.length < 6) {
+        this.CreateCategoryErrors.NoName = this.ErrorStrings.ShortName;
+      } else if (this.newCategory.name.length > 50) {
+        this.CreateCategoryErrors.NoName = this.ErrorStrings.LongName;
+      } else if (this.duplicate) {
+        this.CreateCategoryErrors.NoName = "Name already exists.";
+        this.duplicate = false;
+      }
+      if (this.CreateCategoryErrors.NoName == "") {
+        this.axios
+          .post(Server.EQUIPMENT_CATEGORY_CREATE_API_PATH, {
+            newCategory: {
+              name: this.newCategory.name.trim(),
+              description: this.newCategory.description
+            }
+          })
+          .then(async res => {
+            // alert(this.selectedTeams.length);
+            this.createPopup = false;
+            let obj = {
+              title: "Create Category",
+              message: "Successfully!!!",
+              type: "success"
+            };
+            this.newCategory.name = "";
+            this.newCategory.description = "";
+            this.$refs.simplert.openSimplert(obj);
+            this.getAllCategory();
+            await Utils.sleep(2000);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     }
   },
   watch: {
     "tmpCategory.Name": function() {
       if (this.tmpCategory && this.tmpCategory.Name.trim() != "") {
         this.CreateCategoryErrors.NoName = "";
+      }
+    },
+    "newCategory.name": function() {
+      if (this.newCategory.name.trim() != "") {
+        this.CreateCategoryErrors.NoName = "";
+      }
+    },
+    createPopup: function() {
+      if (!this.createPopup) {
+        this.CreateCategoryErrors.NoName = "";
+        this.newCategory.name = "";
       }
     }
   }
