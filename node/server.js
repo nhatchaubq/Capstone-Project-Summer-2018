@@ -18,7 +18,7 @@ var connection = {
   server: "localhost",
   userName: "sa",
 
-  password: "tien1005",
+  password: "123456",
 
   port: "1433",
   options: {
@@ -43,15 +43,11 @@ var server = app.listen(3000, () => {
 });
 
 var io = require("socket.io")(server);
-<<<<<<< HEAD
-io.on("connection", function(socket) {
-  socket.emit("WEB_CONFIG", require("./web_config/config.json"));
-  socket.on("NEW_WORK_ORDER_CREATED", function(data) {
-=======
+
 io.on("connection", function (socket) {
   socket.emit("WEB_CONFIG", require("./web_config/config.json"));
   socket.on("NEW_WORK_ORDER_CREATED", function (data) {
->>>>>>> 5d27ae082df2bb85ef0001dc31d1afd3dc5bd9b0
+
     socket.broadcast.emit("NEW_WORK_ORDER_CREATED", data);
   });
   socket.on("NEW_NOTIFICATION", function (data) {
@@ -63,20 +59,16 @@ io.on("connection", function (socket) {
   socket.on("CLOSE_WORK_ORDER_DETAIL", function (data) {
     socket.broadcast.emit("ORDER_STATUS_CHANGED", data);
   });
-<<<<<<< HEAD
-  socket.on("CONFIGURATION_CHANGED", function(data) {
-=======
+
   socket.on("CONFIGURATION_CHANGED", function (data) {
->>>>>>> 5d27ae082df2bb85ef0001dc31d1afd3dc5bd9b0
+
     fs.writeFile(
       "./web_config/config.json",
       JSON.stringify(data, null, 4),
       "utf8",
-<<<<<<< HEAD
-      function(err) {
-=======
+
       function (err) {
->>>>>>> 5d27ae082df2bb85ef0001dc31d1afd3dc5bd9b0
+
         if (err) {
           return console.log(err);
         }
