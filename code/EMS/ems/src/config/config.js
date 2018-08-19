@@ -31,10 +31,17 @@ const EQUIPMENTITEM_BY_ID_LOCATION_API_PATH = SERVER_DEFAULT + "/equipmentItem";
 
 // equipment unit api -start
 const EQUIPMENT_UNIT_CREATE_API_PATH = SERVER_DEFAULT + "/unit/createUnit";
-const EQUIPMENT_UNIT_UPDATE_API_PATH =
-  SERVER_DEFAULT + "/unit/editUnit";
+const EQUIPMENT_UNIT_UPDATE_API_PATH = SERVER_DEFAULT + "/unit/editUnit";
 
 //equipment unit api - end
+
+// equipment duration api -start
+const EQUIPMENT_MAINTENANCE_DURATION_CREATE_API_PATH =
+  SERVER_DEFAULT + "/duration/createDuration";
+const EQUIPMENT_MAINTENANCE_DURATION_UPDATE_API_PATH =
+  SERVER_DEFAULT + "/duration/editDuration";
+
+//equipment duration api - end
 
 // work order api section - start
 const WORKORDER_API_PATH = SERVER_DEFAULT + "/work_order";
@@ -162,5 +169,8 @@ export default {
   EQUIPMENT_CATEGORY_UPDATE_API_PATH,
 
   EQUIPMENT_UNIT_CREATE_API_PATH,
-  EQUIPMENT_UNIT_UPDATE_API_PATH
+  EQUIPMENT_UNIT_UPDATE_API_PATH,
+
+  EQUIPMENT_MAINTENANCE_DURATION_CREATE_API_PATH,
+  EQUIPMENT_MAINTENANCE_DURATION_UPDATE_API_PATH
 };

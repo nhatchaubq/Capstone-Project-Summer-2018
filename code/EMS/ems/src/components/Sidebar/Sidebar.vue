@@ -66,6 +66,14 @@
           </div>
           </router-link>
         </li>
+        <li>
+          <router-link to='/duration'>
+            <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
+            <i class="material-icons">build</i>
+            {{ menu.Equipment }} Maintenance Duration
+          </div>
+          </router-link>
+        </li>
         <li v-if="authUser.Role != 'Admin'">
 
           <router-link to='/location'>
