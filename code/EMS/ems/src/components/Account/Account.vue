@@ -1,16 +1,29 @@
 <template>
    <div>
-      <!-- <div class="field is-grouped ">
-        <router-link to='/account/'>
-          <button id="btn-add-account1" class="button" >Account</button>
-        </router-link>
-        <router-link to='/department'>
-          <button id="btn-add-account1" class="button ">Department</button>
-        </router-link>
-        <router-link to='/team'>
-          <button id="btn-add-account1" class="button ">Team</button>
-        </router-link>
-      </div> -->
+    <!-- <div v-if="authUser.Role == 'Admin' || authUser.Role == 'Manager' " >
+        <div class="filter" style="width: 100%; display: grid; grid-template-columns: 5% auto">
+          <div style="font-weight: bold">
+              Filter:
+          </div>
+          <div>
+              <div style="width: 100%; height:1.5rem;display: grid; grid-template-columns:4rem 6rem auto;">
+                <div>Status: </div> 
+                  <div style="user-select: none; display: grid; grid-template-columns: 3.5rem auto;">
+                      <div>Active:</div>
+                      <div style="padding-top:0.1rem">
+                        <input type="checkbox" v-model="activeChecked">                            
+                      </div>                        
+                  </div>
+                  <div style="user-select: none; display: grid; grid-template-columns: 4.5rem auto;">
+                      <div>In Active:</div>
+                      <div style="padding-top:0.1rem">
+                        <input type="checkbox"  v-model="inActiveChecked">
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div> -->
     
     <div >
       <div class="field is-grouped view-mode" style="margin-bottom: 0.2rem !important; padding: 0rem!important">
@@ -139,7 +152,9 @@ export default {
       accounts: [],
       selectedAccount: null,
       currentViewMode: true,
-      viewModes: {}
+      viewModes: {},
+      inActiveChecked: false,
+      activeChecked: true
     };
   },
   methods: {
@@ -163,9 +178,116 @@ export default {
         this.totalAccount = this.accounts.length;
         this.toDisplayData = this.accounts.slice(0, 10);
       });
+    },
+    getAllAccountStatusTrueFalse() {
+      let URL = Server.ACCOUNT_API_PATH;
+      this.axios
+        .get(URL)
+        .then(response => {
+          let data = response.data;
+          // alert('in');
+          data.forEach(value => {
+            this.accounts.push(value.Account);
+            if (this.$store.state.accountPage.searchText != "") {
+              let tempAccounts = [];
+              if (this.searchValues.length > 0) {
+                for (const account of this.searchValues) {
+                  tempAccounts = tempAccounts.concat(
+                    this.accounts.filter(a => a.Id == account.Id)
+                  );
+                }
+              }
+              this.accounts = tempAccounts;
+              this.searchMode = true;
+            } else {
+              // this.$store.state.workOrderPage.searchValues = [];
+              this.searchMode = false;
+            }
+            this.toDisplayData = this.accounts.slice(0, 10);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getAccountInActive() {
+      let URL = Server.ACCOUNT_API_PATH;
+      this.axios
+        .get(URL)
+        .then(response => {
+          let data = response.data;
+          // alert('in');
+          data.forEach(value => {
+            let account = value.Account;
+            if (account.Status == false) {
+              this.accounts.push(account);
+            }
+            if (this.$store.state.accountPage.searchText != "") {
+              let tempAccounts = [];
+              if (this.searchValues.length > 0) {
+                for (const account of this.searchValues) {
+                  tempAccounts = tempAccounts.concat(
+                    this.accounts.filter(e => e.Id == account.Id)
+                  );
+                }
+              }
+              this.accounts = tempAccounts;
+              this.searchMode = true;
+            } else {
+              // this.$store.state.workOrderPage.searchValues = [];
+              this.searchMode = false;
+            }
+            this.toDisplayData = this.accounts.slice(0, 10);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   },
   watch: {
+    activeChecked: function() {
+      this.accounts = [];
+      this.toDisplayData = [];
+      if (this.activeChecked) {
+        if (this.inActiveChecked) {
+          this.getAllAccountStatusTrueFalse();
+          this.currentPage = 1;
+        } else {
+          this.getAccountDetail();
+          this.currentPage = 1;
+        }
+      } else {
+        if (this.inActiveChecked) {
+          this.getAccountInActive();
+          this.currentPage = 1;
+        } else {
+          this.accounts = [];
+          this.toDisplayData = [];
+        }
+      }
+    },
+    inActiveChecked: function() {
+      this.accounts = [];
+      this.toDisplayData = [];
+      if (this.inActiveChecked) {
+        if (this.activeChecked) {
+          this.getAllAccountStatusTrueFalse();
+          this.currentPage = 1;
+        } else {
+          this.getAccountInActive();
+          this.currentPage = 1;
+        }
+      } else {
+        if (this.activeChecked) {
+          this.getAccountDetail();
+          this.currentPage = 1;
+        } else {
+          this.accounts = [];
+          this.toDisplayData = [];
+        }
+      }
+    },
     searchValues: function() {
       if (this.searchValues && this.searchValues.length > 0) {
         let tmpAccounts = [];

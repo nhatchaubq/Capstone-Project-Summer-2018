@@ -1,6 +1,7 @@
 <template>
     <div v-if="allCategories">        
         <div style="padding-left:10rem; padding-right: 10rem">
+
         <table class="mytable">
       <thead>
         <tr>
@@ -25,6 +26,7 @@
           </tr>
       </tbody>
     </table>        
+
         </div>        
         <div v-if="allCategories.length >9" class="number-page" style="padding-left:10rem; padding-right: 10rem"> 
           <Page :current="currentPage" :total="allCategories.length" show-elevator 
@@ -91,7 +93,7 @@
                 <button id="" class="button is-primary"  v-on:click="editCategory()">Save changes</button>                       
                 <button id="" class="button" style="margin-right: .6rem"  v-on:click="editPopup = false">Cancel</button>             
         </div>        
-        </modal>
+      </modal>
 
         <modal v-model="deletePopup">                          
           <div slot="header" style=" font-size: 24px; font-weight: bold"> 
