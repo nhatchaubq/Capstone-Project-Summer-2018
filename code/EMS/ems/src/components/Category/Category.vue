@@ -385,6 +385,12 @@ export default {
       if (this.newCategory.name.trim() != "") {
         this.CreateCategoryErrors.NoName = "";
       }
+    },
+    createPopup: function() {
+      if (!this.createPopup) {
+        this.CreateCategoryErrors.NoName = "";
+        this.newCategory.name = "";
+      }
     }
   }
 };

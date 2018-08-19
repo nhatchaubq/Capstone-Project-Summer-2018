@@ -25,8 +25,8 @@ import VendorComponent from "./components/Vendor/Vendor.vue";
 import VendorDetailComponent from "./components/Vendor/VendorDetail.vue";
 
 import CategoryComponent from "./components/Category/Category.vue";
-
 import UnitComponent from "./components/Unit/Unit.vue";
+import MaintenanceDurationComponent from "./components/MaintenanceDuration/Duration.vue";
 
 // import AddVendorComponent from "./components/Vendor/AddVendor.vue";
 import AddVendor1Component from "./components/Vendor/AddVendor1.vue";
@@ -591,6 +591,17 @@ let router = new Router({
       component: UnitComponent,
       beforeEnter: (to, from, next) => {
         store.set("title", "Equipment Unit");
+        next();
+      },
+      meta: {
+        showSearchBar: false
+      }
+    },
+    {
+      path: "/duration",
+      component: MaintenanceDurationComponent,
+      beforeEnter: (to, from, next) => {
+        store.set("title", "Equipment Maintenance Duration");
         next();
       },
       meta: {

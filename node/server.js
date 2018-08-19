@@ -2,7 +2,7 @@ var app = require("express")();
 const bodyParser = require("body-parser");
 const tediousExpress = require("express4-tedious");
 const cors = require("cors");
-const fs = require('fs');
+const fs = require("fs");
 
 // server.listen(80);
 // io.on('connection', function (socket) {
@@ -41,9 +41,9 @@ var server = app.listen(3000, () => {
 });
 
 var io = require("socket.io")(server);
-io.on("connection", function (socket) {
-  socket.emit('WEB_CONFIG', require('./web_config/config.json'));
-  socket.on("NEW_WORK_ORDER_CREATED", function (data) {
+io.on("connection", function(socket) {
+  socket.emit("WEB_CONFIG", require("./web_config/config.json"));
+  socket.on("NEW_WORK_ORDER_CREATED", function(data) {
     socket.broadcast.emit("NEW_WORK_ORDER_CREATED", data);
   });
   socket.on("NEW_NOTIFICATION", function(data) {
@@ -55,14 +55,19 @@ io.on("connection", function (socket) {
   socket.on("CLOSE_WORK_ORDER_DETAIL", function(data) {
     socket.broadcast.emit("ORDER_STATUS_CHANGED", data);
   });
-  socket.on('CONFIGURATION_CHANGED', function(data) {
-    fs.writeFile('./web_config/config.json', JSON.stringify(data, null, 4), 'utf8', function(err) {
-      if (err) {
-        return console.log(err);
+  socket.on("CONFIGURATION_CHANGED", function(data) {
+    fs.writeFile(
+      "./web_config/config.json",
+      JSON.stringify(data, null, 4),
+      "utf8",
+      function(err) {
+        if (err) {
+          return console.log(err);
+        }
+        socket.broadcast.emit("WEB_CONFIG", data);
+        console.log("new config saved");
       }
-      socket.broadcast.emit('WEB_CONFIG', data);
-      console.log('new config saved');
-    });
+    );
   });
 });
 
@@ -73,6 +78,7 @@ app.use("/api/account", require("./routes/account"));
 app.use("/api/account/id", require("./routes/accountDetail"));
 app.use("/api/equipment", require("./routes/equipment"));
 app.use("/api/EquipmentCategory", require("./routes/EquipmentCategory"));
+app.use("/api/duration", require("./routes/duration"));
 app.use("/api/equipmentItemHistory", require("./routes/equipmentItemHistory"));
 app.use("/api/Vendor", require("./routes/vendor"));
 app.use("/api/work_order", require("./routes/work_order"));
