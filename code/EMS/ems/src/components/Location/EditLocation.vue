@@ -126,6 +126,7 @@ export default {
         let data = response.data[0];
         this.location = data;
         this.woTeams = this.location.TeamWithWorkOrdering;
+        await this.getAllTeam();
         this.unselectedTeams = this.teams;
         if (this.location.Team) {
           this.selectedTeams = this.location.Team;
@@ -139,7 +140,7 @@ export default {
       .catch(error => {
         console.log(error);
       });
-    this.getAllTeam();
+    
     await this.getSameAddressLocations();
 
     // alert(this.sameAddressLocations.length);
@@ -181,10 +182,10 @@ export default {
           console.log(error);
         });
     },
-    getAllTeam() {
-      this.axios
+    async getAllTeam() {
+      return await this.axios
         .get(Server.TEAM_API_PATH + "/getAllTeam")
-        .then(response => {
+        .then(async response => {
           let data = response.data;
           data.forEach(selectTeam => {
             this.teams.push(selectTeam);

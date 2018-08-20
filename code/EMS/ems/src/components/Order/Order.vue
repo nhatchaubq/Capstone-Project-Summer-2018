@@ -81,7 +81,7 @@
                         </span>
                     </div>
                     <!-- edit/cancel work order -->
-                    <div style="margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="authUser.Id == selectedOrder.RequestUserID">
+                    <div style="font-weight: 500; margin-top: .5rem; user-select: none; display: flex; justify-content: flex-end" v-if="authUser.Id == selectedOrder.RequestUserID">
                         <!-- cancel work order -->
                         <a  v-if="selectedOrder.WorkOrderStatus == 'Requested' || selectedOrder.WorkOrderStatus == 'Checked' || selectedOrder.WorkOrderStatus == 'Rejected'"
                             v-on:click="() => {

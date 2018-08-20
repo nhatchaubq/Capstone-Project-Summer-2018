@@ -152,46 +152,7 @@
                             </div>    
                         </div> <!-- paint helper tool -->
                         <!-- naming and describe block -->
-                        <div v-if="newBlock">
-                            <div class="form-field">
-                                <div class="form-field-title">
-                                    Notice: - Please use paint helper tool to select a block from your floor plan image. <br/>
-                                    <span style="color: transparent;">Notice: </span>- For hand tool, you must draw at least 3 points to be accepted as a legal block.
-                                </div>
-                            </div>
-                            <div v-if="currentLocationPaintToolMode == paintToolMode.Preset 
-                                        && locationSelectedTileIndex >= 0">
-                                <div class="form-field">
-                                    <div class="form-field-title">
-                                        Name of this block
-                                    </div>
-                                    <div class="form-field-input" style="display: flex !important">
-                                        <input :disabled="newBlock.points.length < 3" 
-                                                v-model="newBlock.name" type="text" 
-                                                class="input" required placeholder="A, B, C">
-                                    </div>
-                                </div>
-                                <div class="form-field">
-                                    <div class="form-field-title">
-                                        Describe this block (optional)
-                                    </div>
-                                    <div class="form-field-input">
-                                        <textarea :disabled="newBlock.points.length < 3" 
-                                                v-model="newBlock.description"
-                                                class="input" rows="5"></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-field">
-                                    <a v-on:click="() => {
-                                        if (currentLocationPaintToolMode == paintToolMode.Preset) {
-                                            locationSelectedTileIndex = -1;
-                                            newBlock = {name: '', points: [], floors: []};
-                                        }
-                                        // newBlock = null;
-                                    }"><i class="fa fa-check-circle"></i> {{ currentLocationPaintToolMode == paintToolMode.Preset ? 'Save changes' : 'Create block' }}</a>
-                                </div>
-                            </div>
-                        </div> <!-- naming and describe block -->
+                        
                     </div>
                     <!-- back, next button -->
                     <div class="form-field">
@@ -1239,7 +1200,6 @@ methods: {
 .form-title {
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem 2rem;
-  /* padding: 1rem 0rem; */
 }
 
 .form-title-start {
