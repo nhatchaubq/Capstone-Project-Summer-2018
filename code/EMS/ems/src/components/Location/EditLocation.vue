@@ -140,7 +140,6 @@ export default {
       .catch(error => {
         console.log(error);
       });
-    // this.getAllTeam();
     await this.getSameAddressLocations();
 
     // alert(this.sameAddressLocations.length);

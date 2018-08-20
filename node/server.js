@@ -18,7 +18,9 @@ var connection = {
   server: "localhost",
   userName: "sa",
 
+
   password: "123456",
+
 
   port: "1433",
   options: {
@@ -44,9 +46,10 @@ var server = app.listen(3000, () => {
 
 var io = require("socket.io")(server);
 
-io.on("connection", function(socket) {
+io.on("connection", function (socket) {
   socket.emit("WEB_CONFIG", require("./web_config/config.json"));
-  socket.on("NEW_WORK_ORDER_CREATED", function(data) {
+  socket.on("NEW_WORK_ORDER_CREATED", function (data) {
+
     socket.broadcast.emit("NEW_WORK_ORDER_CREATED", data);
   });
   socket.on("NEW_NOTIFICATION", function(data) {

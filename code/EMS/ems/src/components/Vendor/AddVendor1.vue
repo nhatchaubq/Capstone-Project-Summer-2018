@@ -60,7 +60,7 @@
                 <div>
             <div class="form-field">
                 <div class="form-field-title">
-                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-else-if="CreateVendorErrors.validEmail != '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-else-if="CreateVendorErrors.duplicateEmail != '' "> {{ CreateVendorErrors.duplicateEmail }}</span>    
+                    <strong>Email (required)</strong><span v-if="CreateVendorErrors.NoEmail != ''"> <span class="error-text">{{ CreateVendorErrors.NoEmail }}</span></span><span v-else-if="CreateVendorErrors.validEmail != '' "> <span class="error-text">{{ CreateVendorErrors.validEmail }}</span></span><span class="error-text" v-else-if="CreateVendorErrors.duplicateEmail != '' "> {{ CreateVendorErrors.duplicateEmail }}</span><span class="error-text" v-else-if="CreateVendorErrors.EmailMax != '' "> {{ CreateVendorErrors.EmailMax }}</span>        
               </div>
                 <div class="form-field-input">
                 <div class="control has-icons-right" style="padding:8px">
@@ -146,6 +146,7 @@ export default {
         // NoBusinessName: "You must provide business name for this vendor",
         BusinessNameMin: " Use from 6 to 250 characters for your business name",
         BusinessNameMax: " Use from 6 to 250 characters for your business name",
+        EmailMax: "Use 250 characters or fewer for your email ",
         // NoBusinessAddress: "You must provide business address for this vendor",
         BusinessAddressMax:
           " Use from 6 to 250 characters for your business address",
@@ -180,6 +181,7 @@ export default {
         BusinessAddressMax: "",
 
         WebMax: "",
+        EmailMax: "",
         // NoContactName: "",
         ContactNameMin: "",
         ContactNameMax: "",
@@ -214,6 +216,9 @@ export default {
       }
       if (this.Vendor.BusinessName.length > 250) {
         this.CreateVendorErrors.BusinessNameMax = this.ErrorStrings.BusinessNameMax;
+      }
+      if (this.Vendor.ContactEmail.length > 250) {
+        this.CreateVendorErrors.EmailMax = this.ErrorStrings.EmailMax;
       }
       // if (this.Vendor.BusinessAddress === "") {
       //   this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
@@ -309,6 +314,7 @@ export default {
         // this.CreateVendorErrors.NoBusinessName === "" &&
         this.CreateVendorErrors.BusinessNameMin === "" &&
         this.CreateVendorErrors.BusinessNameMax === "" &&
+        this.CreateVendorErrors.EmailMax === "" &&
         // this.CreateVendorErrors.NoBusinessAddress === "" &&
         this.CreateVendorErrors.BusinessAddressMin === "" &&
         this.CreateVendorErrors.BusinessAddressMax === "" &&
@@ -370,6 +376,9 @@ export default {
     "Vendor.ContactEmail": function() {
       if (this.Vendor.ContactEmail != "") {
         this.CreateVendorErrors.NoEmail = "";
+      }
+      if (this.Vendor.ContactEmail != "") {
+        this.CreateVendorErrors.EmailMax = "";
       }
       if (this.emailRegex.test(this.Vendor.ContactEmail)) {
         this.CreateVendorErrors.validEmail = "";

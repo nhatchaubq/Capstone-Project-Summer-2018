@@ -7,7 +7,17 @@
     <div style="padding: 0; margin-top: 1rem">
       <div class="material-box" >
         <div class="row" style="margin: 0 !important; margin-bottom: 1rem;">
-          <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase; font-size: 20px; color: #26a69a" >{{vendor.BusinessName}}</strong></h2>
+          <h2 class="col-11" v-if="!editMode" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase; font-size: 20px; color: #26a69a" >{{vendor.BusinessName}}</strong></h2>
+          <div v-if="editMode" style="width: 100%; margin-bottom: 1rem;">
+            <div>
+              <strong>Vendor name</strong> (required)
+              <span class="error-text" v-if="CreateVendorErrors.NoVendorName"> {{ CreateVendorErrors.NoVendorName }}</span>
+              <span class="error-text" v-else-if="CreateVendorErrors.InvalidVendorNameLength"> {{ CreateVendorErrors.InvalidVendorNameLength }}</span>
+            </div>
+            <div style="padding: 0; width: 100%">
+              <input style="width: 100%" :style="(CreateVendorErrors.NoVendorName || CreateVendorErrors.InvalidVendorNameLength) ? 'border: 1px solid var(--danger-color)' : ''" class="input" type="text" v-model.trim="vendor.BusinessName" placeholder="Công ty vận tải Trường Thành"/>
+            </div>
+          </div>
           <!-- <h2 class="col-11" style="padding: 0.5rem 0 0 0 !important"><strong style="text-transform: uppercase;  font-size: 20px; color: #26a69a" >{{vendor.BusinessName}}  <span v-if="editMode" > <strong style="color: #26a69a">- Edit Information</strong> </span> </strong> </h2> -->
           <div style="padding: 0rem !important; text-align: right;" class="col-1"  v-if="authUser.Role =='Equipment Staff'">
             <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate " v-on:click="editMode = !editMode">Edit</button>
@@ -17,43 +27,44 @@
           <div>
             <strong>Business address</strong>
             <span v-if="editMode"> (required)
-              <span class="error-text" v-if="CreateVendorErrors.InvalidBusinessAddressLength != ''"> {{ CreateVendorErrors.InvalidBusinessAddressLength }}</span>
-              <span class="error-text" v-else-if="CreateVendorErrors.NoBusinessAddress != ''"> {{ CreateVendorErrors.NoBusinessAddress }}</span>
+              <span class="error-text" v-if="CreateVendorErrors.NoBusinessAddress"> {{ CreateVendorErrors.NoBusinessAddress }}</span>
+              <span class="error-text" v-else-if="CreateVendorErrors.InvalidBusinessAddressLength"> {{ CreateVendorErrors.InvalidBusinessAddressLength }}</span>
             </span>
           </div>
-          <input style="margin-top: .3rem;" :style="(CreateVendorErrors.InvalidBusinessAddressLength != '' || CreateVendorErrors.NoBusinessAddress != '') ? 'border: 1px solid var(--danger-color)' : ''" class="input" v-model.trim="vendor.BusinessAddress" type="text" placeholder="150 To Ky, Tan Chanh Hiep, Quan 12, Ho Chi Minh" :disabled="!editMode">
+          <input style="margin-top: .3rem;" :style="editMode && (CreateVendorErrors.InvalidBusinessAddressLength || CreateVendorErrors.NoBusinessAddress) ? 'border: 1px solid var(--danger-color)' : ''" class="input" v-model.trim="vendor.BusinessAddress" type="text" placeholder="150 To Ky, Tan Chanh Hiep, Quan 12, Ho Chi Minh" :disabled="!editMode">
         </div>
         <div style="margin: 1rem 0" >
           <div>
             <strong>Contact name</strong>
             <span v-if="editMode"> (required)
-              <span class="error-text" v-if="CreateVendorErrors.InvalidContactName != ''"> {{ CreateVendorErrors.InvalidContactName }}</span>
-              <span class="error-text" v-else-if="CreateVendorErrors.NoContactName != ''"> {{ CreateVendorErrors.NoContactName }}</span>
+              <span class="error-text" v-if="CreateVendorErrors.NoContactName"> {{ CreateVendorErrors.NoContactName }}</span>
+              <span class="error-text" v-else-if="CreateVendorErrors.InvalidContactName"> {{ CreateVendorErrors.InvalidContactName }}</span>
             </span>
           </div>
-          <input style="margin-top: .3rem;" :style="(CreateVendorErrors.InvalidContactName != '' || CreateVendorErrors.NoContactName != '') ? 'border: 1px solid var(--danger-color)' : ''" v-model.trim="vendor.ContactName" class="input" type="text" placeholder="Mr. John Snow" :disabled="!editMode"/>
+          <input style="margin-top: .3rem;" :style="editMode && (CreateVendorErrors.InvalidContactName || CreateVendorErrors.NoContactName) ? 'border: 1px solid var(--danger-color)' : ''" v-model.trim="vendor.ContactName" class="input" type="text" placeholder="Mr. John Snow" :disabled="!editMode"/>
         </div>
         <div style="margin: 1rem 0" >
           <div>
             <strong>Contact email</strong>
             <span v-if="editMode"> (required)
-              <span class="error-text" v-if="CreateVendorErrors.NoEmail != ''"> {{ CreateVendorErrors.NoEmail }}</span>
-              <span class="error-text" v-else-if="CreateVendorErrors.InvalidEmail != ''"> {{ CreateVendorErrors.InvalidEmail }}</span>
-              <span class="error-text" v-else-if="CreateVendorErrors.DuplicateEmail != ''"> {{ CreateVendorErrors.DuplicateEmail }}</span>
+              <span class="error-text" v-if="CreateVendorErrors.NoEmail"> {{ CreateVendorErrors.NoEmail }}</span>
+              <span class="error-text" v-else-if="CreateVendorErrors.InvalidEmailLength"> {{ CreateVendorErrors.InvalidEmailLength }}</span>
+              <span class="error-text" v-else-if="CreateVendorErrors.InvalidEmail"> {{ CreateVendorErrors.InvalidEmail }}</span>
+              <span class="error-text" v-else-if="CreateVendorErrors.DuplicateEmail"> {{ CreateVendorErrors.DuplicateEmail }}</span>
             </span>
           </div>
-          <input style="margin-top: .3rem;" :style="(CreateVendorErrors.NoEmail != '' || CreateVendorErrors.InvalidEmail != '' || CreateVendorErrors.DuplicateEmail != '') ? 'border: 1px solid var(--danger-color)' : ''" v-model.trim="vendor.ContactEmail" class="input" type="email" placeholder="contact@dpoint.com" :disabled="!editMode">
+          <input style="margin-top: .3rem;" :style="editMode && (CreateVendorErrors.NoEmail || CreateVendorErrors.InvalidEmail || CreateVendorErrors.DuplicateEmail || CreateVendorErrors.InvalidEmailLength) ? 'border: 1px solid var(--danger-color)' : ''" v-model.trim="vendor.ContactEmail" class="input" type="email" placeholder="contact@dpoint.com" :disabled="!editMode">
         </div>
         <div style="margin: 1rem 0" >
           <div>
             <strong>Phone</strong>
             <span v-if="editMode"> (required)
-              <span class="error-text" v-if="CreateVendorErrors.NoPhoneNumber != ''"> {{ CreateVendorErrors.NoPhoneNumber }}</span>
-              <span class="error-text" v-else-if="CreateVendorErrors.InvalidPhone != ''"> {{ CreateVendorErrors.InvalidPhone }}</span>
-              <span class="error-text" v-else-if="CreateVendorErrors.DuplicatePhone != ''"> {{ CreateVendorErrors.DuplicatePhone }}</span>     
+              <span class="error-text" v-if="CreateVendorErrors.NoPhoneNumber"> {{ CreateVendorErrors.NoPhoneNumber }}</span>
+              <span class="error-text" v-else-if="CreateVendorErrors.InvalidPhone"> {{ CreateVendorErrors.InvalidPhone }}</span>
+              <span class="error-text" v-else-if="CreateVendorErrors.DuplicatePhone"> {{ CreateVendorErrors.DuplicatePhone }}</span>     
             </span>
           </div>
-          <input style="margin-top: .3rem;" :style="(CreateVendorErrors.InvalidPhone != '' || CreateVendorErrors.DuplicatePhone != '' || CreateVendorErrors.NoPhoneNumber != '') ? 'border: 1px solid var(--danger-color)' : ''" v-model.trim="vendor.Phone" class="input" type="text" placeholder="0927 234 924" :disabled="!editMode"/>
+          <input style="margin-top: .3rem;" :style="editMode && (CreateVendorErrors.InvalidPhone || CreateVendorErrors.DuplicatePhone || CreateVendorErrors.NoPhoneNumber) ? 'border: 1px solid var(--danger-color)' : ''" v-model.trim="vendor.Phone" class="input" type="text" placeholder="0927 234 924" :disabled="!editMode"/>
         </div>
         <div v-if="editMode"> 
           <strong>Status: </strong>
@@ -70,21 +81,21 @@
           <div style="padding: 0" >
             <strong>Website</strong>
             <span v-if="editMode"> (optional)
-              <span class="error-text" v-if="CreateVendorErrors.WebsiteMaximum != ''"> {{ CreateVendorErrors.WebsiteMaximum }}</span>
-              <span class="error-text" v-else-if="CreateVendorErrors.InvalidWebsite != ''"> {{ CreateVendorErrors.InvalidWebsite }}</span>
+              <span class="error-text" v-if="CreateVendorErrors.WebsiteMaximum"> {{ CreateVendorErrors.WebsiteMaximum }}</span>
+              <span class="error-text" v-else-if="CreateVendorErrors.InvalidWebsite"> {{ CreateVendorErrors.InvalidWebsite }}</span>
             </span>
           </div>
-          <input style="margin-top: .3rem;" :style="(CreateVendorErrors.WebsiteMaximum != '' || CreateVendorErrors.InvalidWebsite != '') ? 'border: 1px solid var(--danger-color)' : ''" v-model.trim="vendor.Website" class="input" type="text" placeholder="www.d-point.co.jp" :disabled="!editMode"/>
+          <input style="margin-top: .3rem;" :style="editMode && (CreateVendorErrors.WebsiteMaximum || CreateVendorErrors.InvalidWebsite) ? 'border: 1px solid var(--danger-color)' : ''" v-model.trim="vendor.Website" class="input" type="text" placeholder="www.d-point.co.jp" :disabled="!editMode"/>
         </div>
         <div style="margin: 1rem 0">
           <div>
             <strong>Description</strong>
             <span v-if="editMode"> (optional)
-              <span class="error-text" v-if="CreateVendorErrors.DescriptionMaximum != ''"> {{ CreateVendorErrors.DescriptionMaximum }}</span>
+              <span class="error-text" v-if="CreateVendorErrors.DescriptionMaximum"> {{ CreateVendorErrors.DescriptionMaximum }}</span>
             </span>
           </div>
           <textarea style="margin-top: .3rem; min-height: 7rem; max-height: 7rem;" 
-                 :style="CreateVendorErrors.DescriptionMaximum != '' ? 'border: 1px solid var(--danger-color)' : ''"
+                 :style="editMode && CreateVendorErrors.DescriptionMaximum ? 'border: 1px solid var(--danger-color)' : ''"
                 v-model.trim="vendor.Description" class="input" type="text" :disabled="!editMode"></textarea>
         </div> 
         <div v-if="editMode" style="padding: 0">
@@ -143,7 +154,6 @@
 
 <script>
 import Server from "@/config/config.js";
-import Utils from "@/utils.js";
 import Simplert from "vue2-simplert";
 export default {
   components: {
@@ -174,27 +184,27 @@ export default {
       toDisplayData: [],
       sending: false,
       ErrorStrings: {
-        NoBusinessAddress: "You must provide business address",
+        NoVendorName: 'You must provide vendor name',
+        InvalidVendorNameLength: 'Use from 6 to 250 characters for vendor name',
+        NoBusinessAddress: 'You must provide business address',
         InvalidBusinessAddressLength:
-          "Use from 6 to 200 characters for your business address",
-        NoContactName: "You must provide contact name",
-        InvalidContactName:
-          " Use from 6 to 50 alphabetical characters for your contact name",
-
+          "Use from 6 to 250 characters for business address",
+        NoContactName: 'You must provide contact name',
+        InvalidContactName: " Use from 6 to 250 alphabetical characters for contact name",
         NoEmail: "You must provide email address",
-        WebsiteMaximum: " Use 250 characters or fewer for website",
+        WebsiteMaximum: " Use 200 characters or fewer for website",
         DescriptionMaximum: " Use 250 characters or fewer for description",
         InvalidEmail: "Invalid email address",
         InvalidWebsite: "Website address is invalid",
         InvalidPhone: "Invalid phone number",
-
-        NoPhoneNumber: "You must provide phone number",
-        DuplicatePhone:
-          "This phone number already belongs to another vendor in the system",
-        DuplicateEmail:
-          "This email address already belongs to another vendor in the system"
+        NoPhoneNumber: 'You must provide phone number',
+        DuplicatePhone: "This phone number already belongs to another vendor in the system",
+        DuplicateEmail: "This email address already belongs to another vendor in the system",
+        InvalidEmailLength: 'Email address must not exceed 250 characters',
       },
       CreateVendorErrors: {
+        NoVendorName: '',
+        InvalidVendorNameLength: '',
         InvalidBusinessAddressLength: "",
         NoContactName: "",
         NoBusinessAddress: "",
@@ -207,7 +217,8 @@ export default {
         InvalidPhone: "",
         NoPhoneNumber: "",
         DuplicatePhone: "",
-        DuplicateEmail: ""
+        DuplicateEmail: "",
+        InvalidEmailLength: '',
       },
       vendor: null,
       checkedActive: [],
@@ -220,71 +231,64 @@ export default {
   },
   methods: {
     async updateVendor() {
+      // vendor name
+      if (!this.vendor.BusinessName) {
+        this.CreateVendorErrors.NoVendorName = this.ErrorStrings.NoVendorName;
+      }
+      if (this.vendor.BusinessName.length < 6 || this.vendor.BusinessName.length > 250) {
+        this.CreateVendorErrors.InvalidVendorNameLength = this.ErrorStrings.InvalidVendorNameLength;
+      }
+      // address
       if (!this.vendor.BusinessAddress) {
         this.CreateVendorErrors.NoBusinessAddress = this.ErrorStrings.NoBusinessAddress;
-      } else if (
-        this.vendor.BusinessAddress &&
-        (this.vendor.BusinessAddress.length < 6 ||
-          this.vendor.BusinessAddress.length > 200)
-      ) {
+      }
+      if (this.vendor.BusinessAddress.length < 6 || this.vendor.BusinessAddress.length > 250) {
         this.CreateVendorErrors.InvalidBusinessAddressLength = this.ErrorStrings.InvalidBusinessAddressLength;
       }
+      // contact name
       if (!this.vendor.ContactName) {
         this.CreateVendorErrors.NoContactName = this.ErrorStrings.NoContactName;
-      } else if (
-        this.vendor.ContactName &&
-        (this.vendor.ContactName.length < 6 ||
-          this.vendor.ContactName.length > 50 ||
-          !this.contactNameRegex.test(this.vendor.ContactName))
-      ) {
+      }
+      if (this.vendor.ContactName.length < 6 || this.vendor.ContactName.length > 250 || !this.contactNameRegex.test(this.vendor.ContactName)) {
         this.CreateVendorErrors.InvalidContactName = this.ErrorStrings.InvalidContactName;
       }
+      // email
       if (!this.vendor.ContactEmail) {
         this.CreateVendorErrors.NoEmail = this.ErrorStrings.NoEmail;
-      } else if (
-        this.vendor.ContactEmail &&
-        !this.emailRegex.test(this.vendor.ContactEmail)
-      ) {
-        this.CreateVendorErrors.InvalidEmail = this.ErrorStrings.InvalidEmail;
-      } else {
-        for (const vendor of this.vendors) {
-          if (
-            vendor.Id != this.vendor.Id &&
-            vendor.ContactEmail == this.vendor.ContactEmail
-          ) {
-            this.CreateVendorErrors.DuplicateEmail = this.ErrorStrings.DuplicateEmail;
-            break;
-          }
-        }
       }
+      if (this.vendor.ContactEmail && this.vendor.ContactEmail.length > 250) {
+        this.CreateVendorErrors.InvalidEmailLength = this.ErrorStrings.InvalidEmailLength;
+      }
+      if (!this.emailRegex.test(this.vendor.ContactEmail)) {
+        this.CreateVendorErrors.InvalidEmail = this.ErrorStrings.InvalidEmail;
+      }      
+      for (const vendor of this.vendors) {
+        if (vendor.Id != this.vendor.Id && vendor.ContactEmail == this.vendor.ContactEmail) {
+          this.CreateVendorErrors.DuplicateEmail = this.ErrorStrings.DuplicateEmail;
+          break;
+        }
+      }    
+      // phone
       if (!this.vendor.Phone) {
         this.CreateVendorErrors.NoPhoneNumber = this.ErrorStrings.NoPhoneNumber;
-      } else if (
-        this.vendor.Phone &&
-        (this.vendor.Phone.length < 10 ||
-          this.vendor.Phone.length > 17 ||
-          !this.phoneRegex.test(this.vendor.Phone))
-      ) {
+      }
+      if (this.vendor.Phone.length < 10 || this.vendor.Phone.length > 17 || !this.phoneRegex.test(this.vendor.Phone)) {
         this.CreateVendorErrors.InvalidPhone = this.ErrorStrings.InvalidPhone;
-      } else {
-        for (const vendor of this.vendors) {
-          if (
-            vendor.Id != this.vendor.Id &&
-            vendor.Phone == this.vendor.Phone
-          ) {
-            this.CreateVendorErrors.DuplicatePhone = this.ErrorStrings.DuplicatePhone;
-            break;
-          }
+      }      
+      for (const vendor of this.vendors) {
+        if (vendor.Id != this.vendor.Id && vendor.Phone == this.vendor.Phone) {
+          this.CreateVendorErrors.DuplicatePhone = this.ErrorStrings.DuplicatePhone;
+          break;
         }
       }
-      if (this.vendor.Website && this.vendor.Website.length > 250) {
+      // website
+      if (this.vendor.Website && this.vendor.Website.length > 200) {
         this.CreateVendorErrors.WebsiteMaximum = this.ErrorStrings.WebsiteMaximum;
-      } else if (
-        this.vendor.Website &&
-        !this.webRegex.test(this.vendor.Website)
-      ) {
+      }
+      if (this.vendor.Website && !this.webRegex.test(this.vendor.Website)) {
         this.CreateVendorErrors.InvalidWebsite = this.ErrorStrings.InvalidWebsite;
       }
+      // description
       if (this.vendor.Description && this.vendor.Description.length > 250) {
         this.CreateVendorErrors.DescriptionMaximum = this.ErrorStrings.DescriptionMaximum;
       }
@@ -345,20 +349,22 @@ export default {
     },
     validateVendor() {
       return (
-        this.CreateVendorErrors.NoBusinessAddress === "" &&
-        this.CreateVendorErrors.InvalidBusinessAddressLength === "" &&
-        this.CreateVendorErrors.WebsiteMaximum === "" &&
-        this.CreateVendorErrors.DescriptionMaximum === "" &&
-        this.CreateVendorErrors.NoEmail === "" &&
-        this.CreateVendorErrors.InvalidEmail == "" &&
-        this.CreateVendorErrors.InvalidWebsite == "" &&
-        this.CreateVendorErrors.NoContactName == "" &&
-        this.CreateVendorErrors.InvalidContactName == "" &&
-        this.CreateVendorErrors.NoContactName == "" &&
-        this.CreateVendorErrors.InvalidPhone == "" &&
-        this.CreateVendorErrors.NoPhoneNumber == "" &&
-        this.CreateVendorErrors.DuplicatePhone == "" &&
-        this.CreateVendorErrors.DuplicateEmail == ""
+        !this.CreateVendorErrors.NoBusinessAddress &&
+        !this.CreateVendorErrors.InvalidBusinessAddressLength &&
+        !this.CreateVendorErrors.WebsiteMaximum &&
+        !this.CreateVendorErrors.DescriptionMaximum &&
+        !this.CreateVendorErrors.NoEmail &&
+        !this.CreateVendorErrors.InvalidEmail &&
+        !this.CreateVendorErrors.InvalidWebsite &&
+        !this.CreateVendorErrors.NoContactName &&
+        !this.CreateVendorErrors.InvalidContactName &&
+        !this.CreateVendorErrors.InvalidPhone &&
+        !this.CreateVendorErrors.NoPhoneNumber &&
+        !this.CreateVendorErrors.DuplicatePhone &&
+        !this.CreateVendorErrors.DuplicateEmail &&
+        !this.CreateVendorErrors.InvalidEmailLength &&
+        !this.CreateVendorErrors.NoVendorName &&
+        !this.CreateVendorErrors.InvalidVendorNameLength
       );
     },
     gotoDetail(EquipmentId) {
@@ -366,56 +372,42 @@ export default {
     }
   },
   watch: {
-    // "vendor.BusinessName": function() {
-    //   if (this.vendor.BusinessName != "") {
-    //     this.CreateVendorErrors.NoBusinessName = "";
-    //   }
-    // },
-    "vendor.BusinessAddress": function() {
-      if (
-        this.vendor.BusinessAddress &&
-        this.CreateVendorErrors.NoBusinessAddress != ""
-      ) {
-        this.CreateVendorErrors.NoBusinessAddress = "";
+    "vendor.BusinessName": function() {
+      if (this.vendor.BusinessName && this.CreateVendorErrors.NoVendorName) {
+        this.CreateVendorErrors.NoVendorName = "";
       }
-
-      if (
-        this.vendor.BusinessAddress.length <= 6 &&
-        this.vendor.BusinessAddress.length >= 200
-      ) {
+      if (this.vendor.BusinessName && this.vendor.BusinessName.length >=6 && this.vendor.BusinessName.length <= 250 && this.CreateVendorErrors.InvalidVendorNameLength) {
+        this.CreateVendorErrors.InvalidVendorNameLength = '';
+      }
+    },
+    "vendor.BusinessAddress": function() {
+      if (this.vendor.BusinessAddress) {
+        this.CreateVendorErrors.NoBusinessAddress = '';
+      }
+      if (this.vendor.BusinessAddress.length >= 6 && this.vendor.BusinessAddress.length <= 250 && this.CreateVendorErrors.InvalidBusinessAddressLength) {
         this.CreateVendorErrors.InvalidBusinessAddressLength = "";
       }
     },
     "vendor.ContactName": function() {
-      if (
-        this.vendor.ContactName != "" &&
-        this.CreateVendorErrors.NoContactName != ""
-      ) {
-        this.CreateVendorErrors.NoContactName = "";
+      if (this.vendor.ContactName && this.CreateVendorErrors.NoContactName) {
+        this.CreateVendorErrors.NoContactName = '';
       }
-      if (
-        this.vendor.ContactName.length >= 6 &&
-        this.vendor.ContactName.length <= 50 &&
-        this.contactNameRegex.test(this.vendor.ContactName) &&
-        this.CreateVendorErrors.InvalidContactName != ""
-      ) {
+      if ((this.vendor.ContactName.length >= 6 && this.vendor.ContactName.length <= 250 && this.CreateVendorErrors.InvalidContactName) 
+          && this.contactNameRegex.test(this.vendor.ContactName) && this.CreateVendorErrors.InvalidContactName) {
         this.CreateVendorErrors.InvalidContactName = "";
       }
     },
     "vendor.ContactEmail": function() {
-      if (
-        this.vendor.ContactEmail != "" &&
-        this.CreateVendorErrors.NoEmail != ""
-      ) {
+      if (this.vendor.ContactEmail != "" && this.CreateVendorErrors.NoEmail) {
         this.CreateVendorErrors.NoEmail = "";
       }
-      if (
-        this.emailRegex.test(this.vendor.ContactEmail) &&
-        this.CreateVendorErrors.InvalidEmail != ""
-      ) {
+      if (this.vendor.ContactEmail && this.vendor.ContactEmail.length <= 250 && this.CreateVendorErrors.InvalidEmailLength) {
+        this.CreateVendorErrors.InvalidEmailLength = "";
+      }
+      if (this.emailRegex.test(this.vendor.ContactEmail) && this.CreateVendorErrors.InvalidEmail) {
         this.CreateVendorErrors.InvalidEmail = "";
       }
-      if (this.CreateVendorErrors.DuplicateEmail != "") {
+      if (this.CreateVendorErrors.DuplicateEmail) {
         let isDupEmail = false;
         for (const vendor of this.vendors) {
           if (
@@ -432,43 +424,26 @@ export default {
       }
     },
     "vendor.Website": function() {
-      if (
-        this.vendor.Website.length <= 250 &&
-        this.CreateVendorErrors.WebsiteMaximum != ""
-      ) {
+      if (this.vendor.Website.length <= 200 && this.CreateVendorErrors.WebsiteMaximum) {
         this.CreateVendorErrors.WebsiteMaximum = "";
       }
-      if (
-        this.webRegex.test(this.vendor.Website) &&
-        this.CreateVendorErrors.InvalidWebsite != ""
-      ) {
+      if (this.webRegex.test(this.vendor.Website) && this.CreateVendorErrors.InvalidWebsite) {
         this.CreateVendorErrors.InvalidWebsite = "";
       }
     },
     "vendor.Description": function() {
-      if (
-        this.vendor.Description.length <= 250 &&
-        this.CreateVendorErrors.DescriptionMaximum != ""
-      ) {
+      if (this.vendor.Description.length <= 250 && this.CreateVendorErrors.DescriptionMaximum) {
         this.CreateVendorErrors.DescriptionMaximum = "";
       }
     },
     "vendor.Phone": function() {
-      if (
-        this.vendor.Phone != "" &&
-        this.CreateVendorErrors.NoPhoneNumber != ""
-      ) {
-        this.CreateVendorErrors.NoPhoneNumber = "";
+      if (this.vendor.Phone && this.CreateVendorErrors.NoPhoneNumber) {
+        this.CreateVendorErrors.NoPhoneNumber = '';
       }
-      if (
-        this.vendor.Phone.length >= 10 &&
-        this.vendor.Phone.length <= 17 &&
-        this.phoneRegex.test(this.vendor.Phone) &&
-        this.CreateVendorErrors.InvalidPhone != ""
-      ) {
+      if (this.vendor.Phone.length >= 10 && this.vendor.Phone.length <= 17 && this.phoneRegex.test(this.vendor.Phone) && this.CreateVendorErrors.InvalidPhone) {
         this.CreateVendorErrors.InvalidPhone = "";
       }
-      if (this.CreateVendorErrors.DuplicatePhone != "") {
+      if (this.CreateVendorErrors.DuplicatePhone) {
         let isDupPhone = false;
         for (const vendor of this.vendors) {
           if (
