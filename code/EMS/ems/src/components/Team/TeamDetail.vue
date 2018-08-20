@@ -39,9 +39,10 @@
       </div>
 
 
-        <h2> <strong>Create date: </strong>  {{getDate(team.CreatedDate)}} </h2>
-        <div v-if="editMode"> 
-          <strong>Status: </strong>
+        <div style="margin-left:1rem"> <strong>Create date: </strong>  {{getDate(team.CreatedDate)}} </div>
+          <strong ><div v-if="!editMode" style="margin:0 0.2rem 0 1rem"> Status: <span  :style="{color: team.Status? 'var(--primary-color)' : '#607D8B'}">  {{team.Status? 'Active': 'Inactive'}}   </span></div></strong>
+        <div v-if="editMode" style="margin-left:1rem"> 
+          <strong >Status: </strong>
           <label style="margin-right: 0rem; margin-left: 1rem" class="radio"  >
             <input type="radio" name="active" v-on:change="team.Status = true" :checked="team.Status" :disabled="!editMode">
             Active
@@ -59,7 +60,7 @@
         
 
         <div class="row">
-            <div class="col-6">  <strong >Member of this team</strong> </div>
+            <div class="col-6" >  <strong >Member of this team</strong> </div>
             <div class="col-6"> <strong v-if="!editMode">Location of this team</strong></div>
 
         </div>
@@ -475,6 +476,8 @@ export default {
       ChangeLeadPopUp: false,
       EquiItems: [],
       items1: [],
+      teams: [],
+      teamdetails: [],
       sending: false,
       ErrorStrings: {
         NameMax: " Use from 6 to 50 characters for your team name",
@@ -489,6 +492,7 @@ export default {
         DuplicateName: ""
       },
       team: null,
+      // team: [],
       memberOptions: [],
       toLeaderOptions: [],
       SelectedMemberId: null,
@@ -525,8 +529,9 @@ export default {
     async loadTeamDetail() {
       let url1 = Server.TEAM_API_PATH;
       await this.axios.get(url1).then(response => {
-        this.teams = [];
+        // this.teams = [];
         response.data.forEach(value => this.teams.push(value.Team));
+        // response.data.forEach(value => this.teamdetails.push(value.Team));
       });
       let teamApiUrl = `http://localhost:3000/api/team/id/${
         this.$route.params.id
@@ -781,6 +786,12 @@ export default {
           let data = res.data;
           this.WorkOrders = data;
         });
+      // for (const workO of this.workOrder) {
+      //   if (this.workOrder && this.WorkOrders.length != 0) {
+      //     this.deleteFlag = true;
+      //     break;
+      //   }
+      // }
       if (this.WorkOrders && this.WorkOrders.length != 0) {
         console.log(this.WorkOrders);
         this.deleteFlag = true;
@@ -792,12 +803,17 @@ export default {
           type: "error"
         };
         this.$refs.simplert.openSimplert(obj);
-      }
-      if (this.deleteFlag == false) {
+      } else {
         this.SelectedMemberId = memberID;
         this.SelectedMemberName = memberName;
         this.kickPopUp = true;
       }
+      this.deleteFlag = false;
+      // if (this.deleteFlag == false) {
+      //   this.SelectedMemberId = memberID;
+      //   this.SelectedMemberName = memberName;
+      //   this.kickPopUp = true;
+      // }
     },
     confirmKick(memberID, memberName) {
       this.SelectedMemberId = memberID;
