@@ -87,7 +87,7 @@
                                             <div :key="'blockFloors' + index" v-for="(floor, index) in mapViewSelectedLocation.Blocks[currentBlockIndex].Floors" style="padding-bottom: .3rem">
                                                 <!-- button to select a floor -->
                                                 <button class="button material-shadow" 
-                                                        :class="{'btn-primary': (index == mapViewSelectedLocation.Blocks[currentBlockIndex].TotalBasementFloor),
+                                                        :class="{'btn-primary': (index == mapViewSelectedLocation.Blocks[currentBlockIndex].Floors.length - mapViewSelectedLocation.Blocks[currentBlockIndex].TotalBasementFloor - 1),
                                                                 'is-active-block': currentFloorIndex == index,
                                                                 }" 
                                                         style="width: 4rem !important; margin: .1rem 0;" 
