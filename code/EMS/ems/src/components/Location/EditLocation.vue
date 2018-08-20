@@ -70,7 +70,7 @@
                 </div>
                 <div class="team-place">
                     <div class="select"> 
-                        <select v-model="tmpTeam">  
+                        <select v-model="tmpTeam" v-if="unselectedTeams.length > 0">  
                           <option disabled=disabled :value="null">-- Choose new team --</option>                                               
                             <option v-bind:key='team.Id' v-for='team in unselectedTeams' :value="team">{{team.Name}}</option>
                         </select>
@@ -140,7 +140,6 @@ export default {
       .catch(error => {
         console.log(error);
       });
-    
     await this.getSameAddressLocations();
 
     // alert(this.sameAddressLocations.length);
