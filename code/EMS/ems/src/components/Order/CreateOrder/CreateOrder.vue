@@ -808,9 +808,8 @@ export default {
                 }
               })
               .catch(error => {
-                alert(
-                  "Create work order: " + error
-                );
+                this.$router.push('/500');
+                console.log(error);
               });
           }            
           if (this.authUser.Role == 'Maintainer' || (teamLocationId && this.authUser.Role == 'Staff')) {
@@ -829,7 +828,7 @@ export default {
               .then(async function(res) {
                 if (res.data.NewWorkOrderId) {
                   let newWorkOrderId = res.data.NewWorkOrderId;
-                  var check = false;
+                  var check = true;
                   for (const equipment of context.selectedEquipments) {
                     for (const itemId of equipment.equipmentItemIds) {
                         await context.axios
@@ -840,10 +839,6 @@ export default {
                             dueDate: equipment.toDate,
                             maintainceCost: null,
                             description: null
-                          }).then((response) => {
-                            if (response.status == 200) {
-                              check = true;
-                            }
                           }).catch((error) => {
                             console.log(error);
                             check = false;
@@ -895,9 +890,8 @@ export default {
                 }
               })
               .catch(error => {
-                alert(
-                  "Create work order detail: " + error
-                );
+                this.$router.push('/500');
+                console.log(error);
               });
 
           }
