@@ -33,6 +33,7 @@ var connection = {
     encrypt: true,
     database: "EquipmentManageSystem",
     trustedConnection: true,
+    requestTimeout: 700000
   },
 };
 
