@@ -1361,7 +1361,12 @@ export default {
             100 <= this.EquimentByID.Id &&
             this.EquimentByID.Id < 1000
           ) {
-            number = number + "0" + this.EquimentByID.CategoryId;
+            number = number + "0" + this.EquimentByID.Id;
+          } else if (
+            1000 <= this.EquimentByID.Id &&
+            this.EquimentByID.Id < 10000
+          ) {
+            number = number + "" + this.EquimentByID.Id;
           } else {
             number = number + "0000";
           }
