@@ -56,7 +56,7 @@
 
                             <div v-if="mapViewSelectedLocation" style="margin-top: 1rem">
                                 <button :key="'block' + block.Id" v-for="(block, index) in mapViewSelectedLocation.Blocks"
-                                    style="margin-right: 1rem;"
+                                    style="margin-right: .5rem;"
                                     :style="{background: currentBlockIndex == index ? '#424242' : '',
                                             color: currentBlockIndex == index ? 'white' : 'black', }"
                                     class="button"
@@ -87,10 +87,10 @@
                                             <div :key="'blockFloors' + index" v-for="(floor, index) in mapViewSelectedLocation.Blocks[currentBlockIndex].Floors" style="padding-bottom: .3rem">
                                                 <!-- button to select a floor -->
                                                 <button class="button material-shadow" 
-                                                        :class="{'btn-primary': (index == mapViewSelectedLocation.Blocks[currentBlockIndex].TotalFloor - 1),
+                                                        :class="{'btn-primary': (index == mapViewSelectedLocation.Blocks[currentBlockIndex].Floors.length - mapViewSelectedLocation.Blocks[currentBlockIndex].TotalBasementFloor - 1),
                                                                 'is-active-block': currentFloorIndex == index,
                                                                 }" 
-                                                        style="width: 3rem !important;" 
+                                                        style="width: 4rem !important; margin: .1rem 0;" 
                                                         :style="((index == mapViewSelectedLocation.Blocks[currentBlockIndex].TotalFloor - 1) 
                                                                     && currentFloorIndex == index) ? 
                                                                     'background: var(--darken-primary-color) !important; border: none !important' : ''"

@@ -947,7 +947,7 @@ export default {
       });
     //GET LOcation to import model-select
     this.axios
-      .get("http://localhost:3000/api/location")
+      .get("http://localhost:3000/api/location/warehouse")
       .then(response => {
         let data = response.data;
         data.forEach(location => {
@@ -1276,6 +1276,14 @@ export default {
         var result = 0;
         this.randomNumbers.forEach(async number => {
           try {
+            var date =
+              moment().valueOf() +
+              this.EquimentByID.MaintenanceDuration.Months *
+                30 *
+                24 *
+                3600 *
+                1000;
+                //moment(date).format("YYYY-MM-DD hh:mm:ss")
             let res = await this.axios.post(
               "http://localhost:3000/api/equipmentItem",
               {
@@ -1285,6 +1293,7 @@ export default {
                 warrantyDuration: this.form.warrantyDuration,
                 price: numeral(this.form.price).value(),
                 statusId: 1,
+                nextmaintaindate: moment(date).format("YYYY-MM-DD"),
                 description: "No description",
                 tileID: this.form.selectedTile.value
               }
@@ -2074,7 +2083,7 @@ export default {
       }
       if (this.changePositonLost == true) {
         this.axios
-          .get("http://localhost:3000/api/location")
+          .get("http://localhost:3000/api/location/warehouse")
           .then(response => {
             let data = response.data;
             data.forEach(location => {
@@ -2124,7 +2133,7 @@ export default {
       if (this.addPopUp == true) {
         this.locationModalSelect = [];
         this.axios
-          .get("http://localhost:3000/api/location")
+          .get("http://localhost:3000/api/location/warehouse")
           .then(response => {
             let data = response.data;
             data.forEach(location => {
