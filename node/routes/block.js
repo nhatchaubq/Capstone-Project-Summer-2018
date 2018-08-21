@@ -11,12 +11,13 @@ router.get("/location/:id", (req, res) => {
 });
 
 router.post('/:locationId', (req, res) => {
-    req.sql("insert into [Block]([Name], LocationID, [Description], Coordinate) values(@blockName, @locationId, @description, @coordinate); "
+    req.sql("insert into [Block]([Name], LocationID, TotalFloor, TotalBasementFloor, [Description]) values(@blockName, @locationId, @totalFloor, @totalBasementFloor, @description); "
             + "select(select SCOPE_IDENTITY()) as [NewBlockId] for json path, without_array_wrapper;")
       .param('locationId', req.params.locationId, TYPES.Int)
       .param('blockName', req.body.blockName, TYPES.NVarChar)
+      .param('totalFloor', req.body.totalFloor, TYPES.NVarChar)
+      .param('totalBasementFloor', req.body.totalBasementFloor, TYPES.NVarChar)
       .param('description', req.body.description, TYPES.NVarChar)
-      .param('coordinate', req.body.coordinate, TYPES.NVarChar)
       .into(res);
   });
   

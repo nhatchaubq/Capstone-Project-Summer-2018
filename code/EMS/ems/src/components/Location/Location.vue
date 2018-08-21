@@ -19,10 +19,10 @@
             <div class="material-box material-shadow-animate" :class="isActive(location.Id)"  :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)" >
               <div class="location-name">                
                 <div>{{location.Name}}</div>
-                <div style="text-align: right; line-height: 1.6rem;">
+                <!-- <div style="text-align: right; line-height: 1.6rem;">
                   <div v-if="!location.IsActive" class="tag" style="width: 100%; background-color:var(--danger-color);color:white">Inactive</div>
                   <div v-else class="tag" style="width: 100%; background-color:var(--success-color);color:white">Active</div>
-                </div>
+                </div> -->
               </div>
               <div class="location-address">
                 <i class="material-icons">place</i>
@@ -323,8 +323,9 @@ export default {
     let url = "";
     if (
       JSON.parse(window.localStorage.getItem("user")).Role == "Manager" ||
-      JSON.parse(window.localStorage.getItem("user")).Role == "Equipment Staff" ||
-      JSON.parse(window.localStorage.getItem("user")).Role == 'Admin'
+      JSON.parse(window.localStorage.getItem("user")).Role ==
+        "Equipment Staff" ||
+      JSON.parse(window.localStorage.getItem("user")).Role == "Admin"
     ) {
       url = "http://localhost:3000/api/location/";
     } else {
@@ -487,7 +488,7 @@ export default {
           });
           if (this.locations.length > 0) {
             this.setSelectedLocation(data[0]);
-          } 
+          }
         })
         .catch(error => {
           console.log(error);

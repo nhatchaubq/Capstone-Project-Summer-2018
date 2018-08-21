@@ -18,15 +18,25 @@ var connection = {
   server: "localhost",
   userName: "sa",
 
-  password: "123456",
+
+
+  password: "cCS94@bcnq836894",
+
+  connectionTimeout: 300000,
+  requestTimeout: 300000,
+  pool: {
+    idleTimeoutMillis: 300000,
+    max: 100
+  },
 
   port: "1433",
   options: {
     // instanceName : "SQLEXPRESS",
     encrypt: true,
     database: "EquipmentManageSystem",
-    trustedConnection: true
-  }
+    trustedConnection: true,
+    requestTimeout: 700000
+  },
 };
 
 app.use(bodyParser.json());

@@ -161,8 +161,8 @@ router.get("/closedate/:id", (req, res) => {
 router.post("/", (request, response) => {
   request
     .sql(
-      "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarehouseID, WarrantyDuration, RuntimeDays, Price, ImportDate, LastMaintainDate, StatusId, Description, TileID)" +
-      " VALUES (@equipmentID, @serialNumber, @warehoueid , @warrantyDuration, 0, @price, GETDATE(), GETDATE(),  @statusId, @description, @tileID)"
+      "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarehouseID, WarrantyDuration, RuntimeDays, Price, ImportDate, LastMaintainDate, NextMaintainDate, StatusId, Description, TileID)" +
+      " VALUES (@equipmentID, @serialNumber, @warehoueid , @warrantyDuration, 0, @price, GETDATE(), GETDATE(), @nextmaintaindate,  @statusId, @description, @tileID)"
     )
     .param("equipmentID", request.body.equipmentID, TYPES.Int)
     .param("serialNumber", request.body.serialNumber, TYPES.NVarChar)
@@ -170,6 +170,7 @@ router.post("/", (request, response) => {
     .param("warrantyDuration", request.body.warrantyDuration, TYPES.Int)
     .param("price", request.body.price, TYPES.Float)
     //.param('importDate', request.body.importDate, TYPES.DateTime)
+    .param("nextmaintaindate", request.body.nextmaintaindate, TYPES.Date)
     .param("statusId", request.body.statusId, TYPES.Int)
     .param("description", request.body.description, TYPES.NVarChar)
     .param("tileID", request.body.tileID, TYPES.Int)
@@ -270,23 +271,24 @@ router.get("/Item/:id", (request, response) => {
     .param("id", request.params.id, TYPES.Int)
     .into(response);
 });
-/* POST request, for insert */
-router.post("/", (request, response) => {
-  request
-    .sql(
-      "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
-      " VALUES (@equipmentID, @serialNumber, @warrantyDuration, 0, @price, GETDATE(), @statusId, @description, @tileID)"
-    )
-    .param("equipmentID", request.body.equipmentID, TYPES.Int)
-    .param("serialNumber", request.body.serialNumber, TYPES.NVarChar)
-    .param("warrantyDuration", request.body.warrantyDuration, TYPES.Int)
-    .param("price", request.body.price, TYPES.Float)
-    //.param('importDate', request.body.importDate, TYPES.DateTime)
-    .param("statusId", request.body.statusId, TYPES.Int)
-    .param("description", request.body.description, TYPES.NVarChar)
-    .param("tileID", request.body.tileID, TYPES.Int)
-    .exec(response);
-});
+// /* POST request, for insert */
+// router.post("/", (request, response) => {
+//   request
+//     .sql(
+//       "INSERT INTO EquipmentItem (EquipmentID, SerialNumber, WarrantyDuration, RuntimeDays, Price, ImportDate, StatusId, Description, TileID)" +
+//       " VALUES (@equipmentID, @serialNumber, @warrantyDuration, 0, @price, GETDATE(), @nextmaintaindate, @statusId, @description, @tileID)"
+//     )
+//     .param("equipmentID", request.body.equipmentID, TYPES.Int)
+//     .param("serialNumber", request.body.serialNumber, TYPES.NVarChar)
+//     .param("warrantyDuration", request.body.warrantyDuration, TYPES.Int)
+//     .param("price", request.body.price, TYPES.Float)
+//     //.param('importDate', request.body.importDate, TYPES.DateTime)
+//     .param("nextmaintaindate", request.body.nextmaintaindate, TYPES.DateTime)
+//     .param("statusId", request.body.statusId, TYPES.Int)
+//     .param("description", request.body.description, TYPES.NVarChar)
+//     .param("tileID", request.body.tileID, TYPES.Int)
+//     .exec(response);
+// });
 
 router.get("/:id/getByLocationId", (request, response) => {
   request
