@@ -4,7 +4,7 @@ var TYPES = require("tedious").TYPES;
 router.get("/", (request, response) => {
   request
     .sql(
-      "Select * From [Location] as l order by IsActive desc,Name asc " +
+      "Select * From [Location] as l where IsActive = 'true'  order by IsActive desc,Name asc " +
         "for json path"
     )
     .into(response);
