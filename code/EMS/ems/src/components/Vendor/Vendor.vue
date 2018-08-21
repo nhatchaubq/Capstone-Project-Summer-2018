@@ -7,7 +7,7 @@
       <thead>
         <tr>
           <!-- <th><strong>ID</strong></th> -->
-          <th ><strong>#</strong></th>
+          <th ><strong>No.</strong></th>
           <th ><strong>Business name</strong></th>
           <th ><strong>Quantity</strong></th>
           <th ><strong>Address</strong></th>

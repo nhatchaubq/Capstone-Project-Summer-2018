@@ -87,7 +87,7 @@
               <table class="mytable" style="margin-bottom:1rem">
                 <thead>
                   <tr>
-                    <th style="width:3% !important"><strong># </strong></th>
+                    <th style="width:3% !important"><strong>No. </strong></th>
                     <th style="width:15% !important"><strong>Username</strong></th>
                     <!-- <th style="width: 30% !important"><strong>Full Name</strong></th> -->
                     <th style="width: 5% !important"><strong>Role</strong></th>
@@ -162,7 +162,7 @@
           <table class="mytable" style="margin-bottom:1rem">
             <thead>
               <tr>
-                <th style="width:3% !important; cursor: context-menu !important"><strong># </strong></th>
+                <th style="width:3% !important; cursor: context-menu !important"><strong>No. </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Location Name </strong></th>
                 <th style="width: 57% !important; cursor: context-menu !important"><strong>Location Address</strong></th>
                 <th style="width: 10% !important; cursor: context-menu !important"><strong>Status</strong></th>
@@ -207,7 +207,7 @@
             <table class="mytable" style="margin-bottom:1rem">
               <thead>
                 <tr>
-                  <th style="width:3% !important; cursor: context-menu !important"><strong># </strong></th>
+                  <th style="width:3% !important; cursor: context-menu !important"><strong>No. </strong></th>
                   <th style="width:15% !important; cursor: context-menu !important"><strong>Username</strong></th>
                   <th style="width: 15% !important; cursor: context-menu !important"><strong>Full Name</strong></th>
                   <th style="width: 5% !important; cursor: context-menu !important"><strong>Role</strong></th>
@@ -275,7 +275,7 @@
         <table  class="mytable" style="margin-bottom:1rem">
             <thead>
               <tr >
-                <th style="width:5% !important;cursor: context-menu !important "><strong># </strong></th>
+                <th style="width:5% !important;cursor: context-menu !important "><strong>No. </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Equipments </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Serial Number Of Item </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Work order </strong></th>
@@ -530,7 +530,9 @@ export default {
       let url1 = Server.TEAM_API_PATH;
       await this.axios.get(url1).then(response => {
         // this.teams = [];
-        response.data.forEach(value => this.teams.push(value.Team));
+        if (response.data) {
+          response.data.forEach(value => this.teams.push(value.Team));
+        }
         // response.data.forEach(value => this.teamdetails.push(value.Team));
       });
       let teamApiUrl = `http://localhost:3000/api/team/id/${
@@ -547,13 +549,15 @@ export default {
       }`;
       await this.axios.get(outsideTeamApiUrl).then(res => {
         let data = res.data;
-        data.forEach(element => {
-          let option = {
-            value: element.Id,
-            text: element.Username
-          };
-          this.memberOptions.push(option);
-        });
+        if (data) {
+          data.forEach(element => {
+            let option = {
+              value: element.Id,
+              text: element.Username
+            };
+            this.memberOptions.push(option);
+          });
+        }
       });
 
       let urlEquipmentItem = `http://localhost:3000/api/team/id/${
@@ -561,18 +565,22 @@ export default {
       }/equipmentitem`;
       await this.axios.get(urlEquipmentItem).then(res => {
         let data = res.data;
-        data.forEach(element => {
-          let EquiItem = element;
-          var totalItem = 0;
-          EquiItem.Equipment.forEach(eq => {
-            totalItem += eq.EquipmentItems.length;
+        if (data) {
+          data.forEach(element => {
+            let EquiItem = element;
+            var totalItem = 0;
+            if (EquiItem.Equipment) {
+              EquiItem.Equipment.forEach(eq => {
+                totalItem += eq.EquipmentItems.length;
+              });
+              let workOrder = {
+                totalItem: totalItem,
+                workOrder: EquiItem
+              };
+              this.EquiItems.push(workOrder);
+            }
           });
-          let workOrder = {
-            totalItem: totalItem,
-            workOrder: EquiItem
-          };
-          this.EquiItems.push(workOrder);
-        });
+        }
       });
       let itemUrl = `http://localhost:3000/api/team/id/${
         this.$route.params.id
@@ -655,6 +663,7 @@ export default {
             checkName = false;
             console.log(error);
           });
+
         this.selectedMemberList.forEach(element => {
           this.axios
             .post(

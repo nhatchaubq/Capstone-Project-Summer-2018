@@ -53,7 +53,7 @@
         <tr style="height:28px !important">
           <!-- <th><strong>ID</strong></th> -->
   
-          <th style="width:3% !important"><strong >#</strong></th>
+          <th style="width:3% !important"><strong >No.</strong></th>
           <th style="width:15% !important"><strong>User name</strong></th>
   
           <th style="width:25% !important"><strong>Full name </strong></th>
