@@ -41,7 +41,7 @@
           <div class="info-location" >
             <div class="header-detail">
               <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>      
-              <div style="display: flex; justify-content: flex-end; align-items: center; ">
+              <div style="display: flex; justify-content: flex-end; align-items: center; font-weight: 500;">
                 <a v-if="authUser.Role == 'Manager'" @click="$router.push(`/location/edit-location/${selectedLocation.Id}`)">Edit</a>
               </div>
             </div>
@@ -317,7 +317,7 @@ export default {
     },
     searchValues: sync("locationPage.searchValues")
   },
-  created() {
+  async created() {
     // alert(JSON.parse(window.localStorage.getItem("user")).Id);
     // alert(JSON.parse(window.localStorage.getItem("user")).Role);
     let url = "";
@@ -333,14 +333,12 @@ export default {
       }`;
     }
     // alert(url);
-    this.axios
+    await this.axios
       .get(url)
-      .then(response => {
+      .then(async response => {
         let data = response.data;
-        data.forEach(location => {
-          this.locations.push(location);
-          this.allLocations.push(location);
-        });
+        this.locations = data;
+        this.allLocations = data;
         if (this.locations.length > 0) {
           this.setSelectedLocation(data[0]);
         }

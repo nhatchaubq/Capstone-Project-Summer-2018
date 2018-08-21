@@ -550,7 +550,7 @@ export default {
         data.forEach(element => {
           let option = {
             value: element.Id,
-            text: element.Fullname
+            text: element.Username
           };
           this.memberOptions.push(option);
         });

@@ -419,4 +419,13 @@ td {
   /* background-color: #26a69a; */
   color: white !important;
 }
+
+.form-title {
+  display: grid;
+  grid-template-columns: 65% 35%;
+  border-bottom: 1px solid #e0e0e0;
+  padding: .5rem 2rem;
+  box-shadow: 0px 3px 5px var(--shadow);
+  z-index: 5;
+}
 </style>

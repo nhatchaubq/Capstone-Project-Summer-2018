@@ -19,5 +19,8 @@
                 "distanceFactor": 0.7
             }
         ]
+    },
+    "nextMaintainYear": {
+        "maximumValue": 5
     }
 }

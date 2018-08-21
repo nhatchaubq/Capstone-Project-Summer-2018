@@ -272,227 +272,342 @@
                 </div>
             </div>
         </div>
+        <div v-if="configOriginal.nextMaintainYear">
+            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Editing next maintain year 
+                <span style="font-weight: 400; font-size: 1rem;">
+                    <a v-if="!editingNextMaintainYearConfig" v-on:click="editingNextMaintainYearConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
+                    <span v-if="editingNextMaintainYearConfig">
+                        <a :style="!isNextMaintainYearChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
+                            v-on:click="() => {
+                                if (isNextMaintainYearChanged) {
+                                    configCopy = JSON.stringify(configOriginal);
+                                    configCopy = JSON.parse(configCopy);
+                                    $socket.emit('CONFIGURATION_CHANGED', configOriginal);
+                                    editingNextMaintainYearConfig = false;
+                                }
+                        }">save changes</a> | 
+                        <a v-on:click="() => {
+                            let configJson = JSON.stringify(configCopy.nextMaintainYear)
+                            configOriginal.nextMaintainYear = JSON.parse(configJson);
+                            editingNextMaintainYearConfig = false;
+                            isNextMaintainYearChanged = false;
+                        }">cancel</a>
+                    </span>
+                </span>
+            </div>
+            <div v-if="!editingNextMaintainYearConfig" style="display: grid;grid-template-columns: 30% 30%;">
+                <div style="padding-top:0.4rem">
+                    Maximum duration for next maintaindate: 
+                </div>
+                <div style="display: grid;grid-template-columns: 10% 20%;">
+                    <div  style="padding-top:0.4rem">
+                        {{configOriginal.nextMaintainYear.maximumValue}}
+                    </div>
+                    <div style="padding-top:0.4rem">
+                        <label>year(s)</label>
+                    </div>
+                </div>
+            </div>
+            <div v-if="editingNextMaintainYearConfig" style="display: grid;grid-template-columns: 30% 30%;">
+                <div style="padding-top:0.4rem">
+                    Maximum duration for next maintaindate: 
+                </div>
+                <div style="display: grid;grid-template-columns: 30% 20%;">
+                    <div>
+                        <input type="number"  class="input" v-model.number="configOriginal.nextMaintainYear.maximumValue" v-on:input="() => {
+                            if (configOriginal.nextMaintainYear.maximumValue < 0 || configOriginal.nextMaintainYear.maximumValue == '') {
+                                configOriginal.nextMaintainYear.maximumValue = 0;
+                            }
+                            configOriginal.nextMaintainYear.maximumValue = parseInt(configOriginal.nextMaintainYear.maximumValue);
+                            checkNextMaintainDateConfigChanged();
+                        }"/>
+                    </div>
+                    <div style="padding-top:0.4rem">
+                        <label>year(s)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
-import { sync } from 'vuex-pathify';
+import { sync } from "vuex-pathify";
 
 export default {
-    computed: {
-        config: sync('config'),        
-    },
-    created() {
-        if (this.config) {
-            let configJson = JSON.stringify(this.config);
-            this.configOriginal = JSON.parse(configJson);
-            this.configCopy = JSON.parse(configJson);
-        }
-    },
-    data() {
-        return {
-            ErrorStrings: {
-                ErrorPresetNameCantBeNormal: 'Preset\'s name can not be "Normal"',
-                ErrorEmptyPresetName: 'Preset\'s name can not be empty',
-                ErrorPresetNameIsDuplicated: 'This name is duplicated with other presets',
-                ErrorConfigDuplicated: 'Configuration is duplicated, it may cause unexpected result of the sorting algorithm',
-                ErrorPresetDurationIsGreaterThanMaximum: 'The work order duration is greater than the maximum duration',
-            },
-            CreateOrderErrors: {
-                ErrorPresetNameCantBeNormal: '',
-                ErrorEmptyPresetName: '',
-                ErrorPresetNameIsDuplicated: '',
-            },
-            configOriginal: null,
-            configCopy: null,
-            errorPresetNameCantBeEmptyIndex: [],
-            errorPresetNameCantBeNormalIndex: [],
-            errorPresetNameOfCreateOrderConfigIndex: [],
-            tobeErrorPresetNameOfCreateOrderConfigIndex: [],
-            errorDurationFromCreateDateIndex: [],
-            tobeErrorDurationFromCreateDateIndex: [],
-            errorRuntimeFactorIndex: [],
-            tobeErrorRuntimeFactorIndex: [],
-            errorDistanceFactorIndex: [],
-            tobeErrorDistanceFactorIndex: [],
-            errorDurationIsGreaterThanMaximumIndex: [],
-            isCreateOrderConfigChanged: false,
-            editingCreateWorkOrderConfig: false,
-        }
-    },
-    watch: {
-        config: function() {
-            if(this.config) {
-                let configJson = JSON.stringify(this.config);
-                this.configOriginal = JSON.parse(configJson);
-                this.configCopy = JSON.parse(configJson);
-            }
-        }
-    },
-    methods: {
-        checkValidPresetName() {
-            let presets = this.configOriginal.createWorkOrder.presets;
-            for (let i = 1; i < presets.length; i++) {
-                if (presets[i].name == '') {
-                    this.errorPresetNameCantBeEmptyIndex.push(i);
-                } else {
-                    if (this.errorPresetNameCantBeEmptyIndex.includes(i)) {
-                        this.errorPresetNameCantBeEmptyIndex = this.errorPresetNameCantBeEmptyIndex.filter(index => i != index);
-                    }
-                    if (presets[i].name.toLowerCase() == 'normal') {
-                        if (!this.errorPresetNameCantBeNormalIndex.includes(i)) {
-                            this.errorPresetNameCantBeNormalIndex.push(i);
-                        }
-                    } else {
-                        if (this.errorPresetNameCantBeNormalIndex.includes(i)) {
-                            this.errorPresetNameCantBeNormalIndex = this.errorPresetNameCantBeNormalIndex.filter(index => i != index);
-                        }
-                        this.errorPresetNameOfCreateOrderConfigIndex = [];
-                        this.tobeErrorPresetNameOfCreateOrderConfigIndex = [];
-                        for (let j = i + 1; j < presets.length && i < presets.length - 1; j++) {
-                            let toCheckPreset = presets[i];
-                            let tobeCheckedPreset = presets[j];
-                            if (toCheckPreset.name.toLowerCase() == tobeCheckedPreset.name.toLowerCase()) {
-                                if (!this.errorPresetNameOfCreateOrderConfigIndex.includes(i)) {
-                                    this.errorPresetNameOfCreateOrderConfigIndex.push(i);
-                                }
-                                if (!this.tobeErrorPresetNameOfCreateOrderConfigIndex.includes(j)) {
-                                    this.tobeErrorPresetNameOfCreateOrderConfigIndex.push(j);
-                                }
-                            }
-                        }
-                    }
-                }      
-            }
-        },
-        checkValidDurationFromCreateDate() {
-            let maximumDuration = this.configOriginal.createWorkOrder.maximumWorkOrderDuration;
-            switch (this.configOriginal.createWorkOrder.maximumWorkOrderDurationType) {
-                case 'month': {
-                    maximumDuration *= 30;
-                    break;
-                }
-                case 'year': {
-                    maximumDuration *= 30 * 12;
-                    break;
-                }
-            }            
-            const presets = this.configOriginal.createWorkOrder.presets;
-            this.errorDurationIsGreaterThanMaximumIndex = [];
-            this.errorDurationFromCreateDateIndex = [];
-            this.tobeErrorDurationFromCreateDateIndex = [];
-            for (let i = 0; i < presets.length; i++) {
-                let presetDuration = presets[i].durationFromCreateDate;
-                switch (presets[i].durationFromCreateDateType) {
-                    case 'month': {
-                        presetDuration *= 30;
-                        break;
-                    }
-                    case 'year': {
-                        presetDuration *= 30 * 12;
-                        break;
-                    }
-                }
-                if (presetDuration > maximumDuration) {
-                    this.errorDurationIsGreaterThanMaximumIndex.push(i);
-                }
-                for (let j = 0; j < presets.length; j++) {
-                    if (i != j) {
-                        const toCheckPreset = presets[i];
-                        const tobeCheckedPreset = presets[j];
-                        if (toCheckPreset.durationFromCreateDate == tobeCheckedPreset.durationFromCreateDate
-                            && toCheckPreset.durationFromCreateDateType == tobeCheckedPreset.durationFromCreateDateType) {
-                            if (!this.errorDurationFromCreateDateIndex.includes(i)) {
-                                this.errorDurationFromCreateDateIndex.push(i);
-                            }
-                            if (!this.tobeErrorDurationFromCreateDateIndex.includes(j)) {
-                                this.tobeErrorDurationFromCreateDateIndex.push(j);
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        checkValidRuntimeFactor() {
-            const presets = this.configOriginal.createWorkOrder.presets;
-            this.errorDistanceFactorIndex = [];
-            this.tobeErrorDistanceFactorIndex = [];
-            this.errorRuntimeFactorIndex = [];
-            this.tobeErrorRuntimeFactorIndex = [];
-            for (let i = 0; i < presets.length; i++) {
-                for (let j = 0; j < presets.length; j++) {
-                    if (i != j) {
-                        const toCheckPreset = presets[i];
-                        const tobeCheckedPreset = presets[j];
-                        if (toCheckPreset.runtimeFactor == tobeCheckedPreset.runtimeFactor) {
-                            if (!this.errorRuntimeFactorIndex.includes(i)) {
-                                this.errorRuntimeFactorIndex.push(i);
-                            }
-                            if (!this.tobeErrorRuntimeFactorIndex.includes(j)) {
-                                this.tobeErrorRuntimeFactorIndex.push(j);
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        checkValidDistanceFactor() {
-            const presets = this.configOriginal.createWorkOrder.presets;
-            this.errorDistanceFactorIndex = [];
-            this.tobeErrorDistanceFactorIndex = [];
-            this.errorRuntimeFactorIndex = [];
-            this.tobeErrorRuntimeFactorIndex = [];
-            for (let i = 0; i < presets.length; i++) {
-                for (let j = 0; j < presets.length; j++) {
-                    if (i != j) {
-                        const toCheckPreset = presets[i];
-                        const tobeCheckedPreset = presets[j];
-                        if (toCheckPreset.distanceFactor == tobeCheckedPreset.distanceFactor) {
-                            if (!this.errorDistanceFactorIndex.includes(i)) {
-                                this.errorDistanceFactorIndex.push(i);
-                            }
-                            if (!this.tobeErrorDistanceFactorIndex.includes(j)) {
-                                this.tobeErrorDistanceFactorIndex.push(j);
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        checkCreateOrderConfigChanged() {
-            this.isCreateOrderConfigChanged = false;
-            const createWorkOrderConfigOriginal = this.configOriginal.createWorkOrder;
-            const createWorkOrderConfigCopy = this.configCopy.createWorkOrder;
-            if (createWorkOrderConfigOriginal && createWorkOrderConfigCopy) {
-                this.isCreateOrderConfigChanged = createWorkOrderConfigOriginal.maximumConflictWorkOrders != createWorkOrderConfigCopy.maximumConflictWorkOrders
-                            || createWorkOrderConfigOriginal.maximumWorkOrderDuration != createWorkOrderConfigCopy.maximumWorkOrderDuration
-                            || createWorkOrderConfigOriginal.maximumWorkOrderDurationType != createWorkOrderConfigCopy.maximumWorkOrderDurationType;
-                if (!this.isCreateOrderConfigChanged) {
-                    for (let i = 0; i < createWorkOrderConfigOriginal.presets.length; i++) {
-                        if (createWorkOrderConfigOriginal.presets.length == createWorkOrderConfigCopy.presets.length) {
-                            const createWorkOrderConfigOriginalPreset = createWorkOrderConfigOriginal.presets[i];
-                            const createWorkOrderConfigCopyPreset = createWorkOrderConfigCopy.presets[i];
-                            this.isCreateOrderConfigChanged = createWorkOrderConfigOriginalPreset.durationFromCreateDate != createWorkOrderConfigCopyPreset.durationFromCreateDate
-                                    ||createWorkOrderConfigOriginalPreset.durationFromCreateDateType != createWorkOrderConfigCopyPreset.durationFromCreateDateType
-                                    ||createWorkOrderConfigOriginalPreset.durationFromCreateDateOperand != createWorkOrderConfigCopyPreset.durationFromCreateDateOperand
-                                    ||createWorkOrderConfigOriginalPreset.runtimeFactor != createWorkOrderConfigCopyPreset.runtimeFactor
-                                    ||createWorkOrderConfigOriginalPreset.distanceFactor != createWorkOrderConfigCopyPreset.distanceFactor;
-                            if (this.isCreateOrderConfigChanged) break;
-                        } else {
-                            this.isCreateOrderConfigChanged = true;
-                            break;
-                        }                        
-                    }
-                }
-            }
-        },
-        showAlert(msg) {
-            alert(msg);
-        }
+  computed: {
+    config: sync("config")
+  },
+  created() {
+    if (this.config) {
+      let configJson = JSON.stringify(this.config);
+      this.configOriginal = JSON.parse(configJson);
+      this.configCopy = JSON.parse(configJson);
     }
-}
+  },
+  data() {
+    return {
+      ErrorStrings: {
+        ErrorPresetNameCantBeNormal: 'Preset\'s name can not be "Normal"',
+        ErrorEmptyPresetName: "Preset's name can not be empty",
+        ErrorPresetNameIsDuplicated:
+          "This name is duplicated with other presets",
+        ErrorConfigDuplicated:
+          "Configuration is duplicated, it may cause unexpected result of the sorting algorithm",
+        ErrorPresetDurationIsGreaterThanMaximum:
+          "The work order duration is greater than the maximum duration"
+      },
+      CreateOrderErrors: {
+        ErrorPresetNameCantBeNormal: "",
+        ErrorEmptyPresetName: "",
+        ErrorPresetNameIsDuplicated: ""
+      },
+      configOriginal: null,
+      configCopy: null,
+      errorPresetNameCantBeEmptyIndex: [],
+      errorPresetNameCantBeNormalIndex: [],
+      errorPresetNameOfCreateOrderConfigIndex: [],
+      tobeErrorPresetNameOfCreateOrderConfigIndex: [],
+      errorDurationFromCreateDateIndex: [],
+      tobeErrorDurationFromCreateDateIndex: [],
+      errorRuntimeFactorIndex: [],
+      tobeErrorRuntimeFactorIndex: [],
+      errorDistanceFactorIndex: [],
+      tobeErrorDistanceFactorIndex: [],
+      errorDurationIsGreaterThanMaximumIndex: [],
+      isCreateOrderConfigChanged: false,
+      editingCreateWorkOrderConfig: false,
+      editingNextMaintainYearConfig: false,
+      isNextMaintainYearChanged: false
+    };
+  },
+  watch: {
+    config: function() {
+      if (this.config) {
+        let configJson = JSON.stringify(this.config);
+        this.configOriginal = JSON.parse(configJson);
+        this.configCopy = JSON.parse(configJson);
+      }
+    }
+  },
+  methods: {
+    checkValidPresetName() {
+      let presets = this.configOriginal.createWorkOrder.presets;
+      for (let i = 1; i < presets.length; i++) {
+        if (presets[i].name == "") {
+          this.errorPresetNameCantBeEmptyIndex.push(i);
+        } else {
+          if (this.errorPresetNameCantBeEmptyIndex.includes(i)) {
+            this.errorPresetNameCantBeEmptyIndex = this.errorPresetNameCantBeEmptyIndex.filter(
+              index => i != index
+            );
+          }
+          if (presets[i].name.toLowerCase() == "normal") {
+            if (!this.errorPresetNameCantBeNormalIndex.includes(i)) {
+              this.errorPresetNameCantBeNormalIndex.push(i);
+            }
+          } else {
+            if (this.errorPresetNameCantBeNormalIndex.includes(i)) {
+              this.errorPresetNameCantBeNormalIndex = this.errorPresetNameCantBeNormalIndex.filter(
+                index => i != index
+              );
+            }
+            this.errorPresetNameOfCreateOrderConfigIndex = [];
+            this.tobeErrorPresetNameOfCreateOrderConfigIndex = [];
+            for (
+              let j = i + 1;
+              j < presets.length && i < presets.length - 1;
+              j++
+            ) {
+              let toCheckPreset = presets[i];
+              let tobeCheckedPreset = presets[j];
+              if (
+                toCheckPreset.name.toLowerCase() ==
+                tobeCheckedPreset.name.toLowerCase()
+              ) {
+                if (!this.errorPresetNameOfCreateOrderConfigIndex.includes(i)) {
+                  this.errorPresetNameOfCreateOrderConfigIndex.push(i);
+                }
+                if (
+                  !this.tobeErrorPresetNameOfCreateOrderConfigIndex.includes(j)
+                ) {
+                  this.tobeErrorPresetNameOfCreateOrderConfigIndex.push(j);
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    checkValidDurationFromCreateDate() {
+      let maximumDuration = this.configOriginal.createWorkOrder
+        .maximumWorkOrderDuration;
+      switch (this.configOriginal.createWorkOrder
+        .maximumWorkOrderDurationType) {
+        case "month": {
+          maximumDuration *= 30;
+          break;
+        }
+        case "year": {
+          maximumDuration *= 30 * 12;
+          break;
+        }
+      }
+      const presets = this.configOriginal.createWorkOrder.presets;
+      this.errorDurationIsGreaterThanMaximumIndex = [];
+      this.errorDurationFromCreateDateIndex = [];
+      this.tobeErrorDurationFromCreateDateIndex = [];
+      for (let i = 0; i < presets.length; i++) {
+        let presetDuration = presets[i].durationFromCreateDate;
+        switch (presets[i].durationFromCreateDateType) {
+          case "month": {
+            presetDuration *= 30;
+            break;
+          }
+          case "year": {
+            presetDuration *= 30 * 12;
+            break;
+          }
+        }
+        if (presetDuration > maximumDuration) {
+          this.errorDurationIsGreaterThanMaximumIndex.push(i);
+        }
+        for (let j = 0; j < presets.length; j++) {
+          if (i != j) {
+            const toCheckPreset = presets[i];
+            const tobeCheckedPreset = presets[j];
+            if (
+              toCheckPreset.durationFromCreateDate ==
+                tobeCheckedPreset.durationFromCreateDate &&
+              toCheckPreset.durationFromCreateDateType ==
+                tobeCheckedPreset.durationFromCreateDateType
+            ) {
+              if (!this.errorDurationFromCreateDateIndex.includes(i)) {
+                this.errorDurationFromCreateDateIndex.push(i);
+              }
+              if (!this.tobeErrorDurationFromCreateDateIndex.includes(j)) {
+                this.tobeErrorDurationFromCreateDateIndex.push(j);
+              }
+            }
+          }
+        }
+      }
+    },
+    checkValidRuntimeFactor() {
+      const presets = this.configOriginal.createWorkOrder.presets;
+      this.errorDistanceFactorIndex = [];
+      this.tobeErrorDistanceFactorIndex = [];
+      this.errorRuntimeFactorIndex = [];
+      this.tobeErrorRuntimeFactorIndex = [];
+      for (let i = 0; i < presets.length; i++) {
+        for (let j = 0; j < presets.length; j++) {
+          if (i != j) {
+            const toCheckPreset = presets[i];
+            const tobeCheckedPreset = presets[j];
+            if (
+              toCheckPreset.runtimeFactor == tobeCheckedPreset.runtimeFactor
+            ) {
+              if (!this.errorRuntimeFactorIndex.includes(i)) {
+                this.errorRuntimeFactorIndex.push(i);
+              }
+              if (!this.tobeErrorRuntimeFactorIndex.includes(j)) {
+                this.tobeErrorRuntimeFactorIndex.push(j);
+              }
+            }
+          }
+        }
+      }
+    },
+    checkValidDistanceFactor() {
+      const presets = this.configOriginal.createWorkOrder.presets;
+      this.errorDistanceFactorIndex = [];
+      this.tobeErrorDistanceFactorIndex = [];
+      this.errorRuntimeFactorIndex = [];
+      this.tobeErrorRuntimeFactorIndex = [];
+      for (let i = 0; i < presets.length; i++) {
+        for (let j = 0; j < presets.length; j++) {
+          if (i != j) {
+            const toCheckPreset = presets[i];
+            const tobeCheckedPreset = presets[j];
+            if (
+              toCheckPreset.distanceFactor == tobeCheckedPreset.distanceFactor
+            ) {
+              if (!this.errorDistanceFactorIndex.includes(i)) {
+                this.errorDistanceFactorIndex.push(i);
+              }
+              if (!this.tobeErrorDistanceFactorIndex.includes(j)) {
+                this.tobeErrorDistanceFactorIndex.push(j);
+              }
+            }
+          }
+        }
+      }
+    },
+    checkNextMaintainDateConfigChanged() {
+      this.isNextMaintainYearChanged = false;
+
+      const nextMaintainYearConfigOriginal = this.configOriginal
+        .nextMaintainYear;
+      const nextMaintainYearConfigCopy = this.configCopy.nextMaintainYear;
+      if (
+        this.configOriginal.nextMaintainYear.maximumValue !=
+        nextMaintainYearConfigCopy.maximumValue
+      ) {
+        this.isNextMaintainYearChanged = true;
+      }
+    },
+    checkCreateOrderConfigChanged() {
+      this.isCreateOrderConfigChanged = false;
+      const createWorkOrderConfigOriginal = this.configOriginal.createWorkOrder;
+      const createWorkOrderConfigCopy = this.configCopy.createWorkOrder;
+      if (createWorkOrderConfigOriginal && createWorkOrderConfigCopy) {
+        this.isCreateOrderConfigChanged =
+          createWorkOrderConfigOriginal.maximumConflictWorkOrders !=
+            createWorkOrderConfigCopy.maximumConflictWorkOrders ||
+          createWorkOrderConfigOriginal.maximumWorkOrderDuration !=
+            createWorkOrderConfigCopy.maximumWorkOrderDuration ||
+          createWorkOrderConfigOriginal.maximumWorkOrderDurationType !=
+            createWorkOrderConfigCopy.maximumWorkOrderDurationType;
+        if (!this.isCreateOrderConfigChanged) {
+          for (
+            let i = 0;
+            i < createWorkOrderConfigOriginal.presets.length;
+            i++
+          ) {
+            if (
+              createWorkOrderConfigOriginal.presets.length ==
+              createWorkOrderConfigCopy.presets.length
+            ) {
+              const createWorkOrderConfigOriginalPreset =
+                createWorkOrderConfigOriginal.presets[i];
+              const createWorkOrderConfigCopyPreset =
+                createWorkOrderConfigCopy.presets[i];
+              this.isCreateOrderConfigChanged =
+                createWorkOrderConfigOriginalPreset.durationFromCreateDate !=
+                  createWorkOrderConfigCopyPreset.durationFromCreateDate ||
+                createWorkOrderConfigOriginalPreset.durationFromCreateDateType !=
+                  createWorkOrderConfigCopyPreset.durationFromCreateDateType ||
+                createWorkOrderConfigOriginalPreset.durationFromCreateDateOperand !=
+                  createWorkOrderConfigCopyPreset.durationFromCreateDateOperand ||
+                createWorkOrderConfigOriginalPreset.runtimeFactor !=
+                  createWorkOrderConfigCopyPreset.runtimeFactor ||
+                createWorkOrderConfigOriginalPreset.distanceFactor !=
+                  createWorkOrderConfigCopyPreset.distanceFactor;
+              if (this.isCreateOrderConfigChanged) break;
+            } else {
+              this.isCreateOrderConfigChanged = true;
+              break;
+            }
+          }
+        }
+      }
+    },
+    showAlert(msg) {
+      alert(msg);
+    }
+  }
+};
 </script>
 
 <style scoped>
-
 </style>
