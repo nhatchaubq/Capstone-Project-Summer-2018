@@ -19,6 +19,7 @@ var connection = {
   userName: "sa",
 
 
+
   password: "cCS94@bcnq836894",
 
   connectionTimeout: 300000,
@@ -27,6 +28,7 @@ var connection = {
     idleTimeoutMillis: 300000,
     max: 100
   },
+
   port: "1433",
   options: {
     // instanceName : "SQLEXPRESS",
@@ -67,12 +69,16 @@ io.on("connection", function (socket) {
   socket.on("CLOSE_WORK_ORDER_DETAIL", function (data) {
     socket.broadcast.emit("ORDER_STATUS_CHANGED", data);
   });
+
   socket.on("CONFIGURATION_CHANGED", function (data) {
+
     fs.writeFile(
       "./web_config/config.json",
       JSON.stringify(data, null, 4),
       "utf8",
+
       function (err) {
+
         if (err) {
           return console.log(err);
         }
