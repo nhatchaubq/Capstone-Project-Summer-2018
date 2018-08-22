@@ -406,17 +406,17 @@
           }">
             <div v-if="closeOrderDetailStep == 0">
                 <div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 2rem; display: grid;"
-                    :style="{'grid-template-columns': (selectedOrder && selectedOrder.Category == 'Working') ? '40% 10% 10% 10% 29%' : '30% 8% 8% 8% 16% 30%'}">
+                    :style="{'grid-template-columns': (selectedOrder && selectedOrder.Category == 'Working') ? '40% 10% 10% 10% 29%' : '30% 12% 12% 16% 30%'}">
                     <div>Equipment</div>
                     <div style="text-align: center">Good</div>
-                    <div style="text-align: center">Damaged</div>
+                    <div style="text-align: center" v-if="selectedOrder && selectedOrder.Category != 'Maintain'">Damaged</div>
                     <div style="text-align: center">Lost</div>
                     <div v-if="selectedOrder && selectedOrder.Category == 'Maintain'" style="text-align: center; margin-right: 1rem;">Cost (VND)</div>
                     <div>Description</div>
                 </div>
                 <div v-if="toCloseEquipments.length > 0" style="display: grid; padding: .5rem;"
                         :style="{'background': (value.status == 'Damaged' ? '#fff1b5' : (value.status == 'Lost' ? '#FF9898' : '')),
-                                'grid-template-columns': (selectedOrder && selectedOrder.Category == 'Working') ? '10% 30% 10% 10% 10% 29%' : '7% 23% 8% 8% 8% 16% 30%'}"
+                                'grid-template-columns': (selectedOrder && selectedOrder.Category == 'Working') ? '10% 30% 10% 10% 10% 29%' : '7% 23% 12% 12% 16% 30%'}"
                         :key="'toCloseItem' + index" v-for="(value, index) in toCloseEquipments">
                     <div style="display: flex">
                         <img v-show="value.equipment.Image" :src="value.equipment.Image" :alt="value.equipment.Name" style="width: 3rem; height: 3rem;">
@@ -454,7 +454,7 @@
                                     }">
                         </label>
                     </div>
-                    <div style="text-align: center">
+                    <div style="text-align: center" v-if="selectedOrder && selectedOrder.Category != 'Maintain'">
                         <label class="radio">
                             <input type="radio" :checked="value.status == 'Damaged'"
                                 :name="`${value.equipment.Name}${value.item.Id}`"
