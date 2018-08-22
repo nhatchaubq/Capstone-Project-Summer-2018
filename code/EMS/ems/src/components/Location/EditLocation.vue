@@ -234,17 +234,22 @@ export default {
                     this.location.TeamWithWorkOrdering.length > 0
                   ) {
                     this.newTeams = this.selectedTeams;
-                    this.location.TeamWithWorkOrdering.forEach(team => {
+                    for (const team of this.location.TeamWithWorkOrdering) {
                       this.newTeams = this.newTeams.filter(
                         newTeam => newTeam.Id != team.TeamID
                       );
-                    });
-                    this.newTeams.forEach(team => {
+                    }
+                    // this.location.TeamWithWorkOrdering.forEach(team => {
+                    //   this.newTeams = this.newTeams.filter(
+                    //     newTeam => newTeam.Id != team.TeamID
+                    //   );
+                    // });                    
+                    for (const team of this.newTeams) {
                       this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
                         locationId: this.location.Id,
                         teamId: team.Id
                       });
-                    });
+                    }
                   } else {
                     this.newTeams = this.selectedTeams;
                     this.newTeams.forEach(team => {
@@ -308,7 +313,7 @@ export default {
       } else {
         let obj = {
           title: "Unable To Remove",
-          message: "This team has working order(s).",
+          message: "This team has order(s).",
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);

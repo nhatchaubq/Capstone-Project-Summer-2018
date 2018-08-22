@@ -20,7 +20,8 @@ var connection = {
 
 
 
-  password: "cCS94@bcnq836894",
+  password: "123456",
+
 
   connectionTimeout: 300000,
   requestTimeout: 300000,
