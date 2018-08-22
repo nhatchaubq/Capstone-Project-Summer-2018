@@ -22,7 +22,7 @@
                 <div class="input_picture">                    
                     <label class="file-label" style="width: 100% !important"> 
                     <span class="file-cta">
-                        <input class="file-input" type="file" accept="image/*" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
+                        <input class="file-input" type="file" accept=".png, .jpg, .jpeg" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
                         <span class="file-icon">
 
                             <i class="fa fa-upload"></i>

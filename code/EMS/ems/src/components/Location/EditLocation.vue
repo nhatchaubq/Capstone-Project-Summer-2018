@@ -34,18 +34,18 @@
               <div>
                 <div class="form-field-title">
                   <strong>Status</strong>
-                  <span v-if="location.Items" class="error-text"> (There are the equipment in this location. Can't change the activity status)</span>
+                  <span v-if="location.Items || selectedTeams.length" class="error-text"> (There are the equipment in this location. Can't change the activity status)</span>
                 </div>
                 <div class="form-field-input" style="margin-top:10px;">
                   <label class="radio" v-on:click="location.IsActive = true" style="margin-right:0.5rem">
-                    <input type="radio" name="status"  :checked="location.IsActive"> Active
+                    <input type="radio" name="status" style="margin-right:0.5rem"  :checked="location.IsActive || selectedTeams.length" > Active
                   </label>
-                  <label class="radio" v-on:click="() => {
-                      if (!location.Items) {
+                  <label class="radio" v-on:click="() => {                    
+                      if (!location.Items && selectedTeams.length==0) {
                         location.IsActive = false
                       }
                     }">
-                    <input type="radio" name="status" :disabled="location.Items" :checked="!location.IsActive">Inactive
+                    <input type="radio" name="status" :disabled="location.Items" :checked="!location.IsActive && !selectedTeams.length" :disabled="location.Items || selectedTeams.length > 0">Inactive
                   </label>                                                  
                 </div>
               </div>
@@ -192,7 +192,8 @@ export default {
       for (const tmpLocation of this.sameAddressLocations) {
         if (
           this.location.Name.trim().toUpperCase() ==
-          tmpLocation.Name.toUpperCase()
+            tmpLocation.Name.toUpperCase() &&
+          tmpLocation.Id != this.location.Id
         ) {
           this.duplicate = true;
           break;
@@ -327,6 +328,7 @@ export default {
             team => team.Id != this.tmpTeam.Id
           );
           this.selectedTeams.push(this.tmpTeam);
+          this.location.IsActive = true;
           this.tmpTeam = null;
         }
       });

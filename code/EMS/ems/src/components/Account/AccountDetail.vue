@@ -32,7 +32,7 @@
       <thead>
         <tr>
 
-          <th ><strong>#</strong></th>
+          <th ><strong>No.</strong></th>
           <th ><strong>Team name </strong></th>
           <th><strong>Team role </strong></th>
         </tr>
