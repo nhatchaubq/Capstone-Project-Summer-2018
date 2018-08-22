@@ -2,7 +2,7 @@
     "createWorkOrder": {
         "maximumWorkOrderDuration": 1,
         "maximumWorkOrderDurationType": "year",
-        "maximumConflictWorkOrders": 1,
+        "maximumConflictWorkOrders": 0,
         "presets": [
             {
                 "name": "Normal",

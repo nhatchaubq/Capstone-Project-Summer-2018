@@ -748,30 +748,33 @@ export default {
                                             let equipmentTable = [];
                                             for (const eqi of eq.Table) {
                                                 // alert(`Warehouse ${JSON.stringify(eqi.Warehouse)}, ${JSON.stringify(context.selectedLocation)}`)
-                                                let distance = {text: 'n/a', value: 1};
-                                                if (equipmentOption && equipmentOption.value != '') {
-                                                    if (context.selectedLocation && context.selectedLocation.value != '') {
-                                                        distance = await context.getDistance(eqi.Warehouse, context.selectedLocation)
+                                                if (this.authUser.Role == 'Maintainer'
+                                                    || (this.authUser.Role == 'Staff' && eqi.Status != 'Damaged')) {
+                                                        let distance = {text: 'n/a', value: 1};
+                                                        if (equipmentOption && equipmentOption.value != '') {
+                                                            if (context.selectedLocation && context.selectedLocation.value != '') {
+                                                                distance = await context.getDistance(eqi.Warehouse, context.selectedLocation)
+                                                            }
+                                                            let item = {
+                                                                "Id": eqi.Id,
+                                                                "EquipmentID": eqi.EquipmentID,
+                                                                "SerialNumber": eqi.SerialNumber,
+                                                                "WarrantyDuration": eqi.WarrantyDuration,
+                                                                "RuntimeDays": eqi.RuntimeDays,
+                                                                "TileID": eqi.TileID,
+                                                                "Price": eqi.Price,
+                                                                "ImportDate": eqi.ImportDate,
+                                                                "NextMaintainDate": eqi.NextMaintainDate,
+                                                                "StatusId": eqi.StatusId,
+                                                                "Description": eqi.Description,
+                                                                "Status": eqi.Status,
+                                                                "Warehouse": eqi.Warehouse,
+                                                                "WorkOrders": eqi.WorkOrders,
+                                                                "Distance": distance,
+                                                            };
+                                                            equipmentTable.push(item);
+                                                        }                                                        
                                                     }
-                                                    let item = {
-                                                        "Id": eqi.Id,
-                                                        "EquipmentID": eqi.EquipmentID,
-                                                        "SerialNumber": eqi.SerialNumber,
-                                                        "WarrantyDuration": eqi.WarrantyDuration,
-                                                        "RuntimeDays": eqi.RuntimeDays,
-                                                        "TileID": eqi.TileID,
-                                                        "Price": eqi.Price,
-                                                        "ImportDate": eqi.ImportDate,
-                                                        "NextMaintainDate": eqi.NextMaintainDate,
-                                                        "StatusId": eqi.StatusId,
-                                                        "Description": eqi.Description,
-                                                        "Status": eqi.Status,
-                                                        "Warehouse": eqi.Warehouse,
-                                                        "WorkOrders": eqi.WorkOrders,
-                                                        "Distance": distance,
-                                                    };
-                                                    equipmentTable.push(item);
-                                                }
                                                 // alert(JSON.stringify(distance))
                                             }
                                             if (context.authUser.Role == 'Staff' && context.selectedLocation.value != '') {

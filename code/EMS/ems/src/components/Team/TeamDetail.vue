@@ -24,7 +24,7 @@
           </div>
           <div class="col-1" style="display: flex; justify-content: flex-end; padding:0rem" >
             <div v-if="authUser.Role =='Manager'  ">
-              <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode" >Edit</button>
+              <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="editMode = !editMode" >Edit</button>
             </div>
           </div>
         </div>
@@ -39,9 +39,10 @@
       </div>
 
 
-        <h2> <strong>Create date: </strong>  {{getDate(team.CreatedDate)}} </h2>
-        <div v-if="editMode"> 
-          <strong>Status: </strong>
+        <div style="margin-left:1rem"> <strong>Create date: </strong>  {{getDate(team.CreatedDate)}} </div>
+          <strong ><div v-if="!editMode" style="margin:0 0.2rem 0 1rem"> Status: <span  :style="{color: team.Status? 'var(--primary-color)' : '#607D8B'}">  {{team.Status? 'Active': 'Inactive'}}   </span></div></strong>
+        <div v-if="editMode" style="margin-left:1rem"> 
+          <strong >Status: </strong>
           <label style="margin-right: 0rem; margin-left: 1rem" class="radio"  >
             <input type="radio" name="active" v-on:change="team.Status = true" :checked="team.Status" :disabled="!editMode">
             Active
@@ -59,7 +60,7 @@
         
 
         <div class="row">
-            <div class="col-6">  <strong >Member of this team</strong> </div>
+            <div class="col-6" >  <strong >Member of this team</strong> </div>
             <div class="col-6"> <strong v-if="!editMode">Location of this team</strong></div>
 
         </div>
@@ -86,7 +87,7 @@
               <table class="mytable" style="margin-bottom:1rem">
                 <thead>
                   <tr>
-                    <th style="width:3% !important"><strong># </strong></th>
+                    <th style="width:3% !important"><strong>No. </strong></th>
                     <th style="width:15% !important"><strong>Username</strong></th>
                     <!-- <th style="width: 30% !important"><strong>Full Name</strong></th> -->
                     <th style="width: 5% !important"><strong>Role</strong></th>
@@ -161,7 +162,7 @@
           <table class="mytable" style="margin-bottom:1rem">
             <thead>
               <tr>
-                <th style="width:3% !important; cursor: context-menu !important"><strong># </strong></th>
+                <th style="width:3% !important; cursor: context-menu !important"><strong>No. </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Location Name </strong></th>
                 <th style="width: 57% !important; cursor: context-menu !important"><strong>Location Address</strong></th>
                 <th style="width: 10% !important; cursor: context-menu !important"><strong>Status</strong></th>
@@ -176,7 +177,7 @@
                 </tr>
             </tbody>
           </table>
-    <div v-if="location1.length > 4" class="">
+    <div v-if="location1 && location1.length > 4" class="">
       <Page :current="currentPageLoca" :total="location1.length" show-elevator 
         @on-change="(newPageNumber) => {
           currentPageLoca = newPageNumber;
@@ -198,7 +199,7 @@
       <!-- <div v-if="!team.LeaderAccount ">
         There is no team leader yet.
       </div> -->
-      <div v-if="!team.MemberAccounts && !team.LeaderAccount && team.MemberAccounts.length ==0 && team.LeaderAccount.length ==0">
+      <div v-if="(!team.MemberAccounts || (team.MemberAccounts && team.MemberAccounts.length ==0)) && (!team.LeaderAccount || (team.LeaderAccount && team.LeaderAccount.length ==0))">
         There is no member yet
       </div>
       <div v-else>
@@ -206,11 +207,11 @@
             <table class="mytable" style="margin-bottom:1rem">
               <thead>
                 <tr>
-                  <th style="width:3% !important; cursor: context-menu !important"><strong># </strong></th>
+                  <th style="width:3% !important; cursor: context-menu !important"><strong>No. </strong></th>
                   <th style="width:15% !important; cursor: context-menu !important"><strong>Username</strong></th>
                   <th style="width: 15% !important; cursor: context-menu !important"><strong>Full Name</strong></th>
-                  <th style="width: 5% !important; cursor: context-menu !important"><strong>Status</strong></th>
                   <th style="width: 5% !important; cursor: context-menu !important"><strong>Role</strong></th>
+                  <th style="width: 5% !important; cursor: context-menu !important"><strong>Status</strong></th>
                   <th style="width: 20% !important; cursor: context-menu !important" v-if="editMode"><strong>Action</strong></th>
                 </tr>
               </thead>  
@@ -219,15 +220,18 @@
                     <td style="cursor: context-menu !important">1</td>
                     <td style="cursor: context-menu !important">{{team.LeaderAccount.Username}}</td>
                     <td style="cursor: context-menu !important">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
-                    <td  style="color:#26a69a; cursor: context-menu !important"><span style="font-size: 25px; ">♛</span> Leader</td>
+                    <td  style="color:#26a69a; cursor: context-menu !important"><span style="font-size: 25px; "></span> Leader</td>
                     <strong style="cursor: context-menu !important"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
-                    <td v-if="editMode">&nbsp;</td>
+                    <td v-if="editMode" style="padding-top: 0rem important">
+                     
+                        <button v-if="editMode" class="button material-shadow-animate "  style="background-color:var(--danger); color:white ; margin-left:9.1rem !important; border-style: none" v-on:click="confirmKick1(team.LeaderAccount.Id, team.LeaderAccount.Username)">Remove</button>
+                    </td>
                   </tr>
                   <tr :key="'member' + index" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
                     <td style="cursor: context-menu !important">{{index + 2}}</td>
                     <td style="cursor: context-menu !important">{{member.Username}}</td>
                     <td style="cursor: context-menu !important">{{member.Fullname ? member.Fullname :'N/A' }} </td>
-                    <td  style="cursor: context-menu !important"><span style="font-size: 25px">♟</span>Member </td>
+                    <td  style="cursor: context-menu !important"><span style="font-size: 25px"></span>Member </td>
                     <strong style="cursor: context-menu !important"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
                     <td v-if="editMode" style="padding-top: 0rem important">
                       <button v-if="editMode" style="margin-left:1rem !important" class="button btn-edit btn-primary material-shadow-animate "   v-on:click="gotoDetail(member.Id, member.Username)">Set to leader</button>
@@ -250,71 +254,28 @@
        <div class="row" style="margin: 0 0 0.5rem 0">
         <button v-if="editMode" class="button btn-confirm-edit  material-shadow-animate" style="margin: 0 0 1rem 1rem; background-color: var(--primary-color); color: white; border-style: none " v-on:click="editTeam()">Save changes</button>
         <button v-if="editMode" id=" btn-cancel" class="button btn-confirm-edit material-shadow-animate" style="margin:0 0 1rem 1rem" v-on:click="() => {
-          this.$router.go(this.$router.currentRoute)
+          //this.$router.go(this.$router.currentRoute)
           //location.reload()
+          this.editMode =!editMode;
+          this.loadTeamDetail();
       }">Cancel</button>
       </div>
 
 
-     <!-- equipmentItem-start -->
-         <!-- <div class="col-12">
-    <div v-if="!editMode">
-      <div v-if="!EquiItems ">
-          Error
-      </div>
-      <div v-else>
-        <table class="mytable" style="margin-bottom:1rem">
-            <thead>
-              <tr>
 
-                <th style="width:30% !important"><strong>Work order(Status) </strong></th>
-                <th style="width:30% !important"><strong>Equipments </strong></th>
-                <th style="width:30% !important"><strong>Items </strong></th>
-                <th style="width:30% !important"><strong>Returned </strong></th>
-
-
-              </tr>
-            </thead>  
-            <tbody style="font-size:14px" :class="{'row-even': index % 2 != 0}" v-bind:key="WO.WorkOrderId" v-for="(WO, index1) in EquiItems" >
-                <tr>
-
-                  <td :rowspan="WO.totalItem + 1">{{WO.workOrder.WorkOrderName}}({{WO.workOrder.WorkOrderStatusName}})-{{WO.workOrder.Equipment.length+1}}</td>
-
-                </tr>
-                <tbody style="font-size:14px" :class="{'row-even': index % 2 != 0}" v-bind:key="'eq' + eq.Id" v-for="(eq, index2) in WO.workOrder.Equipment" >
-                  <tr>  
-
-                      <td :rowspan="eq.EquipmentItems.length + 1">{{eq.Name}}-{{eq.EquipmentItems.length +1}} </td>
-
-                  </tr>
-                  <tr :key="'eqi' + eqi.Id" v-for="(eqi, index3) in eq.EquipmentItems">
-                    <td>#{{eqi.SerialNumber}}</td>
-                  </tr>
-                
-                </tbody>
-
-
-            </tbody>
-          </table>
-
-      </div>
-    </div>  
-  </div> -->
-     <!-- equipmentItem-end -->
-     <!-- equipmentItem-start -->
   <div class="col-12">
     <div v-if="!editMode">
     <strong>
       Borrowing Equipment
     </strong>
-      <div v-if="items1 && items1.length == 0">
+      <div v-if="!items1 || (items1 && items1.length == 0)">
           There is no equipment yet.
       </div>
       <div v-else>
         <table  class="mytable" style="margin-bottom:1rem">
             <thead>
               <tr >
-                <th style="width:5% !important;cursor: context-menu !important "><strong># </strong></th>
+                <th style="width:5% !important;cursor: context-menu !important "><strong>No. </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Equipments </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Serial Number Of Item </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Work order </strong></th>
@@ -338,7 +299,7 @@
             </tbody>
         </table>
 
-    <div v-if="items1.length > 9" class="">
+    <div v-if="items1 && items1.length > 9" class="">
     <Page :current="currentPage" :total="items1.length" show-elevator 
       @on-change="(newPageNumber) => {
         currentPage = newPageNumber;
@@ -416,7 +377,7 @@
             <div style="font-size: 1rem">
                 <div >
                    
-                    <span ><strong> Are you sure you want to kick this member?? </strong></span>
+                    <span ><strong> Are you sure you want to remove this member?? </strong></span>
                     <div style="font-size: .95rem; font-weight: 500; margin-top: 0.5rem;">
                       <div class="row">
                         <div class="col-5" style="text-align: right; padding-left:0rem !important">Member Id: </div>
@@ -436,6 +397,26 @@
             </div>
       </modal> <!-- change status dialog -->
  <!-- modal-end -->
+  <!-- modal-start -->
+      <!-- change status dialog -->
+      <!-- <modal v-model="cannotKickPopup" style="font-family: Roboto">
+          <div slot="header" style="font-weight: bold">
+                Remove a member 
+            </div>
+            <div style="font-size: 1rem">
+                <div >
+                   
+                    <span ><strong> You can not delete the leader that is holding work order. </strong></span>
+                    
+                    
+                </div>
+            </div>
+            <div slot="footer">
+              <button class="button btn-edit material-shadow-animate "  style="background-color:white; color:black; margin-left: 4rem;  border-color: silver" v-on:click="cancelCannotKickPopup" >Cancel</button>
+            
+            </div>
+      </modal>  -->
+ <!-- modal-end -->
 
   </div>
 
@@ -444,44 +425,8 @@
   </div>
 
 
-  <!-- test -->
 
-  <!-- <div class="grid-wrapper1 col-12">
-    <div class="">
-      <div v-if="!team.Location">
-        There is no team member yet.
-      </div>
-      <div v-else>
-      <table class="mytable">
-        <thead>
-          <tr>
-            <th style="width:3% !important"><strong># </strong></th>
-            <th style="width:20% !important"><strong>Username</strong></th>
-            <th style="width: 67% !important"><strong>Full Name</strong></th>
-            <th style="width: 10% !important"><strong>Role</strong></th>
-          </tr>
-        </thead>  
-        <tbody>
-            <tr>
-              <td>1</td>
-              <td>{{team.LeaderAccount.Username}}</td>
-              <td>{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
-              <td><span style="font-size: 25px; color:#26a69a">♛</span> Leader</td>
-            </tr>
-            <tr :key="member.Id" v-for="(member, index) in team.MemberAccounts"  >
-              <td >{{index + 2}}</td>
-              <td >{{member.Username}}</td>
-              <td >{{member.Fullname ? member.Fullname :'N/A' }} </td>
-              <td ><span style="font-size: 25px">♟</span>Member </td>
-            </tr>
-        </tbody>
-      </table>
-        <i class="material-icons" style="color: gray;position: relative;top: 0.3rem;font-size: 25px\">crown</i> 
-    </div>
-
-  </div>
-</div> -->
-<!-- test-end -->
+    <simplert :useRadius="true" :icon="true" ref="simplert"></simplert>    
 </div>
          
 
@@ -495,8 +440,10 @@ import "vodal/common.css";
 import "vodal/slide-up.css";
 import Vodal from "vodal";
 import moment from "moment";
+import Simplert from "vue2-simplert";
 import VueBase64FileUpload from "vue-base64-file-upload";
 import { BasicSelect, MultiSelect, ModelSelect } from "vue-search-select";
+
 export default {
   components: {
     VueBase64FileUpload,
@@ -504,94 +451,21 @@ export default {
     BasicSelect,
     ModelSelect,
     Vodal,
-    moment
+    moment,
+    Simplert
   },
   created() {
-    let url1 = Server.TEAM_API_PATH;
-    this.axios.get(url1).then(response => {
-      this.teams = [];
-      response.data.forEach(value => this.teams.push(value.Team));
-    });
-    let teamApiUrl = `http://localhost:3000/api/team/id/${
-      this.$route.params.id
-    }`;
-
-    this.axios.get(teamApiUrl).then(response => {
-      let data = response.data.team;
-      this.team = data;
-    });
-
-    let outsideTeamApiUrl = `http://localhost:3000/api/AllAccExceptThatTeam/${
-      this.$route.params.id
-    }`;
-    this.axios.get(outsideTeamApiUrl).then(res => {
-      let data = res.data;
-      data.forEach(element => {
-        let option = {
-          value: element.Id,
-          text: element.Fullname
-        };
-        this.memberOptions.push(option);
-      });
-    });
-
-    let urlEquipmentItem = `http://localhost:3000/api/team/id/${
-      this.$route.params.id
-    }/equipmentitem`;
-    this.axios.get(urlEquipmentItem).then(res => {
-      let data = res.data;
-      data.forEach(element => {
-        let EquiItem = element;
-        var totalItem = 0;
-        EquiItem.Equipment.forEach(eq => {
-          totalItem += eq.EquipmentItems.length;
-        });
-        let workOrder = {
-          totalItem: totalItem,
-          workOrder: EquiItem
-        };
-        this.EquiItems.push(workOrder);
-      });
-    });
-    let itemUrl = `http://localhost:3000/api/team/id/${
-      this.$route.params.id
-    }/item`;
-
-    this.axios.get(itemUrl).then(response => {
-      let data = response.data;
-      this.items1 = data;
-      this.toDisplayData = this.items1.slice(0, 10);
-    });
-    let team1ApiUrl = `http://localhost:3000/api/team/id/${
-      this.$route.params.id
-    }`;
-
-    this.axios.get(team1ApiUrl).then(response => {
-      let data = response.data.team.Location;
-      this.location1 = data;
-      this.toDisplayLocation = this.location1.slice(0, 5);
-    });
-    let onlymemURL = `http://localhost:3000/api/team/id/${
-      this.$route.params.id
-    }/OnlyteamMember`;
-
-    this.axios.get(onlymemURL).then(response => {
-      let data = response.data;
-      this.teamOnly = data;
-      this.toDisplayMember = this.teamOnly.slice(0, 5);
-      // this.toDisplayTeam = this.teamOnly.slice(0, 5);
-    });
-    // this.axios.get(team1ApiUrl).then(response => {
-    //   let data = response.data.team.Location;
-    //   this.location1 = data;
-    //   this.toDisplayLocation = this.location1.slice(0, 5);
-    // });
+    this.loadTeamDetail();
   },
 
   data() {
     return {
+      deleteFlag: false,
+      // editMode: true,
       NameRegex: /^[^~`!#$%@()\^&*+=\-\[\]\\';,/{}|\\":<>\?]*?$/,
+      cannotKickPopup: false,
       currentPageMember: 1,
+      Equipments: [],
       toDisplayMember: [],
       currentPageLoca: 1,
       toDisplayLocation: [],
@@ -602,6 +476,8 @@ export default {
       ChangeLeadPopUp: false,
       EquiItems: [],
       items1: [],
+      teams: [],
+      teamdetails: [],
       sending: false,
       ErrorStrings: {
         NameMax: " Use from 6 to 50 characters for your team name",
@@ -616,6 +492,7 @@ export default {
         DuplicateName: ""
       },
       team: null,
+      // team: [],
       memberOptions: [],
       toLeaderOptions: [],
       SelectedMemberId: null,
@@ -627,17 +504,117 @@ export default {
       selectedMemberList: [],
       lastSelectItem: {},
       show: false,
-      showConfirm: false
-      // editMode: false
+      showConfirm: false,
+      teamOnly: [],
+      editMode: false
     };
   },
   computed: {
-    editMode: sync("teamPage.detailPage.editMode"),
+    // editMode: sync("teamPage.detailPage.editMode"),
     authUser() {
       return JSON.parse(window.localStorage.getItem("user"));
     }
   },
   methods: {
+    // getAllWorkOrderThatLeaderHad() {
+    //   this.axios.get(
+    //     `http://localhost:3000/api/team/wo/getAllWorkOrderThatLeaderHad/${
+    //       this.$route.params.id
+    //     }`.then(res => {
+    //       let data = res.data;
+    //       this.Equipments = data;
+    //     })
+    //   );
+    // },
+    async loadTeamDetail() {
+      let url1 = Server.TEAM_API_PATH;
+      await this.axios.get(url1).then(response => {
+        // this.teams = [];
+        if (response.data) {
+          response.data.forEach(value => this.teams.push(value.Team));
+        }
+        // response.data.forEach(value => this.teamdetails.push(value.Team));
+      });
+      let teamApiUrl = `http://localhost:3000/api/team/id/${
+        this.$route.params.id
+      }`;
+
+      await this.axios.get(teamApiUrl).then(response => {
+        let data = response.data.team;
+        this.team = data;
+      });
+
+      let outsideTeamApiUrl = `http://localhost:3000/api/AllAccExceptThatTeam/${
+        this.$route.params.id
+      }`;
+      await this.axios.get(outsideTeamApiUrl).then(res => {
+        let data = res.data;
+        if (data) {
+          data.forEach(element => {
+            let option = {
+              value: element.Id,
+              text: element.Username
+            };
+            this.memberOptions.push(option);
+          });
+        }
+      });
+
+      let urlEquipmentItem = `http://localhost:3000/api/team/id/${
+        this.$route.params.id
+      }/equipmentitem`;
+      await this.axios.get(urlEquipmentItem).then(res => {
+        let data = res.data;
+        if (data) {
+          data.forEach(element => {
+            let EquiItem = element;
+            var totalItem = 0;
+            if (EquiItem.Equipment) {
+              EquiItem.Equipment.forEach(eq => {
+                totalItem += eq.EquipmentItems.length;
+              });
+              let workOrder = {
+                totalItem: totalItem,
+                workOrder: EquiItem
+              };
+              this.EquiItems.push(workOrder);
+            }
+          });
+        }
+      });
+      let itemUrl = `http://localhost:3000/api/team/id/${
+        this.$route.params.id
+      }/item`;
+      await this.axios.get(itemUrl).then(response => {
+        if (response.data) {
+          let data = response.data;
+          this.items1 = data;
+          this.toDisplayData = this.items1.slice(0, 10);
+        }
+      });
+
+      let team1ApiUrl = `http://localhost:3000/api/team/id/${
+        this.$route.params.id
+      }`;
+      await this.axios.get(team1ApiUrl).then(response => {
+        if (response.data.team && response.data.team.Location) {
+          let data = response.data.team.Location;
+          this.location1 = data;
+          this.toDisplayLocation = this.location1.slice(0, 5);
+        }
+      });
+      let onlymemURL = `http://localhost:3000/api/team/id/${
+        this.$route.params.id
+      }/OnlyteamMember`;
+
+      await this.axios.get(onlymemURL).then(response => {
+        if (response.data) {
+          let data = response.data;
+          this.teamOnly = data;
+          this.toDisplayMember = this.teamOnly.slice(0, 5);
+        }
+      });
+    },
     createAccount1() {
       this.axios
         .post(
@@ -686,6 +663,7 @@ export default {
             checkName = false;
             console.log(error);
           });
+
         this.selectedMemberList.forEach(element => {
           this.axios
             .post(
@@ -707,7 +685,11 @@ export default {
         if (checkName && checkAccounts) {
           alert("Change successful");
           // this.getTeamDetail(this.$route.params.id);
-          location.reload();
+          // location.reload();
+          // this.editMode = false;
+          this.loadTeamDetail();
+          this.editMode = !this.editMode;
+          this.selectedMemberList = [];
         }
       }
     },
@@ -742,7 +724,8 @@ export default {
             }
           )
           .then(res => {
-            location.reload();
+            // location.reload();
+            this.loadTeamDetail();
           });
       });
     },
@@ -754,7 +737,9 @@ export default {
           }/${accountID}`
         )
         .then(res => {
-          location.reload();
+          // location.reload();
+          this.loadTeamDetail();
+          this.kickPopUp = false;
         });
     },
     changeToLeader(SelectedMemberId) {
@@ -774,17 +759,25 @@ export default {
           }/${SelectedMemberId}/${leaderId}`
         )
         .then(res => {
+          // location.reload();
+          this.ChangeLeadPopUp = false;
+          this.loadTeamDetail();
           this.show = false;
-          location.reload();
         });
     },
     cancel() {
       // this.show = false;
       this.ChangeLeadPopUp = false;
+      this.editmode = false;
+      this.loadTeamDetail();
     },
     cancelConfirm() {
       // this.showConfirm = false;
       this.kickPopUp = false;
+    },
+    cancelCannotKickPopup() {
+      // this.showConfirm = false;
+      this.cannotKickPopup = false;
     },
     gotoDetail(memberID, memberName) {
       // this.show = true;
@@ -792,11 +785,50 @@ export default {
       this.SelectedMemberName = memberName;
       this.ChangeLeadPopUp = true;
     },
+    confirmKick1(memberID, memberName) {
+      // let deleteFlag = false;
+      this.axios
+        .get(
+          `http://localhost:3000/api/team/wo/getAllWorkOrderThatLeaderHad/${memberID}`
+        )
+        .then(res => {
+          let data = res.data;
+          this.WorkOrders = data;
+        });
+      // for (const workO of this.workOrder) {
+      //   if (this.workOrder && this.WorkOrders.length != 0) {
+      //     this.deleteFlag = true;
+      //     break;
+      //   }
+      // }
+      if (this.WorkOrders && this.WorkOrders.length != 0) {
+        console.log(this.WorkOrders);
+        this.deleteFlag = true;
+      }
+      if (this.deleteFlag == true) {
+        let obj = {
+          title: "Delete A member",
+          message: "You can not remove the account that is holding work order.",
+          type: "error"
+        };
+        this.$refs.simplert.openSimplert(obj);
+      } else {
+        this.SelectedMemberId = memberID;
+        this.SelectedMemberName = memberName;
+        this.kickPopUp = true;
+      }
+      this.deleteFlag = false;
+      // if (this.deleteFlag == false) {
+      //   this.SelectedMemberId = memberID;
+      //   this.SelectedMemberName = memberName;
+      //   this.kickPopUp = true;
+      // }
+    },
     confirmKick(memberID, memberName) {
-      // this.showConfirm = true;
       this.SelectedMemberId = memberID;
       this.SelectedMemberName = memberName;
       this.kickPopUp = true;
+      this.loadTeamDetail();
     },
     toDetail(accountId) {
       this.$router.push(`/account/${accountId}`);
