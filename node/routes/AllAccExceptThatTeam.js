@@ -4,7 +4,7 @@ var TYPES = require("tedious").TYPES;
 router.get("/:id", (request, response) => {
   request
     .sql(
-      "(select acc.Id, acc.Username from [Account] as acc WHERE acc.RoleID NOT IN (SELECT r.Id FROM [role] as r WHERE r.Name = N'Admin' OR r.Name = N'Maintainer' OR r.Name = N'Manager'))  except (select acc.Id,acc.Fullname from [Account] as acc  join [TeamAccount] as ta ON acc.Id = ta.AccountID where TeamID = @teamID) for json path"
+      "(select acc.Id, acc.Username from [Account] as acc WHERE acc.RoleID = (SELECT r.Id FROM [role] as r WHERE r.Name = N'Staff' ))  except (select acc.Id,acc.Username from [Account] as acc  join [TeamAccount] as ta ON acc.Id = ta.AccountID where TeamID = @teamID) for json path"
     )
     .param("teamID", request.params.id, TYPES.Int)
     .into(response);

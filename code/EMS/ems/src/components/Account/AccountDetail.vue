@@ -20,7 +20,7 @@
 
 
 
-<div>
+<div v-if="authUser.Role == 'Staff' || authUser.Role == 'Admin'">
   <div v-if="!editMode">
  <div style="font-size: 20px;margin-top:0.5rem; margin-bot:0.5rem"><strong>Team</strong></div>
   <div v-if="!teamAccount">
