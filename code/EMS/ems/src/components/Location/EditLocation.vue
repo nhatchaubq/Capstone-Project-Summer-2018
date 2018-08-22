@@ -70,7 +70,7 @@
                 </div>
                 <div class="team-place">
                     <div class="select"> 
-                        <select v-model="tmpTeam" v-if="unselectedTeams.length > 0">  
+                        <select v-model="tmpTeam" >  
                           <option disabled=disabled :value="null">-- Choose new team --</option>                                               
                             <option v-bind:key='team.Id' v-for='team in unselectedTeams' :value="team">{{team.Name}}</option>
                         </select>
@@ -239,17 +239,22 @@ export default {
                     this.location.TeamWithWorkOrdering.length > 0
                   ) {
                     this.newTeams = this.selectedTeams;
-                    this.location.TeamWithWorkOrdering.forEach(team => {
+                    for (const team of this.location.TeamWithWorkOrdering) {
                       this.newTeams = this.newTeams.filter(
                         newTeam => newTeam.Id != team.TeamID
                       );
-                    });
-                    this.newTeams.forEach(team => {
+                    }
+                    // this.location.TeamWithWorkOrdering.forEach(team => {
+                    //   this.newTeams = this.newTeams.filter(
+                    //     newTeam => newTeam.Id != team.TeamID
+                    //   );
+                    // });                    
+                    for (const team of this.newTeams) {
                       this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
                         locationId: this.location.Id,
                         teamId: team.Id
                       });
-                    });
+                    }
                   } else {
                     this.newTeams = this.selectedTeams;
                     this.newTeams.forEach(team => {
@@ -313,7 +318,7 @@ export default {
       } else {
         let obj = {
           title: "Delete A Team",
-          message: "This team have the working order. Can't delete them.",
+          message: "This team have the order. Can't delete them.",
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
