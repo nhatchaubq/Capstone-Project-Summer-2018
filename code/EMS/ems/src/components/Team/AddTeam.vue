@@ -63,12 +63,12 @@
               <div class="select" style="margin-left:0.5rem; margin-bottom:1rem">
                 <select v-model="selectedAccount" style="width: 35rem">
                   <option :disabled="selectedAccounts.length > 0"  value="null"></option>
-                  <option v-bind:key='account.Id' v-for='account in accounts' :value="account">{{account.Fullname}}</option>
+                  <option v-bind:key='account.Id' v-for='account in accounts' :value="account">{{account.Username}}</option>
                 </select>
               </div>
               <div class="selected-account" >
                 <label class="lb-account" :key='account.Id' v-for="account in selectedAccounts">
-                  {{account.Fullname}} <div class="delete" v-on:click="removeSelectedAccount(account)"></div>
+                  {{account.Username}} <div class="delete" v-on:click="removeSelectedAccount(account)"></div>
                 </label> 
               </div>
             </div>

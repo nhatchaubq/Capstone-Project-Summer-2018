@@ -6,84 +6,78 @@
                Edit Location 
             </div>
             <div class="form-title-end">              
-              <button  class="button" style="margin-right: .6rem"  v-on:click="$router.push('/location')">Cancel</button>
+              <button  class="button" style="margin-right: .6rem" v-on:click="$router.push('/location')">Cancel</button>
               <simplert :useRadius="true" :useIcon="true" ref="simplert"></simplert>
               <button  class="button is-primary"  v-on:click="updateLocation()">Save Changes</button>              
             </div>
-        </div>
-       
+        </div>       
         <div class="form-content">
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  New Name (required) </strong>  <span v-if="NoName != ''"><span class="error-text">  {{ NoName }}</span></span>
+                  <strong>Location ame (required)</strong>
+                  <span class="error-text" v-if="NoName != ''"> {{ NoName }}</span>
                 </div>
                 <div class="form-field-input">
-                        <input  class="input " type="text"  v-model="location.Name" >   
+                  <input class="input" style="width: 40%;" type="text" v-model.trim="location.Name" >   
                 </div>
             </div> 
             <div class="form-field">
                 <div class="form-field-title">
-                <strong>  New Address (required) </strong>
+                  <strong>Location address</strong>
                 </div>
                 <div class="form-field-input">
-                    <input  class="input " type="text"  v-model="location.Address" disabled="disabled" >
+                    <input class="input" style="width: 50%;" type="text" v-model="location.Address" disabled="disabled" >
                     <!-- <label v-if="location.WorkOrderQuantity >0" style="color: red">This location have working Work Oders.So you can't edit address!!! </label> -->
                 </div>
             </div>  
             <div class="form-field" >
               <div>
                 <div class="form-field-title">
-                <strong> Status </strong> <span v-if="location.Items" class="error-text"> (There are the equipment in this location. Can't change the activity status)</span>
+                  <strong>Status</strong>
+                  <span v-if="location.Items" class="error-text"> (There are the equipment in this location. Can't change the activity status)</span>
                 </div>
-                <div class="form-field-input" style="padding-left:30px;padding-top:10px;">
-                  <label class="radio" v-on:click="location.IsActive = true" style="margin-right:25px;">
-                    <input type="radio" name="status" style="margin-right:0.5rem"  :checked="location.IsActive"> Active
+                <div class="form-field-input" style="margin-top:10px;">
+                  <label class="radio" v-on:click="location.IsActive = true" style="margin-right:0.5rem">
+                    <input type="radio" name="status"  :checked="location.IsActive"> Active
                   </label>
                   <label class="radio" v-on:click="() => {
                       if (!location.Items) {
                         location.IsActive = false
                       }
                     }">
-                    <input type="radio" name="status" style="margin-right:0.5rem" :disabled="location.Items" :checked="!location.IsActive">Inactive
+                    <input type="radio" name="status" :disabled="location.Items" :checked="!location.IsActive">Inactive
                   </label>                                                  
                 </div>
               </div>
-              
-                
-                
+            </div>             
+            <div class="form-field">
+              <div>
+
               </div>
-            <div class="form-field" >
+                <div class="form-field-title">
+                  <strong>Team</strong>
+                  <span class="select" style="margin-left: .5rem; position: relative; top: -.3rem"> 
+                    <select v-model="tmpTeam">  
+                      <option disabled=disabled :value="null">-- Choose new team --</option>                                               
+                      <option v-bind:key='team.Id' v-for='team in unselectedTeams' :value="team">{{team.Name}}</option>
+                    </select>
+                  </span>
+                </div>
+                <div class="selected-team" v-if="selectedTeams != null" style="padding-top:0.5rem">
+                    <label :key='team.Id' v-for="team in selectedTeams" style="margin: 0! important; margin-right :0.5rem" class="lb-team">
+                      {{team.Name}} <span style="font-size: 1rem; margin-left: .5rem;" class="delete" v-on:click="removeTeam(team)"></span>
+                    </label>
+                    <!-- <label v-if="tmpTeam != null">{{tmpTeam.Name}}</label> -->
+                </div>             
+            </div><div class="form-field" >
               <div>
                 <div class="form-field-title">
-                <strong> New Description </strong>
+                  <strong>Description</strong>
                 </div>
                 <div class="form-field-input">
-                    <textarea v-model="location.Description" cols="80" rows="7" >  </textarea>                              
+                  <textarea class="input" v-model.trim="location.Description" cols="80" rows="7" style="min-height: 4rem; max-height: 7rem; width: 50%;" >  </textarea>                              
                 </div>
               </div>
-              
-                
-            </div> 
-            <div class="form-field">
-                <div class="form-field-title">
-                <strong> New Team </strong>
-                </div>
-                <div class="team-place">
-                    <div class="select"> 
-                        <select v-model="tmpTeam" v-if="unselectedTeams.length > 0">  
-                          <option disabled=disabled :value="null">-- Choose new team --</option>                                               
-                            <option v-bind:key='team.Id' v-for='team in unselectedTeams' :value="team">{{team.Name}}</option>
-                        </select>
-                    </div>
-                    <div class="selected-team" v-if="selectedTeams != null" style="padding-top:0.5rem">
-                        <label class="lb-team"   :key='team.Id' v-for="team in selectedTeams" style="margin-right :0.5rem">
-                        {{team.Name}} <div class="delete" v-on:click="removeTeam(team)"></div>
-                        </label> 
-                        <!-- <label v-if="tmpTeam != null">{{tmpTeam.Name}}</label> -->
-                    </div>
-                    
-                </div>
-                
             </div>
         </div>
         <!-- <div class="end">
@@ -119,6 +113,7 @@ export default {
     };
   },
   async created() {
+    await this.getAllTeam();
     let url = `${Server.LOCATION_UPDATE_API_PATH}/${this.$route.params.id}`;
     await this.axios
       .get(url)
@@ -126,7 +121,6 @@ export default {
         let data = response.data[0];
         this.location = data;
         this.woTeams = this.location.TeamWithWorkOrdering;
-        await this.getAllTeam();
         this.unselectedTeams = this.teams;
         if (this.location.Team) {
           this.selectedTeams = this.location.Team;
@@ -201,6 +195,7 @@ export default {
           tmpLocation.Name.toUpperCase()
         ) {
           this.duplicate = true;
+          break;
         }
       }
 
@@ -311,8 +306,8 @@ export default {
         // );
       } else {
         let obj = {
-          title: "Delete A Team",
-          message: "This team have the working order. Can't delete them.",
+          title: "Unable To Remove",
+          message: "This team has working order(s).",
           type: "warning"
         };
         this.$refs.simplert.openSimplert(obj);
@@ -367,11 +362,10 @@ export default {
   display: grid;
   grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
-  padding: 1rem 2rem;
+  padding: .5rem 2rem;
 }
 .form-title-start {
-  position: relative;
-  top: 10px;
+  padding-top: .2rem;
   font-weight: bold;
   font-size: 20px;
   color: #616161;
@@ -386,28 +380,19 @@ export default {
   padding-left: 50px;
   padding-right: 50px;
 }
-.form-field {
-  margin-bottom: 1.5rem;
-}
 
 .form-field-title {
   font-size: 15px;
 }
-textarea {
-  border: 0.5px solid lightgray;
-  border-radius: 5px;
-  padding: 0.3rem;
-  background-color: white;
-}
-.lb-team {
-  border: 0.5px solid;
-  border-radius: 5px;
-  padding: 3px;
-}
 
+.lb-team {
+  border: 1px solid #616161;
+  border-radius: 5px;
+  padding: .3rem;
+}
 .delete {
-  position: relative;
-  top: 0.2rem;
+  /* position: relative;
+  top: 0.2rem; */
   font-size: 20px;
 }
 </style>

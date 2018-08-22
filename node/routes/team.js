@@ -6,7 +6,6 @@ router.get("/", (request, response) => {
   request
     .sql(
       "SELECT  team.Id as 'Team.Id', team.Name as 'Team.Name', team.CreatedDate as 'Team.CreatedDate',team.Status as 'Team.Status', json_query((select count(*) as [Quantity]  " +
-
       "from TeamAccount   " +
       "where TeamID = team.Id for json path, without_array_wrapper)) as [Team.Members],   " +
       "json_query((select acc.*  " +
@@ -17,9 +16,22 @@ router.get("/", (request, response) => {
       "FROM [Team] as team  " +
       "ORDER BY Team.Status DESC, Team.Name ASC " +
       " for json path"
-
     )
 
+    .into(response);
+});
+router.get("/wo/getAllWorkOrderThatLeaderHad/:id/", (request, response) => {
+  request
+    .sql(
+      "SELECT wo.* FROM [WorkOrder] as wo JOIN Account as acc ON acc.Id = wo.RequestUserID " +
+      // "JOIN Account as acc ON acc.Id = wo.RequestUserID " +
+      // "JOIN TeamAccount as ta ON ta.AccountID = acc.Id " +
+      "WHERE acc.Id = @id " +
+      // "and t.Id = @teamId " +
+      "for json path"
+    )
+    .param("id", request.params.id, TYPES.Int)
+    .param("teamId", request.params.teamId, TYPES.Int)
     .into(response);
 });
 
@@ -32,7 +44,7 @@ router.get("/search/:value", function (request, response) {
       // "JOIN [Account] as acc ON acc.Id =ta.AccountID " +
       // "JOIN [Role] as r ON r.Id = acc.RoleID" +
       // "WHERE t.Name like N'%' + @searchText + '%' or t.CreatedDate like N'%' + @searchText + '%' " +
-      // "or (acc.Username like N'%' + @searchText + '%' and ta.TeamRoleID = (select tr.Id from [TeamRoles] as tr where tr.TeamRole ='Leader')) " +    
+      // "or (acc.Username like N'%' + @searchText + '%' and ta.TeamRoleID = (select tr.Id from [TeamRoles] as tr where tr.TeamRole ='Leader')) " +
       // "ORDER BY t.Name DESC " +
       // "for json path "
       "SELECT distinct t.* " +
@@ -43,7 +55,6 @@ router.get("/search/:value", function (request, response) {
       "WHERE t.Name like N'%' + @searchText + '%' or t.CreatedDate like N'%' + @searchText + '%'   " +
       // "or (acc.Username like N'%' + @searchText + '%' and ta.TeamRoleID = (select tr.Id from [TeamRoles] as tr where tr.TeamRole ='Leader'))   " +
       "or (acc.Username like N'%' + @searchText + '%' )   " +
-
       "ORDER BY t.Name DESC   " +
       "for json path"
     )

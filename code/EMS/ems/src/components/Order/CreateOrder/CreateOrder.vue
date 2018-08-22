@@ -660,20 +660,22 @@ export default {
     this.axios.get(Server.EQUIPMENT_API_PATH).then(res => {
       if (res.data) {
         let data = res.data;
-        data.forEach(element => {
-          let quantity = parseInt(element.Equipment.Quantity);
-          let option = {
-            text: `${element.Equipment.Name}, quantity: ${quantity} ${
-              quantity > 0 ? element.Equipment.Unit.Name : ""
-            }`,
-            value: element.Equipment.Id,
-            image: element.Equipment.Image,
-            totalQuantity: quantity,
-            maintenancePeriodInMonths: element.Equipment.MaintenanceDuration.Month
-          };
-          this.equipmentOptions.push(option);
-        });
-        this.toDisplayEquipmentOptions = this.equipmentOptions;
+        if (data) {
+          data.forEach(element => {
+            let quantity = parseInt(element.Equipment.Quantity);
+            let option = {
+              text: `${element.Equipment.Name}, quantity: ${quantity} ${
+                quantity > 0 ? element.Equipment.Unit.Name : ""
+              }`,
+              value: element.Equipment.Id,
+              image: element.Equipment.Image,
+              totalQuantity: quantity,
+              maintenancePeriodInMonths: element.Equipment.MaintenanceDuration.Month
+            };
+            this.equipmentOptions.push(option);
+          });
+          this.toDisplayEquipmentOptions = this.equipmentOptions;          
+        }
       }
     });
     this.axios.get(Server.WORKORDER_PRIORITIES_API_PATH).then(res => {
@@ -1270,30 +1272,32 @@ export default {
               this.equipmentTable = [];
               let tempItems = [];
               for (let eqi of res.data) {
-                let distance = {text: 'n/a', value: 1};
-                if (this.selectedLocation && this.selectedLocation.value != '') {
-                  distance = await this.getDistance(eqi.Warehouse, this.selectedLocation);
-                }
-                let item = {
-                  "Id": eqi.Id,
-                  "EquipmentID": eqi.EquipmentID,
-                  "SerialNumber": eqi.SerialNumber,
-                  "WarrantyDuration": eqi.WarrantyDuration,
-                  "RuntimeDays": eqi.RuntimeDays,
-                  "TileID": eqi.TileID,
-                  "Price": eqi.Price,
-                  "ImportDate": eqi.ImportDate,
-                  "NextMaintainDate": eqi.NextMaintainDate,
-                  "StatusId": eqi.StatusId,
-                  "Description": eqi.Description,
-                  "Status": eqi.Status,
-                  "Warehouse": eqi.Warehouse,
-                  "WorkOrders": eqi.WorkOrders,
-                  "Distance": distance,
-                  'Location': eqi.Location,
-                };
-                tempItems.push(item);
-
+                if (this.authUser.Role == 'Maintainer'
+                    || (this.authUser.Role == 'Staff' && eqi.Status != 'Damaged')) {
+                      let distance = {text: 'n/a', value: 1};
+                      if (this.selectedLocation && this.selectedLocation.value != '') {
+                        distance = await this.getDistance(eqi.Warehouse, this.selectedLocation);
+                      }
+                      let item = {
+                        "Id": eqi.Id,
+                        "EquipmentID": eqi.EquipmentID,
+                        "SerialNumber": eqi.SerialNumber,
+                        "WarrantyDuration": eqi.WarrantyDuration,
+                        "RuntimeDays": eqi.RuntimeDays,
+                        "TileID": eqi.TileID,
+                        "Price": eqi.Price,
+                        "ImportDate": eqi.ImportDate,
+                        "NextMaintainDate": eqi.NextMaintainDate,
+                        "StatusId": eqi.StatusId,
+                        "Description": eqi.Description,
+                        "Status": eqi.Status,
+                        "Warehouse": eqi.Warehouse,
+                        "WorkOrders": eqi.WorkOrders,
+                        "Distance": distance,
+                        'Location': eqi.Location,
+                      };
+                      tempItems.push(item);
+                    }
               }
               if (this.authUser.Role == 'Staff') {
                 this.equipmentTable = this.sortItems(tempItems);
