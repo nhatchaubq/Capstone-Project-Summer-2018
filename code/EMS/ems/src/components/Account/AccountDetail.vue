@@ -109,14 +109,15 @@
       </strong>
     </div>
   </div >
+        <strong><div v-if="InactiveFlag && editMode" style="color:red">Can not change to "inactive" because of holding work orders</div></strong> 
   <div class="col-7" style="padding-left: 0 !important" v-if="authUser.Role =='Admin' ">
       <div style="margin-top:0.5rem" >
         <label style="margin-right: 1rem;" class="radio"  >
-          <input type="radio" name="active" v-on:change="account.IsActive = true" :checked="account.IsActive" :disabled="!editMode">
+          <input type="radio" name="active" v-on:change="account.IsActive = true" :checked="account.IsActive" :disabled="!editMode ||InactiveFlag">
           Active
         </label>
         <label class="radio">
-          <input type="radio" style="margin-top: 0.5rem" name="active" v-on:change="account.IsActive = false" :checked="!account.IsActive" :disabled="!editMode">
+          <input type="radio" style="margin-top: 0.5rem" name="active" v-on:change="account.IsActive = false" :checked="!account.IsActive" :disabled="!editMode || InactiveFlag">
           Inactive
         </label>
       </div>
@@ -284,6 +285,7 @@ export default {
   created() {
     this.getAccountDetail(this.$route.params.id);
     this.getAllTeamOfThisAccount(this.$route.params.id);
+    this.getWordOrderOfthisAccount();
     this.axios.get("http://localhost:3000/api/account").then(res => {
       this.existedAccounts = [];
       res.data.forEach(value => this.accounts.push(value.Account));
@@ -298,6 +300,8 @@ export default {
       phoneRegex: /^\(?[+]?([0-9]{2,3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4,7})$/,
       showOkPopup: false,
       accounts: [],
+      InactiveFlag: false,
+      workOrders: [],
       currentPassInput: "",
       retypePass: "",
       SelectedMemberPassword1: "",
@@ -565,6 +569,21 @@ export default {
         this.account = data;
       });
     },
+    async getWordOrderOfthisAccount() {
+      let URL = `http://localhost:3000/api/account/getAllWorkOrderOfthatAcc/${
+        this.$route.params.id
+      }`;
+      await this.axios.get(URL).then(response => {
+        let data = response.data;
+        this.workOrders = data;
+      });
+      if (this.workOrders.length > 0) {
+        this.InactiveFlag = true;
+        // console.log(this.workOrders);
+        // console.log(this.InactiveFlag);
+        // alert("have");
+      }
+    },
 
     changePass(Id, SelectedMemberPassword1) {
       if (this.currentPassInput != this.SelectedMemberPassword) {
@@ -604,8 +623,11 @@ export default {
       let URL = `http://localhost:3000/api/account/id/${accountId}`;
       this.axios.get(URL).then(response => {
         let data2 = response.data.Teams;
-        this.teamAccount = data2;
-        this.toDisplayData = this.teamAccount.slice(0, 5);
+        if (data2) {
+          this.teamAccount = [];
+          this.teamAccount = data2;
+          this.toDisplayData = this.teamAccount.slice(0, 5);
+        }
       });
     },
     getDate(date) {
