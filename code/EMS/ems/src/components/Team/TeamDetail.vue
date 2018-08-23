@@ -285,8 +285,9 @@
               <tr >
                 <th style="width:5% !important;cursor: context-menu !important "><strong>No. </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Equipments </strong></th>
-                <th style="width:30% !important; cursor: context-menu !important"><strong>Serial Number Of Item </strong></th>
+                <th style="width:15% !important; cursor: context-menu !important"><strong>Serial Number Of Item </strong></th>
                 <th style="width:30% !important; cursor: context-menu !important"><strong>Work order </strong></th>
+                <th style="width:20% !important; cursor: context-menu !important"><strong>Expecting Return Date  </strong></th>
               </tr>
             </thead>  
             <tbody >
@@ -302,6 +303,10 @@
                 </td>
                 <td style="cursor: context-menu !important">
                   {{item.WordOrderName}}
+                </td>
+                <td style="cursor: context-menu !important">
+                  {{getDate(item.ExpectingCloseDate)}}
+                  <!-- {{item.ExpectingCloseDate}} -->
                 </td>
               </tr>
             </tbody>
@@ -427,7 +432,7 @@
  <!-- modal-end -->
 
   </div>
-  <div v-if="team" class="material-box col-12">
+  <div v-if="team && editMode" class="material-box col-12">
   <div class="col-6" >  <strong v-if="editMode">Edit member of this team</strong> </div>
   <div class="col-12">
     <div v-if="editMode">
@@ -500,10 +505,10 @@
 <script>
 import Server from "@/config/config.js";
 import { sync } from "vuex-pathify";
+import moment from "moment";
 import "vodal/common.css";
 import "vodal/slide-up.css";
 import Vodal from "vodal";
-import moment from "moment";
 import Simplert from "vue2-simplert";
 import VueBase64FileUpload from "vue-base64-file-upload";
 import { BasicSelect, MultiSelect, ModelSelect } from "vue-search-select";
