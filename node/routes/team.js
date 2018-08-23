@@ -6,7 +6,6 @@ router.get("/", (request, response) => {
   request
     .sql(
       "SELECT  team.Id as 'Team.Id', team.Name as 'Team.Name', team.CreatedDate as 'Team.CreatedDate',team.Status as 'Team.Status', json_query((select count(*) as [Quantity]  " +
-
       "from TeamAccount   " +
       "where TeamID = team.Id for json path, without_array_wrapper)) as [Team.Members],   " +
       "json_query((select acc.*  " +
@@ -17,9 +16,35 @@ router.get("/", (request, response) => {
       "FROM [Team] as team  " +
       "ORDER BY Team.Status DESC, Team.Name ASC " +
       " for json path"
-
     )
 
+    .into(response);
+});
+router.get("/wo/getAllWorkOrderThatLeaderHad/:id/", (request, response) => {
+  request
+    .sql(
+      "select wo.Id,wo.Name from [WorkOrder] as wo  " +
+      "JOIN TeamLocation as tl ON wo.TeamLocationID =tl.Id   " +
+      "JOIN Team as t ON tl.TeamID =t.Id    " +
+      "JOIN WorkOrderStatus as ws ON wo.StatusID = ws.Id " +
+      "WHERE t.Id = @id  and wo.StatusID NOT IN ( SELECT ws.Id FROM [WorkOrderStatus] as ws WHERE ws.Name = N'Closed' or ws.Name = N'Cancelled') " +
+      "for json path "
+    )
+    .param("id", request.params.id, TYPES.Int)
+    .param("teamId", request.params.teamId, TYPES.Int)
+    .into(response);
+});
+router.get("/wo/getAllLocationThatTeamHad/:id/", (request, response) => {
+  request
+    .sql(
+      "select l.Name from [Location] as l  " +
+      "JOIN TeamLocation as tl ON tl.LocationID =l.Id     " +
+      "JOIN Team as t ON tl.TeamID =t.Id      " +
+
+      "WHERE t.Id = @id  and l.Id IN ( SELECT l.Id FROM [Location] as l WHERE l.IsActive = 'True' )   "
+    )
+    .param("id", request.params.id, TYPES.Int)
+    .param("teamId", request.params.teamId, TYPES.Int)
     .into(response);
 });
 
@@ -32,7 +57,7 @@ router.get("/search/:value", function (request, response) {
       // "JOIN [Account] as acc ON acc.Id =ta.AccountID " +
       // "JOIN [Role] as r ON r.Id = acc.RoleID" +
       // "WHERE t.Name like N'%' + @searchText + '%' or t.CreatedDate like N'%' + @searchText + '%' " +
-      // "or (acc.Username like N'%' + @searchText + '%' and ta.TeamRoleID = (select tr.Id from [TeamRoles] as tr where tr.TeamRole ='Leader')) " +    
+      // "or (acc.Username like N'%' + @searchText + '%' and ta.TeamRoleID = (select tr.Id from [TeamRoles] as tr where tr.TeamRole ='Leader')) " +
       // "ORDER BY t.Name DESC " +
       // "for json path "
       "SELECT distinct t.* " +
@@ -43,7 +68,6 @@ router.get("/search/:value", function (request, response) {
       "WHERE t.Name like N'%' + @searchText + '%' or t.CreatedDate like N'%' + @searchText + '%'   " +
       // "or (acc.Username like N'%' + @searchText + '%' and ta.TeamRoleID = (select tr.Id from [TeamRoles] as tr where tr.TeamRole ='Leader'))   " +
       "or (acc.Username like N'%' + @searchText + '%' )   " +
-
       "ORDER BY t.Name DESC   " +
       "for json path"
     )

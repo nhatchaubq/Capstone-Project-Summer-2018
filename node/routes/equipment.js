@@ -111,6 +111,29 @@ router.get("/byName/:equipmentName", function (request, response) {
     .param("equipmentName", request.params.equipmentName, TYPES.NVarChar)
     .into(response);
 });
+
+// chaubqn
+router.get('/getItemsByStatus/:status', function(req, res) {
+  req.sql(" select e.*, json_query((select ei.*, json_query((select [tile].[Name] as [Tile], [floor].[Name] as [Floor], [block].[Name] as [Block], [location].[Name] as [Location.Name], [location].[Address] as [Location.Address] "
+        + "                                                 from Tile as tile "
+        + "                                                       join [Floor] as [floor] on tile.FloorID = [floor].Id "
+        + "                                                       join [Block] as [block] on [floor].BlockID = [block].Id "
+        + "                                                       join [Location] as [location] on [block].LocationID = [location].Id "
+        + "                                                 where ei.TileID = tile.Id for json path, without_array_wrapper)) as [Position], "
+        + "                                 json_query((select lo.[Name] as [Name], lo.[Address] as [Address] "
+        + "                                             from [Location] as lo join EquipmentItem as ei2 on lo.Id = ei2.WarehouseID "
+        + "                                             where ei2.Id = ei.Id "
+        + "                                             for json path, without_array_wrapper)) as [Warehouse] "
+        + "                         from EquipmentItem as ei  "
+        + "                         where ei.EquipmentID = e.Id and ei.StatusId = (select Id from EquipmentStatus where [Name] = @status) "
+        + "                         for json path)) as [EquipmentItems] "
+        + " from Equipment as e "
+        + " where e.Status = 1 "
+        + " for json path")
+        .param('status', req.params.status, TYPES.NVarChar)
+        .into(res);
+});
+
 /* GET request, get EquipmentByName and vendorName */
 router.get("/:equipmentId/:vendorId", function (request, response) {
   request

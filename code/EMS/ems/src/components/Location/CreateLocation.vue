@@ -14,34 +14,48 @@
           :style="(currentStep == Steps.CreateLocation 
                     && (CreateLocationErrors.ErrorLocationName
                         || CreateLocationErrors.ErrorLocationAddress))
-                  || (currentStep == Steps.CreateBlocks && !toCreateBlocks.length) ? 'cursor: not-allowed; background: #8CACA9' : ''"
+                  || (currentStep == Steps.CreateBlocks && !toCreateBlocks.length)
+                  || (currentStep == Steps.CreateFloorsAndTiles && currentToCreateBlockIndex != -1) ? 'cursor: not-allowed; background: #8CACA9' : ''"
             v-on:click="() => {
             if (quickCreatePosition) {
               if (validateLocation()) {
-                // todo
+                createLocation();
               }
             } else {
               switch (currentStep) {
                 case Steps.CreateLocation: {
-                  //if (validateLocation()) {
-                  //  ++currentStep;
-                  //}
-                  ++currentStep;
+                  if (validateLocation()) {
+                    ++currentStep;
+                  }
                   break;
                 }
                 case Steps.CreateBlocks: {
                   if (toCreateBlocks.length) {
+                    createNewBlockFlag = false;
+                    CreateLocationErrors.ErrorBlockName = '';
+                    newBlock = {
+                      name: '',
+                      description: '',
+                      floors: [],
+                      firstFloorType: 'Ground',
+                      totalFloor: 1,
+                      totalBasementFloor: 0,
+                      tilePrefix: 'none',
+                    };
                     ++currentStep;
                     currentToCreateBlockIndex = 0;
                   }
                   break;
                 }
                 case Steps.CreateFloorsAndTiles: {
+                  if (currentToCreateBlockIndex == -1) {
+                    createLocation();
+                  }
                   break;
                 }
               }
             }
-          }">{{ nextButtonText }}</button>
+          }">{{ nextButtonText }}<span v-show="sending"> <i class="fa fa-circle-o-notch fa-spin"></i></span></button>
         </div>           
       </div>
       <div class="form-content" >
@@ -174,7 +188,18 @@
                           if (newBlock.name.length > 50) {
                             CreateLocationErrors.ErrorBlockName = ErrorStrings.InvalidBlockNameLength;
                           } else {
-                            CreateLocationErrors.ErrorBlockName = '';
+                            for (let i = 0; i < toCreateBlocks.length; i++) {
+                              const block = toCreateBlocks[i];
+                              let duplicateName = false;
+                              if (block.name.toLowerCase() == newBlock.name.toLowerCase()) {
+                                duplicateName = true;
+                              }
+                              if (duplicateName) {
+                                CreateLocationErrors.ErrorBlockName = ErrorStrings.DuplicateBlockName;
+                              } else {
+                                CreateLocationErrors.ErrorBlockName = '';
+                              }
+                            }
                           }
                         }
                       }">
@@ -190,26 +215,7 @@
             </div>
             <div class="form-field">
               <a :style="CreateLocationErrors.ErrorBlockName ? 'color: var(--shadow) !important; cursor: not-allowed;' : ''"
-                v-on:click="() => {
-                  if (!newBlock.name) {
-                    CreateLocationErrors.ErrorBlockName = ErrorStrings.NoBlockName;
-                  }
-                  if (!CreateLocationErrors.ErrorBlockName) {
-                    let tempBlock = JSON.stringify(newBlock);
-                    tempBlock = JSON.parse(tempBlock);
-                    toCreateBlocks.push(tempBlock);
-                    newBlock = {
-                      name: '',
-                      description: '',
-                      floors: [],
-                      firstFloorType: 'Ground',
-                      totalFloor: 1,
-                      totalBasementFloor: 0,
-                    };
-                    createFloors(toCreateBlocks.length - 1);
-                    createNewBlockFlag = false;
-                  }
-              }"><i class="fa fa-check-circle"></i> Create block</a>
+                v-on:click="createBlock()"><i class="fa fa-check-circle"></i> Create block</a>
               <a style="margin-left: 1.5rem; font-weight: 400 !important;" @click="() => {
                 CreateLocationErrors.ErrorBlockName = '';
                 newBlock = {
@@ -219,6 +225,7 @@
                   firstFloorType: 'Ground',
                   totalFloor: 1,
                   totalBasementFloor: 0,
+                  tilePrefix: 'none',
                 };
                 createNewBlockFlag = false;
               }"><i class="fa fa-ban"></i> Cancel</a>
@@ -254,35 +261,66 @@
                     <div class="form-field-title">
                         <span style="position: relative; top: .5rem">Block {{ toCreateBlocks[currentToCreateBlockIndex].name }} has </span>
                           <span>
-                            <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="1" v-model="toCreateBlocks[currentToCreateBlockIndex].totalFloor" v-on:input="() => {
+                            <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="1" max="300" step="1" v-model.number="toCreateBlocks[currentToCreateBlockIndex].totalFloor" v-on:input="() => {
+                              currentToCreateFloorIndex = -1;
+                              currentToCreateTileIndex = -1;
+                              if (!toCreateBlocks[currentToCreateBlockIndex].totalFloor || toCreateBlocks[currentToCreateBlockIndex].totalFloor < 0) {
+                                toCreateBlocks[currentToCreateBlockIndex].totalFloor = 1
+                              } else if (toCreateBlocks[currentToCreateBlockIndex].totalFloor > 300) {
+                                toCreateBlocks[currentToCreateBlockIndex].totalFloor = 300;
+                              }
+                              toCreateBlocks[currentToCreateBlockIndex].totalFloor = parseInt(toCreateBlocks[currentToCreateBlockIndex].totalFloor);
                               createFloors(currentToCreateBlockIndex);
                             }">
                           </span>
                         <span style="position: relative; top: .5rem">floor<span v-if="toCreateBlocks[currentToCreateBlockIndex].totalFloor > 1">s</span>,</span>
                         <span style="position: relative; top: .5rem"> and has </span>
                           <span>
-                            <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="0" v-model="toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor" v-on:input="() => {
-                              createFloors(currentToCreateBlockIndex);
+                            <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="0" v-model.number="toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor" v-on:input="() => {
+                              currentToCreateFloorIndex = -1;
+                              currentToCreateTileIndex = -1;
+                              if (!toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor || toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor < 0) {
+                                toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor = 0;
+                              } else if (toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor > 300) {
+                                toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor = 300;
+                              }
+                              toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor = parseInt(toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor);
+                              createBasementFloors(currentToCreateBlockIndex);
                             }">
                           </span>
                         <span style="position: relative; top: .5rem"> basement floor<span v-if="toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor > 1">s</span>.</span>
                     </div>
                   </div>
-                  <div class="form-field">
+                  <div class="form-field" style="margin-bottom: 1.5rem; padding-bottom: 0">
                       <div class="form-field-title">
                           What would you call the first floor of Block {{ toCreateBlocks[currentToCreateBlockIndex].name }} ?  
                       </div>
-                      <div class="form-field-input">
-                          <label class="radio" v-on:click="() => { 
-                              toCreateBlocks[currentToCreateBlockIndex].firstFloorType = 'Ground';
-                              createFloors(currentToCreateBlockIndex);
+                      <div class="form-field-input" style="margin: .5rem 0 !important">
+                          <label class="radio" v-on:click="() => {
+                              const block = toCreateBlocks[currentToCreateBlockIndex];
+                              block.firstFloorType = 'Ground';
+                              const floors = toCreateBlocks[currentToCreateBlockIndex].floors;
+                              floors.reverse();
+                              // floors[floors.totalBasementFloor] is the ground floor
+                              floors[block.totalBasementFloor].name = 'Ground';
+                              for (let i = block.totalBasementFloor + 1, number = 1; i < floors.length; i++, number++) {
+                                floors[i].name = `${number}`;
+                              }
+                              floors.reverse();
                             }">
                               <input type="radio" name="firstFloorType" :checked="toCreateBlocks[currentToCreateBlockIndex].firstFloorType == 'Ground'">
                               Ground
                           </label>
                           <label class="radio" v-on:click="() => {
-                              toCreateBlocks[currentToCreateBlockIndex].firstFloorType = 'FloorOne';
-                              createFloors(currentToCreateBlockIndex);
+                              const block = toCreateBlocks[currentToCreateBlockIndex];
+                              block.firstFloorType = 'FloorOne';
+                              const floors = toCreateBlocks[currentToCreateBlockIndex].floors;
+                              floors.reverse();
+                              // floors[floors.totalBasementFloor] is the ground floor
+                              for (let i = block.totalBasementFloor, number = 1; i < floors.length; i++, number++) {
+                                floors[i].name = `${number}`;
+                              }
+                              floors.reverse();
                             }">
                               <input type="radio" name="firstFloorType" :checked="toCreateBlocks[currentToCreateBlockIndex].firstFloorType == 'FloorOne'">
                               Floor 1
@@ -290,30 +328,30 @@
                       </div>
                   </div>
                   <!-- define tile name style -->
-                  <div class="form-field">
-                      <!-- <div class="form-field-title">
-                          Define your room name style
-                      </div> -->
+                  <div class="form-field" style="padding-top: 0; margin-top: 0">
+                      <div class="form-field-title">
+                          Define your room name style <span style="font-style: italic">(not affect tiles of basement floors)</span>
+                      </div>
                       <div style="margin: .5rem 0 !important" class="row form-field-input">
-                          <!-- <div>
+                          <div>
                               <span style="margin-right: 1rem;">Prefix:</span>
                               <label class="radio">
-                                  <input :checked="tilePrefix == 'none'" v-on:click="tilePrefix = 'none'" class="radio" type="radio">
+                                  <input :checked="toCreateBlocks[currentToCreateBlockIndex].tilePrefix == 'none'" class="radio" type="radio"
+                                  v-on:click="() => {
+                                    toCreateBlocks[currentToCreateBlockIndex].tilePrefix = 'none';
+                                    changeNameAllTiles(currentToCreateBlockIndex);
+                                  }">
                                   None
                               </label>
                               <label class="radio">
-                                  <input :checked="tilePrefix == 'floororder'" v-on:click="tilePrefix = 'floororder'" class="radio" type="radio">
+                                <input :checked="toCreateBlocks[currentToCreateBlockIndex].tilePrefix == 'floororder'" class="radio" type="radio"
+                                  v-on:click="() => {
+                                    toCreateBlocks[currentToCreateBlockIndex].tilePrefix = 'floororder';
+                                    changeNameAllTiles(currentToCreateBlockIndex);
+                                  }">
                                   Floor number
-                              </label> -->
-                              <!-- <label class="radio">
-                                  <input :checked="tilePrefix == 'custom'" v-on:click="tilePrefix = 'custom'" class="radio" type="radio">
-                                  Custom
-                              </label> -->
-                              <!-- <input style="margin-left: .5rem" v-if="tilePrefix == 'custom'" v-model="tilePrefixCustom" class="input" type="text" placeholder="A, B, C"> -->
-                          <!-- </div> -->
-                          <!-- <div>
-                              Define your room name style (leave blank if you do not want to use custom name)
-                          </div> -->
+                              </label>
+                          </div>
                       </div>
                   </div> <!-- define tile name style -->
                   <!-- tile or room -->
@@ -325,12 +363,10 @@
                       <a v-on:click="() => {
                           if (!editingFloor) {
                               ++currentToCreateBlockIndex;
-                              locationSelectedTileIndex = currentToCreateBlockIndex;
                               // at the end of block list, no need move to next block to create more floor
                               if (currentToCreateBlockIndex >= toCreateBlocks.length) {
                                   currentToCreateBlockIndex = -1; // currentToCreateBlockIndex = -1 to display the review
                               }
-                              // repaint the canvas the display the next block to create floors info
                           } else {
                               currentToCreateBlockIndex = -1;
                               editingFloor = false;
@@ -342,7 +378,7 @@
               <div class="col-6" style="padding-left: 0; padding-right: 0">
                   <div class="form-field" style="padding-right: 0">
                       <div class="form-field-title" style="margin: .5rem 0 !important">
-                          Please click on visual floors below to setup rooms for each floor.
+                          Please click on visual floors below to setup tiles for each floor.
                       </div>
                       <div class="row" style="margin: .5rem 0 !important">
                           <!-- display floors -->
@@ -361,10 +397,7 @@
                                               currentToCreateFloorIndex = index;
                                               currentToCreateTileIndex = -1;
                                               if (toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].tiles.length == 0) {
-                                                  toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles = 1;
-                                                  makeTiles();
-                                              } else {
-                                                  totalTiles = toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles;
+                                                  createTiles();
                                               }
                                               //let floor = toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex];
 
@@ -377,8 +410,16 @@
                           <div v-if="currentToCreateFloorIndex >= 0" style="width: 75%; margin-left: 5%; padding: 0 !important;">
                               <div style="margin: 0 !important;" class="row">
                                   <span style="position: relative; top: .5rem">Floor {{ toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].name }} has:</span>
-                                  <input style="margin: 0 .5rem; text-align: right;" class="input col-2" type="number" min='1' v-model="toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles" v-on:input="makeTiles()">
-                                  <span style="position: relative; top: .5rem"> room<span v-if="toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles > 1">s</span></span>
+                                  <input style="margin: 0 .5rem; text-align: right;" class="input col-2" type="number" min='1' max="1000" step="1" v-model.number="toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles" v-on:input="() => {
+                                    if (!toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles || toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles < 0) {
+                                      toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles = 1;
+                                    } else if (toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles > 1000) {
+                                      toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles = 1000;
+                                    }
+                                    toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles = parseInt(toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles);
+                                    createTiles();
+                                  }">
+                                  <span style="position: relative; top: .5rem"> tile<span v-if="toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles > 1">s</span></span>
                               </div>
                               <!-- <div v-if="toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].tiles.length > 0">
                                   <span><strong>Click on the rooms below to edit its name.</strong></span>
@@ -402,19 +443,19 @@
               </div> <!-- display floors visually -->
           </div>
           <!-- else, this happens after created floors for all the newLocation.blocks or save changes of an editing block -->
-          <div ref="daylaref" v-else>
-              <div class="form-field">
+          <div v-else>
+              <div class="form-field" style="margin-top: 1.5rem;">
                   <div class="form-field-title">
-                      Please recheck the floors information of <span v-if="newLocation.blocks.length == 1">this block</span><span v-if="newLocation.blocks.length > 1">these newLocation.blocks</span> (click on a block to edit floor information):
+                      Please recheck the floors information of <span v-if="toCreateBlocks.length == 1">this block</span><span v-if="toCreateBlocks.length > 1">these blocks</span> (click on a block to edit floor information):
                   </div>
-                  <div :key="'makeBlockFloor' + block.id" v-for="block in newLocation.blocks">
-                      <div style="padding-left: 1rem; margin-bottom: .5rem">
+                  <div :key="'makeBlockFloor' + block.id" v-for="block in toCreateBlocks">
+                      <div style="padding-left: 1rem; margin-top: .5rem">
                           <!-- click the <a> below to edit selected block -->
                           <span>- <a v-on:click="() => {
-                                      currentToCreateBlockIndex = block.id;
-                                      locationSelectedTileIndex = block.id;
+                                      currentToCreateBlockIndex = toCreateBlocks.indexOf(block);
+                                      currentToCreateFloorIndex = -1;
+                                      currentToCreateTileIndex = -1;
                                       editingFloor = true;
-                                      paintCanvas($refs.locationCanvas, null, null);
                                   }">Block {{ block.name }}</a> has <strong>{{ block.totalFloor }} floor<span v-if="block.totalFloor > 1">s</span></strong>
                                   <span>, <strong>{{ block.totalBasementFloor > 0 ? block.totalBasementFloor : 'no' }} basement floor<span v-if="block.totalBasementFloor > 1">s</span></strong></span>
                                   <span>, and start with <strong>floor {{ block.firstFloorType}}</strong>.</span>
@@ -518,31 +559,21 @@ export default {
       toCreateBlocks: [],
       editingBlockIndexes: [],
       duplicateBlockIndexes: [],
+      currentToCreateBlockIndex: - 1,
       newBlock: {
         name: '',
-        floors: [],
         description: '',
+        floors: [],
         firstFloorType: 'Ground',
         totalFloor: 1,
         totalBasementFloor: 0,
+        tilePrefix: 'none',
       },
       currentToCreateFloorIndex: - 1,
-      toCreateFloors: [],
-      totalTiles: 1,
       editingFloor: false,
-      duplicateFloorIndexes: [],
-      newFloor: {
-        name: '',
-        tiles: [],
-      },
       currentToCreateTileIndex: - 1,
-      toCreateTiles: [],
-      editingTileIndexes: [],
-      duplicateTileIndexes: [],
-      newTile: {
-        name: '',
-      },
-      currentToCreateTileIndex: - 1,
+
+      sending: false,
       //chaubqn - end
     };
   },
@@ -555,7 +586,7 @@ export default {
       .then(response => {
         let data = response.data;
         data.forEach(team => {
-          this.teams.push(team);
+          if (team.Status) this.teams.push(team);
         });
       })
       .catch(error => {
@@ -601,8 +632,9 @@ export default {
     validateBlocks() {
 
     },
-    createLocation() {
-      this.axios
+    async createLocation() {
+      this.sending = true;
+      await this.axios
         .post(Server.LOCATION_CREATE_API_PATH, {
           newLocation: {
             name: this.newLocation.name.trim(),
@@ -625,6 +657,21 @@ export default {
               });
             }
           }
+          // create position
+          if (this.quickCreatePosition) {
+            this.toCreateBlocks = [{
+              name: '1',
+              totalFloor: 1,
+              totalBasementFloor: 0,
+              description: null,
+              floors: [{
+                name: 'G',
+                tiles: [{name: '1'}]
+              }]
+            }]
+          }
+          await this.createPostion(res.data.NewLocationId);
+          this.sending = false;
           let obj = {
             title: "Success",
             message: "Create location successfully!",
@@ -678,65 +725,213 @@ export default {
         };
       });
     },
-    makeTiles() {
-      let floor = this.toCreateBlocks[this.currentToCreateBlockIndex].floors[this.currentToCreateFloorIndex];
-      let prefix = "";
-      // switch (this.tilePrefix) {
-      //   case "none": {
-      //     prefix = "";
-      //     break;
-      //   }
-      //   case "floororder": {
-      //     prefix = floor.name;
-      //     break;
-      //   }
-      //   case "custom": {
-      //     prefix = this.tilePrefixCustom;
-      //     break;
-      //   }
-      // }
-      if (floor.totalTiles != floor.tiles.length) {
-        if (floor.totalTiles > floor.tiles.length) {
-          while (floor.tiles.length != floor.totalTiles) {
-            let newTile = {
-              name: `${prefix}${floor.tiles.length + 1}`
-            };
-            floor.tiles.push(newTile);
-          }
-        } else if (floor.totalTiles < floor.tiles.length) {
-          while (floor.tiles.length != floor.totalTiles) {
-            floor.tiles.pop();
-          }
-        }
+    createBlock() {
+      if (!this.newBlock.name) {
+        this.CreateLocationErrors.ErrorBlockName = this.ErrorStrings.NoBlockName;
+      }
+      if (!this.CreateLocationErrors.ErrorBlockName) {
+        let tempBlock = JSON.stringify(this.newBlock);
+        tempBlock = JSON.parse(tempBlock);
+        this.toCreateBlocks.push(tempBlock);
+        this.newBlock = {
+          name: '',
+          description: '',
+          floors: [],
+          firstFloorType: 'Ground',
+          totalFloor: 1,
+          totalBasementFloor: 0,
+          tilePrefix: 'none',
+        };
+        this.createFloors(this.toCreateBlocks.length - 1);
+        this.createNewBlockFlag = false;
       }
     },
     createFloors(index) {
-      let floors = [];
-      let block = this.toCreateBlocks[index];
-      for (let i = 0; i < block.totalFloor; i++) {
-        let floor = {
-          name: "",
-          tiles: []
-        };
-        if (i == 0) {
-          floor.name = block.firstFloorType == 'Ground' ? 'Ground' : '1';
-        } else if (block.firstFloorType == 'Ground') {
-          floor.name = `${i}`;
-        } else if (block.firstFloorType == 'FloorOne') {
-          floor.name = `${i + 1}`;
+      // block.totalFloor is new total floor, count from floor ground, this value is binding in the input
+      // floors.length - block.totalBasementFloor is current total floor, 
+      // floors.length holds number of floors (including floors from the floor ground and basement floors)
+      const block = this.toCreateBlocks[index];
+      const floors = block.floors;
+      floors.reverse();
+      const newTotalFloor = block.totalFloor;
+      const newTotalBasementFloor = block.totalBasementFloor;
+      const currentTotalFloor = floors.length - newTotalBasementFloor;
+      if (newTotalFloor > currentTotalFloor) {        
+        for (let i = currentTotalFloor; newTotalFloor > floors.length - newTotalBasementFloor; i++) {
+          const floor = {
+            name: "",
+            tiles: [{name: '1'}],
+            totalTiles: 1,
+          };
+          if (!floors.length) {
+            floor.name = block.firstFloorType == 'Ground' ? 'Ground' : '1';
+          } else if (block.firstFloorType == 'Ground') {
+            floor.name = `${i}`;
+          } else if (block.firstFloorType == 'FloorOne') {
+            floor.name = `${i + 1}`;
+          }
+          if (block.firstFloorType != 'Ground' && i != newTotalBasementFloor) {
+            let prefix = "";
+            switch (block.tilePrefix) {
+              case "none": {
+                prefix = "";
+                break;
+              }
+              case "floororder": {
+                prefix = floor.name;
+                break;
+              }
+            }
+            floor.tiles[0].name = `${prefix}${block.tilePrefix == "floororder" ? '0' : '' }1`;
+          }
+          floors.push(floor);
         }
-        floors.push(floor);
-      }
-      if (block.totalBasementFloor > 0) {
-        for (var i = 1; i <= block.totalBasementFloor; i++) {
-          let floor = {
+      } else if (newTotalFloor < currentTotalFloor) {
+        while (newTotalFloor < (floors.length - newTotalBasementFloor)) {
+          floors.pop();
+        }
+      }      
+      floors.reverse();
+    },
+    createBasementFloors(index) {
+      // block.totalBasementFloor is new total basement floors, count from floor ground, this value is binding in the input
+      // floors.length - block.totalFloor is current total basement floors, 
+      // floors.length holds number of floors (including floors from the floor ground and basement floors)
+      const block = this.toCreateBlocks[index];
+      const floors = block.floors;      
+      floors.reverse();
+      const newTotalFloor = block.totalFloor;
+      const newTotalBasementFloor = block.totalBasementFloor;
+      const currentTotalBasementFloor = floors.length - newTotalFloor;
+      if (newTotalBasementFloor > currentTotalBasementFloor) {
+        for (let i = currentTotalBasementFloor + 1; newTotalBasementFloor > (floors.length - newTotalFloor); i++) {
+          const floor = {
             name: `B${i}`,
-            tiles: []
+            tiles: [{name: '1'}],
+            totalTiles: 1,
           };
           floors.unshift(floor); // add to the head of list
         }
+      } else if (newTotalBasementFloor < currentTotalBasementFloor) {
+        while (newTotalBasementFloor < (floors.length - newTotalFloor)) {
+          floors.shift();
+        }
+      }      
+      floors.reverse();
+    },
+    createTiles() {      
+      const block = this.toCreateBlocks[this.currentToCreateBlockIndex];
+      const floors = block.floors;
+      const floor = block.floors[this.currentToCreateFloorIndex];
+      if (!floor.tiles.length || (floor.totalTiles > floor.tiles.length)) {
+        const floorGroundIndex = block.totalBasementFloor;
+        let prefix = "";        
+        switch (block.tilePrefix) {
+          case "none": {
+            prefix = "";
+            break;
+          }
+          case "floororder": {
+            prefix = floor.name;
+            break;
+          }
+        }
+        while (floor.tiles.length != floor.totalTiles) {
+          const newTile = {
+            name: `${floor.tiles.length + 1}`
+          };
+          if (this.currentToCreateFloorIndex >= floorGroundIndex 
+            && (block.firstFloorType == 'FloorOne' 
+                || (block.firstFloorType == 'Ground' && this.currentToCreateFloorIndex != floorGroundIndex))) {
+                newTile.name = `${prefix}${block.tilePrefix == "floororder" ? '0' : '' }` + newTile.name;
+          }
+          floor.tiles.push(newTile);
+        }
+      } else if (floor.totalTiles < floor.tiles.length) {
+        while (floor.tiles.length != floor.totalTiles) {
+          floor.tiles.pop();
+        }
       }
-      this.toCreateBlocks[index].floors = floors.slice().reverse();
+      floor.totalTiles = floor.tiles.length;
+    },
+    changeNameAllTiles(blockIndex) {
+      const block = this.toCreateBlocks[blockIndex];
+      const floors = block.floors;      
+      floors.reverse();
+      // block.totalBasementFloor is floor ground
+      const floorGroundIndex = block.totalBasementFloor;
+      for (let i = floorGroundIndex; i < floors.length; i++) {
+        if (i > floorGroundIndex || (i == floorGroundIndex && block.firstFloorType != 'Ground')) {
+          const floor = floors[i];
+          let prefix = "";
+          switch (block.tilePrefix) {
+            case "none": {
+              prefix = "";
+              break;
+            }
+            case "floororder": {
+              prefix = floor.name;
+              break;
+            }
+          }
+          for (let j = 0; j < floor.tiles.length; j++) {
+            floor.tiles[j].name = `${prefix}${(floor.tiles.length + 1 < 10 && block.tilePrefix == "floororder") ? '0' : '' }${j + 1}`;
+          }
+        }
+      }
+      floors.reverse();
+    },
+    async createPostion(locationId) {
+      return new Promise(async (resolve, reject) => {
+        let context = this;
+        let blockApi = `${Server.SERVER_DEFAULT}/block`;
+        let floorApi = `${Server.SERVER_DEFAULT}/floor`;
+        let tileApi = `${Server.SERVER_DEFAULT}/tile`;
+        let newBlockApi = `${blockApi}/${locationId}`;
+        for (const block of this.toCreateBlocks) {
+            await context.axios.post(newBlockApi, {
+              blockName: block.name,
+              totalFloor: block.totalFloor,
+              totalBasementFloor: block.totalBasementFloor,
+              description: block.description,
+            }).then(async (blockRes) => {
+              if (blockRes.status == 200 && blockRes.data.NewBlockId) {
+                let newBlockId = blockRes.data.NewBlockId;
+                let newFloorApi = `${floorApi}/${newBlockId}`;
+                for (const floor of block.floors) {
+                    await context.axios.post(newFloorApi, {
+                      floorName: floor.name,
+                      description: floor.description
+                    }).then(async (floorRes) => {
+                      if (floorRes.status == 200 && floorRes.data.NewFloorId) {
+                        let newFloorId = floorRes.data.NewFloorId;
+                        let newTileApi = `${tileApi}/${newFloorId}`;
+                        for (const tile of floor.tiles) {
+                          await context.axios.post(newTileApi, {
+                            tileName: tile.name,
+                            description: floor.description
+                          }).catch(error => {
+                            reject();
+                            console.log(error);
+                          });
+                        }
+                      }
+                    }).catch(error => {
+                      reject();
+                      console.log(error);
+                    });
+                }
+              } else {
+                reject();
+                alert("Error NewBlockId");
+              }
+            }).catch(error => {
+              reject();
+              console.log(error);
+            });
+        }
+        resolve();
+      });
     },
   },
   watch: {

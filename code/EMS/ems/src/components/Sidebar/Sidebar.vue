@@ -57,8 +57,7 @@
           </div>
           </router-link>
         </li>
-        <li>
-
+        <li v-if="false">
           <router-link to='/unit'>
             <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
             <i class="material-icons">build</i>
@@ -66,7 +65,7 @@
           </div>
           </router-link>
         </li>
-        <li>
+        <li v-if="false">
           <router-link to='/duration'>
             <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
             <i class="material-icons">build</i>

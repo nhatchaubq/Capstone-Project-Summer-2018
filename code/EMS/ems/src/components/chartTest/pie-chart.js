@@ -8,7 +8,7 @@ const {
 export default {
     extends: Pie,
     mixins: [reactiveProp],
-    props: ['data', 'options'],
+    props: ['chartData', 'options', 'onClickChart'],
     mounted() {
         this.work1 = this.$refs.canvas
             .getContext("2d")
@@ -30,7 +30,7 @@ export default {
 
         // Overwriting base render method with actual data.
         this.renderChart({
-            labels: this.data.labels,
+            labels: this.chartData.labels,
             datasets: [{
                 // label: "Data 3",
                 backgroundColor: [
@@ -42,11 +42,18 @@ export default {
                     "#FFC107",
                     "#795548"
                 ],
-                data: this.data.values
+                data: this.chartData.values
             }]
-        }, {
+        },
+        {
             responsive: true,
-            maintainAspectRatio: false
-            }, { options: this.myoption});
+            maintainAspectRatio: false,
+            onClick: (event, items) => {
+                let equipmentStatus = items[0]['_model'].label;
+                if (equipmentStatus) {
+                    this.onClickChart(equipmentStatus);
+                }
+            }
+        },);
     }
 };
