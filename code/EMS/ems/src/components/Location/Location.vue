@@ -501,7 +501,7 @@ export default {
         let data = response.data;
         if (
           JSON.parse(window.localStorage.getItem("user")).Role ==
-          ("Staff" || "Maintainer")
+          ("Staff")
         ) {
           data.forEach(workorder => {
             workorder.OfTeam.forEach(mem => {
