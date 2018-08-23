@@ -17,7 +17,7 @@
 
 
   <div v-if="team" class="material-box col-12" style="margin-bottom: 1rem !important">
-        <div class="col-6" >  <strong v-if="editMode">Edit details of this team</strong> </div>
+        <div class="col-6" style="font-size: 20px; ">  <strong v-if="editMode">Edit details of this team</strong> </div>
         <div class="row" style="margin: 0 1rem 0 0rem">
           <div class="col-11">
             <strong style="font-size: 20px; ">Team Name</strong> <span  v-if="CreateTeamErrors.NameMin != ''"> <span class="error-text">{{ CreateTeamErrors.NameMin }}</span></span> <span v-else-if="CreateTeamErrors.NameMax != ''"> <span class="error-text">{{ CreateTeamErrors.NameMax }}</span></span> <span v-else-if="CreateTeamErrors.ValidName != ''"> <span class="error-text">{{ CreateTeamErrors.ValidName }}</span></span><span v-else-if="CreateTeamErrors.DuplicateName != ''"> <span class="error-text">{{ CreateTeamErrors.DuplicateName }}</span></span>
@@ -30,7 +30,7 @@
           </div>
         </div>
       <div class="row" >
-        <div v-if="!editMode" class="col-7 input" style="font-size: 20px; color: var(--primary-color);  padding: 0 0 0 1rem !important; font-weight: bold; margin-left: 1rem; margin-bottom:0.5rem" disabled="true">{{team.Name}} </div>
+        <div v-if="!editMode" class="col-6 input" style="font-size: 20px; color: var(--primary-color);  padding: 0 0 0 1rem !important; font-weight: bold; margin-left: 1rem; margin-bottom:0.5rem" disabled="true">{{team.Name}} </div>
         <input v-if="editMode" v-model.trim="team.Name" class="col-7 input" style="font-size: 20px; color: var(--primary-color);font-weight: bold; padding: 0 0 0 1rem !important; margin-left: 1rem; margin-bottom:0.5rem" > 
         <!-- <div class="col-5 input2" style="display: flex; max-width:480px !important; justify-content: flex-end; margin-top:0.5rem; padding-left: 0rem !important">
           <button v-if="!editMode" class="button btn-edit btn-primary material-shadow-animate "  v-on:click="$store.state.teamPage.detailPage.editMode = !editMode">Edit</button>
@@ -433,7 +433,7 @@
 
   </div>
   <div v-if="team && editMode" class="material-box col-12">
-  <div class="col-6" >  <strong v-if="editMode">Edit member of this team</strong> </div>
+  <div class="col-6" style="font-size: 20px; " >  <strong v-if="editMode">Edit member of this team</strong> </div>
   <div class="col-12">
     <div v-if="editMode">
       <!-- <div v-if="!team.LeaderAccount ">
