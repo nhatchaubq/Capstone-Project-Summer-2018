@@ -19,7 +19,7 @@
                       <input type="radio" name="status" style="padding-right:0.5rem" :checked="!linechartOption"> Damaged and Lost Equipment
                     </label>
                   </div>
-                    <bar-chart :chartData="lineChartData" ref="lineChart" styles="height: 40vh"  ></bar-chart>
+                    <bar-chart :chartData="lineChartData" ref="lineChart" :styles="{height: '40vh'}"  ></bar-chart>
                   <div style="margin-top: 1rem; color: #424242; font-size: 1rem; text-align: center; font-style: italic;">
                     <div v-if="linechartOption">
                       Completed work orders chart from the past 11 months
@@ -120,7 +120,7 @@
 
                         <div style="width:100%" class="Chart1">
                             <strong>Equipment by status</strong>  
-                            <pie-chart styles="height: 16rem" :data="pieChartData" :option="myoption" ></pie-chart>
+                            <pie-chart :styles="{height: '16rem'}" :chartData="pieChartData" :onClickChart="displayEquipmentStatusPopup" ></pie-chart>
                         </div>
                   
                         </div>
@@ -268,8 +268,57 @@
               </div>
 
               <div slot="footer"><button class="button" v-on:click="addPopUp = false" style="background-color:var(--primary-color);color:white">OK</button></div>
-            </modal>   
-        </div>                          
+            </modal>
+            <modal style="font-size: 1rem !important;" :styles="equipmentByStatusList.length > 6 ? {top: '20px'} : {}" v-model="showEquipmentByStatusPopup">
+              <div slot="header">
+                <span v-if="equipmentStatusFromChart">{{ equipmentStatusFromChart }} equipment</span>
+              </div>
+              <div slot="footer">
+                <button style="width: 4rem;" class="button btn-primary" @click="showEquipmentByStatusPopup = false">OK</button>
+              </div>
+              <div v-if="equipmentByStatusList && equipmentByStatusList.length" :style="equipmentByStatusList.length > 6 ? 'max-height: 70vh; overflow-y: auto;' : ''">
+                <v-flex style="font-size: 1rem !important;">
+                  <v-expansion-panel popout>
+                    <v-expansion-panel-content v-for="equipment in equipmentByStatusList" :key="'equipment' + equipment.Id" v-if="equipment.EquipmentItems">
+                      <div slot="header">
+                        <div style="display: grid; grid-template-columns: 25% auto;">
+                          <div style="display: flex">
+                            <img v-show="equipment.Image" :src="equipment.Image" :alt="equipment.Name" style="width: 3rem; height: 3rem;">
+                          </div>
+                          <div style="display: grid; grid-template-rows: auto auto;">
+                            <div>
+                              {{ equipment.Name.trim() }}
+                            </div>                                            
+                            <div style="font-size: .9rem">
+                              Quantity: {{ equipment.EquipmentItems.length }} {{ equipment.Unit }}
+                            </div>
+                          </div>
+                        </div>
+                      <div>
+                    </div>
+                  </div>
+                  <v-card style="border: 0" v-for="item in equipment.EquipmentItems" :key="'equipmentItems' + item.Id">
+                    <v-card-text style="font-size: .9rem">
+                      <div>
+                        Serial #: <strong>{{ item.SerialNumber }}</strong>, warehouse: <strong>{{ item.Warehouse.Name }}</strong>
+                      </div>
+                      <div v-if="authUser.Role == 'Manager' || authUser.Role == 'Equipment Staff'">
+                          Current in: 
+                        <span v-if="item.Position">
+                            {{ item.Position.Location.Name }}
+                            - Block {{ item.Position.Block }} - Floor {{ item.Position.Floor }}
+                            - Tile {{ item.Position.Tile }}
+                        </span>
+                        <span v-else>undefined</span>
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-flex>
+          </div>
+        </modal>
+      </div>                          
 </template>
 
 <script>
@@ -288,6 +337,11 @@ export default {
     OrderBlock
 
     // DoughnutChart
+  },
+  computed: {
+    authUser() {
+      return JSON.parse(window.localStorage.getItem('user'));
+    }
   },
   data() {
     return {
@@ -332,7 +386,11 @@ export default {
       workOrders: [], // orders data to display in orderblocks <order-block></order-block>
       workOrdersMaintainTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
       workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
-      workOrdersWokingTomorrow: [] // orders data to display in orderblocks <order-block></order-block>
+      workOrdersWokingTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
+
+      equipmentStatusFromChart: '',
+      equipmentByStatusList: [],
+      showEquipmentByStatusPopup: false,
     };
   },
   mounted() {
@@ -528,7 +586,6 @@ export default {
         console.log(error);
       });
   },
-
   methods: {
     dayClicked(day) {
       this.selectedDay = day;
@@ -581,7 +638,21 @@ export default {
     },
     getYear(date) {
       return moment(date).year;
-    }
+    },
+    displayEquipmentStatusPopup(status) {
+      this.axios.get(`http://localhost:3000/api/equipment/getItemsByStatus/${status}`)
+        .then(res => {
+          if (res.status == 200) {
+            this.equipmentByStatusList = res.data;
+            this.equipmentStatusFromChart = status;
+            this.showEquipmentByStatusPopup = true;
+          }
+        }).catch(error => {
+          console.log(error);
+          this.$router.push('/500');
+        })
+    },
+
   },
   watch: {
     tmpCategory: function() {
