@@ -66,7 +66,34 @@ router.get("/search/:value", (req, res) => {
     .param("searchText", req.params.value, TYPES.NVarChar)
     .into(res);
 });
-
+router.get("/searchLeaderEquipment/:value", (req, res) => {
+  req
+    .sql(" select distinct wo.*,t.Name as 'Team' ,ws.Name as 'Status',wc.Name as 'Category', loca.Name as [Location], loca.Id as [LocationID],(select distinct e.Id,e.Name,e.Image,wd.WorkOrderID,wd.ClosedDate , ei.SerialNumber as [SerialNumber], " +
+      "   ei.Id as [EquipmentItemID], ei.TileID as [TileID], tile.Name as [Tile], floor.Id as [FloorID], floor.Name as [Floor] ,block.Id as [BlockID], block.Name as [Block], l.Id as [LocationID], l.Name as [Location] " +
+      "   from WorkOrderDetail as wd join EquipmentItem as ei on wd.EquipmentItemID = ei.Id " +
+      "   join Equipment as e on e.Id = ei.EquipmentID " +
+      "   join Tile as tile on tile.Id = ei.TileID " +
+      "   join Floor as floor on floor.Id = tile.FloorID " +
+      "   join Block as block on block.Id = floor.BlockID " +
+      "   join Location as l on l.Id = block.LocationID " +
+      "   where wd.WorkOrderID = wo.Id and (wd.ClosedDate is null) for json path) as 'WorkorderDetail' " +
+      " from WorkOrder as wo join TeamLocation as tl on tl.Id = wo.TeamLocationID " +
+      " join Team as t on t.Id = tl.TeamId " +
+      " join Location as loca on loca.Id = tl.LocationID " +
+      " join WorkOrderDetail as wd on wo.Id = wd.WorkOrderID " +
+      " join EquipmentItem as ei on wd.EquipmentItemID = ei.Id " +
+      "   join Equipment as e on e.Id = ei.EquipmentID " +
+      " join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
+      " join Account as acc on acc.Id = wo.RequestUserID " +
+      " join WorkOrderCategory as wc on wc.Id = wo.CategoryID						  " +
+      " where (ws.Name = 'In Progress') AND  " +
+      "       e.[Name] like N'%' + @searchText + '%' or ws.[Name] like N'%' + @searchText + '%' or loca.[Name] like N'%' + @searchText + '%' " +
+      "       or convert(nvarchar(max), e.Id) = @searchText or ei.[SerialNumber] like N'%' + @searchText + '%' " +
+      " order by wo.CreateDate asc  " +
+      "  for json path ")
+    .param("searchText", req.params.value, TYPES.NVarChar)
+    .into(res);
+});
 // /*Get Equipment BY ID*/
 // router.get("/:id", (request, response) => {
 //   request

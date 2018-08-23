@@ -154,7 +154,7 @@ router.get('/id/:orderId', (request, response) => {
 router.get("/", (request, response) => {
     request
         .sql(
-            "select (select wo.*, woc.[Name] as [Category], wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], " +
+            "select (select wo.*, woc.[Name] as [Category], wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], acc.Email as [RequestUserEmail], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], " +
             "       (json_query((select wod.*, json_query((select ei.*, e.Name as [Name], e.Image as [Image] " +
             "                                               from EquipmentItem as ei join Equipment as e on ei.EquipmentId = e.Id " +
             "                                               where ei.Id = wod.EquipmentItemId for json path, without_array_wrapper)) as [EquipmentItem] " +
