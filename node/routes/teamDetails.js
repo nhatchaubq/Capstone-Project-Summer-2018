@@ -94,7 +94,7 @@ router.get("/:id/equipmentitem", (request, response) => {
 router.get("/:id/item", (request, response) => {
   request
     .sql(
-      "select ei.*,e.Name, wo.Name as 'WordOrderName' " +
+      "select ei.*,e.Name, wo.Name as 'WordOrderName', wo.ExpectingCloseDate  " +
       "from TeamLocation as tl join WorkOrder as wo on tl.Id = wo.TeamLocationID " +
       "join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
       "join WorkOrderDetail as wd on wd.WorkOrderID = wo.Id " +

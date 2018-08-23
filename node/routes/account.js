@@ -33,6 +33,19 @@ router.get("/search/:value", function (request, response) {
     .param("searchText", request.params.value, TYPES.NVarChar)
     .into(response);
 });
+router.get("/getAllWorkOrderOfthatAcc/:id", function (request, response) {
+  request
+    .sql(
+      "SELECT wo.* FROM [WorkOrder] as wo  " +
+      "JOIN Account as acc ON acc.Id =wo.RequestUserID   " +
+
+      "WHERE wo.StatusID NOT IN (SELECT ws.Id FROM [WorkOrderStatus] as ws WHERE ws.Name = N'Closed' or ws.Name = N'Cancelled' )   " +
+      "and acc.Id = @accId for json path  "
+
+    )
+    .param("accId", request.params.id, TYPES.NVarChar)
+    .into(response);
+});
 
 // search-end
 
