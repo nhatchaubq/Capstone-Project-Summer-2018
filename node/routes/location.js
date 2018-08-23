@@ -36,9 +36,9 @@ router.delete("/deleteTeamWithoutWO/:id", (req, res) => {
   req
     .sql(
       "delete from TeamLocation where LocationID = @locationId and TeamID not in( " +
-        "select distinct tl.TeamID " +
-        "from TeamLocation as tl join WorkOrder as wo on tl.Id = wo.TeamLocationID " +
-        "where tl.LocationID = @locationId)"
+        " select distinct tl.TeamID " +
+        " from TeamLocation as tl join WorkOrder as wo on tl.Id = wo.TeamLocationID " +
+        " where tl.LocationID = @locationId ) "
     )
     .param("locationId", req.params.id, TYPES.Int)
     .exec(res);
@@ -145,7 +145,7 @@ router.get("/editLocation/:id", (request, response) => {
         " where tl.LocationID = @locationId for json path) as 'Team', (select distinct tl.Id, tl.TeamID " +
         " from TeamLocation as tl join WorkOrder as wo on tl.Id = wo.TeamLocationID " +
         " join WorkOrderStatus as ws on ws.Id = wo.StatusID " +
-        " where tl.LocationID = @locationId and ws.Name != 'Closed' and ws.Name != 'Cancelled' and ws.Name != 'Rejected'  for json path) as 'TeamWithWorkOrdering', " +
+        " where tl.LocationID = @locationId for json path) as 'TeamWithWorkOrdering', " +
         " (select ei.Id " +
         "   from EquipmentItem as ei join Tile as t on ei.TileID = t.Id " +
         "   join[Floor] as f on f.Id = t.FloorID " +
@@ -178,9 +178,9 @@ router.get("/search/:value", (req, res) => {
   req
     .sql(
       "select distinct l.Id " +
-        " from Location as l join TeamLocation as tl on l.Id = tl.LocationID " +
-        " 			             join Team as t on t.Id = tl.TeamID " +
-        " where l.[Name] like N'%' + @searchText + '%' or l.[Address] like N'%' + @searchText + '%' or t.[Name] like N'%' + @searchText + '%' " +
+        " from Location as l " +
+        // " 			             join Team as t on t.Id = tl.TeamID " +
+        " where l.[Name] like N'%' + @searchText + '%' or l.[Address] like N'%' + @searchText + '%' " +
         " for json path "
     )
     .param("searchText", req.params.value, TYPES.NVarChar)
