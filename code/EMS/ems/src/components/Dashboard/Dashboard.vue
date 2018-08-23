@@ -304,7 +304,7 @@
                       </div>
                       <div v-if="authUser.Role == 'Manager' || authUser.Role == 'Equipment Staff'">
                           Current in: 
-                        <span v-if="item.Position.Block && item.Position.Floor && item.Position.Tile">
+                        <span v-if="item.Position">
                             {{ item.Position.Location.Name }}
                             - Block {{ item.Position.Block }} - Floor {{ item.Position.Floor }}
                             - Tile {{ item.Position.Tile }}
