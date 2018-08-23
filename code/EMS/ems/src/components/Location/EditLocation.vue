@@ -34,18 +34,18 @@
               <div>
                 <div class="form-field-title">
                   <strong>Status</strong>
-                  <span v-if="location.Items || selectedTeams.length" class="error-text"> (There are the equipment in this location. Can't change the activity status)</span>
+                  <span v-if="location.Items" class="error-text"> (There are the equipment in this location. Can't change the activity status)</span>
                 </div>
                 <div class="form-field-input" style="margin-top:10px;">
                   <label class="radio" v-on:click="location.IsActive = true" style="margin-right:0.5rem">
-                    <input type="radio" name="status" style="margin-right:0.5rem"  :checked="location.IsActive || selectedTeams.length" > Active
+                    <input type="radio" name="status" style="margin-right:0.5rem"  :checked="location.IsActive" > Active
                   </label>
                   <label class="radio" v-on:click="() => {                    
-                      if (!location.Items && selectedTeams.length==0) {
+                      if (!location.Items) {
                         location.IsActive = false
                       }
                     }">
-                    <input type="radio" name="status" :disabled="location.Items" :checked="!location.IsActive && !selectedTeams.length" :disabled="location.Items || selectedTeams.length > 0">Inactive
+                    <input type="radio" name="status" :disabled="location.Items" :checked="!location.IsActive" >Inactive
                   </label>                                                  
                 </div>
               </div>
@@ -243,7 +243,7 @@ export default {
                     //   this.newTeams = this.newTeams.filter(
                     //     newTeam => newTeam.Id != team.TeamID
                     //   );
-                    // });                    
+                    // });
                     for (const team of this.newTeams) {
                       this.axios.post(Server.TEAM_LOCATION_CREATE_API_PATH, {
                         locationId: this.location.Id,
@@ -369,10 +369,10 @@ export default {
   display: grid;
   grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
-  padding: .5rem 2rem;
+  padding: 0.5rem 2rem;
 }
 .form-title-start {
-  padding-top: .2rem;
+  padding-top: 0.2rem;
   font-weight: bold;
   font-size: 20px;
   color: #616161;
@@ -395,7 +395,7 @@ export default {
 .lb-team {
   border: 1px solid #616161;
   border-radius: 5px;
-  padding: .3rem;
+  padding: 0.3rem;
 }
 .delete {
   /* position: relative;
