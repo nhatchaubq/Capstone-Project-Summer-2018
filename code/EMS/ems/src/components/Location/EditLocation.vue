@@ -45,7 +45,7 @@
                         location.IsActive = false
                       }
                     }">
-                    <input type="radio" name="status" :disabled="location.Items" :checked="!location.IsActive && !selectedTeams.length" :disabled="location.Items || selectedTeams.length > 0">Inactive
+                    <input type="radio" name="status" :disabled="location.Items" :checked="!location.IsActive && !selectedTeams.length">Inactive
                   </label>                                                  
                 </div>
               </div>
