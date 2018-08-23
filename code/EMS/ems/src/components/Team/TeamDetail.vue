@@ -44,7 +44,7 @@
           <strong ><div v-if="!editMode" style="margin:0 0.2rem 0 1rem"> Status: <span  :style="{color: team.Status? 'var(--primary-color)' : '#607D8B'}">  {{team.Status? 'Active': 'Inactive'}}   </span></div></strong>
         <div v-if="editMode" style="margin-left:1rem"> 
           <strong >Status: </strong>
-          <strong><div v-if="deleteFlag && editMode" style="color:red">Can not change to "inactive" because of holding work orders</div></strong> 
+          <strong ><div v-if="deleteFlag && editMode" style="color:red">Can not change to "inactive" because of holding work orders with Id: <span :key="'member1' + workOrder.Id" v-for="workOrder in WorkOrders">[#{{workOrder.Id}}]  </span> </div></strong> 
           <label style="margin-right: 0rem; margin-left: 1rem" class="radio"  >
             <input type="radio" name="active" v-on:change="team.Status = true" :checked="team.Status" :disabled="!editMode || deleteFlag">
             Active
