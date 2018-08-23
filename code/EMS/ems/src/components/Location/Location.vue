@@ -16,7 +16,7 @@
             <b>Sort By</b>
           </div> -->
           <div class="location-blocks" :style="authUser.Role == 'Manager' ? 'max-height: 83%; min-height: 83%' : 'max-height: 90.15%; min-height: 90.15%'">
-            <div class="material-box material-shadow-animate" :class="isActive(location.Id)"  :key='location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)" >
+            <div class="material-box material-shadow-animate" :class="isActive(location.Id)"  :key='"location" + location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)" >
               <div class="location-name">                
                 <div>{{location.Name}}</div>
                 <!-- <div style="text-align: right; line-height: 1.6rem;">
@@ -87,7 +87,7 @@
                 <img v-show="equipment.Image" :src="equipment.Image"  style="width: 3rem; height: 3rem;"> -->
                 <v-flex >
                         <v-expansion-panel popout>
-                            <v-expansion-panel-content v-bind:key='equipment.Id' v-for="equipment in equipments">
+                            <v-expansion-panel-content v-bind:key="'equipment' + equipment.Id" v-for="equipment in equipments">
                                 <div slot="header" style="display: grid; grid-template-columns: 25% auto;">
                                     <div style="display: flex">
                                         <img v-show="equipment.Image" :src="equipment.Image" style="width: 3rem; height: 3rem;">
@@ -101,7 +101,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <v-card v-for="eqtItem in equipment.EquipmentItems" :key="eqtItem.Id">
+                                <v-card v-for="eqtItem in equipment.EquipmentItems" :key="'eqtItem' + eqtItem.Id">
                                     <v-card-text style="font-size: .9rem">
                                         Serial #: <a>{{ eqtItem.SerialNumber }}</a> | Current in: Block {{eqtItem.Block}} - Floor {{eqtItem.Floor}} - Tile {{eqtItem.Tile}}
                                     </v-card-text>
@@ -117,7 +117,7 @@
             
             <div v-else-if="currentMode == modes.WORKORDER" style="padding-top:5px">
               <div  v-if="workorders.length > 0">
-                <div v-bind:key='workorder.Id' v-for="workorder in workorders">                           
+                <div v-bind:key='"workorder" + workorder.Id' v-for="workorder in workorders">                           
                 <div style="display: grid; grid-template-columns: 80% auto;border-bottom:0.15px solid;padding-top:1rem; font-size: 0.95rem" >
                     <div style=" border-right: 0.25px solid">
                       <div style="display: grid; grid-template-columns: 80% auto; font-weight: 500; padding: .5rem 0">
@@ -143,7 +143,7 @@
               <div v-if="teams.length > 0">
                 <v-flex>
                         <v-expansion-panel popout>
-                            <v-expansion-panel-content :key='account.Id' v-for="account in teams">
+                            <v-expansion-panel-content :key='"account" + account.Id' v-for="account in teams">
                                 <div slot="header" style="padding-top:0.2rem; width: 100% " >
                                   <div class="name-team">
                                     <div><i class="material-icons" >group</i></div>
@@ -177,7 +177,7 @@
                                           Members:
                                         </div>
                                         <div style="font-size:15px;">
-                                          <div style="margin-bottom:0.2rem" :key="member.Id" v-for="member in account.Members">
+                                          <div style="margin-bottom:0.2rem" :key="'member' + member.Id" v-for="member in account.Members">
                                             -  {{member.Fullname}}<br>
                                           </div>                                          
                                         </div>
@@ -257,11 +257,11 @@
                   <th><strong>Status</strong></th>
                 </tr>                
               </thead>
-              <tbody style="font-size:14px" :class="{'row-even': index % 2 != 0}" :key='workorderDetail.Id' v-for="(workorderDetail, index) in selectedWorkorder.WorkorderDetail">
+              <tbody style="font-size:14px" :class="{'row-even': index % 2 != 0}" :key='"workorderDetail" + workorderDetail.Id' v-for="(workorderDetail, index) in selectedWorkorder.WorkorderDetail">
                 <tr >
                   <td :rowspan="`${workorderDetail.EquipmentItems.length + 1}`">{{workorderDetail.Name}}</td>
                 </tr>
-                <tr :key="item.Id" v-for="item in workorderDetail.EquipmentItems">                  
+                <tr :key="'EquipmentItems' + item.Id" v-for="item in workorderDetail.EquipmentItems">                  
                   <td >{{item.SerialNumber}}</td>
                   <td v-if="selectedWorkorder.Status == 'In Progress' || selectedWorkorder.Status == 'Closed'" :style="{color: item.ClosedDate? 'var(--blue)' : 'var(--success-color)'}">{{item.ClosedDate? "Returned" : "Working" }}</td>
                   <td v-if="selectedWorkorder.Status == 'Requested'" style="color: var(--status-requested)" >Requested</td>
@@ -501,7 +501,7 @@ export default {
         let data = response.data;
         if (
           JSON.parse(window.localStorage.getItem("user")).Role ==
-          ("Staff" || "Maintainer")
+          ("Staff")
         ) {
           data.forEach(workorder => {
             workorder.OfTeam.forEach(mem => {
@@ -583,7 +583,8 @@ export default {
     },
     "$store.state.locationPage.searchText": function() {
       if (this.$store.state.locationPage.searchText.length > 0) {
-        this.setSelectedLocation(null);
+        // this.setSelectedLocation(null);
+        this.selectedLocation = null;
       }
       if (this.$store.state.locationPage.searchText == "") {
         this.getAllLocation();

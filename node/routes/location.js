@@ -178,9 +178,9 @@ router.get("/search/:value", (req, res) => {
   req
     .sql(
       "select distinct l.Id " +
-        " from Location as l join TeamLocation as tl on l.Id = tl.LocationID " +
-        " 			             join Team as t on t.Id = tl.TeamID " +
-        " where l.[Name] like N'%' + @searchText + '%' or l.[Address] like N'%' + @searchText + '%' or t.[Name] like N'%' + @searchText + '%' " +
+        " from Location as l " +
+        // " 			             join Team as t on t.Id = tl.TeamID " +
+        " where l.[Name] like N'%' + @searchText + '%' or l.[Address] like N'%' + @searchText + '%' " +
         " for json path "
     )
     .param("searchText", req.params.value, TYPES.NVarChar)
