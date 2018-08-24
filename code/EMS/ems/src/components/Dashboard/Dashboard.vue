@@ -144,12 +144,12 @@
                                           <!-- chow- start -->
                                           <div class="order-blocks">
                                               <div>
-                                                  <!-- <div class="emtpy-text" v-if="workOrdersWokingToday.length == 0"> -->
+                                          
                                                   <div class="emtpy-text" v-if="workOrdersWokingToday && workOrdersWokingToday.length == 0">
                                                       There is no orders to display.
                                                   </div>
-                                                  <div v-else>
-                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingToday" ></order-block>
+                                                  <div v-else>                                                    
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingToday" @click.native="$router.push(`/work_order/${order.Id}`)" ></order-block>
                                                   </div>
                                               </div>
                                           </div>
@@ -170,11 +170,11 @@
                                           <div class="order-blocks">
                                               <div>
                                                   <div class="emtpy-text" v-if="workOrdersWokingTomorrow && workOrdersWokingTomorrow.length == 0">
-                                                  <!-- <div class="emtpy-text" v-if="workOrdersWokingTomorrow"> -->
+                                              
                                                       There is no orders to display.
                                                   </div>
                                                   <div v-else>
-                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingTomorrow"></order-block>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingTomorrow" @click.native="$router.push(`/work_order/${order.Id}`)"></order-block>
                                                   </div>
                                               </div>
                                           </div>
@@ -202,12 +202,11 @@
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                   
                                           <div class="order-blocks">
                                               <div>
-                                                  <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
                                                   <div class="emtpy-text" v-if="workOrders && workOrders.length == 0" >
                                                       There is no orders to display.
                                                   </div>
                                                   <div v-else>
-                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrders" ></order-block>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrders" @click.native="$router.push(`/work_order/${order.Id}`)"></order-block>
                                                   </div>
                                               </div>
                                           </div>
@@ -227,12 +226,12 @@
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                                                       
                                           <div class="order-blocks">
                                               <div>
-                                                  <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
+
                                                   <div class="emtpy-text" v-if="workOrdersMaintainTomorrow && workOrdersMaintainTomorrow.length == 0">
                                                       There is no orders to display.
                                                   </div>
                                                   <div v-else>
-                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersMaintainTomorrow" ></order-block>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersMaintainTomorrow" @click.native="$router.push(`/work_order/${order.Id}`)"></order-block>
                                                   </div>
                                               </div>
                                           </div>
@@ -340,7 +339,7 @@ export default {
   },
   computed: {
     authUser() {
-      return JSON.parse(window.localStorage.getItem('user'));
+      return JSON.parse(window.localStorage.getItem("user"));
     }
   },
   data() {
@@ -388,9 +387,9 @@ export default {
       workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
       workOrdersWokingTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
 
-      equipmentStatusFromChart: '',
+      equipmentStatusFromChart: "",
       equipmentByStatusList: [],
-      showEquipmentByStatusPopup: false,
+      showEquipmentByStatusPopup: false
     };
   },
   mounted() {
@@ -640,19 +639,20 @@ export default {
       return moment(date).year;
     },
     displayEquipmentStatusPopup(status) {
-      this.axios.get(`http://localhost:3000/api/equipment/getItemsByStatus/${status}`)
+      this.axios
+        .get(`http://localhost:3000/api/equipment/getItemsByStatus/${status}`)
         .then(res => {
           if (res.status == 200) {
             this.equipmentByStatusList = res.data;
             this.equipmentStatusFromChart = status;
             this.showEquipmentByStatusPopup = true;
           }
-        }).catch(error => {
-          console.log(error);
-          this.$router.push('/500');
         })
-    },
-
+        .catch(error => {
+          console.log(error);
+          this.$router.push("/500");
+        });
+    }
   },
   watch: {
     tmpCategory: function() {
