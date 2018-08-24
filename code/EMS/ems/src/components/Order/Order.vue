@@ -8,27 +8,29 @@
                             Filter:
                         </div>
                         <div>
-                            <div style="width: 100%; display: grid; grid-template-rows: auto auto,">
-                                <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
-                                        <div>Priority:</div>
-                                        <div>
-                                            <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in $store.state.workOrderPage.options.priorities" style="margin-right: .5rem;">
-                                                <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="$store.state.workOrderPage.filterOptionsValues.priorities.includes(priority)">
-                                                {{ priority.name }}
-                                            </label>                              
-                                        </div>                        
-                                </div>
-                                <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
-                                        <div>Status:</div>
-                                        <div>
-                                            <label class="checkbox" :key="'statusOption' + status.id" v-for="status in $store.state.workOrderPage.options.status" style="margin-right: .5rem;">
-                                                <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="$store.state.workOrderPage.filterOptionsValues.status.includes(status)">
-                                                {{ status.name }}
-                                            </label>
-                                        </div>
-                                </div>
-
+                          <div style="width: 100%; display: grid; grid-template-rows: auto auto,">
+                            <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
+                              <div>Priority:</div>
+                              <div>
+                                <label class="checkbox" :key="'priorOption' + priority.id" v-for="priority in $store.state.workOrderPage.options.priorities" style="margin-right: .5rem;">
+                                    <input type="checkbox" v-on:change="addFilter(priority, $event)" :checked="$store.state.workOrderPage.filterOptionsValues.priorities.includes(priority)">
+                                    {{ priority.name }}
+                                </label>                              
+                              </div>                        
                             </div>
+                            <div style="user-select: none; display: grid; grid-template-columns: 4rem auto;">
+                              <div>Status:</div>
+                              <div>
+                                <span>
+                                  <label class="checkbox" :key="'statusOption' + status.id" v-for="status in $store.state.workOrderPage.options.status" style="margin-right: .5rem;">
+                                    <input type="checkbox" v-on:change="addFilter(status, $event)" :checked="$store.state.workOrderPage.filterOptionsValues.status.includes(status)">
+                                    {{ status.name }}
+                                  </label>
+                                </span>
+                                <span class="link" style="margin-left: .5rem; font-weight: 500;"><a @click="resetFilterOptions()">reset</a></span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                   </div>
                   <div v-if="authUser.Role == 'Manager' || authUser.Role == 'Equipment Staff'" style="width: 60%; user-select: none">
@@ -76,7 +78,10 @@
                         </span>
                     </div>                        
                     <div>
-                        <span class="detail-title">
+                        <span class="detail-title" 
+                              :class="{'error-text': !selectedOrder.ClosedDate && (getDurationFromToday(selectedOrder.ExpectingCloseDate) < 0),
+                                      'warning-text': !selectedOrder.ClosedDate && (getDurationFromToday(selectedOrder.ExpectingCloseDate) <= 3 && getDurationFromToday(selectedOrder.ExpectingCloseDate) >= 0)}"
+                              style="font-size: 1.7rem; font-style: normal; font-weight: 400 !important;">
                             {{ selectedOrder.Name }}
                         </span>
                     </div>
@@ -829,8 +834,6 @@ import EquipmentDetailPopup from "@/components/Equipment/EquipmentDetailPopup";
 import Vodal from "vodal";
 import { gmapApi } from "vue2-google-maps";
 import { BasicSelect } from "vue-search-select";
-import io from "socket.io-client";
-import Utils from "@/utils.js";
 import numeral from "numeral";
 
 export default {
@@ -851,8 +854,7 @@ export default {
     }
   },
 
-  async created() {    
-
+  async created() {   
     if (this.$store.state.workOrderPage.initialLoad) {
       await this.axios
         .get(Server.WORKORDER_STATUS_API_PATH)
@@ -865,10 +867,12 @@ export default {
               type: this.optionTypes.STATUS
             };
             this.$store.state.workOrderPage.options.status.push(status);
-            if (status.name != "Cancelled" && status.name != "Closed") {
-              this.$store.state.workOrderPage.filterOptionsValues.status.push(
-                status
-              );
+            if (this.$store.state.workOrderPage.statusFromDashBoard) {
+              if (status.name == this.$store.state.workOrderPage.statusFromDashBoard) {
+                this.$store.state.workOrderPage.filterOptionsValues.status.push(status);
+              }
+            } else if (status.name != "Cancelled" && status.name != "Closed") {
+              this.$store.state.workOrderPage.filterOptionsValues.status.push(status);
             }
           }
         })
@@ -899,8 +903,6 @@ export default {
           }
         });
     }
-
-
     this.getWorkOrders();
     this.getBlockFloorTile();
     if (this.$store.state.workOrderPage.initialLoad) {
@@ -909,65 +911,51 @@ export default {
   },
   data() {
     return {
-
-
         // socket: io(`http://localhost:3000`),
-        ErrorString: {
-            errorInvalidPosition: 'The location has invalid positions (missing blocks or floors or tiles).',
-            closeOrderDamagedLostItemMustProvideDescription: 'You must provide description for the damaged/lost equipment.',
-            errorUpdatePosition: 'You must select block, floor and tile to update position.',
-            closeOrderMaintenanceMustProvideDescription: 'You must provide description for maintained equipment.',
-        },
-        Errors: {
-            RejectedDescriptionNotProvided: '',
-            closeOrderDamagedLostItemMustProvideDescription: '',
-            errorUpdatePosition: '',
-            errorInvalidPosition: '',
-            closeOrderMaintenanceMustProvideDescription: '',
-        },
-        tempValues: null, // to hold the original orders when apply filters
-        toDisplayWorkOrders: [],
-        workingOrders: [],
-        maintainingOrders: [],
-        workOrders: [], // orders data to display in orderblocks <order-block></order-block>
-        selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
-        equipments: [], // to hold equipments in the selected work order
-        equipmentPanelIndex: [true, ],
-        selectedEquipmentPanelIndex: -1,
-        editMode: false, // edit work order detail
-        equipmentItem: null, // when select an item in the list of equipment of selected order
-        selectedFilter: null, // to hold the selected value when change in <select></select>
-        searchMode: false, // flag to display the "Clear search result"
-        // options: { 
-        //     priorities: [],
-        //     status: []
-        // },
-        // filterValues: [],
-        // filterOptionsValues: {
-        //     priorities: [],
-        //     status: []
-        // },
-        optionTypes: {
-            STATUS: 0,
-            PRIORITY: 1
-        },
-        showCancelDialog: false,
-        showApproveRejectDialog: false,
-        showChangeStatusDialog: false,
-        showCloseWorkOrderDialog: false,
-        newStatusId: -1,
-        newStatusName: '',
-        approveWorkOrder: false,
-        changeStatusDescription: '',
-        viewDetailMode: true,        
-        showUpdateItemPosition: false,
-        
-        blockFloorTiles: [],
-        toUpdateSelectedLocation: null,
-        locationOptions: [],        
-
-
-
+      ErrorString: {
+          errorInvalidPosition: 'The location has invalid positions (missing blocks or floors or tiles).',
+          closeOrderDamagedLostItemMustProvideDescription: 'You must provide description for the damaged/lost equipment.',
+          errorUpdatePosition: 'You must select block, floor and tile to update position.',
+          closeOrderMaintenanceMustProvideDescription: 'You must provide description for maintained equipment.',
+      },
+      Errors: {
+          RejectedDescriptionNotProvided: '',
+          closeOrderDamagedLostItemMustProvideDescription: '',
+          errorUpdatePosition: '',
+          errorInvalidPosition: '',
+          closeOrderMaintenanceMustProvideDescription: '',
+      },
+      tempValues: null, // to hold the original orders when apply filters
+      toDisplayWorkOrders: [],
+      workingOrders: [],
+      maintainingOrders: [],
+      workOrders: [], // orders data to display in orderblocks <order-block></order-block>
+      selectedOrder: null, // to provide order to OrderDetail component <order-detail></order-detail>
+      equipments: [], // to hold equipments in the selected work order
+      equipmentPanelIndex: [true, ],
+      selectedEquipmentPanelIndex: -1,
+      editMode: false, // edit work order detail
+      equipmentItem: null, // when select an item in the list of equipment of selected order
+      selectedFilter: null, // to hold the selected value when change in <select></select>
+      searchMode: false, // flag to display the "Clear search result"
+      optionTypes: {
+          STATUS: 0,
+          PRIORITY: 1
+      },
+      showCancelDialog: false,
+      showApproveRejectDialog: false,
+      showChangeStatusDialog: false,
+      showCloseWorkOrderDialog: false,
+      newStatusId: -1,
+      newStatusName: '',
+      approveWorkOrder: false,
+      changeStatusDescription: '',
+      viewDetailMode: true,        
+      showUpdateItemPosition: false,
+      
+      blockFloorTiles: [],
+      toUpdateSelectedLocation: null,
+      locationOptions: [],    
       toUpdatePositionItem: null,
       updateBlock: null,
       updateFloor: null,
@@ -1550,7 +1538,9 @@ export default {
           return "var(--status-cancelled)";
       }
     },
-
+    getDurationFromToday(toDate) {
+      return moment(toDate).diff(moment(), 'days');
+    },
     getDate(date) {
       return moment(date).format("L");
     },
@@ -1730,6 +1720,15 @@ export default {
     getNumberFormattedThousand(str) {
       let value = numeral(str).value();
       return numeral(value).format("0,0");
+    },
+    resetFilterOptions() {
+      this.$store.state.workOrderPage.filterOptionsValues.status = [];
+      for (const status of this.$store.state.workOrderPage.options.status) {
+        if (status.name != "Cancelled" && status.name != "Closed") {
+          this.$store.state.workOrderPage.filterOptionsValues.status.push(status);
+        }
+      }
+      this.filterOrders();
     }
   },
   watch: {
@@ -2008,5 +2007,9 @@ export default {
 .view-mode-active {
   color: white;
   background-color: #26a69a;
+}
+
+.link:hover {
+  font-style: italic;
 }
 </style>

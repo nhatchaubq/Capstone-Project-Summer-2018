@@ -1,6 +1,8 @@
 <template>
     <div v-if="order" class="material-box material-shadow-animate order-block">
-        <div class="order-block-title">{{ order.Name }}</div>
+        <div class="order-block-title" :class="{'error-text': !order.ClosedDate && (getDurationFromToday(order.ExpectingCloseDate) < 0),
+                                                'warning-text': !order.ClosedDate && (getDurationFromToday(order.ExpectingCloseDate) <= 3 && getDurationFromToday(order.ExpectingCloseDate) >= 0)}"
+            style="font-size: 1.4rem !important; font-style: normal; font-weight: 500 !important;">{{ order.Name }}</div>
         <div class="order-status-icon" style="display: grid; grid-template-row: auto auto; text-align: center">
             <!-- <i class="material-icons">lock_open</i> -->
             <div style="margin-top: -.5rem; margin-bottom: 1rem">
@@ -104,6 +106,15 @@ export default {
         },
         getFormatDateTime(date) {
             return moment(date).format('LLL');
+        },        
+        getDurationFromToday(toDate) {
+            return moment(toDate).diff(moment(), 'days');
+        },
+        getDate(date) {
+            return moment(date);
+        },
+        getToday() {
+            return moment();
         },
     }
 }
@@ -122,7 +133,7 @@ export default {
     .order-block-title {
         grid-column: 1;
         grid-row: 1;
-        font-size: 25px;
+        font-size: 1.2rem;
         font-weight: 500;
         margin-bottom: 5px;
     }

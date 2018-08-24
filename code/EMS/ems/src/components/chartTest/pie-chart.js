@@ -49,9 +49,11 @@ export default {
             responsive: true,
             maintainAspectRatio: false,
             onClick: (event, items) => {
-                let equipmentStatus = items[0]['_model'].label;
-                if (equipmentStatus) {
-                    this.onClickChart(equipmentStatus);
+                if (items[0] && items[0]['_model']) {
+                    let equipmentStatus = items[0]['_model'].label;
+                    if (equipmentStatus) {
+                        this.onClickChart(equipmentStatus);
+                    }
                 }
             }
         },);
