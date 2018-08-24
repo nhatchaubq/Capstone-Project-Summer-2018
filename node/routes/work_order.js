@@ -156,47 +156,47 @@ router.get("/id/:orderId", (request, response) => {
 // ChauBQN
 // get work orders
 router.get("/", (request, response) => {
-  request
-    .sql(
-      "select (select wo.*, woc.[Name] as [Category], wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], " +
-        "       (json_query((select wod.*, json_query((select ei.*, e.Name as [Name], e.Image as [Image] " +
-        "                                               from EquipmentItem as ei join Equipment as e on ei.EquipmentId = e.Id " +
-        "                                               where ei.Id = wod.EquipmentItemId for json path, without_array_wrapper)) as [EquipmentItem] " +
-        "                       from WorkOrderDetail as wod " +
-        "                       where wod.WorkOrderID = wo.Id " +
-        "            for json path))) as [WorkOrderDetails], (select wor.*, json_query((select [Name] " +
-        "                                                                                from WorkOrderStatus " +
-        "                                                                                where wor.OldStatusID = Id " +
-        "                                                                                for json path, without_array_wrapper)) as [OldStatus], " +
-        "                                                                        json_query((select [Name] " +
-        "                                                                                    from WorkOrderStatus " +
-        "                                                                                    where wor.NewStatusID = Id " +
-        "                                                                                    for json path, without_array_wrapper)) as NewStatus, " +
-        "                                                                            json_query((select acc.*, ro.[Name] as [Role] " +
-        "                                                                                        from Account as acc join [Role] as ro on acc.RoleID = ro.Id " +
-        "                                                                                        where acc.Id = wor.ModifiedByUserID " +
-        "                                                                                        for json path, without_array_wrapper)) as [ModifiedUser] " +
-        "                                                    from WorkOrderRecord as wor " +
-        "                                                    where wor.WorkOrderID = wo.Id " +
-        "                                                    order by wor.ModifiedByDateTime desc " +
-        "                                                    for json path) as [WorkOrderRecord], json_query((select tl.*, json_query((select * from [Location] where tl.LocationID = Id for json path, without_array_wrapper)) as [Location], t.Id as [Team.Id], t.[Name] as [Team.Name] " +
-        "                                                                                                     from TeamLocation as tl " +
-        "                                                                                                               join Team as t on tl.TeamID = t.Id " +
-        "                                                                                                     where wo.TeamLocationID = tl.Id " +
-        "                                                                                                     for json path, without_array_wrapper)) as [TeamLocation]  " +
-        " from WorkOrder as wo join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
-        " join Account as acc on wo.RequestUserID = acc.Id " +
-        " join [Priority] as p on wo.PriorityID = p.Id " +
-        " join [WorkOrderCategory] as woc on wo.CategoryID = woc.Id " +
-        " order by wo.CreateDate desc " +
-        " for json path) as [WorkOrders] for json path, without_array_wrapper"
-    )
-    .fail(function(exception, response) {
-      response.statusCode = 500;
-      response.write(exception.message);
-      response.end();
-    })
-    .into(response);
+    request
+        .sql(
+            "select (select wo.*, woc.[Name] as [Category], wos.Name as [WorkOrderStatus], acc.Username as [RequestUsername], acc.Fullname as [RequestFullname], acc.Email as [RequestUserEmail], p.[Name] as [Priority], p.TagHexColor as [PriorityColor], " +
+            "       (json_query((select wod.*, json_query((select ei.*, e.Name as [Name], e.Image as [Image] " +
+            "                                               from EquipmentItem as ei join Equipment as e on ei.EquipmentId = e.Id " +
+            "                                               where ei.Id = wod.EquipmentItemId for json path, without_array_wrapper)) as [EquipmentItem] " +
+            "                       from WorkOrderDetail as wod " +
+            "                       where wod.WorkOrderID = wo.Id " +
+            "            for json path))) as [WorkOrderDetails], (select wor.*, json_query((select [Name] " +
+            "                                                                                from WorkOrderStatus " +
+            "                                                                                where wor.OldStatusID = Id " +
+            "                                                                                for json path, without_array_wrapper)) as [OldStatus], " +
+            "                                                                        json_query((select [Name] " +
+            "                                                                                    from WorkOrderStatus " +
+            "                                                                                    where wor.NewStatusID = Id " +
+            "                                                                                    for json path, without_array_wrapper)) as NewStatus, " +
+            "                                                                            json_query((select acc.*, ro.[Name] as [Role] " +
+            "                                                                                        from Account as acc join [Role] as ro on acc.RoleID = ro.Id " +
+            "                                                                                        where acc.Id = wor.ModifiedByUserID " +
+            "                                                                                        for json path, without_array_wrapper)) as [ModifiedUser] " +
+            "                                                    from WorkOrderRecord as wor " +
+            "                                                    where wor.WorkOrderID = wo.Id " +
+            "                                                    order by wor.ModifiedByDateTime desc " +
+            "                                                    for json path) as [WorkOrderRecord], json_query((select tl.*, json_query((select * from [Location] where tl.LocationID = Id for json path, without_array_wrapper)) as [Location], t.Id as [Team.Id], t.[Name] as [Team.Name] " +
+            "                                                                                                     from TeamLocation as tl " +
+            "                                                                                                               join Team as t on tl.TeamID = t.Id " +
+            "                                                                                                     where wo.TeamLocationID = tl.Id " +
+            "                                                                                                     for json path, without_array_wrapper)) as [TeamLocation]  " +
+            " from WorkOrder as wo join WorkOrderStatus as wos on wo.StatusID = wos.Id " +
+            " join Account as acc on wo.RequestUserID = acc.Id " +
+            " join [Priority] as p on wo.PriorityID = p.Id " +
+            " join [WorkOrderCategory] as woc on wo.CategoryID = woc.Id " +
+            " order by wo.CreateDate desc " +
+            " for json path) as [WorkOrders] for json path, without_array_wrapper"
+        )
+        .fail(function (exception, response) {
+            response.statusCode = 500;
+            response.write(exception.message);
+            response.end();
+        })
+        .into(response);
 });
 
 // ChauBQN
