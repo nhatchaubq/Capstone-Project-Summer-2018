@@ -82,7 +82,7 @@
               </div>
             </div>
             <div v-if="currentMode == modes.EQUIPMENT && equipments" style="padding-top:5px">               
-              <div v-if="equipments.length > 0">                
+              <div v-if="equipments && equipments.length > 0">                
                 <!-- {{equipment.Id}},{{equipment.Name}} , 
                 <img v-show="equipment.Image" :src="equipment.Image"  style="width: 3rem; height: 3rem;"> -->
                 <v-flex >
@@ -430,7 +430,7 @@ export default {
       }/getByEquipmentId/${location.Id}`;
       if (
         JSON.parse(window.localStorage.getItem("user")).Role ==
-        ("Staff" || "Maintainer")
+        ("Staff")
       ) {
         url = `http://localhost:3000/api/equipmentItem/getItemByMem/${
           location.Id
@@ -444,7 +444,7 @@ export default {
           data.forEach(eqtItem => {
             if (
               JSON.parse(window.localStorage.getItem("user")).Role ==
-              ("Staff" || "Maintainer")
+              ("Staff")
             ) {
               eqtItem.OfTeam.forEach(mem => {
                 if (
