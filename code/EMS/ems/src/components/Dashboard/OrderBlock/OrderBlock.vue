@@ -15,7 +15,7 @@
             <div >#{{ order.Id }}</div>
             <div>
                 <i class="fa fa-user"></i>
-                {{ order.RequestUsername }}
+                {{ order.RequestUsername }}<span v-if="order.TeamLocation"> ({{ order.TeamLocation.Team.Name }})</span>
             </div>
           </div>
             <!-- <div>
@@ -26,9 +26,10 @@
         <!-- <div class="order-status" :class="statusColor(order)">
             {{ order.WorkOrderStatus }}            
         </div> -->
-        <div class="order-block-location col-12" style="padding-left: 0px !important">
-            <i class="material-icons">location_on</i>
-            {{ order.Location.Name }} - {{ order.Location.Address }}
+
+        <div class="order-block-location col-12" style="padding-left: 0px !important" v-if="order.TeamLocation">
+          <i class="material-icons">location_on</i>
+          {{ order.TeamLocation.Location.Name }} - {{ order.TeamLocation.Location.Address }}
         </div>
     </div>
 </template>
@@ -223,5 +224,8 @@ export default {
 }
 .odbl {
   margin-bottom: 0.5rem;
+}
+.odbl:hover {
+  cursor: pointer;
 }
 </style>
