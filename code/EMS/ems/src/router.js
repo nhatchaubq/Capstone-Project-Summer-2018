@@ -196,6 +196,9 @@ let router = new Router({
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Teams);
         next();
+      },
+      meta: {
+        showSearchBar: false
       }
     },
     {
@@ -229,6 +232,9 @@ let router = new Router({
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Accounts);
         next();
+      },
+      meta: {
+        showSearchBar: false
       }
     },
     {
@@ -237,6 +243,9 @@ let router = new Router({
       beforeEnter: (to, from, next) => {
         store.set("title", menu.AccountDetails);
         next();
+      },
+      meta: {
+        showSearchBar: false
       }
     },
     // {
@@ -316,6 +325,9 @@ let router = new Router({
       beforeEnter: (to, from, next) => {
         store.set("title", menu.Vendors);
         next();
+      },
+      meta: {
+        showSearchBar: false
       }
     },
     // {
@@ -337,7 +349,7 @@ let router = new Router({
         next();
       },
       meta: {
-        showSearchBar: true
+        showSearchBar: false
       }
     },
     {
@@ -349,7 +361,7 @@ let router = new Router({
         next();
       },
       meta: {
-        showSearchBar: true
+        showSearchBar: false
       }
     },
     // chaubqn - start

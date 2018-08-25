@@ -250,8 +250,12 @@ router.get("/maintainCalendar", (req, res) => {
   req
     .sql(
       "select e.Name,ei.Id,ei.SerialNumber,ei.WarrantyDuration,convert(date,ei.NextMaintainDate) as 'MaintainDate',convert(date,ei.LastMaintainDate) as 'LastMaintainDate' " +
-      " from EquipmentItem as ei join Equipment as e on e.Id = ei.EquipmentID " +
-      " for json path"
+
+        " from EquipmentItem as ei join Equipment as e on e.Id = ei.EquipmentID " +
+        " join EquipmentStatus as es on es.Id = ei.StatusId " +
+        " where es.Name != 'Lost' and es.Name != 'Archived' " +
+        " for json path"
+
     )
     .into(res);
 });
