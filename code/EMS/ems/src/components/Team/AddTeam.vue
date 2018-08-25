@@ -273,12 +273,12 @@ export default {
   display: grid;
   grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
 }
 
 .form-title-start {
-  position: relative;
-  top: 10px;
+  /* position: relative; */
+  padding-top: 0.3rem;
   font-weight: bold;
   font-size: 20px;
   color: #616161;

@@ -15,6 +15,7 @@ const state = {
   searchValue: '',
   workOrderPage: {
     initialLoad: true,
+    statusFromDashBoard: null,
     searchText: '',
     searchValues: [],
     workingOrderViewMode: true,

@@ -328,6 +328,62 @@
                 </div>
             </div>
         </div>
+        <div v-if="configOriginal.warrantyMonth">
+            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Editing maximum value of warranty (months) 
+                <span style="font-weight: 400; font-size: 1rem;">
+                    <a v-if="!editingWarrantyMonthConfig" v-on:click="editingWarrantyMonthConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
+                    <span v-if="editingWarrantyMonthConfig">
+                        <a :style="!isWarrantyMonthChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
+                            v-on:click="() => {
+                                if (isWarrantyMonthChanged) {
+                                    configCopy = JSON.stringify(configOriginal);
+                                    configCopy = JSON.parse(configCopy);
+                                    $socket.emit('CONFIGURATION_CHANGED', configOriginal);
+                                    editingWarrantyMonthConfig = false;
+                                }
+                        }">save changes</a> | 
+                        <a v-on:click="() => {
+                            let configJson = JSON.stringify(configCopy.warrantyMonth)
+                            configOriginal.warrantyMonth = JSON.parse(configJson);
+                            editingWarrantyMonthConfig = false;
+                            isWarrantyMonthChanged = false;
+                        }">cancel</a>
+                    </span>
+                </span>
+            </div>
+            <div v-if="!editingWarrantyMonthConfig" style="display: grid;grid-template-columns: 24% 30%;">
+                <div style="padding-top:0.4rem">
+                    Maximum value for warranty: 
+                </div>
+                <div style="display: grid;grid-template-columns: 10% 20%;">
+                    <div  style="padding-top:0.4rem">
+                        {{configOriginal.warrantyMonth.maximumValue}}
+                    </div>
+                    <div style="padding-top:0.4rem">
+                        <label>month(s)</label>
+                    </div>
+                </div>
+            </div>
+            <div v-if="editingWarrantyMonthConfig" style="display: grid;grid-template-columns: 24% 30%;">
+                <div style="padding-top:0.4rem">
+                    Maximum value for warranty: 
+                </div>
+                <div style="display: grid;grid-template-columns: 30% 20%;">
+                    <div>
+                        <input type="number"  class="input" v-model.number="configOriginal.warrantyMonth.maximumValue" v-on:input="() => {
+                            if (configOriginal.warrantyMonth.maximumValue < 0 || configOriginal.warrantyMonth.maximumValue == '') {
+                                configOriginal.warrantyMonth.maximumValue = 0;
+                            }
+                            configOriginal.warrantyMonth.maximumValue = parseInt(configOriginal.warrantyMonth.maximumValue);
+                            checkWarrantyMonthConfigChanged();
+                        }"/>
+                    </div>
+                    <div style="padding-top:0.4rem">
+                        <label>month(s)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -378,7 +434,9 @@ export default {
       isCreateOrderConfigChanged: false,
       editingCreateWorkOrderConfig: false,
       editingNextMaintainYearConfig: false,
-      isNextMaintainYearChanged: false
+      isNextMaintainYearChanged: false,
+      editingWarrantyMonthConfig: false,
+      isWarrantyMonthChanged: false
     };
   },
   watch: {
@@ -541,6 +599,19 @@ export default {
             }
           }
         }
+      }
+    },
+    checkWarrantyMonthConfigChanged() {
+      this.isWarrantyMonthChanged = false;
+
+      const warrantyMonthConfigOriginal = this.configOriginal
+        .warrantyMonth;
+      const warrantyMonthConfigCopy = this.configCopy.warrantyMonth;
+      if (
+        this.configOriginal.warrantyMonth.maximumValue !=
+        warrantyMonthConfigCopy.maximumValue
+      ) {
+        this.isWarrantyMonthChanged = true;
       }
     },
     checkNextMaintainDateConfigChanged() {

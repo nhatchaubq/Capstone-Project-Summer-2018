@@ -22,7 +22,7 @@
                     <bar-chart :chartData="lineChartData" ref="lineChart" :styles="{height: '40vh'}"  ></bar-chart>
                   <div style="margin-top: 1rem; color: #424242; font-size: 1rem; text-align: center; font-style: italic;">
                     <div v-if="linechartOption">
-                      Completed work orders chart from the past 11 months
+                      Completed work orders chart from the past 11 months to the current moment.
                     </div>
                     <div v-else>
                       Damaged and lost equipment chart in the past 11 months to the current moment.
@@ -37,7 +37,7 @@
                   Maintenance Calendar
                 </div>       
                 <div>
-                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width: 100% !important; height:332px">                    
+                  <v-calendar :attributes='attrs' @dayclick='dayClicked' style="width: 100% !important; height:48vh">                    
                   </v-calendar>
                 </div>                       
                     <!-- <doughnut-chart :data="doughnutChartData" styles="height: 36vh"></doughnut-chart> -->
@@ -54,60 +54,102 @@
                     <div class="col-6 " style="padding-left: 0.3rem !important; padding-right: 0rem !important">
 
                             <!-- <div class="row col-12" style="margin-bottom: 1rem;padding-right: 0px; padding-left: 25px !important"> -->
-                            <div class="row col-12" style="margin-bottom: 0.5rem;  padding-right: 0px; padding-left: 25px !important">
-                                <div class="status column material-shadow-animate">
-                                    <div class="headerstatus columns">
-                                        <div style="width:40%" class="column">
-                                        <strong>Requested</strong>
-                                        </div>
-
-                                    </div>
-                                    <div class="contentstatus1" >
-                                        <p style="color: #F44336; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
-                                        <p style="font-size:15px;" >Work Orders</p>
-                                    </div>
+                          <div class="row col-12" style="margin-bottom: 0.5rem;  padding-right: 0px; padding-left: 25px !important">
+                            <div class="status column material-shadow-animate" @click="() => {
+                                $store.state.workOrderPage.initialLoad = true;
+                                $store.state.workOrderPage.statusFromDashBoard = 'Requested';
+                                $store.state.workOrderPage.options = {
+                                  priorities: [],
+                                  status: []
+                                };
+                                $store.state.workOrderPage.filterOptionsValues = {
+                                  priorities: [],
+                                  status: []
+                                };
+                                $router.push('/work_order');
+                              }">
+                              <div class="headerstatus columns">
+                                <div style="width:40%" class="column">
+                                  <strong>Requested</strong>
                                 </div>
-                                <div class="status column material-shadow-animate" style="margin-right: 0rem !important">
-                                    <div class="headerstatus columns">
-                                        <div style="width:40%" class="column">
-                                        <strong>Checked</strong>
-                                        </div>
-
-                                    </div>
-                                    <div class="contentstatus1 ">
-                                        <p style="color: #1E88E5; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
-                                        <p style="font-size:15px;">Work Orders</p>
-                                    </div>
-                                </div>
+                              </div>
+                              <div class="contentstatus1" >
+                                  <p style="color: #F44336; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Requested}}</p>
+                                  <p style="font-size:15px;" >Work Orders</p>
+                              </div>
                             </div>
-                            <div class="row col-12" style="margin-bottom: 0.5rem;  padding-right: 0px; padding-left: 25px !important">
-                                <div class="status column material-shadow-animate">
-                                    <div class="headerstatus columns">
-                                        <div style="width:40%" class="column">
-                                        <strong>Approved</strong>
-                                        </div>
-
-                                    </div>
-                                    <div class="contentstatus1">
-                                        <p style="color: #00BFA5; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
-                                        <p style="font-size:15px;">Work Orders</p>
-                                    </div>
+                            <div class="status column material-shadow-animate" style="margin-right: 0rem !important" @click="() => {
+                                $store.state.workOrderPage.initialLoad = true;
+                                $store.state.workOrderPage.statusFromDashBoard = 'Checked';
+                                $store.state.workOrderPage.options = { 
+                                  priorities: [],
+                                  status: []
+                                };
+                                $store.state.workOrderPage.filterOptionsValues = {
+                                  priorities: [],
+                                  status: []
+                                };
+                                $router.push('/work_order');
+                              }">
+                              <div class="headerstatus columns">
+                                <div style="width:40%" class="column">
+                                  <strong>Checked</strong>
                                 </div>
-                                <div class="status column material-shadow-animate" style="margin-right: 0rem !important">
-                                    <div class="headerstatus columns">
-                                        <div style="width:40%" class="column">
-                                        <strong>In Progress</strong>
-                                        </div>
-
-                                    </div>
-                                    <div class="contentstatus1" >
-                                        <p style="color: #673AB7; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
-                                        <p style="font-size:15px; ">Work Orders</p>
-                                    </div>
-                                </div>
+                              </div>
+                              <div class="contentstatus1 ">
+                                <p style="color: #1E88E5; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Checked}}</p>
+                                <p style="font-size:15px;">Work Orders</p>
+                              </div>
                             </div>
-
-                            
+                          </div>
+                          <div class="row col-12" style="margin-bottom: 0.5rem;  padding-right: 0px; padding-left: 25px !important">
+                            <div class="status column material-shadow-animate" @click="() => {
+                                $store.state.workOrderPage.initialLoad = true;
+                                $store.state.workOrderPage.statusFromDashBoard = 'Approved';
+                                $store.state.workOrderPage.options = { 
+                                  priorities: [],
+                                  status: []
+                                };
+                                $store.state.workOrderPage.filterOptionsValues = {
+                                  priorities: [],
+                                  status: []
+                                };
+                                $router.push('/work_order');
+                              }">
+                              <div class="headerstatus columns">
+                                <div style="width:40%" class="column">
+                                  <strong>Approved</strong>
+                                </div>
+                              </div>
+                              <div class="contentstatus1">
+                                <p style="color: #00BFA5; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.Approve}}</p>
+                                <p style="font-size:15px;">Work Orders</p>
+                              </div>
+                            </div>
+                            <div class="status column material-shadow-animate" style="margin-right: 0rem !important" @click="() => {
+                                $store.state.workOrderPage.initialLoad = true;
+                                $store.state.workOrderPage.statusFromDashBoard = 'In Progress';
+                                $store.state.workOrderPage.options = { 
+                                  priorities: [],
+                                  status: []
+                                };
+                                $store.state.workOrderPage.filterOptionsValues = {
+                                  priorities: [],
+                                  status: []
+                                }
+                                $router.push('/work_order');
+                              }">
+                              <div class="headerstatus columns">
+                                <div style="width:40%" class="column">
+                                  <strong>In Progress</strong>
+                                </div>
+                              </div>
+                              <div class="contentstatus1" >
+                                <p style="color: #673AB7; font-size:38px; text-align: center;font-weight: bold;">{{Dashboard.InProgress}}</p>
+                                <p style="font-size:15px; ">Work Orders</p>
+                              </div>
+                            </div>
+                          </div>                            
                         </div>
 
                     <!-- /test -->
@@ -124,8 +166,8 @@
                         </div>
                   
                         </div>
-                </div>                
-                <div class=" row" style="margin-top: 1.5rem">
+                </div >                
+                <div v-if="authUser.Role == 'Equipment Staff' || authUser.Role == 'Manager' " class=" row" style="margin-top: 1.5rem">
                   <div class="col-6" style="margin-bottom: 0rem"><strong>Working</strong></div>
                   <div class="col-6" style="padding-left: 0; margin-bottom: 0rem"><strong>Maintenance</strong></div>
                   <div class="divrow3 columns " style="margin-right:0rem !important">
@@ -144,12 +186,12 @@
                                           <!-- chow- start -->
                                           <div class="order-blocks">
                                               <div>
-                                                  <!-- <div class="emtpy-text" v-if="workOrdersWokingToday.length == 0"> -->
+                                          
                                                   <div class="emtpy-text" v-if="workOrdersWokingToday && workOrdersWokingToday.length == 0">
                                                       There is no orders to display.
                                                   </div>
-                                                  <div v-else>
-                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingToday" ></order-block>
+                                                  <div v-else>                                                    
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingToday" @click.native="$router.push(`/work_order/${order.Id}`)" ></order-block>
                                                   </div>
                                               </div>
                                           </div>
@@ -170,11 +212,11 @@
                                           <div class="order-blocks">
                                               <div>
                                                   <div class="emtpy-text" v-if="workOrdersWokingTomorrow && workOrdersWokingTomorrow.length == 0">
-                                                  <!-- <div class="emtpy-text" v-if="workOrdersWokingTomorrow"> -->
+                                              
                                                       There is no orders to display.
                                                   </div>
                                                   <div v-else>
-                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingTomorrow"></order-block>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersWokingTomorrow" @click.native="$router.push(`/work_order/${order.Id}`)"></order-block>
                                                   </div>
                                               </div>
                                           </div>
@@ -202,12 +244,11 @@
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                   
                                           <div class="order-blocks">
                                               <div>
-                                                  <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
                                                   <div class="emtpy-text" v-if="workOrders && workOrders.length == 0" >
                                                       There is no orders to display.
                                                   </div>
                                                   <div v-else>
-                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrders" ></order-block>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrders" @click.native="$router.push(`/work_order/${order.Id}`)"></order-block>
                                                   </div>
                                               </div>
                                           </div>
@@ -227,12 +268,12 @@
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                                                       
                                           <div class="order-blocks">
                                               <div>
-                                                  <!-- <div class="emtpy-text" v-if="workOrders.length == 0"> -->
+
                                                   <div class="emtpy-text" v-if="workOrdersMaintainTomorrow && workOrdersMaintainTomorrow.length == 0">
                                                       There is no orders to display.
                                                   </div>
                                                   <div v-else>
-                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersMaintainTomorrow" ></order-block>
+                                                      <order-block :key="'order' + order.Id" :order="order"  v-for="order in workOrdersMaintainTomorrow" @click.native="$router.push(`/work_order/${order.Id}`)"></order-block>
                                                   </div>
                                               </div>
                                           </div>
@@ -244,11 +285,11 @@
                   </div>                
                 </div>  
             </div>
-            <modal v-model="addPopUp" v-if="this.maintainItems.length > 0">
+            <modal :width="600" v-model="addPopUp" v-if="this.maintainItems.length > 0" :styles="{top: '20px'}">
               <div slot="header" class="title-modal"> 
                 List Of Maintain Equipment: {{this.selectedDay.day}}-{{this.selectedDay.month}}-{{this.selectedDay.year}}
               </div>
-              <div>
+              <div style="max-height: 70vh; overflow-y: auto;">
                 <table style="width:100%"> 
                   <thead>
                     <tr style="width:100%">
@@ -276,7 +317,7 @@
               <div slot="footer">
                 <button style="width: 4rem;" class="button btn-primary" @click="showEquipmentByStatusPopup = false">OK</button>
               </div>
-              <div v-if="equipmentByStatusList && equipmentByStatusList.length" :style="equipmentByStatusList.length > 6 ? 'max-height: 70vh; overflow-y: auto;' : ''">
+              <div v-if="equipmentByStatusList && equipmentByStatusList.length" style="padding: 0 .5rem;" :style="equipmentByStatusList.length > 6 ? 'max-height: 70vh; overflow-y: auto;' : ''">
                 <v-flex style="font-size: 1rem !important;">
                   <v-expansion-panel popout>
                     <v-expansion-panel-content v-for="equipment in equipmentByStatusList" :key="'equipment' + equipment.Id" v-if="equipment.EquipmentItems">
@@ -340,7 +381,7 @@ export default {
   },
   computed: {
     authUser() {
-      return JSON.parse(window.localStorage.getItem('user'));
+      return JSON.parse(window.localStorage.getItem("user"));
     }
   },
   data() {
@@ -388,9 +429,9 @@ export default {
       workOrdersWokingToday: [], // orders data to display in orderblocks <order-block></order-block>
       workOrdersWokingTomorrow: [], // orders data to display in orderblocks <order-block></order-block>
 
-      equipmentStatusFromChart: '',
+      equipmentStatusFromChart: "",
       equipmentByStatusList: [],
-      showEquipmentByStatusPopup: false,
+      showEquipmentByStatusPopup: false
     };
   },
   mounted() {
@@ -640,19 +681,20 @@ export default {
       return moment(date).year;
     },
     displayEquipmentStatusPopup(status) {
-      this.axios.get(`http://localhost:3000/api/equipment/getItemsByStatus/${status}`)
+      this.axios
+        .get(`http://localhost:3000/api/equipment/getItemsByStatus/${status}`)
         .then(res => {
           if (res.status == 200) {
             this.equipmentByStatusList = res.data;
             this.equipmentStatusFromChart = status;
             this.showEquipmentByStatusPopup = true;
           }
-        }).catch(error => {
-          console.log(error);
-          this.$router.push('/500');
         })
-    },
-
+        .catch(error => {
+          console.log(error);
+          this.$router.push("/500");
+        });
+    }
   },
   watch: {
     tmpCategory: function() {
