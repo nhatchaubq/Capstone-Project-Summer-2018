@@ -42,12 +42,43 @@
         <div class="divider" v-if="authUser.Role != 'Admin'"></div>
             
         <li>
-          <router-link to='/equipment'>
-            <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
-            <i class="material-icons">build</i>
-            {{ menu.Equipment }}
-          </div>
-          </router-link>
+          <div style="display:grid; grid-template-columns: 85% 15%">
+            <div>
+              <router-link to='/equipment'>
+                <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
+                <i class="material-icons">build</i>
+                {{ menu.Equipment }}
+                </div>
+              </router-link>
+            </div>          
+            <div class="submenu-show" v-on:click="submenu = !submenu">
+              <i class="material-icons">expand_more</i>
+            </div>
+          </div>              
+        </li>
+        <li v-if="submenu" >
+           <div class="submenu sidebar-list-content">
+            <ul>
+              <li>
+                <router-link to="/category">                  
+                  <i class="material-icons">chevron_right</i>
+                  Category
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/Unit">
+                  <i class="material-icons">chevron_right</i>
+                  Unit
+                </router-link>
+              </li>  
+              <li>
+                <router-link to="/duration">
+                  <i class="material-icons">chevron_right</i>
+                  Duration Maintenance
+                </router-link>
+              </li>    
+            </ul>  
+          </div>     
         </li>
         <li v-if="false">
           <router-link to='/category'>
@@ -141,7 +172,8 @@ export default {
   },
   data() {
     return {
-      menu: menuData
+      menu: menuData,
+      submenu: false
     };
   },
   methods: {
@@ -170,7 +202,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.divider {
+.x {
   border-bottom: 1px solid #b2dfdb;
   margin: 10px 0 10px 0;
 }
@@ -206,7 +238,7 @@ export default {
   transition: all 0.15s ease-in-out;
 }
 
-.sidebar-list ul li:hover a {
+.submenu ul li:hover a {
   cursor: pointer;
   color: #26a69a !important;
 }
@@ -249,5 +281,37 @@ export default {
   border-radius: 50%;
   /* left: 5rem;
     bottom: .8rem; */
+}
+.submenu-show {
+  color: #b2dfdb !important;
+}
+.submenu-show i {
+  position: relative;
+  top: 0.5rem;
+  left: 0.5rem;
+}
+.submenu-show :hover {
+  cursor: pointer;
+  color: #26a69a !important;
+}
+
+.submenu {
+  position: relative;
+
+  z-index: 99;
+}
+.submenu ul li {
+  color: #b2dfdb;
+  padding-left: 1.7rem;
+  font-size: 0.9rem;
+  line-height: 1.3rem;
+}
+li :hover {
+  cursor: pointer;
+  color: #26a69a !important;
+}
+.submenu i {
+  position: relative;
+  top: 0.4rem;
 }
 </style>

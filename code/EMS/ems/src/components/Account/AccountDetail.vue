@@ -109,7 +109,7 @@
       </strong>
     </div>
   </div >
-        <strong><div v-if="InactiveFlag && editMode" style="color:red">Can not change to "inactive" because of holding work orders</div></strong> 
+        <strong><div v-if="InactiveFlag && editMode" style="color:red">Can not change to "inactive" because of holding work orders  with Id: <span :key="'member1' + workOrder.Id" v-for="workOrder in workOrders">[#{{workOrder.Id}}]  </span> </div></strong> 
   <div class="col-7" style="padding-left: 0 !important" v-if="authUser.Role =='Admin' ">
       <div style="margin-top:0.5rem" >
         <label style="margin-right: 1rem;" class="radio"  >

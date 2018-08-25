@@ -184,33 +184,24 @@
                       class="input" required placeholder="A, B, C" style="width: 40%;" v-on:input="() => {
                         if (!newBlock.name) {
                           CreateLocationErrors.ErrorBlockName = ErrorStrings.NoBlockName;
-                        } else {                            
-                          if (newBlock.name.length > 50) {
-                            CreateLocationErrors.ErrorBlockName = ErrorStrings.InvalidBlockNameLength;
-                          } else {
-                            for (let i = 0; i < toCreateBlocks.length; i++) {
-                              const block = toCreateBlocks[i];
-                              let duplicateName = false;
-                              if (block.name.toLowerCase() == newBlock.name.toLowerCase()) {
-                                duplicateName = true;
-                              }
-                              if (duplicateName) {
-                                CreateLocationErrors.ErrorBlockName = ErrorStrings.DuplicateBlockName;
-                              } else {
-                                CreateLocationErrors.ErrorBlockName = '';
-                              }
+                        } else if (newBlock.name.length > 50) {
+                          CreateLocationErrors.ErrorBlockName = ErrorStrings.InvalidBlockNameLength;
+                        } else {
+                          let duplicateName = false;
+                          for (let i = 0; i < toCreateBlocks.length; i++) {
+                            const block = toCreateBlocks[i];
+                            if (block.name.toLowerCase() == newBlock.name.toLowerCase()) {
+                              duplicateName = true;
+                              break;
                             }
+                          }
+                          if (duplicateName) {
+                            CreateLocationErrors.ErrorBlockName = ErrorStrings.DuplicateBlockName;
+                          } else {
+                            CreateLocationErrors.ErrorBlockName = '';
                           }
                         }
                       }">
-              </div>
-            </div>
-            <div class="form-field" style="margin-bottom: 0;">
-              <div class="form-field-title">
-                  Describe this block (optional)                  
-              </div>
-              <div class="form-field-input">
-                <textarea v-model.trim="newBlock.description" class="input" style="width: 40%; min-height: 4rem; max-height: 7rem;"></textarea>
               </div>
             </div>
             <div class="form-field">
@@ -299,7 +290,7 @@
                           <label class="radio" v-on:click="() => {
                               const block = toCreateBlocks[currentToCreateBlockIndex];
                               block.firstFloorType = 'Ground';
-                              const floors = toCreateBlocks[currentToCreateBlockIndex].floors;
+                              const floors = block.floors;
                               floors.reverse();
                               // floors[floors.totalBasementFloor] is the ground floor
                               floors[block.totalBasementFloor].name = 'Ground';
@@ -307,6 +298,7 @@
                                 floors[i].name = `${number}`;
                               }
                               floors.reverse();
+                              changeNameAllTiles(currentToCreateBlockIndex);
                             }">
                               <input type="radio" name="firstFloorType" :checked="toCreateBlocks[currentToCreateBlockIndex].firstFloorType == 'Ground'">
                               Ground
@@ -314,13 +306,14 @@
                           <label class="radio" v-on:click="() => {
                               const block = toCreateBlocks[currentToCreateBlockIndex];
                               block.firstFloorType = 'FloorOne';
-                              const floors = toCreateBlocks[currentToCreateBlockIndex].floors;
+                              const floors = block.floors;
                               floors.reverse();
                               // floors[floors.totalBasementFloor] is the ground floor
                               for (let i = block.totalBasementFloor, number = 1; i < floors.length; i++, number++) {
                                 floors[i].name = `${number}`;
                               }
                               floors.reverse();
+                              changeNameAllTiles(currentToCreateBlockIndex);
                             }">
                               <input type="radio" name="firstFloorType" :checked="toCreateBlocks[currentToCreateBlockIndex].firstFloorType == 'FloorOne'">
                               Floor 1
@@ -458,7 +451,7 @@
                                       editingFloor = true;
                                   }">Block {{ block.name }}</a> has <strong>{{ block.totalFloor }} floor<span v-if="block.totalFloor > 1">s</span></strong>
                                   <span>, <strong>{{ block.totalBasementFloor > 0 ? block.totalBasementFloor : 'no' }} basement floor<span v-if="block.totalBasementFloor > 1">s</span></strong></span>
-                                  <span>, and start with <strong>floor {{ block.firstFloorType}}</strong>.</span>
+                                  <span>, and start with <strong>floor {{ block.firstFloorType == 'Ground' ? 'Ground' : '1' }}</strong>.</span>
                           </span>
                       </div>
                   </div>
@@ -819,12 +812,13 @@ export default {
       }      
       floors.reverse();
     },
-    createTiles() {      
+    createTiles() { // dont know why, but in this method the floor list is reversed
       const block = this.toCreateBlocks[this.currentToCreateBlockIndex];
       const floors = block.floors;
-      const floor = block.floors[this.currentToCreateFloorIndex];
+      const floor = floors[this.currentToCreateFloorIndex];
+      // alert(this.currentToCreateFloorIndex + ' floor ' + floor.name + ' floorGroundIndex ' + (floors.length - block.totalBasementFloor - 1));
       if (!floor.tiles.length || (floor.totalTiles > floor.tiles.length)) {
-        const floorGroundIndex = block.totalBasementFloor;
+        const floorGroundIndex = floors.length - block.totalBasementFloor - 1;
         let prefix = "";        
         switch (block.tilePrefix) {
           case "none": {
@@ -840,10 +834,9 @@ export default {
           const newTile = {
             name: `${floor.tiles.length + 1}`
           };
-          if (this.currentToCreateFloorIndex >= floorGroundIndex 
-            && (block.firstFloorType == 'FloorOne' 
-                || (block.firstFloorType == 'Ground' && this.currentToCreateFloorIndex != floorGroundIndex))) {
-                newTile.name = `${prefix}${block.tilePrefix == "floororder" ? '0' : '' }` + newTile.name;
+          if ((block.firstFloorType == 'FloorOne' && this.currentToCreateFloorIndex <= floorGroundIndex) 
+              || (block.firstFloorType == 'Ground' && this.currentToCreateFloorIndex < floorGroundIndex)) {
+                  newTile.name = `${prefix}${(floor.tiles.length + 1 < 10 && block.tilePrefix == "floororder") ? '0' : '' }` + newTile.name;
           }
           floor.tiles.push(newTile);
         }
@@ -861,7 +854,7 @@ export default {
       // block.totalBasementFloor is floor ground
       const floorGroundIndex = block.totalBasementFloor;
       for (let i = floorGroundIndex; i < floors.length; i++) {
-        if (i > floorGroundIndex || (i == floorGroundIndex && block.firstFloorType != 'Ground')) {
+        if (i >= floorGroundIndex) {
           const floor = floors[i];
           let prefix = "";
           switch (block.tilePrefix) {
@@ -875,7 +868,12 @@ export default {
             }
           }
           for (let j = 0; j < floor.tiles.length; j++) {
-            floor.tiles[j].name = `${prefix}${(floor.tiles.length + 1 < 10 && block.tilePrefix == "floororder") ? '0' : '' }${j + 1}`;
+            floor.tiles[j].name = `${j + 1}`;
+            if (block.tilePrefix == 'floororder'
+                && (block.firstFloorType == 'FloorOne' && i >= floorGroundIndex) 
+                    || (block.firstFloorType == 'Ground' && i > floorGroundIndex)) {
+                        floor.tiles[j].name = `${prefix}${(j + 1 < 10 && block.tilePrefix == "floororder") ? '0' : '' }` + floor.tiles[j].name;
+            }
           }
         }
       }
