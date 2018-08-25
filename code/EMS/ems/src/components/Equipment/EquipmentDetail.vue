@@ -233,8 +233,8 @@
             <input type="text" class="input" placeholder="Quantity" style="margin-right: 1rem" v-model="quantity" v-on:input="() => {
                         if (quantity < 1 || quantity == '') {
                             quantity = 0;
-                        } else if (quantity > 50) {
-                            quantity = 50;
+                        } else if (quantity > this.config.numOfAddItem.maximumValue) {
+                            quantity = this.config.numOfAddItem.maximumValue;
                         }
                         quantity  = getNumberFormattedThousand(quantity);
                     }" >
@@ -273,7 +273,7 @@
               </div>
               <div class="field is-horizontal" >
                 <input type="text" min="1" style="text-align: right" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration" v-on:input="() => {
-                        if (form.warrantyDuration < 0 || form.warrantyDuration == '') {
+                        if (form.warrantyDuration < 1 || form.warrantyDuration == '') {
                             form.warrantyDuration = 0;
                         } else if (form.warrantyDuration > this.config.warrantyMonth.maximumValue) {
                             form.warrantyDuration = this.config.warrantyMonth.maximumValue;
