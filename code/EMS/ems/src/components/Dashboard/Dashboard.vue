@@ -124,8 +124,8 @@
                         </div>
                   
                         </div>
-                </div>                
-                <div class=" row" style="margin-top: 1.5rem">
+                </div >                
+                <div v-if="authUser.Role == 'Equipment Staff' || authUser.Role == 'Manager' " class=" row" style="margin-top: 1.5rem">
                   <div class="col-6" style="margin-bottom: 0rem"><strong>Working</strong></div>
                   <div class="col-6" style="padding-left: 0; margin-bottom: 0rem"><strong>Maintenance</strong></div>
                   <div class="divrow3 columns " style="margin-right:0rem !important">
