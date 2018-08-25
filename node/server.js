@@ -39,7 +39,7 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-cron.schedule("56 17 * * *", function () {
+cron.schedule("30 19 * * *", function () {
   console.log("---------------------");
   console.log("Running Cron Job");
   for (var i = 0; i < account.length; i++) {
@@ -114,7 +114,7 @@ var connection = {
   server: "localhost",
   userName: "sa",
 
-  password: "cCS94@bcnq836894",
+  password: "tien1005",
 
   connectionTimeout: 300000,
   requestTimeout: 300000,
@@ -180,7 +180,7 @@ function callback(error, response, body) {
         emails.push(WOArray[i].RequestUserEmail);
       }
     }
-    console.log(account)
+    // console.log(account)
   }
 }
 request(options, callback);

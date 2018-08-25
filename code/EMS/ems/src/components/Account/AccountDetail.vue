@@ -146,7 +146,7 @@
                   <label class="file-label"  > 
                   <span class="file-cta">
                       <input v-if="!editMode" class="file-input" type="file" accept="image/*" style="opacity:0" ref="fileInput"  disabled="disabled" />
-                      <input v-else class="file-input" type="file" accept="image/*"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
+                      <input v-else class="file-input" type="file" accept=".png, .jpg, .jpeg, .jpe, .jfif, .gif"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
                       <span class="file-icon" style="margin-right=0;">
                           <i class="fa fa-upload"></i>
                       </span>
