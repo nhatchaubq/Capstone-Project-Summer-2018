@@ -52,10 +52,10 @@
                 <!-- <th><strong>Department</strong></th> -->
             </tr>
         </thead>  
-        <tbody>
+        <tbody style="font-size: .9rem !important;">
             <tr v-bind:key="team.Id" v-for="(team, index) in toDisplayData" v-on:click="gotoDetail(team.Id)">
               <!-- <td>{{team.Id}}</td>     -->
-              <td>{{ 10*(currentPage - 1) + (index + 1 )}}</td>   
+              <td style="text-align: center;">{{ 10*(currentPage - 1) + (index + 1 )}}</td>   
               <td>{{team.Name}}</td>
               <!-- <router-link :to="`/account/${team.TeamLeader.Id}`">   -->
                 <td :style="{color: team.TeamLeader ? 'var(--primary-color)' : '#607D8B'}"> <span style="font-size: 25px;"></span> {{ team.TeamLeader ? team.TeamLeader.Username : 'n/a'}}</td>
