@@ -666,8 +666,7 @@ export default {
           await this.createPostion(res.data.NewLocationId);
           this.sending = false;
           let obj = {
-            title: "Success",
-            message: "Create location successfully!",
+            title: "Location created successfully!",
             type: "success"
           };
           this.$refs.simplert.openSimplert(obj);
