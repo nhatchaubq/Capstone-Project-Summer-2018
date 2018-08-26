@@ -384,6 +384,56 @@
                 </div>
             </div>
         </div>
+        <div v-if="configOriginal.numOfAddItem">
+            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Editing maximum value when add items 
+                <span style="font-weight: 400; font-size: 1rem;">
+                    <a v-if="!editingNumOfAddItemConfig" v-on:click="editingNumOfAddItemConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
+                    <span v-if="editingNumOfAddItemConfig">
+                        <a :style="!isNumOfAddItemChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
+                            v-on:click="() => {
+                                if (isNumOfAddItemChanged) {
+                                    configCopy = JSON.stringify(configOriginal);
+                                    configCopy = JSON.parse(configCopy);
+                                    $socket.emit('CONFIGURATION_CHANGED', configOriginal);
+                                    editingNumOfAddItemConfig = false;
+                                }
+                        }">save changes</a> | 
+                        <a v-on:click="() => {
+                            let configJson = JSON.stringify(configCopy.numOfAddItem)
+                            configOriginal.numOfAddItem = JSON.parse(configJson);
+                            editingNumOfAddItemConfig = false;
+                            isNumOfAddItemChanged = false;
+                        }">cancel</a>
+                    </span>
+                </span>
+            </div>
+            <div v-if="!editingNumOfAddItemConfig" style="display: grid;grid-template-columns: 24% 30%;">
+                <div style="padding-top:0.4rem">
+                    Maximum value for add item: 
+                </div>
+                <div style="display: grid;grid-template-columns: 10% 20%;">
+                    <div  style="padding-top:0.4rem">
+                        {{configOriginal.numOfAddItem.maximumValue}}
+                    </div>
+                </div>
+            </div>
+            <div v-if="editingNumOfAddItemConfig" style="display: grid;grid-template-columns: 24% 30%;">
+                <div style="padding-top:0.4rem">
+                   Maximum value for add item:
+                </div>
+                <div style="display: grid;grid-template-columns: 30% 20%;">
+                    <div>
+                        <input type="number"  class="input" v-model.number="configOriginal.numOfAddItem.maximumValue" v-on:input="() => {
+                            if (configOriginal.numOfAddItem.maximumValue < 1 || configOriginal.numOfAddItem.maximumValue == '') {
+                                configOriginal.numOfAddItem.maximumValue = 1;
+                            }
+                            configOriginal.numOfAddItem.maximumValue = parseInt(configOriginal.numOfAddItem.maximumValue);
+                            checkNumOfAddItemConfigChanged();
+                        }"/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -436,7 +486,9 @@ export default {
       editingNextMaintainYearConfig: false,
       isNextMaintainYearChanged: false,
       editingWarrantyMonthConfig: false,
-      isWarrantyMonthChanged: false
+      isWarrantyMonthChanged: false,
+      editingNumOfAddItemConfig: false,
+      isNumOfAddItemChanged: false
     };
   },
   watch: {
@@ -599,6 +651,19 @@ export default {
             }
           }
         }
+      }
+    },
+    checkNumOfAddItemConfigChanged() {
+      this.isNumOfAddItemChanged = false;
+
+      const numOfAddItemConfigOriginal = this.configOriginal
+        .numOfAddItem;
+      const numOfAddItemConfigCopy = this.configCopy.numOfAddItem;
+      if (
+        this.configOriginal.numOfAddItem.maximumValue !=
+        numOfAddItemConfigCopy.maximumValue
+      ) {
+        this.isNumOfAddItemChanged = true;
       }
     },
     checkWarrantyMonthConfigChanged() {
