@@ -109,7 +109,7 @@
       </strong>
     </div>
   </div >
-        <strong><div v-if="InactiveFlag && editMode" style="color:red">Can not change to "inactive" because of holding work orders</div></strong> 
+        <strong><div v-if="InactiveFlag && editMode" style="color:red">Can not change to "inactive" because of holding work orders  with Id: <span :key="'member1' + workOrder.Id" v-for="workOrder in workOrders">[#{{workOrder.Id}}]  </span> </div></strong> 
   <div class="col-7" style="padding-left: 0 !important" v-if="authUser.Role =='Admin' ">
       <div style="margin-top:0.5rem" >
         <label style="margin-right: 1rem;" class="radio"  >
@@ -146,7 +146,7 @@
                   <label class="file-label"  > 
                   <span class="file-cta">
                       <input v-if="!editMode" class="file-input" type="file" accept="image/*" style="opacity:0" ref="fileInput"  disabled="disabled" />
-                      <input v-else class="file-input" type="file" accept="image/*"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
+                      <input v-else class="file-input" type="file" accept=".png, .jpg, .jpeg, .jpe, .jfif, .gif"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
                       <span class="file-icon" style="margin-right=0;">
                           <i class="fa fa-upload"></i>
                       </span>

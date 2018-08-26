@@ -22,5 +22,8 @@
     },
     "nextMaintainYear": {
         "maximumValue": 5
+    },
+    "warrantyMonth": {
+        "maximumValue": 200
     }
 }

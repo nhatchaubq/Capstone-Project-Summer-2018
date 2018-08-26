@@ -147,7 +147,7 @@
                   <label class="file-label"  > 
                   <span class="file-cta">
                       <input v-if="!editMode" class="file-input" type="file" accept="image/*" style="opacity:0" ref="fileInput"  disabled="disabled" />
-                      <input v-else class="file-input" type="file" accept="image/*"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
+                      <input v-else class="file-input" type="file" accept=".png, .jpg, .jpeg, .jpe, .jfif, .gif"  style="opacity: 0" ref="fileInput" v-on:change="inputFileChange" />
                       <span class="file-icon" style="margin-right=0;">
                           <i class="fa fa-upload"></i>
                       </span>
@@ -275,8 +275,8 @@
                 <input type="text" min="1" style="text-align: right" class="input" placeholder="Warranty Months" v-model="form.warrantyDuration" v-on:input="() => {
                         if (form.warrantyDuration < 0 || form.warrantyDuration == '') {
                             form.warrantyDuration = 0;
-                        } else if (form.warrantyDuration > 999) {
-                            form.warrantyDuration = 999;
+                        } else if (form.warrantyDuration > this.config.warrantyMonth.maximumValue) {
+                            form.warrantyDuration = this.config.warrantyMonth.maximumValue;
                         }
                         form.warrantyDuration  = getNumberFormattedThousand(form.warrantyDuration);
                     }">
@@ -385,8 +385,8 @@
                       <input v-else type="text"  class="input" v-model="selectedItem.Item.WarrantyDuration" v-on:input="() => {
                         if (selectedItem.Item.WarrantyDuration < 0 || selectedItem.Item.WarrantyDuration == '') {
                             selectedItem.Item.WarrantyDuration = 0;
-                        } else if (selectedItem.Item.WarrantyDuration > 999) {
-                            selectedItem.Item.WarrantyDuration = 999;
+                        } else if (selectedItem.Item.WarrantyDuration > this.config.warrantyMonth.maximumValue) {
+                            selectedItem.Item.WarrantyDuration = this.config.warrantyMonth.maximumValue;
                         }
                         selectedItem.Item.WarrantyDuration  = getNumberFormattedThousand(selectedItem.Item.WarrantyDuration);
                     }">
@@ -1857,10 +1857,11 @@ export default {
       let working = "Working";
       let maintainanceApproved = "Maintainance Approved";
       let maintaining = "Maintaining";
+      let lost = "Lost";
       let statusName = "";
       for (var i = 0; i < this.statusOptions.length; i++) {
         if (this.selectedItem.Item.StatusID == this.statusOptions[i].Id) {
-          statusName = this.statusOptions[i].Name;
+          statusName = this.statusOptions[i].Name; // lay stt hien tai
         }
       }
       let authUser = JSON.parse(window.localStorage.getItem("user"));
@@ -1891,6 +1892,20 @@ export default {
         let obj = {
           message:
             "Cannot change from " + this.currentsttName + " to other status!!!",
+          type: "warning"
+        };
+        this.$refs.simplert1.openSimplert(obj);
+      }else if(this.currentsttName == "Lost" && statusName != "Available"){
+        let obj = {
+          message:
+            "Cannot change from " + this.currentsttName + " to " + statusName,
+          type: "warning"
+        };
+        this.$refs.simplert1.openSimplert(obj);
+      }else if(this.currentsttName == "Archived" && statusName != "Available"){
+        let obj = {
+          message:
+            "Cannot change from " + this.currentsttName + " to " + statusName,
           type: "warning"
         };
         this.$refs.simplert1.openSimplert(obj);
