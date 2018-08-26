@@ -260,8 +260,7 @@ export default {
                     });
                   }
                   let obj = {
-                    title: "Update Location",
-                    message: "Successfully!!!",
+                    title: "Location updated successfully!",
                     type: "success"
                   };
                   this.$refs.simplert.openSimplert(obj);

@@ -174,7 +174,7 @@
                     <div class="col-6" style="padding: 0 1rem 0 0.7rem  !important; margin-right: 0rem ">
                               <div class=" material-shadow-animate1" style="margin-bottom: 1rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
-                                      <div class="column is-9">
+                                      <div class="column is-10">
                                           <!-- <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong> -->
                                           <strong>Today: {{Dashboard.ReturnCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
@@ -200,7 +200,7 @@
                               </div>
                               <div class=" material-shadow-animate1" style="margin-bottom: 1rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
-                                      <div class=" column is-9">
+                                      <div class=" column is-10">
                                           <!-- <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong> -->
                                           <strong>Tomorrow: {{Dashboard.ReturnCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 
@@ -233,7 +233,7 @@
                               </div> -->
                               <div class=" material-shadow-animate1 " style="margin-bottom: 1rem; margin-right: 0.9rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
-                                      <div class="column is-9">
+                                      <div class="column is-10">
                                           <!-- <strong>Today: {{Dashboard.MaintainCountToday}} order to be returned</strong> -->
                                           <strong>Today: {{Dashboard.MaintainCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
@@ -257,7 +257,7 @@
                               </div>
                               <div class=" material-shadow-animate1" style="margin-bottom: 1rem; margin-right: 0.9rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
-                                      <div class="column is-9">
+                                      <div class="column is-10">
                                           <!-- <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} order to be returned</strong> -->
                                           <strong>Tomorrow: {{Dashboard.MaintainCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 
