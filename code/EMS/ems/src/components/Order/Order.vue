@@ -1003,6 +1003,20 @@ export default {
               this.maintainingOrders = data.filter(
                 order => order.Category == "Maintain"
               );
+              if (this.$route.params && this.$route.params.orderId) {
+                let selectedOrderIdInWorkingOrder = false;
+                for (const order of this.workingOrders) {
+                  if (order.Id == this.$route.params.orderId) {
+                    selectedOrderIdInWorkingOrder = true;
+                    break;
+                  }
+                }
+                if (selectedOrderIdInWorkingOrder) {
+                  this.$store.state.workOrderPage.workingOrderViewMode = true;
+                } else {
+                  this.$store.state.workOrderPage.workingOrderViewMode = false;
+                }
+              }
               if (this.workingOrderViewMode) {
                 this.toDisplayWorkOrders = data.filter(
                   order => order.Category == "Working"
@@ -1753,10 +1767,7 @@ export default {
       }
     },
     workingOrderViewMode: function() {
-      this.selectedOrder = null;
-      this.$route.params.orderId = null;
-      this.toDisplayWorkOrders = [];
-      this.$router.replace("/work_order");
+      this.selectedOrder = null;      
       if (
         this.authUser.Role == "Manager" ||
         this.authUser.Role == "Equipment Staff"
@@ -1765,6 +1776,24 @@ export default {
           this.toDisplayWorkOrders = this.workingOrders;
         } else {
           this.toDisplayWorkOrders = this.maintainingOrders;
+        }
+        let toSelectOrder = this.toDisplayWorkOrders.filter(
+          order => order.Id == this.$route.params.orderId
+        )[0];
+        if (toSelectOrder) {
+          this.selectedOrder = toSelectOrder;
+          this.getEquipmentsOfWorkOrder(toSelectOrder);
+          if (
+            toSelectOrder.TeamLocation &&
+            toSelectOrder.Category == "Working"
+          ) {
+            this.toUpdateSelectedLocation = this.blockFloorTiles.filter(
+              location => location.Id == toSelectOrder.TeamLocation.Location.Id
+            )[0];
+          }
+        } else {
+          this.$route.params.orderId = null;
+          this.$router.replace("/work_order");
         }
       } else {
         this.toDisplayWorkOrders = this.workOrders.filter(
@@ -1789,6 +1818,20 @@ export default {
     },
     "$route.params": function() {
       if (this.$route.params.orderId) {
+        if (this.authUser.Role == 'Manager' || this.authUser.Role == 'Equipment Staff') {
+          let selectedOrderIdInWorkingOrder = false;
+          for (const order of this.workingOrders) {
+            if (order.Id == this.$route.params.orderId) {
+              selectedOrderIdInWorkingOrder = true;
+              break;
+            }
+          }
+          if (selectedOrderIdInWorkingOrder) {
+            this.$store.state.workOrderPage.workingOrderViewMode = true;
+          } else {
+            this.$store.state.workOrderPage.workingOrderViewMode = false;
+          }
+        }
         let toSelectOrder = this.toDisplayWorkOrders.filter(
           order => order.Id == this.$route.params.orderId
         )[0];

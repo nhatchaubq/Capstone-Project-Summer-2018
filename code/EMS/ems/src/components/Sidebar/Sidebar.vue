@@ -51,7 +51,7 @@
                 </div>
               </router-link>
             </div>          
-            <div class="submenu-show" v-on:click="submenu = !submenu">
+            <div class="submenu-show" v-on:click="submenu = !submenu" v-if="authUser.Role =='Equipment Staff'">
               <i class="material-icons">expand_more</i>
             </div>
           </div>              
@@ -79,32 +79,8 @@
               </li>    
             </ul>  
           </div>     
-        </li>
-        <li v-if="false">
-          <router-link to='/category'>
-            <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
-            <i class="material-icons">build</i>
-            {{ menu.Equipment }} Category
-          </div>
-          </router-link>
-        </li>
-        <li v-if="false">
-          <router-link to='/unit'>
-            <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
-            <i class="material-icons">build</i>
-            {{ menu.Equipment }} Unit
-          </div>
-          </router-link>
-        </li>
-        <li v-if="false">
-          <router-link to='/duration'>
-            <div class="sidebar-list-content" :class="isActive(menu.Equipment)">
-            <i class="material-icons">build</i>
-            {{ menu.Equipment }} Maintenance Duration
-          </div>
-          </router-link>
-        </li>
-        <li v-if="authUser.Role != 'Admin'">
+        </li>        
+        <li v-if="authUser.Role != 'Admin' && authUser.Role != 'Maintainer'">
 
           <router-link to='/location'>
             <div class="sidebar-list-content" :class="isActive(menu.Location)">
