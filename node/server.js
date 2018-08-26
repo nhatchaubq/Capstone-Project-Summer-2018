@@ -113,7 +113,9 @@ app.use(cors());
 var connection = {
   server: "localhost",
   userName: "sa",
+  
   password: "tien1005",
+  
   connectionTimeout: 300000,
   requestTimeout: 300000,
   pool: {
