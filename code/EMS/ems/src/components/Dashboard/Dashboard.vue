@@ -22,10 +22,10 @@
                     <bar-chart :chartData="lineChartData" ref="lineChart" :styles="{height: '40vh'}"  ></bar-chart>
                   <div style="margin-top: 1rem; color: #424242; font-size: 1rem; text-align: center; font-style: italic;">
                     <div v-if="linechartOption">
-                      Completed work orders chart from the past 11 months to the current moment.
+                      Number of Completed Work Orders chart from the past 1 year.
                     </div>
                     <div v-else>
-                      Damaged and lost equipment chart in the past 11 months to the current moment.
+                      Number of Damaged and Lost Equipment chart from the past 1 year.
                     </div>  
                   </div> 
 
@@ -49,7 +49,7 @@
                 <div class="col-6" style="padding-left:2rem"><strong>Equipment items by status</strong></div>
             </div> -->
             <div>
-                <div class="row">
+                <div style="margin-top: 2rem !important;" class="row">
                     <!-- test -->
                     <div class="col-6 " style="padding-left: 0.3rem !important; padding-right: 0rem !important">
 
@@ -168,13 +168,13 @@
                         </div>
                 </div >                
                 <div v-if="authUser.Role == 'Equipment Staff' || authUser.Role == 'Manager' " class=" row" style="margin-top: 1.5rem">
-                  <div class="col-6" style="margin-bottom: 0rem"><strong>Working</strong></div>
-                  <div class="col-6" style="padding-left: 0; margin-bottom: 0rem"><strong>Maintenance</strong></div>
+                  <div class="col-6" style="margin-bottom: 0rem"><strong>Working Order</strong></div>
+                  <div class="col-6" style="padding-left: 0; margin-bottom: 0rem"><strong>Maintenance Order</strong></div>
                   <div class="divrow3 columns " style="margin-right:0rem !important">
                     <div class="col-6" style="padding: 0 1rem 0 0.7rem  !important; margin-right: 0rem ">
                               <div class=" material-shadow-animate1" style="margin-bottom: 1rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
-                                      <div class="column is-9">
+                                      <div class="column is-10">
                                           <!-- <strong>Today: {{Dashboard.ReturnCountToday}} orders to be returned</strong> -->
                                           <strong>Today: {{Dashboard.ReturnCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
@@ -200,7 +200,7 @@
                               </div>
                               <div class=" material-shadow-animate1" style="margin-bottom: 1rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
-                                      <div class=" column is-9">
+                                      <div class=" column is-10">
                                           <!-- <strong>Tomorrow: {{Dashboard.ReturnCountTomorrow}} orders to be returned</strong> -->
                                           <strong>Tomorrow: {{Dashboard.ReturnCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 
@@ -233,7 +233,7 @@
                               </div> -->
                               <div class=" material-shadow-animate1 " style="margin-bottom: 1rem; margin-right: 0.9rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
-                                      <div class="column is-9">
+                                      <div class="column is-10">
                                           <!-- <strong>Today: {{Dashboard.MaintainCountToday}} order to be returned</strong> -->
                                           <strong>Today: {{Dashboard.MaintainCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
@@ -257,7 +257,7 @@
                               </div>
                               <div class=" material-shadow-animate1" style="margin-bottom: 1rem; margin-right: 0.9rem; background-color:#F5F5F5 !important">                            
                                   <div class="headerstatus1 col-12 row"  style="padding: 0.5rem 0rem 0.5rem 0; margin-left:0px;">
-                                      <div class="column is-9">
+                                      <div class="column is-10">
                                           <!-- <strong>Tomorrow: {{Dashboard.MaintainCountTomorrow}} order to be returned</strong> -->
                                           <strong>Tomorrow: {{Dashboard.MaintainCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 

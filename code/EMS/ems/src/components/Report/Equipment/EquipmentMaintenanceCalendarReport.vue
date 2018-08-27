@@ -105,7 +105,7 @@
                                 <td>20/02/2018</td>  
                                 <td>10</td>  
                                 <td>56 days</td>  
-                                <td>N/A</td>                                 
+                                <td>n/a</td>                                 
                             </tr>
                             <tr>
                                 <td>CM9856</td>                            
@@ -113,7 +113,7 @@
                                 <td>20/02/2018</td>  
                                 <td>10</td>  
                                 <td>12 days</td>  
-                                <td>N/A</td>                                 
+                                <td>n/a</td>                                 
                             </tr>
                             <tr>
                                 <td>CM1124</td>                            
@@ -121,7 +121,7 @@
                                 <td>20/02/2018</td>  
                                 <td>60</td>  
                                 <td>996 days</td>  
-                                <td>N/A</td>                                 
+                                <td>n/a</td>                                 
                             </tr>
 
                             <tr>
@@ -130,7 +130,7 @@
                                 <td>20/02/2018</td>  
                                 <td>14</td>  
                                 <td>52 days</td>  
-                                <td>N/A</td>                                 
+                                <td>n/a</td>                                 
                             </tr>
                             <tr>
                                 <td>EV1652</td>                            
@@ -138,7 +138,7 @@
                                 <td>20/02/2018</td>  
                                 <td>52</td>  
                                 <td>562 days</td>  
-                                <td>N/A</td>                                 
+                                <td>n/a</td>                                 
                             </tr>
                             
                         </tbody>
