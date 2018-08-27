@@ -171,7 +171,7 @@
                             </div>
                         </div>
                         <div class="is-horizontal" :style="editingCreateWorkOrderConfig ? 'margin: .5rem 0;' : ''">
-                            <span style="position: relative; top: .5rem">- Duration from created date: </span>
+                            <span v-if="preset.name != 'Normal'" style="position: relative; top: .5rem">- Duration from created date: </span>
                             <!-- <span style="position: relative; top: .5rem" v-if="!editingCreateWorkOrderConfig && preset.durationFromCreateDate > 0"> {{ preset.durationFromCreateDateOperand }}</span>
                             <span style="position: relative; top: .5rem" v-if="editingCreateWorkOrderConfig && preset.durationFromCreateDate > 0">
                                 <label class="radio">
@@ -187,13 +187,13 @@
                                     }"/> from 
                                 </label>
                             </span> -->
-                            <span style="position: relative; top: .5rem" v-if="!editingCreateWorkOrderConfig"> {{ preset.durationFromCreateDate }}</span>
+                            <span style="position: relative; top: .5rem" v-if="!editingCreateWorkOrderConfig && preset.name != 'Normal'"> {{ preset.durationFromCreateDate }}</span>
                             <input style="margin-left: .3rem; width: 7%; text-align: right;" 
                                     :style="errorDurationFromCreateDateIndex.includes(index)
                                             || tobeErrorDurationFromCreateDateIndex.includes(index)
                                             || errorDurationIsGreaterThanMaximumIndex.includes(index) ? 'border: 1px solid var(--danger-color)' : ''"
                                     :disabled="preset.name == 'Normal'"
-                                    v-if="editingCreateWorkOrderConfig" v-model.number="preset.durationFromCreateDate" 
+                                    v-if="editingCreateWorkOrderConfig && preset.name != 'Normal'" v-model.number="preset.durationFromCreateDate" 
                                     class="input" type="number" min="0" step="1" 
                                     v-on:input="() => {
                                 if (preset.durationFromCreateDate < 0 || preset.durationFromCreateDate == '') {
@@ -242,7 +242,7 @@
                                 preset.distanceFactor = parseFloat((1 - preset.runtimeFactor).toFixed(2));
                                 checkCreateOrderConfigChanged();
                                 checkValidRuntimeFactor();
-                            }"/><span style="position: relative; top: .5rem">%</span>
+                            }"/><span style="position: relative; top: .5rem"></span>
                             <div class="error-text" v-if="errorRuntimeFactorIndex.includes(index) || tobeErrorRuntimeFactorIndex.includes(index)">
                                 <span>{{ ErrorStrings.ErrorConfigDuplicated }}</span>
                             </div>
@@ -263,7 +263,7 @@
                                 preset.runtimeFactor = parseFloat((1 - preset.distanceFactor).toFixed(2));
                                 checkCreateOrderConfigChanged();
                                 checkValidDistanceFactor();
-                            }"/><span style="position: relative; top: .5rem">%</span>
+                            }"/><span style="position: relative; top: .5rem"></span>
                             <div class="error-text" v-if="errorDistanceFactorIndex.includes(index) || tobeErrorDistanceFactorIndex.includes(index)">
                                 <span>{{ ErrorStrings.ErrorConfigDuplicated }}</span>
                             </div>

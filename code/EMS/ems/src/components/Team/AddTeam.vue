@@ -149,7 +149,7 @@ export default {
       });
   },
   methods: {
-    createTeam() {
+    async createTeam() {
       // if (this.team.name === "") {
       //   this.CreateTeamErrors.NoTeamName = this.ErrorStrings.NoTeamName;
       // }
@@ -174,21 +174,21 @@ export default {
       //   this.CreateTeamErrors.NoCreateDate = this.ErrorStrings.NoCreateDate;
       // }
       if (this.validateTeam())
-        this.axios
+        await this.axios
           .post("http://localhost:3000/api/team", {
             team: this.team
           })
-          .then(res => {
+          .then(async res => {
             if (this.selectedAccounts.length > 0) {
               if (res.data.NewTeamId) {
                 // alert(res.data.NewTeamId);
-                this.selectedAccounts.forEach(account => {
-                  this.axios.post(Server.TEAM_ACCOUNT_CREATE_API_PATH, {
+                for (const account of this.selectedAccounts) {
+                  await this.axios.post(Server.TEAM_ACCOUNT_CREATE_API_PATH, {
                     teamId: res.data.NewTeamId,
                     accountId: account.Id
                   });
                   // alert("Success!");
-                });
+                }
               }
             }
             this.$router.push("/team");

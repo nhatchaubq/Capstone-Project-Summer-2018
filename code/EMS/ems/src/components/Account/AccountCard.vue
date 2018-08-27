@@ -13,9 +13,9 @@
           <h2><strong>{{account.Username}}</strong></h2>
         </router-link>
           <!-- <div><span>ID: </span>{{equipment.Id}}</div> -->
-          <div><span>Full name: </span>{{account.Fullname ? account.Fullname : "N/A"}}</div>
-          <div><span>Email: </span>{{account.Email ? account.Email : "N/A" }}</div>
-          <div><span>Telephone number: </span>{{account.Phone ? account.Phone : "N/A"}}</div>
+          <div><span>Full name: </span>{{account.Fullname ? account.Fullname : "n/a"}}</div>
+          <div><span>Email: </span>{{account.Email ? account.Email : "n/a" }}</div>
+          <div><span>Telephone number: </span>{{account.Phone ? account.Phone : "n/a"}}</div>
           <div><span>Role: </span>{{account.Role.Name}}  </div>
           <div><span>Status: </span>{{account.IsActive ? 'Active': 'Inactive'}}</div>
         

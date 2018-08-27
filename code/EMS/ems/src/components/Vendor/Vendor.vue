@@ -7,7 +7,7 @@
       <thead>
         <tr>
           <!-- <th><strong>ID</strong></th> -->
-          <th ><strong>No.</strong></th>
+          <th style="text-align: center;"><strong>No.</strong></th>
           <th ><strong>Business name</strong></th>
           <th ><strong>Quantity</strong></th>
           <th ><strong>Address</strong></th>
@@ -22,13 +22,13 @@
           <tr v-bind:key="vendor.Id" v-for="(vendor, index) in toDisplayData" class="txtText" v-on:click="gotoDetail(vendor.Id)">
             <!-- <td style="width:3rem">{{vendor.Id}}</td>     -->
             <!-- <router-link :to="`/team/${team.Id}`">   -->
-            <td width=3% >{{ 10*(currentPage -1) + (index + 1) }}</td>
+            <td style="text-align: center;" width=3% >{{ 10*(currentPage -1) + (index + 1) }}</td>
             <td width=22%>{{vendor.BusinessName | truncate(25)}}</td>
-            <td width=10%>{{vendor.Vendor.Quantityitems.Quantity ? vendor.Vendor.Quantityitems.Quantity : "N/A" }}</td>
+            <td width=10%>{{vendor.Vendor.Quantityitems.Quantity ? vendor.Vendor.Quantityitems.Quantity : "n/a" }}</td>
             <!-- </router-link> -->
-            <td width=30%>{{vendor.BusinessAddress ? vendor.BusinessAddress : "N/A" }}</td>
-            <td width=20%>{{vendor.Website ? vendor.Website : "N/A"}} </td>
-            <td width=15%>{{vendor.ContactName ? vendor.ContactName : "N/A"}}</td>
+            <td width=30%>{{vendor.BusinessAddress ? vendor.BusinessAddress : "n/a" }}</td>
+            <td width=20%>{{vendor.Website ? vendor.Website : "n/a"}} </td>
+            <td width=15%>{{vendor.ContactName ? vendor.ContactName : "n/a"}}</td>
             <strong>
               <td :style="{color: vendor.Status? 'var(--primary-color)' : '#607D8B'}">{{vendor.Status? "Active" : "Inactive"}}</td>
               </strong>

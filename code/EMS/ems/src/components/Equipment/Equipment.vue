@@ -54,7 +54,7 @@
                       <td width=30% >{{equipment.Name | truncate(50)}}</td>
                       <td width=5% >{{equipment.AvailableQuantity}}/{{equipment.Quantity}}</td>
                       <td width=20% >{{equipment.Vendor.Name | truncate(30)}}</td>
-                      <td width=25% >{{equipment.Description ? equipment.Description: 'N/A' }}</td>
+                      <td width=25% >{{equipment.Description ? equipment.Description: 'n/a' }}</td>
                       <td width=10% >{{equipment.Category.Name }}</td>
                       <td width=5% :style="{color: equipment.Status? 'var(--primary-color)' : '#607D8B'}">{{equipment.Status? "Active" : "InActive"}}</td>
                   </tr>
