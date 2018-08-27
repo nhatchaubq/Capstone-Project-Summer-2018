@@ -20,7 +20,7 @@
                     <td>{{equipment.Vendor.Name}}</td>
                     <td>{{equipment.MadeIn}}</td>
                     <!-- <td>{{equipment.Price ? equipment.Price : 'n/a'}}</td> -->
-                    <td style="width=70px">{{equipment.Description ? equipment.Description : 'N/A' }}</td>
+                    <td style="width=70px">{{equipment.Description ? equipment.Description : 'n/a' }}</td>
                     <td>{{equipment.Category.Name}}</td>
                 </tr>
             </tbody>

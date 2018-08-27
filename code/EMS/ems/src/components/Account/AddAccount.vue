@@ -1,150 +1,133 @@
 <template>
-     <div>
-            <div class="form-title" >
-                <div class="form-title-start ">
-                  <div>
-                    Add New Account
-                  </div>
-                </div>
-                  <div class="form-title-end">
-                    <router-link to='/account'>
-                      <button id="btn-cancel" class="button" >Cancel</button>
-                    </router-link>
-                    <button id="btn-add" class="button" v-on:click="createAccount1()">Create Account</button>
-                </div>
-            </div>
-            <div class="form-content" >
-              <div class="form-field-picture">
-                <div class="form-field-title">
-                    <span><strong>  Picture </strong></span><span v-if="CreateAccountErrors.NoImage != ''"> <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span>
-
-                </div>
-                <div class="input_picture">                    
-                    <label class="file-label" style="width: 100% !important"> 
-                    <span class="file-cta">
-                        <input class="file-input" type="file" accept=".png, .jpg, .jpeg" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
-                        <span class="file-icon">
-
-                            <i class="fa fa-upload"></i>
-                        </span>
-                        <span class="file-label">
-                            Choose images...
-                        </span>
-                    </span>
-                        <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
-                            {{ file.name }}
-                        <div>
-                            <img class="file-upload" v-bind:src="getFilePath(file)" width="300px" height="450px"/>
-                        </div>
-                        </div>
-                    </label>
-                </div> 
-              </div>
-              <div >
-                  <div class="form-field">
-                      <div class="form-field-title">
-                      <strong>  Username (required)</strong> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span><span v-if="CreateAccountErrors.UserNameTrim != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UserNameTrim }}</span></span> <span class="error-text" v-if="CreateAccountErrors.duplicateUsername != ''"> {{ CreateAccountErrors.duplicateUsername }}</span> <span class="error-text" v-if="CreateAccountErrors.ValidUsername != ''"> {{ CreateAccountErrors.ValidUsername }}</span>
-                      <!-- <span v-if="CreateWorkOrderErrors.NoTitle != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoTitle }}</span></span> -->
-                      </div>
-                      <div class="control has-icons-right" style="padding:8px">
-                          <input v-model.trim="account.username" class="input " type="text" placeholder="James123" >
-
-                              <!-- <span class="icon is-small is-left">
-                              <i class="fa fa-user"></i>
-                              </span> -->
-                              <!-- <span class="icon is-small is-right">
-                              <i class="fa fa-check"></i>
-                              </span> -->
-
-                      </div>
-                  </div>
-
-              </div>
-              <div>
-                  <div class="form-field">
-                      <div class="form-field-title">
-                      <strong>   Password (required)</strong> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span>
-                  <div class="control has-icons-right" style="padding:8px">
-                          <input v-model.trim="account.password" class="input " type="password" placeholder="Chow@321" name="password" id="password">
-                              <!-- <span class="icon is-small is-left">
-                              <i class="fa fa-expeditedssl"></i>
-                              </span> -->
-                              <!-- <span class="icon is-small is-right">
-                              <i class="fa fa-check"></i>
-                              </span> -->
-                              <!-- {{account.password}} -->
-                          </div>
-                      </div>
-
-                  </div>
-                  
-              </div>
-              <div>
-                  <div class="form-field">
-                      <div class="form-field-title">
-                          <strong>
-                              Fullname (required)
-                          </strong>     <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span><span v-if="CreateAccountErrors.ValidFullName != ''"> <span class="error-text">{{ CreateAccountErrors.ValidFullName }}</span></span>
-                      </div>
-                      <div class="form-field-input">
-                      <div class="control  has-icons-right" style="padding:8px">
-                          <input v-model.trim="account.fullname" class="input " type="text" placeholder="James Cole" name="fullname" id="fullname">
-                              <!-- <span class="icon is-small is-left">
-                              <i class="fa fa-user"></i>
-                              </span> -->
-                              <!-- <span class="icon is-small is-right">
-                              <i class="fa fa-check"></i>
-                              </span> -->
-                              <!-- {{account.fullname}} -->
-                          </div>
-                      </div>
-
-                  </div>
-                  
-              </div>
-              <div>
-                  <div class="form-field">
-                      <div class="form-field-title">
-                          <strong>
-                              Phone (required)
-                          </strong>  <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span><span v-if="CreateAccountErrors.validPhone != ''"> <span class="error-text">{{ CreateAccountErrors.validPhone }}</span></span><span v-if="CreateAccountErrors.duplicatePhone != ''"> <span class="error-text">{{ CreateAccountErrors.duplicatePhone }}</span></span>
-                      </div>
-                      <div class="form-field-input">
-                        <div class="control has-icons-right" style="padding:8px">
-                          <input v-model.trim="account.phone" class="input " type="text" placeholder="0633824936" name="phone" id="phone">
-                        </div>
-                      </div>
-                  </div>
-              </div>
-              <div>
-                <div class="form-field">
-                  <div class="form-field-title">
-                      <strong>
-                          Email (required) 
-                      </strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span><span v-if="CreateAccountErrors.validEmail != ''"> <span class="error-text">{{ CreateAccountErrors.validEmail }}</span></span><span v-if="CreateAccountErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateAccountErrors.duplicateEmail }}</span></span> <span v-if="CreateAccountErrors.EmailMax != ''"> <span class="error-text">{{ CreateAccountErrors.EmailMax }}</span></span>
-                  </div>
-                  <div class="form-field-input">
-                      <div class="control has-icons-right" style="padding:8px">
-                        <input v-model.trim="account.email" class="input"  type="text" placeholder="DPoint@gmail.com"  >
-                      </div>
-                  </div>
-                </div>
-              </div>            
-              <div>
-                  <div class="form-field">
-                      <div class="form-field-title" >
-                          <strong>
-                              Role (required)
-                          </strong><span v-if="CreateAccountErrors.NoRole != ''"> <span class="error-text">{{ CreateAccountErrors.NoRole }}</span></span>
-                      </div> 
-                      <div class="field is-horizontal" >
-                          <model-select style="width: 100% !important; margin-bottom:12rem" :options="roleOptions" v-model="account.roleid" placeholder="Select a role"></model-select>                     
-                      </div>
-                  </div>            
-              </div>
-            </div>
-         <simplert :useRadius="true" :useIcon="true" ref="simplert2"></simplert>
+  <div class="form">
+    <div class="form-title" >
+      <div class="form-title-start ">
+        <div>
+          Add New Account
+        </div>
+      </div>
+      <div class="form-title-end">
+        <router-link to='/account'>
+          <button id="btn-cancel" class="button" >Cancel</button>
+        </router-link>
+        <button id="btn-add" class="button" v-on:click="createAccount1()">Create Account</button>
+      </div>
     </div>
+    <div class="form-content" >
+      <div class="form-field-picture">
+        <div class="form-field-title">
+          <span><strong>Picture</strong></span><span v-if="CreateAccountErrors.NoImage != ''"> <span class="error-text">{{ CreateAccountErrors.NoImage }}</span></span>
+        </div>
+        <div class="input_picture">                    
+          <label class="file-label" style="width: 100% !important"> 
+            <span class="file-cta">
+              <input class="file-input" type="file" accept=".png, .jpg, .jpeg" ref="fileInput" style="opacity:0" v-on:change="inputFileChange"  />
+              <span class="file-icon">
+                <i class="fa fa-upload"></i>
+              </span>
+              <span class="file-label">
+                Choose images...
+              </span>
+            </span>
+            <div class="file-upload" v-bind:key="file.name" v-for="file in files" style="width: 100% !important;">
+              {{ file.name }}
+              <div>
+                <img class="file-upload" v-bind:src="getFilePath(file)" width="300px" height="450px"/>
+              </div>
+            </div>
+          </label>
+        </div> 
+      </div>
+      <div >
+        <div class="form-field">
+          <div class="form-field-title">
+            <strong>Username (required)</strong> <span v-if="CreateAccountErrors.UsernameMin != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMin }}</span></span>  <span v-if="CreateAccountErrors.UsernameMax != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UsernameMax }}</span></span><span v-if="CreateAccountErrors.UserNameTrim != ''"> <span></span> <span class="error-text">{{ CreateAccountErrors.UserNameTrim }}</span></span> <span class="error-text" v-if="CreateAccountErrors.duplicateUsername != ''"> {{ CreateAccountErrors.duplicateUsername }}</span> <span class="error-text" v-if="CreateAccountErrors.ValidUsername != ''"> {{ CreateAccountErrors.ValidUsername }}</span>
+            <!-- <span v-if="CreateWorkOrderErrors.NoTitle != ''">. <span class="error-text">{{ CreateWorkOrderErrors.NoTitle }}</span></span> -->
+          </div>
+          <div class="control">
+            <input v-model.trim="account.username" class="input " type="text" placeholder="ThanhNM" >
+            <!-- <span class="icon is-small is-left">
+            <i class="fa fa-user"></i>
+            </span> -->
+            <!-- <span class="icon is-small is-right">
+            <i class="fa fa-check"></i>
+            </span> -->
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="form-field">
+          <div class="form-field-title">
+            <strong>Password (required)</strong> <span v-show="CreateAccountErrors.WeakAccount != ''"> <span class="error-text">{{ CreateAccountErrors.WeakAccount }}</span></span><span v-show="CreateAccountErrors.MaxPassword != ''"> <span class="error-text">{{ CreateAccountErrors.MaxPassword }}</span></span>
+            <div class="control">
+              <input v-model.trim="account.password" class="input " type="password" placeholder="Password" name="password" id="password">
+              <!-- <span class="icon is-small is-left">
+              <i class="fa fa-expeditedssl"></i>
+              </span> -->
+              <!-- <span class="icon is-small is-right">
+              <i class="fa fa-check"></i>
+              </span> -->
+              <!-- {{account.password}} -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="form-field">
+          <div class="form-field-title">
+            <strong>Fullname (required)</strong> <span v-if="CreateAccountErrors.FullNameMax != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMax }}</span></span> <span v-if="CreateAccountErrors.FullNameMin != ''"> <span class="error-text">{{ CreateAccountErrors.FullNameMin }}</span></span><span v-if="CreateAccountErrors.ValidFullName != ''"> <span class="error-text">{{ CreateAccountErrors.ValidFullName }}</span></span>
+          </div>
+          <div class="form-field-input">
+            <div class="control">
+              <input v-model.trim="account.fullname" class="input " type="text" placeholder="Nguyễn Minh Thành" name="fullname" id="fullname">
+              <!-- <span class="icon is-small is-left">
+              <i class="fa fa-user"></i>
+              </span> -->
+              <!-- <span class="icon is-small is-right">
+              <i class="fa fa-check"></i>
+              </span> -->
+              <!-- {{account.fullname}} -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="form-field">
+          <div class="form-field-title">
+            <strong>Phone (required)</strong> <span v-if="CreateAccountErrors.PhoneMax != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMax }}</span></span> <span v-if="CreateAccountErrors.PhoneMin != ''"> <span class="error-text">{{ CreateAccountErrors.PhoneMin }}</span></span><span v-if="CreateAccountErrors.validPhone != ''"> <span class="error-text">{{ CreateAccountErrors.validPhone }}</span></span><span v-if="CreateAccountErrors.duplicatePhone != ''"> <span class="error-text">{{ CreateAccountErrors.duplicatePhone }}</span></span>
+          </div>
+          <div class="form-field-input">
+            <div class="control">
+              <input v-model.trim="account.phone" class="input " type="text" placeholder="0633824936" name="phone" id="phone">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="form-field">
+          <div class="form-field-title">
+            <strong>Email (required)</strong> <span v-if="CreateAccountErrors.NoEmail != ''"> <span class="error-text">{{ CreateAccountErrors.NoEmail }}</span></span><span v-if="CreateAccountErrors.validEmail != ''"> <span class="error-text">{{ CreateAccountErrors.validEmail }}</span></span><span v-if="CreateAccountErrors.duplicateEmail != ''"> <span class="error-text">{{ CreateAccountErrors.duplicateEmail }}</span></span> <span v-if="CreateAccountErrors.EmailMax != ''"> <span class="error-text">{{ CreateAccountErrors.EmailMax }}</span></span>
+          </div>
+          <div class="form-field-input">
+            <div class="control">
+              <input v-model.trim="account.email" class="input"  type="text" placeholder="DPoint@gmail.com"  >
+            </div>
+          </div>
+        </div>
+      </div>            
+      <div>
+        <div class="form-field">
+          <div class="form-field-title" >
+            <strong>Role (required)</strong><span v-if="CreateAccountErrors.NoRole != ''"> <span class="error-text">{{ CreateAccountErrors.NoRole }}</span></span>
+          </div> 
+          <div class="field is-horizontal" >
+            <model-select style="width: 100% !important; margin-bottom:12rem" :options="roleOptions" v-model="account.roleid" placeholder="Select a role"></model-select>                     
+          </div>
+        </div>            
+      </div>
+    </div>
+    <simplert :useRadius="true" :useIcon="true" ref="simplert2"></simplert>
+  </div>
 </template>
 
 <script>
@@ -534,23 +517,25 @@ export default {
 
 <style scoped>
 .form {
-  background-color: white;
+  /* background-color: white; */
   padding: 0 !important;
 }
 .form-title {
   display: grid;
   grid-template-columns: 65% 35%;
   border-bottom: 1px solid #e0e0e0;
-  padding: 1rem 2rem;
+  padding: .5rem 2rem;
+  box-shadow: 0px 3px 5px var(--shadow);
+  z-index: 5;
 }
 
 .form-title-start {
-  position: relative;
-  top: 10px;
+  padding-top: .25rem;
   font-weight: bold;
   font-size: 20px;
   color: #616161;
 }
+
 .form-title-end {
   width: 100%;
   display: flex;
@@ -587,11 +572,12 @@ export default {
 
 .form-field {
   /* margin-bottom: 5px; */
-  padding: 1rem 3rem;
+  padding: 1rem 2rem;
+  width: 50%;
 }
 
 .form-field-title {
-  font-size: 14px;
+  font-size: 14px;  
 }
 
 #btn-change-pass {
@@ -608,17 +594,17 @@ export default {
   color: white;
 }
 .form-field-picture {
-  padding: 1rem 3rem;
+  padding: 1rem 2rem;
   border: none;
 }
 .file-upload {
-  padding-left: 2rem;
+  padding-left: 2rem;  
 }
 .input_picture {
-  padding: 1rem 3rem 1rem 3rem;
+  padding: 1rem 2rem;
   outline: 1px dashed #a8a8a8fb;
   background-color: #f0efeffb;
-  display: flex;
+  width: 50%;
 }
 .file-cta {
   border: none;

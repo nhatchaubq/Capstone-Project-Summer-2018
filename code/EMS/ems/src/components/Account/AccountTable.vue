@@ -44,11 +44,11 @@
   
   
   
-          <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
+          <td>{{account.Fullname ? account.Fullname: "n/a" }}</td>
   
-          <td>{{account.Email ? account.Email : "N/A" }}</td>
+          <td>{{account.Email ? account.Email : "n/a" }}</td>
   
-          <td>{{account.Phone ? account.Phone : "N/A"}}</td>
+          <td>{{account.Phone ? account.Phone : "n/a"}}</td>
   
           <td>{{account.Role.Name}}</td>
 
