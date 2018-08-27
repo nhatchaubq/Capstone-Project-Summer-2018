@@ -272,49 +272,34 @@
                 </div>
             </div>
         </div>
+        <div>
+        </div>
         <div v-if="configOriginal.nextMaintainYear">
-            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Editing next maintain year 
-                <span style="font-weight: 400; font-size: 1rem;">
-                    <a v-if="!editingNextMaintainYearConfig" v-on:click="editingNextMaintainYearConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
-                    <span v-if="editingNextMaintainYearConfig">
-                        <a :style="!isNextMaintainYearChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
-                            v-on:click="() => {
-                                if (isNextMaintainYearChanged) {
-                                    configCopy = JSON.stringify(configOriginal);
-                                    configCopy = JSON.parse(configCopy);
-                                    $socket.emit('CONFIGURATION_CHANGED', configOriginal);
-                                    editingNextMaintainYearConfig = false;
-                                }
-                        }">save changes</a> | 
-                        <a v-on:click="() => {
-                            let configJson = JSON.stringify(configCopy.nextMaintainYear)
-                            configOriginal.nextMaintainYear = JSON.parse(configJson);
-                            editingNextMaintainYearConfig = false;
-                            isNextMaintainYearChanged = false;
-                        }">cancel</a>
-                    </span>
-                </span>
+            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Equipment configuration :
             </div>
-            <div v-if="!editingNextMaintainYearConfig" style="display: grid;grid-template-columns: 30% 30%;">
+            <div v-if="!editingNextMaintainYearConfig" style="display: grid;grid-template-columns: 30% auto;">
                 <div style="padding-top:0.4rem">
                     Maximum duration for next maintaindate: 
                 </div>
-                <div style="display: grid;grid-template-columns: 10% 20%;">
+                <div style="display: grid;grid-template-columns: 10% auto;">
                     <div  style="padding-top:0.4rem">
                         {{configOriginal.nextMaintainYear.maximumValue}}
                     </div>
                     <div style="padding-top:0.4rem">
-                        <label>year(s)</label>
+                        <label style="padding-right:1rem">year(s)</label>
+                         <span style="font-weight: 400; font-size: 1rem;">
+                            <a v-if="!editingNextMaintainYearConfig" v-on:click="editingNextMaintainYearConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>  
+                        </span>
                     </div>
                 </div>
             </div>
-            <div v-if="editingNextMaintainYearConfig" style="display: grid;grid-template-columns: 30% 30%;">
+            <div v-if="editingNextMaintainYearConfig" style="display: grid;grid-template-columns: 30% auto;">
                 <div style="padding-top:0.4rem">
                     Maximum duration for next maintaindate: 
                 </div>
-                <div style="display: grid;grid-template-columns: 30% 20%;">
+                <div style="display: grid;grid-template-columns: 10% auto%;">
                     <div>
-                        <input type="number"  class="input" v-model.number="configOriginal.nextMaintainYear.maximumValue" v-on:input="() => {
+                        <input type="number"  class="input" style="width:65px" v-model.number="configOriginal.nextMaintainYear.maximumValue" v-on:input="() => {
                             if (configOriginal.nextMaintainYear.maximumValue < 0 || configOriginal.nextMaintainYear.maximumValue == '') {
                                 configOriginal.nextMaintainYear.maximumValue = 0;
                             }
@@ -323,54 +308,53 @@
                         }"/>
                     </div>
                     <div style="padding-top:0.4rem">
-                        <label>year(s)</label>
+                        <label style="padding-right:1rem">year(s)</label>
+                        <span v-if="editingNextMaintainYearConfig">
+                            <a :style="!isNextMaintainYearChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
+                                v-on:click="() => {
+                                    if (isNextMaintainYearChanged) {
+                                        configCopy = JSON.stringify(configOriginal);
+                                        configCopy = JSON.parse(configCopy);
+                                        $socket.emit('CONFIGURATION_CHANGED', configOriginal);
+                                        editingNextMaintainYearConfig = false;
+                                    }
+                            }">save changes</a> | 
+                            <a v-on:click="() => {
+                                let configJson = JSON.stringify(configCopy.nextMaintainYear)
+                                configOriginal.nextMaintainYear = JSON.parse(configJson);
+                                editingNextMaintainYearConfig = false;
+                                isNextMaintainYearChanged = false;
+                            }">cancel</a>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
         <div v-if="configOriginal.warrantyMonth">
-            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Editing maximum value of warranty (months) 
-                <span style="font-weight: 400; font-size: 1rem;">
-                    <a v-if="!editingWarrantyMonthConfig" v-on:click="editingWarrantyMonthConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
-                    <span v-if="editingWarrantyMonthConfig">
-                        <a :style="!isWarrantyMonthChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
-                            v-on:click="() => {
-                                if (isWarrantyMonthChanged) {
-                                    configCopy = JSON.stringify(configOriginal);
-                                    configCopy = JSON.parse(configCopy);
-                                    $socket.emit('CONFIGURATION_CHANGED', configOriginal);
-                                    editingWarrantyMonthConfig = false;
-                                }
-                        }">save changes</a> | 
-                        <a v-on:click="() => {
-                            let configJson = JSON.stringify(configCopy.warrantyMonth)
-                            configOriginal.warrantyMonth = JSON.parse(configJson);
-                            editingWarrantyMonthConfig = false;
-                            isWarrantyMonthChanged = false;
-                        }">cancel</a>
-                    </span>
-                </span>
-            </div>
-            <div v-if="!editingWarrantyMonthConfig" style="display: grid;grid-template-columns: 24% 30%;">
+            <div v-if="!editingWarrantyMonthConfig" style="display: grid;grid-template-columns: 24% auto;">
                 <div style="padding-top:0.4rem">
                     Maximum value for warranty: 
                 </div>
-                <div style="display: grid;grid-template-columns: 10% 20%;">
+                <div style="display: grid;grid-template-columns: 10% auto;">
                     <div  style="padding-top:0.4rem">
                         {{configOriginal.warrantyMonth.maximumValue}}
                     </div>
                     <div style="padding-top:0.4rem">
-                        <label>month(s)</label>
+                        <label style="padding-right:1rem">month(s)</label>
+                        <span style="font-weight: 400; font-size: 1rem;">
+                            <a v-if="!editingWarrantyMonthConfig" v-on:click="editingWarrantyMonthConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
+                            
+                        </span>
                     </div>
                 </div>
             </div>
-            <div v-if="editingWarrantyMonthConfig" style="display: grid;grid-template-columns: 24% 30%;">
+            <div v-if="editingWarrantyMonthConfig" style="display: grid;grid-template-columns: 24% auto;">
                 <div style="padding-top:0.4rem">
                     Maximum value for warranty: 
                 </div>
-                <div style="display: grid;grid-template-columns: 30% 20%;">
+                <div style="display: grid;grid-template-columns: 10% auto;">
                     <div>
-                        <input type="number"  class="input" v-model.number="configOriginal.warrantyMonth.maximumValue" v-on:input="() => {
+                        <input type="number"  class="input" style="width:65px" v-model.number="configOriginal.warrantyMonth.maximumValue" v-on:input="() => {
                             if (configOriginal.warrantyMonth.maximumValue < 0 || configOriginal.warrantyMonth.maximumValue == '') {
                                 configOriginal.warrantyMonth.maximumValue = 0;
                             }
@@ -379,16 +363,56 @@
                         }"/>
                     </div>
                     <div style="padding-top:0.4rem">
-                        <label>month(s)</label>
+                        <label  style="padding-right:1rem">month(s)</label>
+                        <span v-if="editingWarrantyMonthConfig">
+                            <a :style="!isWarrantyMonthChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
+                                v-on:click="() => {
+                                    if (isWarrantyMonthChanged) {
+                                        configCopy = JSON.stringify(configOriginal);
+                                        configCopy = JSON.parse(configCopy);
+                                        $socket.emit('CONFIGURATION_CHANGED', configOriginal);
+                                        editingWarrantyMonthConfig = false;
+                                    }
+                            }">save changes</a> | 
+                            <a v-on:click="() => {
+                                let configJson = JSON.stringify(configCopy.warrantyMonth)
+                                configOriginal.warrantyMonth = JSON.parse(configJson);
+                                editingWarrantyMonthConfig = false;
+                                isWarrantyMonthChanged = false;
+                            }">cancel</a>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
         <div v-if="configOriginal.numOfAddItem">
-            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Editing maximum value when add items 
-                <span style="font-weight: 400; font-size: 1rem;">
-                    <a v-if="!editingNumOfAddItemConfig" v-on:click="editingNumOfAddItemConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
-                    <span v-if="editingNumOfAddItemConfig">
+            <div v-if="!editingNumOfAddItemConfig" style="display: grid;grid-template-columns: 24% auto;">
+                <div style="padding-top:0.4rem">
+                    Maximum value for add item: 
+                </div>
+                <div style="display: grid;grid-template-columns: 10% auto;">
+                    <div style="padding-top:0.4rem">
+                        {{configOriginal.numOfAddItem.maximumValue}}
+                    </div>
+                    <span style="font-weight: 400; font-size: 1rem;padding-top:0.4rem">
+                        <a v-if="!editingNumOfAddItemConfig" v-on:click="editingNumOfAddItemConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
+                    </span>
+                </div>
+            </div>
+            <div v-if="editingNumOfAddItemConfig" style="display: grid;grid-template-columns: 24% 30%;">
+                <div style="padding-top:0.4rem">
+                   Maximum value for add item:
+                </div>
+                <div style="display: grid;grid-template-columns: 20% auto;">   
+                    <input type="number"  class="input" v-model.number="configOriginal.numOfAddItem.maximumValue" v-on:input="() => {
+                        if (configOriginal.numOfAddItem.maximumValue < 1 || configOriginal.numOfAddItem.maximumValue == '') {
+                            configOriginal.numOfAddItem.maximumValue = 1;
+                        }
+                        configOriginal.numOfAddItem.maximumValue = parseInt(configOriginal.numOfAddItem.maximumValue);
+                        checkNumOfAddItemConfigChanged();
+                    }"/>
+                    
+                    <span v-if="editingNumOfAddItemConfig" style="padding-top:0.4rem">
                         <a :style="!isNumOfAddItemChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
                             v-on:click="() => {
                                 if (isNumOfAddItemChanged) {
@@ -405,32 +429,6 @@
                             isNumOfAddItemChanged = false;
                         }">cancel</a>
                     </span>
-                </span>
-            </div>
-            <div v-if="!editingNumOfAddItemConfig" style="display: grid;grid-template-columns: 24% 30%;">
-                <div style="padding-top:0.4rem">
-                    Maximum value for add item: 
-                </div>
-                <div style="display: grid;grid-template-columns: 10% 20%;">
-                    <div  style="padding-top:0.4rem">
-                        {{configOriginal.numOfAddItem.maximumValue}}
-                    </div>
-                </div>
-            </div>
-            <div v-if="editingNumOfAddItemConfig" style="display: grid;grid-template-columns: 24% 30%;">
-                <div style="padding-top:0.4rem">
-                   Maximum value for add item:
-                </div>
-                <div style="display: grid;grid-template-columns: 30% 20%;">
-                    <div>
-                        <input type="number"  class="input" v-model.number="configOriginal.numOfAddItem.maximumValue" v-on:input="() => {
-                            if (configOriginal.numOfAddItem.maximumValue < 1 || configOriginal.numOfAddItem.maximumValue == '') {
-                                configOriginal.numOfAddItem.maximumValue = 1;
-                            }
-                            configOriginal.numOfAddItem.maximumValue = parseInt(configOriginal.numOfAddItem.maximumValue);
-                            checkNumOfAddItemConfigChanged();
-                        }"/>
-                    </div>
                 </div>
             </div>
         </div>
@@ -656,8 +654,7 @@ export default {
     checkNumOfAddItemConfigChanged() {
       this.isNumOfAddItemChanged = false;
 
-      const numOfAddItemConfigOriginal = this.configOriginal
-        .numOfAddItem;
+      const numOfAddItemConfigOriginal = this.configOriginal.numOfAddItem;
       const numOfAddItemConfigCopy = this.configCopy.numOfAddItem;
       if (
         this.configOriginal.numOfAddItem.maximumValue !=
@@ -669,8 +666,7 @@ export default {
     checkWarrantyMonthConfigChanged() {
       this.isWarrantyMonthChanged = false;
 
-      const warrantyMonthConfigOriginal = this.configOriginal
-        .warrantyMonth;
+      const warrantyMonthConfigOriginal = this.configOriginal.warrantyMonth;
       const warrantyMonthConfigCopy = this.configCopy.warrantyMonth;
       if (
         this.configOriginal.warrantyMonth.maximumValue !=
