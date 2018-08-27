@@ -39,21 +39,21 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-cron.schedule("30 19 * * *", function () {
+cron.schedule("30 12 * * *", function () {
   console.log("---------------------");
   console.log("Running Cron Job");
   for (var i = 0; i < account.length; i++) {
     var textWO = "";
     var content =
       " <p>Dear Mr/Mrs " + account[i] + "</p>" +
-      " <p>Anh/chị có một số workorder mượn đồ của cty đã quá hạn trả. Anh/chị vui lòng trả về cho cty nhanh chóng. Xin cảm ơn anh/chị.</p> " +
+      " <p>Anh/chị có một số Work Order mượn đồ của công ty đã quá hạn trả. Anh/chị vui lòng trả về cho công ty nhanh chóng. Xin cảm ơn anh/chị.</p> " +
       " <p>Các work order gồm: </p> " +
-      " <div style='padding-left: 20px; font-size:16px'> ";
+      " <div style='padding-left: 20px;'> ";
     for (var j = 0; j < overdueWWO.length; j++) {
       if (overdueWWO[j].RequestUsername == account[i]) {
 
         textWO = textWO + overdueWWO[j].Name + "\n";
-        content = content.concat("<p style='color:red;'>" + overdueWWO[j].Name + "</p>");
+        content = content.concat("<p style='font-weight: bold; font-size:12.0pt;color:#ef5350'>- " + overdueWWO[j].Name + "</p>");
       }
     }
     content = content.concat("</div>");

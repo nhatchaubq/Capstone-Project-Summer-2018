@@ -40,7 +40,7 @@
       <tbody>
           <tr  :key="team.Id" v-for="(team, index) in toDisplayData" v-on:click="gotoDetail(team.Id)" >
             <td width=7%>{{ 5*(currentPage -1) + (index + 1)}}</td>
-            <td width=40%>{{team.Name? team.Name: "N/A" }}</td>
+            <td width=40%>{{team.Name? team.Name: "n/a" }}</td>
             <td width=15% v-if="team.TeamRole.TeamRole == 'Leader'"> <strong> <span style="color: var(--primary-color); font-size: 17px">Leader</span>   </strong> </td> 
             <td width=15% v-if="team.TeamRole.TeamRole == 'Member'"> <strong> <span style=" 20px; font-size: 17px ">Member</span> </strong> </td> 
           
@@ -177,7 +177,7 @@
   <div class="row" style="margin-top:0.5rem; height: 36px">
     <div class="col-12"> <strong>Start date</strong>  </div>
   </div>
-  <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? getDate(account.StartDate): 'N/A' }}</div>
+  <div class="col-7" style="padding-left: 0 !important;"> {{account.StartDate ? getDate(account.StartDate): 'n/a' }}</div>
 
 <div class="row" v-if="editMode">
  

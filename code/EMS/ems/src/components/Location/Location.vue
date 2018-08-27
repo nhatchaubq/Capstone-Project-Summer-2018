@@ -1,12 +1,16 @@
 <template>  
-<div>
-  
+<div>  
   <div>
+    <router-link to="/location/create-location" v-if="authUser.Role == 'Manager' && isListViewMode">
+      <button class="btn-add-location button btn-primary material-shadow-animate">
+        Add Location
+      </button>
+    </router-link> 
     <div class="emtpy-text" v-if="locations && locations.length == 0">
       There is no location to display.
     </div>
     <div class="location-page" v-if="locations && locations.length > 0">
-      <div class="field is-grouped view-mode" v-if="authUser.Role == 'Manager'">
+      <div class="field is-grouped view-mode">
         <button class="btn-view-mode-left" :class='{"is-active": isListViewMode}' v-on:click="isListViewMode = true">List view</button>
         <button class="btn-view-mode-right" :class='{"is-active": !isListViewMode}' v-on:click="isListViewMode = false">Map view</button>
       </div>
@@ -15,7 +19,7 @@
           <!-- <div class="location-sort">
             <b>Sort By</b>
           </div> -->
-          <div class="location-blocks" :style="authUser.Role == 'Manager' ? 'max-height: 83%; min-height: 83%' : 'max-height: 90.15%; min-height: 90.15%'">
+          <div class="location-blocks" style="max-height: 83%; min-height: 83%">
             <div class="material-box material-shadow-animate" :class="isActive(location.Id)"  :key='"location" + location.Id' v-for="location in locations" v-on:click="setSelectedLocation(location)" >
               <div class="location-name">                
                 <div>{{location.Name}}</div>
@@ -30,14 +34,9 @@
               </div>
             </div>         
           </div>
-          <router-link to="/location/create-location" v-if="authUser.Role == 'Manager'">
-            <button class="btn-add-location button btn-primary material-shadow-animate">
-              Add Location
-            </button>
-          </router-link> 
-        </div>
+        </div>       
 
-        <div v-if="selectedLocation != null" class="location-detail material-box material-shadow"  :style="authUser.Role == 'Manager' ? 'max-height: 81%' : 'max-height: 88%'">  
+        <div v-if="selectedLocation != null" class="location-detail material-box material-shadow" style="max-height: 81%">  
           <div class="info-location" >
             <div class="header-detail">
               <div style="font-size: 1.8rem;" >{{selectedLocation.Name}}</div>      
@@ -240,7 +239,7 @@
                {{getFormatDate(selectedWorkorder.ClosedDate)}}
             </div>
             <div class="info-content"  v-else>
-              N/A
+              n/a
             </div>
           </div>                                        
         </div>

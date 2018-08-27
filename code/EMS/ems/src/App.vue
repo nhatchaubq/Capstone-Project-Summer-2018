@@ -57,29 +57,32 @@ export default {
   },
   methods: {
     getNotifications() {
-      let url = `${Server.NOTIFICATION_API_PATH}/top50/${this.authUser.Id}`;
-      this.axios
-        .get(url)
-        .then(res => {
-          if (res.status == 200) {
-            let notifications = [];
-            res.data.forEach(value => {
-              let noti = {
-                Id: value.Id,
-                Content: value.Content,
-                CreatedDate: value.CreatedDate,
-                TimeString: null,
-                Status: value.Status,
-                Metadata: value.Metadata
-              };
-              notifications.push(noti);
-            });
-            this.$store.state.notifications = notifications;
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      if (this.authUser) {
+        let url = `${Server.NOTIFICATION_API_PATH}/top50/${this.authUser.Id}`;
+        this.axios
+          .get(url)
+          .then(res => {
+            if (res.status == 200) {
+              let notifications = [];
+              res.data.forEach(value => {
+                let noti = {
+                  Id: value.Id,
+                  Content: value.Content,
+                  CreatedDate: value.CreatedDate,
+                  TimeString: null,
+                  Status: value.Status,
+                  Metadata: value.Metadata
+                };
+                notifications.push(noti);
+              });
+              this.$store.state.notifications = notifications;
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            this.$router.push('/500');
+          });        
+      }
     }
   }
 };

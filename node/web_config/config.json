@@ -25,5 +25,8 @@
     },
     "warrantyMonth": {
         "maximumValue": 200
+    },
+    "numOfAddItem": {
+        "maximumValue": 50
     }
 }

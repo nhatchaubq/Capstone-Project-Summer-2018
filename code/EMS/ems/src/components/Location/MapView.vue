@@ -32,7 +32,6 @@
         <div class="material-box material-shadow" v-show="selectedLocation && mapViewSelectedLocation" style="width: 49%; margin-left: 2%;">
             <div>
                 <i v-on:click="selectedLocation = null" class="fa fa-times" style="cursor: pointer; color: var(--danger-color)"></i>
-                <a v-show="authUser.Role === 'Manager'" style="float: right; font-weight: 500;">Edit</a>
             </div>
             <div style="color: #424242">
                 <div class="header" v-if="selectedLocation">
@@ -129,7 +128,7 @@
                 </span>
             </div>
             <div slot="footer">
-                <Button size="large" long class="button btn-primary" @click="showTileEquipmentPopup = false">OK</Button>
+                <button class="button btn-primary" style="width: 4rem;"  @click="showTileEquipmentPopup = false">OK</button>
             </div>
             <div :style="{
                 'max-height': '50vh',

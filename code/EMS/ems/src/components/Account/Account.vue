@@ -53,7 +53,7 @@
         <tr style="height:28px !important">
           <!-- <th><strong>ID</strong></th> -->
   
-          <th style="width:3% !important"><strong >No.</strong></th>
+          <th style="width:3% !important; text-align: center;"><strong >No.</strong></th>
           <th style="width:15% !important"><strong>User name</strong></th>
   
           <th style="width:25% !important"><strong>Full name </strong></th>
@@ -67,13 +67,13 @@
           <th style="width:7% !important"><strong>Status</strong></th>
         </tr>
       </thead>  
-      <tbody>
-          <tr  :key="account.Id" v-for="(account, index) in toDisplayData"  style="height:28px !important" v-on:click="gotoDetail(account.Id)"  >
-          <td>{{ 10*(currentPage -1) + (index + 1) }}</td>   
+      <tbody style="font-size: .9rem !important;">
+          <tr :key="account.Id" v-for="(account, index) in toDisplayData" style="height:28px !important;" v-on:click="gotoDetail(account.Id)"  >
+          <td style="text-align: center;">{{ 10*(currentPage -1) + (index + 1) }}</td>   
           <td>{{account.Username | truncate(13)}}</td>
-          <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
-          <td>{{account.Email ? account.Email : "N/A" }}</td>
-          <td>{{account.Phone ? account.Phone : "N/A"}}</td>
+          <td>{{account.Fullname ? account.Fullname: "n/a" }}</td>
+          <td>{{account.Email ? account.Email : "n/a" }}</td>
+          <td>{{account.Phone ? account.Phone : "n/a"}}</td>
           <td>{{account.Role.Name}}</td>
           <strong>
             <td :style="{color: account.IsActive? 'var(--primary-color)' : '#607D8B'}">{{account.IsActive? "Active" : "Inactive"}}</td>
