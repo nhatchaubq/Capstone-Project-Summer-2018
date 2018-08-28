@@ -217,6 +217,7 @@ router.get("/:id/equipments", (request, response) => {
         "                                                                                                                                                       for json path, without_array_wrapper)) as [DetailReturn] " +
         "                                                     from WorkOrder as wo2 join WorkOrderDetail as wod2 on wo2.Id = wod2.WorkOrderID " +
         "                                                                         join EquipmentItem as ei2 on wod2.EquipmentItemID = ei2.Id " +
+        "                                                                         join [Location] as lo on lo.Id = ei2.WarehouseID " +
         "                                                                         join EquipmentStatus as es on ei2.StatusID = es.Id " +
         "                                                     where wo2.Id = @workOrderId and ei2.EquipmentID = e.Id for json path) as [EquipmentItems] " +
         " from Equipment as e join [Unit] as u on e.UnitID = u.Id " +

@@ -3,7 +3,7 @@ import { Line, mixins } from "vue-chartjs";
 export default {
   extends: Line,
   mixins: [mixins.reactiveProp],
-  props: ["chartData", "options"],
+  props: ["chartData", "options", "isWorkorderChart"],
   // data() {
   //     return {
   //         gradient: null,
@@ -42,16 +42,34 @@ export default {
           {
             label: this.chartData.labels[0],
             backgroundColor: this.gradient,
-            data: this.chartData.monthData[0]
+            data: this.chartData.monthData[0],
+            lineTension: 0
           },
           {
             label: this.chartData.labels[1],
             backgroundColor: this.gradient2,
-            data: this.chartData.monthData[1]
+            data: this.chartData.monthData[1],
+            lineTension: 0
           }
         ]
       },
-      { responsive: true, maintainAspectRatio: false }
+      { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [{
+              ticks: {
+                  beginAtZero: true,
+                  callback: function (value) { if (Number.isInteger(value)) { return value; } },
+                  stepSize: 1
+              },
+              scaleLabel: {
+                display: true,
+                labelString: this.isWorkorderChart ? 'Work Order' : 'Equipment',
+              }
+          }]
+        }
+      }
     );
   },
   methods: {
@@ -63,16 +81,34 @@ export default {
             {
               label: data.labels[0],
               backgroundColor: this.gradient,
-              data: data.monthData[0]
+              data: data.monthData[0],
+              lineTension: 0
             },
             {
               label: data.labels[1],
               backgroundColor: this.gradient2,
-              data: data.monthData[1]
+              data: data.monthData[1],
+              lineTension: 0
             }
           ]
         },
-        { responsive: true, maintainAspectRatio: false }
+        { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    callback: function (value) { if (Number.isInteger(value)) { return value; } },
+                    stepSize: 1
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: this.isWorkorderChart ? 'Work Order' : 'Equipment',
+                }
+            }]
+          }
+        }
       );
     }
   }
