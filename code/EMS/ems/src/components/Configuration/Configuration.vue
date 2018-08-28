@@ -1,7 +1,8 @@
 <template>
     <div v-if="config && configOriginal && configCopy">
         <div v-if="configOriginal.createWorkOrder">
-            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Creating/editing work order 
+            <div>
+                <span style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Creating/editing work order </span>
                 <span style="font-weight: 400; font-size: 1rem;">
                     <a v-if="!editingCreateWorkOrderConfig" v-on:click="editingCreateWorkOrderConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
                     <span v-if="editingCreateWorkOrderConfig">
@@ -429,6 +430,36 @@
                             isNumOfAddItemChanged = false;
                         }">cancel</a>
                     </span>
+                </div>
+            </div>
+        </div>
+        <!-- <div v-if="configOriginal.location"> -->
+        <div style="margin-top: 1rem;">
+            <div>
+                <span style="font-weight: 500; font-size: 1.3rem">Location </span>
+                <span style="font-size: 1rem">
+                    <span>
+                        <a><i class="fa fa-pencil-square-o"></i> edit</a>
+                    </span>
+                    <span v-if="false">
+                        <a>
+                            save changes
+                        </a> | 
+                        <a>
+                            cancel
+                        </a>
+                    </span>                    
+                </span>
+            </div>
+            <div style="padding-left: 1rem;">
+                <div style="font-size: .95rem; padding: .25rem 0">
+                    - Maximum block: 50
+                </div>
+                <div style="font-size: .95rem; padding: .25rem 0">
+                    - Maximum floor: 150
+                </div>
+                <div style="font-size: .95rem; padding: .25rem 0">
+                    - Maximum tile: 100
                 </div>
             </div>
         </div>
