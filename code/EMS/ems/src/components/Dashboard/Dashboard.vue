@@ -179,7 +179,7 @@
                                           <strong>Today: {{Dashboard.ReturnCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{workOrdersWokingToday ? workOrdersWokingToday.length : '0'}}</strong> orders 
+                                          <strong>{{workOrdersWokingToday ? workOrdersWokingToday.length : '0'}}</strong> order<span v-if="workOrdersWokingToday && workOrdersWokingToday.length > 1">s</span> 
                                       </div>
                                   </div>
                                   <div class="contentstatus" style="padding: 0.2rem;" >
@@ -205,7 +205,7 @@
                                           <strong>Tomorrow: {{Dashboard.ReturnCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{workOrdersWokingTomorrow ? workOrdersWokingTomorrow.length : '0'}}</strong> orders 
+                                          <strong>{{workOrdersWokingTomorrow ? workOrdersWokingTomorrow.length : '0'}}</strong> order<span v-if="workOrdersWokingTomorrow && workOrdersWokingTomorrow.length > 1">s</span> 
                                       </div>
                                   </div>                                  
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                    
@@ -238,7 +238,7 @@
                                           <strong>Today: {{Dashboard.MaintainCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{workOrders ? workOrders.length : '0' }}</strong> orders 
+                                          <strong>{{workOrders ? workOrders.length : '0' }}</strong> order<span v-if="workOrders && workOrders.length > 1">s</span> 
                                       </div>
                                   </div>                                  
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                   
@@ -262,7 +262,7 @@
                                           <strong>Tomorrow: {{Dashboard.MaintainCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{workOrdersMaintainTomorrow ? workOrdersMaintainTomorrow.length : '0'}}</strong> orders
+                                          <strong>{{workOrdersMaintainTomorrow ? workOrdersMaintainTomorrow.length : '0'}}</strong> order<span v-if="workOrdersMaintainTomorrow && workOrdersMaintainTomorrow.length > 1">s</span>
                                       </div>
                                   </div>                                  
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                                                       
