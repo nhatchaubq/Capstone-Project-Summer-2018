@@ -39,7 +39,7 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-cron.schedule("30 12 * * *", function () {
+cron.schedule("00 17 * * *", function () {
   console.log("---------------------");
   console.log("Running Cron Job");
   for (var i = 0; i < account.length; i++) {
@@ -57,11 +57,12 @@ cron.schedule("30 12 * * *", function () {
       }
     }
     content = content.concat("</div>");
+    content = content.concat("<div><a style='text-decoration: none !important; font-weight: bold' href='http://localhost:8080/work_order'>Go to Work Order Management page</a></div>");
     if (textWO != "") {
       let mailOptions = {
         from: "tiennt1005@gmail.com",
         to: emails[i],
-        subject: `WorkOrder trễ hạn`,
+        subject: `Work Order trễ hạn`,
         text: '',
         html: content
       };
@@ -78,23 +79,24 @@ cron.schedule("30 12 * * *", function () {
     var textWO = "";
     var content =
       " <p>Dear Mr/Mrs " + account[i] + "</p>" +
-      " <p>Anh/chị có một số workorder mượn đồ của cty đã gần tới hạn trả. Anh/chị vui lòng thu xếp trả về cty nhanh chóng. Xin cảm ơn anh/chị.</p> " +
+      " <p>Anh/chị có một số Work Order mượn đồ của công ty đã gần tới hạn trả. Anh/chị vui lòng thu xếp trả về công ty nhanh chóng. Xin cảm ơn anh/chị.</p> " +
       " <p>Các work order gồm: </p> " +
-      " <div style='padding-left: 20px; font-size:16px'> ";
+      " <div style='padding-left: 20px;'> ";
     for (var j = 0; j < nearExpectWO.length; j++) {
       if (nearExpectWO[j].RequestUsername == account[i]) {
 
         textWO = textWO + nearExpectWO[j].Name + "\n";
-        content = content.concat("<p style='color:red;'>" + nearExpectWO[j].Name + "</p>");
+        content = content.concat("<p style='font-weight: bold; font-size:12.0pt;color:#ef5350'>- " + nearExpectWO[j].Name + "</p>");
       }
     }
     content = content.concat("</div>");
+    content = content.concat("<div><a style='text-decoration: none !important; font-weight: bold' href='http://localhost:8080/work_order'>Go to Work Order Management page</a></div>");
 
     if (textWO != "") {
       let mailOptions = {
         from: "tiennt1005@gmail.com",
         to: emails[i],
-        subject: `WorkOrder tới hạn`,
+        subject: `Work Order tới hạn`,
         text: '',
         html: content
       };
@@ -164,11 +166,10 @@ function callback(error, response, body) {
       duplicate = 0;
       var expect_date = moment(WOArray[i].ExpectingCloseDate, 'YYYY-MM-DD HH:mm:ss');
       var duration = moment(expect_date).diff(today, 'days');
-      if (WOArray[i].WorkOrderStatus == 'In Progress' && today > WOArray[i].ExpectingCloseDate) {
-        overdueWWO.push(WOArray[i]);
-      }
       if (WOArray[i].WorkOrderStatus == 'In Progress' && duration < 3 && duration >= 0) {
         nearExpectWO.push(WOArray[i]);
+      } else if (WOArray[i].WorkOrderStatus == 'In Progress' && today > WOArray[i].ExpectingCloseDate) {
+        overdueWWO.push(WOArray[i]);
       }
       for (var j = 0; j < account.length; j++) {
         if (account[j] == WOArray[i].RequestUsername) {
