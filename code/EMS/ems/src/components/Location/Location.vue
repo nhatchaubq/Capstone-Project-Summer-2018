@@ -1,7 +1,11 @@
 <template>  
-<div>
-  
+<div>  
   <div>
+    <router-link to="/location/create-location" v-if="authUser.Role == 'Manager' && isListViewMode">
+      <button class="btn-add-location button btn-primary material-shadow-animate">
+        Add Location
+      </button>
+    </router-link> 
     <div class="emtpy-text" v-if="locations && locations.length == 0">
       There is no location to display.
     </div>
@@ -30,12 +34,7 @@
               </div>
             </div>         
           </div>
-          <router-link to="/location/create-location" v-if="authUser.Role == 'Manager'">
-            <button class="btn-add-location button btn-primary material-shadow-animate">
-              Add Location
-            </button>
-          </router-link> 
-        </div>
+        </div>       
 
         <div v-if="selectedLocation != null" class="location-detail material-box material-shadow" style="max-height: 81%">  
           <div class="info-location" >
@@ -240,7 +239,7 @@
                {{getFormatDate(selectedWorkorder.ClosedDate)}}
             </div>
             <div class="info-content"  v-else>
-              N/A
+              n/a
             </div>
           </div>                                        
         </div>

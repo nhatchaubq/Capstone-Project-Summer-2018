@@ -196,7 +196,7 @@
                         <td>{{item.LastMaintainDate}}</td>
                         <td>{{item.NextMaintainDate}}</td>
                         <td>{{item.Status}}</td>
-                        <td>{{item.Description ? item.Description : 'N/A' }}</td>    
+                        <td>{{item.Description ? item.Description : 'n/a' }}</td>    
                     </tr>
                 </tbody>
             </table>
@@ -1171,6 +1171,7 @@ export default {
       this.axios
         .get("http://localhost:3000/api/equipmentItem/" + this.equipmentId)
         .then(response => {
+          this.Items = [];
           let data = response.data;
           this.Eitem = data;
           this.toDisplayEquipmentItem = this.Eitem.slice(0, 10);
@@ -1239,6 +1240,7 @@ export default {
       this.currentViewMode = mode;
     },
     async createNewEquipentItem() {
+      let context = this;
       if (this.quantity === "" || this.quantity < 1 || this.quantity > 50) {
         this.CreateItemErrors.NoQuantity = this.ErrorStrings.NoQuantity;
       }
@@ -1273,53 +1275,51 @@ export default {
         this.CreateItemErrors.NoTile === "" &&
         this.CreateItemErrors.NoQuantity === ""
       ) {
-        var result = 0;
-        this.randomNumbers.forEach(async number => {
-          try {
-            var date =
-              moment().valueOf() +
-              this.EquimentByID.MaintenanceDuration.Months *
-                30 *
-                24 *
-                3600 *
-                1000;
-                //moment(date).format("YYYY-MM-DD hh:mm:ss")
-            let res = await this.axios.post(
-              "http://localhost:3000/api/equipmentItem",
-              {
-                equipmentID: this.EquimentByID.Id,
-                serialNumber: number,
-                warehoueid: this.form.selectedLocation.value,
-                warrantyDuration: this.form.warrantyDuration,
-                price: numeral(this.form.price).value(),
-                statusId: 1,
-                nextmaintaindate: moment(date).format("YYYY-MM-DD"),
-                description: "No description",
-                tileID: this.form.selectedTile.value
-              }
-            );
+        let result = 0;
+        for (const number of this.randomNumbers) {
+          let date =
+            moment().valueOf() +
+            this.EquimentByID.MaintenanceDuration.Months *
+              30 *
+              24 *
+              3600 *
+              1000;
+              //moment(date).format("YYYY-MM-DD hh:mm:ss")
+          await this.axios.post(
+            "http://localhost:3000/api/equipmentItem",
+            {
+              equipmentID: this.EquimentByID.Id,
+              serialNumber: number,
+              warehoueid: this.form.selectedLocation.value,
+              warrantyDuration: this.form.warrantyDuration,
+              price: numeral(this.form.price).value(),
+              statusId: 1,
+              nextmaintaindate: moment(date).format("YYYY-MM-DD"),
+              description: "No description",
+              tileID: this.form.selectedTile.value
+            }
+          ).then(async res => {
             if (res.status == 200) {
               result = result + 1;
             }
-          } catch (error) {
+          }).catch(error => {
             console.log(error);
             result = result - 1;
-          }
-        });
-        await Utils.sleep(1000);
+          });          
+        }
         if (result == this.quantity) {
-          let context = this;
           let obj = {
             title: "Successfully!!!",
             message: "Create new " + context.quantity + " item(s) successfully",
             type: "success",
-            hideAllButton: true
-            // showXclose: false
+            showXclose: true,
+            hideAllButton: false,
+            onClose: function () {
+              context.addPopUp = !context.addPopUp;
+              context.getAllItemOfEquipment();
+            },
           };
-          context.$refs.simplert2.openSimplert(obj);
-          await Utils.sleep(1500);
-          context.getAllItemOfEquipment();
-          context.addPopUp = !context.addPopUp;
+          context.$refs.simplert2.openSimplert(obj);          
         } else {
           alert("Add failed");
         }

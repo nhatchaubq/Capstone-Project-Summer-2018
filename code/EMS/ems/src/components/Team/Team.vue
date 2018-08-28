@@ -41,7 +41,7 @@
             <tr>
                 <!-- <th><strong>ID</strong></th> -->
 
-                <th><strong>No.</strong></th>
+                <th style="text-align: center;"><strong>No.</strong></th>
                 <th><strong>Team name</strong></th>
                 <th><strong>Leader </strong></th>
                 <th><strong>Members </strong></th>
@@ -60,7 +60,7 @@
               <!-- <router-link :to="`/account/${team.TeamLeader.Id}`">   -->
                 <td :style="{color: team.TeamLeader ? 'var(--primary-color)' : '#607D8B'}"> <span style="font-size: 25px;"></span> {{ team.TeamLeader ? team.TeamLeader.Username : 'n/a'}}</td>
               <!-- </router-link> -->
-              <td>{{team.Members.Quantity? team.Members.Quantity: 'N/A'}}</td>
+              <td>{{team.Members.Quantity? team.Members.Quantity: 'n/a'}}</td>
               <td>{{getDate(team.CreatedDate)}}</td>
               <strong><td :style="{color: team.Status ? 'var(--primary-color)' : '#607D8B'}">{{team.Status ? "Active" : "Inactive"}}</td></strong>
 

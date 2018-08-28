@@ -228,7 +228,7 @@
                   <tr v-if="team.LeaderAccount" >
                     <td style="cursor: context-menu !important">1</td>
                     <td style="cursor: context-menu !important">{{team.LeaderAccount.Username}}</td>
-                    <td style="cursor: context-menu !important">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
+                    <td style="cursor: context-menu !important">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'n/a'}}</td>
                     <td  style="color:#26a69a; cursor: context-menu !important"><span style="font-size: 25px; "></span> Leader</td>
                     <strong style="cursor: context-menu !important"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
                     <td v-if="editMode" style="padding-top: 0rem important">
@@ -239,7 +239,7 @@
                   <tr :key="'member' + index" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
                     <td style="cursor: context-menu !important">{{index + 2}}</td>
                     <td style="cursor: context-menu !important">{{member.Username}}</td>
-                    <td style="cursor: context-menu !important">{{member.Fullname ? member.Fullname :'N/A' }} </td>
+                    <td style="cursor: context-menu !important">{{member.Fullname ? member.Fullname :'n/a' }} </td>
                     <td  style="cursor: context-menu !important"><span style="font-size: 25px"></span>Member </td>
                     <strong style="cursor: context-menu !important"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
                     <td v-if="editMode" style="padding-top: 0rem important">
@@ -459,7 +459,7 @@
                   <tr v-if="team.LeaderAccount" >
                     <td style="cursor: context-menu !important">1</td>
                     <td style="cursor: context-menu !important">{{team.LeaderAccount.Username}}</td>
-                    <td style="cursor: context-menu !important">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'N/A'}}</td>
+                    <td style="cursor: context-menu !important">{{team.LeaderAccount.Fullname ? team.LeaderAccount.Fullname :'n/a'}}</td>
                     <td  style="color:#26a69a; cursor: context-menu !important"><span style="font-size: 25px; "></span> Leader</td>
                     <strong style="cursor: context-menu !important"><td :style="{color: team.LeaderAccount.IsActive? 'var(--primary-color)' : '#607D8B'}">{{team.LeaderAccount.IsActive ? "Active" : "Inactive"}}</td></strong> 
                     <td v-if="editMode" style="padding-top: 0rem important">
@@ -470,7 +470,7 @@
                   <tr :key="'member' + index" v-for="(member, index) in team.MemberAccounts"  v-if="team.MemberAccounts">
                     <td style="cursor: context-menu !important">{{index + 2}}</td>
                     <td style="cursor: context-menu !important">{{member.Username}}</td>
-                    <td style="cursor: context-menu !important">{{member.Fullname ? member.Fullname :'N/A' }} </td>
+                    <td style="cursor: context-menu !important">{{member.Fullname ? member.Fullname :'n/a' }} </td>
                     <td  style="cursor: context-menu !important"><span style="font-size: 25px"></span>Member </td>
                     <strong style="cursor: context-menu !important"><td :style="{color: member.IsActive? 'var(--primary-color)' : '#607D8B'}">{{member.IsActive ? "Active" : "Inactive"}}</td></strong> 
                     <td v-if="editMode" style="padding-top: 0rem important">

@@ -71,9 +71,9 @@
           <tr :key="account.Id" v-for="(account, index) in toDisplayData" style="height:28px !important;" v-on:click="gotoDetail(account.Id)"  >
           <td style="text-align: center;">{{ 10*(currentPage -1) + (index + 1) }}</td>   
           <td>{{account.Username | truncate(13)}}</td>
-          <td>{{account.Fullname ? account.Fullname: "N/A" }}</td>
-          <td>{{account.Email ? account.Email : "N/A" }}</td>
-          <td>{{account.Phone ? account.Phone : "N/A"}}</td>
+          <td>{{account.Fullname ? account.Fullname: "n/a" }}</td>
+          <td>{{account.Email ? account.Email : "n/a" }}</td>
+          <td>{{account.Phone ? account.Phone : "n/a"}}</td>
           <td>{{account.Role.Name}}</td>
           <strong>
             <td :style="{color: account.IsActive? 'var(--primary-color)' : '#607D8B'}">{{account.IsActive? "Active" : "Inactive"}}</td>
