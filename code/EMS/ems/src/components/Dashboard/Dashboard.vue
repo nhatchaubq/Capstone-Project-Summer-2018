@@ -19,13 +19,13 @@
                       <input type="radio" name="status" style="padding-right:0.5rem" :checked="!linechartOption"> Damaged and Lost Equipment
                     </label>
                   </div>
-                    <bar-chart :chartData="lineChartData" ref="lineChart" :styles="{height: '40vh'}"  ></bar-chart>
+                    <bar-chart :isWorkorderChart="linechartOption" :chartData="lineChartData" ref="lineChart" :styles="{height: '40vh'}"  ></bar-chart>
                   <div style="margin-top: 1rem; color: #424242; font-size: 1rem; text-align: center; font-style: italic;">
                     <div v-if="linechartOption">
-                      Number of Completed Work Orders chart from the past 1 year.
+                      Number of Completed Work Orders chart from the past 1 year
                     </div>
                     <div v-else>
-                      Number of Damaged and Lost Equipment chart from the past 1 year.
+                      Number of Damaged and Lost Equipment chart from the past 1 year
                     </div>  
                   </div> 
 
@@ -179,7 +179,7 @@
                                           <strong>Today: {{Dashboard.ReturnCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{Dashboard.ReturnCountToday}}</strong> orders 
+                                          <strong>{{workOrdersWokingToday ? workOrdersWokingToday.length : '0'}}</strong> order<span v-if="workOrdersWokingToday && workOrdersWokingToday.length > 1">s</span> 
                                       </div>
                                   </div>
                                   <div class="contentstatus" style="padding: 0.2rem;" >
@@ -205,7 +205,7 @@
                                           <strong>Tomorrow: {{Dashboard.ReturnCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{Dashboard.ReturnCountTomorrow}}</strong> orders 
+                                          <strong>{{workOrdersWokingTomorrow ? workOrdersWokingTomorrow.length : '0'}}</strong> order<span v-if="workOrdersWokingTomorrow && workOrdersWokingTomorrow.length > 1">s</span> 
                                       </div>
                                   </div>                                  
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                    
@@ -238,7 +238,7 @@
                                           <strong>Today: {{Dashboard.MaintainCountTodayQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{Dashboard.MaintainCountToday}}</strong> orders 
+                                          <strong>{{workOrders ? workOrders.length : '0' }}</strong> order<span v-if="workOrders && workOrders.length > 1">s</span> 
                                       </div>
                                   </div>                                  
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                   
@@ -262,7 +262,7 @@
                                           <strong>Tomorrow: {{Dashboard.MaintainCountTomorrowQItem}} equipment to be returned</strong>
                                       </div> 
                                       <div class="numItem column" style="text-align:right;">
-                                          <strong>{{Dashboard.MaintainCountTomorrow}}</strong> orders
+                                          <strong>{{workOrdersMaintainTomorrow ? workOrdersMaintainTomorrow.length : '0'}}</strong> order<span v-if="workOrdersMaintainTomorrow && workOrdersMaintainTomorrow.length > 1">s</span>
                                       </div>
                                   </div>                                  
                                   <div class="contentstatus" style="padding: 0.2rem;" >                                                                       
@@ -345,7 +345,7 @@
                       </div>
                       <div v-if="authUser.Role == 'Manager' || authUser.Role == 'Equipment Staff'">
                           Current in: 
-                        <span v-if="item.Position">
+                        <span v-if="item.Position && equipmentStatusFromChart != 'Lost'">
                             {{ item.Position.Location.Name }}
                             - Block {{ item.Position.Block }} - Floor {{ item.Position.Floor }}
                             - Tile {{ item.Position.Tile }}

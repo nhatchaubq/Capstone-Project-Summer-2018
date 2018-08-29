@@ -1,7 +1,8 @@
 <template>
     <div v-if="config && configOriginal && configCopy">
         <div v-if="configOriginal.createWorkOrder">
-            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Creating/editing work order 
+            <div>
+                <span style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Creating/editing work order </span>
                 <span style="font-weight: 400; font-size: 1rem;">
                     <a v-if="!editingCreateWorkOrderConfig" v-on:click="editingCreateWorkOrderConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
                     <span v-if="editingCreateWorkOrderConfig">
@@ -86,7 +87,7 @@
                 </span>
             </div>
             <div>
-                <div style="padding-left: 1rem; margin-bottom: .5rem; user-select: none">
+                <div style="padding-left: 1rem; margin-bottom: .5rem;">
                     <div style="margin-bottom: .5rem" class="is-horizontal">
                         <div style="font-size: .95rem"><span style="position: relative; top: .5rem;">Maximum conflicting work order: <span v-if="!editingCreateWorkOrderConfig">{{ configOriginal.createWorkOrder.maximumConflictWorkOrders }}</span></span>
                         <input class="input" style="width: 7%; text-align: right;" v-if="editingCreateWorkOrderConfig" v-model.number="configOriginal.createWorkOrder.maximumConflictWorkOrders" type="number" min="0" step="1" v-on:input="() => {
@@ -274,40 +275,39 @@
         </div>
         <div>
         </div>
-        <div v-if="configOriginal.nextMaintainYear">
-            <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Equipment configuration :
-            </div>
-            <div v-if="!editingNextMaintainYearConfig" style="display: grid;grid-template-columns: 30% auto;">
-                <div style="padding-top:0.4rem">
+        <div style="font-weight: 500; margin-top: 1rem; font-size: 1.3rem">Equipment</div>
+        <div style="padding-left: 1rem; margin-bottom: .5rem; font-size: .95rem" v-if="configOriginal.nextMaintainYear">
+            <span v-if="!editingNextMaintainYearConfig">
+                <span style="padding-top:0.4rem">
                     Maximum duration for next maintaindate: 
-                </div>
-                <div style="display: grid;grid-template-columns: 10% auto;">
-                    <div  style="padding-top:0.4rem">
+                </span>
+                <span>
+                    <span  style="padding-top:0.4rem">
                         {{configOriginal.nextMaintainYear.maximumValue}}
-                    </div>
-                    <div style="padding-top:0.4rem">
+                    </span>
+                    <span style="padding-top:0.4rem">
                         <label style="padding-right:1rem">year(s)</label>
                          <span style="font-weight: 400; font-size: 1rem;">
                             <a v-if="!editingNextMaintainYearConfig" v-on:click="editingNextMaintainYearConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>  
                         </span>
-                    </div>
-                </div>
-            </div>
-            <div v-if="editingNextMaintainYearConfig" style="display: grid;grid-template-columns: 30% auto;">
-                <div style="padding-top:0.4rem">
+                    </span>
+                </span>
+            </span>
+            <div v-if="editingNextMaintainYearConfig">
+                <span style="padding-top:0.4rem">
                     Maximum duration for next maintaindate: 
-                </div>
-                <div style="display: grid;grid-template-columns: 10% auto%;">
-                    <div>
-                        <input type="number"  class="input" style="width:65px" v-model.number="configOriginal.nextMaintainYear.maximumValue" v-on:input="() => {
+                </span>
+                <span>
+                    <span>
+                        <input type="number" class="input" style="text-align: right; width: 5rem; margin: 0 1rem;" v-model.number="configOriginal.nextMaintainYear.maximumValue" v-on:input="() => {
                             if (configOriginal.nextMaintainYear.maximumValue < 0 || configOriginal.nextMaintainYear.maximumValue == '') {
                                 configOriginal.nextMaintainYear.maximumValue = 0;
                             }
                             configOriginal.nextMaintainYear.maximumValue = parseInt(configOriginal.nextMaintainYear.maximumValue);
                             checkNextMaintainDateConfigChanged();
                         }"/>
-                    </div>
-                    <div style="padding-top:0.4rem">
+                    </span>
+                    <span style="padding-top:0.4rem">
                         <label style="padding-right:1rem">year(s)</label>
                         <span v-if="editingNextMaintainYearConfig">
                             <a :style="!isNextMaintainYearChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
@@ -326,43 +326,43 @@
                                 isNextMaintainYearChanged = false;
                             }">cancel</a>
                         </span>
-                    </div>
-                </div>
+                    </span>
+                </span>
             </div>
         </div>
-        <div v-if="configOriginal.warrantyMonth">
-            <div v-if="!editingWarrantyMonthConfig" style="display: grid;grid-template-columns: 24% auto;">
-                <div style="padding-top:0.4rem">
+        <div style="padding-left: 1rem; margin-bottom: .5rem; font-size: .95rem" v-if="configOriginal.warrantyMonth">
+            <div v-if="!editingWarrantyMonthConfig">
+                <span style="padding-top:0.4rem">
                     Maximum value for warranty: 
-                </div>
-                <div style="display: grid;grid-template-columns: 10% auto;">
-                    <div  style="padding-top:0.4rem">
+                </span>
+                <span>
+                    <span  style="padding-top:0.4rem">
                         {{configOriginal.warrantyMonth.maximumValue}}
-                    </div>
-                    <div style="padding-top:0.4rem">
+                    </span>
+                    <span style="padding-top:0.4rem">
                         <label style="padding-right:1rem">month(s)</label>
                         <span style="font-weight: 400; font-size: 1rem;">
                             <a v-if="!editingWarrantyMonthConfig" v-on:click="editingWarrantyMonthConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
                             
                         </span>
-                    </div>
-                </div>
+                    </span>
+                </span>
             </div>
-            <div v-if="editingWarrantyMonthConfig" style="display: grid;grid-template-columns: 24% auto;">
-                <div style="padding-top:0.4rem">
+            <div v-if="editingWarrantyMonthConfig">
+                <span style="padding-top:0.4rem">
                     Maximum value for warranty: 
-                </div>
-                <div style="display: grid;grid-template-columns: 10% auto;">
-                    <div>
-                        <input type="number"  class="input" style="width:65px" v-model.number="configOriginal.warrantyMonth.maximumValue" v-on:input="() => {
+                </span>
+                <span>
+                    <span>
+                        <input type="number" class="input" style="text-align: right; width: 5rem; margin: 0 1rem;" v-model.number="configOriginal.warrantyMonth.maximumValue" v-on:input="() => {
                             if (configOriginal.warrantyMonth.maximumValue < 0 || configOriginal.warrantyMonth.maximumValue == '') {
                                 configOriginal.warrantyMonth.maximumValue = 0;
                             }
                             configOriginal.warrantyMonth.maximumValue = parseInt(configOriginal.warrantyMonth.maximumValue);
                             checkWarrantyMonthConfigChanged();
                         }"/>
-                    </div>
-                    <div style="padding-top:0.4rem">
+                    </span>
+                    <span style="padding-top:0.4rem">
                         <label  style="padding-right:1rem">month(s)</label>
                         <span v-if="editingWarrantyMonthConfig">
                             <a :style="!isWarrantyMonthChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''" 
@@ -381,30 +381,30 @@
                                 isWarrantyMonthChanged = false;
                             }">cancel</a>
                         </span>
-                    </div>
-                </div>
+                    </span>
+                </span>
             </div>
         </div>
-        <div v-if="configOriginal.numOfAddItem">
-            <div v-if="!editingNumOfAddItemConfig" style="display: grid;grid-template-columns: 24% auto;">
-                <div style="padding-top:0.4rem">
-                    Maximum value for add item: 
-                </div>
-                <div style="display: grid;grid-template-columns: 10% auto;">
-                    <div style="padding-top:0.4rem">
+        <div style="padding-left: 1rem; margin-bottom: .5rem; font-size: .95rem" v-if="configOriginal.numOfAddItem">
+            <div v-if="!editingNumOfAddItemConfig">
+                <span style="padding-top:0.4rem">
+                    Maximum value for adding item: 
+                </span>
+                <span>
+                    <span style="padding-top:0.4rem">
                         {{configOriginal.numOfAddItem.maximumValue}}
-                    </div>
+                    </span>
                     <span style="font-weight: 400; font-size: 1rem;padding-top:0.4rem">
                         <a v-if="!editingNumOfAddItemConfig" v-on:click="editingNumOfAddItemConfig = true;"><i class="fa fa-pencil-square-o"></i> edit</a>
                     </span>
-                </div>
+                </span>
             </div>
-            <div v-if="editingNumOfAddItemConfig" style="display: grid;grid-template-columns: 24% 30%;">
-                <div style="padding-top:0.4rem">
-                   Maximum value for add item:
-                </div>
-                <div style="display: grid;grid-template-columns: 20% auto;">   
-                    <input type="number"  class="input" v-model.number="configOriginal.numOfAddItem.maximumValue" v-on:input="() => {
+            <div v-if="editingNumOfAddItemConfig">
+                <span style="padding-top:0.4rem">
+                   Maximum value for adding item:
+                </span>
+                <span>   
+                    <input type="number" style="text-align: right; width: 5rem; margin: 0 1rem;" class="input" v-model.number="configOriginal.numOfAddItem.maximumValue" v-on:input="() => {
                         if (configOriginal.numOfAddItem.maximumValue < 1 || configOriginal.numOfAddItem.maximumValue == '') {
                             configOriginal.numOfAddItem.maximumValue = 1;
                         }
@@ -428,6 +428,91 @@
                             editingNumOfAddItemConfig = false;
                             isNumOfAddItemChanged = false;
                         }">cancel</a>
+                    </span>
+                </span>
+            </div>
+        </div>
+        <!-- <div v-if="configOriginal.location"> -->
+        <div v-if="configOriginal.location" style="margin-top: 1rem;">
+            <div>
+                <span style="font-weight: 500; font-size: 1.3rem">Location </span>
+                <span style="font-size: 1rem">
+                    <span v-if="!editingLocationConfig">
+                        <a @click="() => {
+                            editingLocationConfig = true;    
+                        }"><i class="fa fa-pencil-square-o"></i> edit</a>
+                    </span>
+                    <span v-if="editingLocationConfig">
+                        <a :style="!isLocationConfigChanged ? 'cursor: not-allowed; color: var(--shadow) !important;' : ''"
+                            @click="() => {
+                                if (isLocationConfigChanged) {
+                                    configCopy = JSON.stringify(configOriginal);
+                                    configCopy = JSON.parse(configCopy);
+                                    $socket.emit('CONFIGURATION_CHANGED', configOriginal);
+                                    editingLocationConfig = false;
+                                }
+                            }">
+                            save changes
+                        </a> | 
+                        <a @click="() => {
+                            editingLocationConfig = false;
+                        }">
+                            cancel
+                        </a>
+                    </span>                    
+                </span>
+            </div>
+            <div style="padding-left: 1rem;">
+                <div style="font-size: .95rem; padding: .25rem 0">
+                    Maximum block: 
+                    <span v-if="!editingLocationConfig">{{ configOriginal.location.maximumBlock }}</span>
+                    <span v-if="editingLocationConfig">
+                        <input style="width: 4rem;" type="number" class="input" v-model="configOriginal.location.maximumBlock" v-on:input="() => {
+                            if (configOriginal.location.maximumBlock <= 0) {
+                                configOriginal.location.maximumBlock = 1;
+                            }
+                            configOriginal.location.maximumBlock = parseInt(configOriginal.location.maximumBlock);
+                            checkLocationConfigChanged();
+                        }" />
+                    </span>
+                </div>
+                <div style="font-size: .95rem; padding: .25rem 0">
+                    Maximum floor: 
+                    <span v-if="!editingLocationConfig">{{ configOriginal.location.maximumFloor }}</span>
+                    <span v-if="editingLocationConfig"> 
+                        <input style="width: 4rem;" type="number" class="input" v-model="configOriginal.location.maximumFloor" v-on:input="() => {
+                            if (configOriginal.location.maximumFloor <= 0) {
+                                configOriginal.location.maximumFloor = 1;
+                            }
+                            configOriginal.location.maximumFloor = parseInt(configOriginal.location.maximumFloor);
+                            checkLocationConfigChanged();
+                        }" />
+                    </span>
+                </div>
+                <div style="font-size: .95rem; padding: .25rem 0">
+                    Maximum basement floor: 
+                    <span v-if="!editingLocationConfig">{{ configOriginal.location.maximumBasementFloor }}</span>
+                    <span v-if="editingLocationConfig"> 
+                        <input style="width: 4rem;" type="number" class="input" v-model="configOriginal.location.maximumBasementFloor" v-on:input="() => {
+                            if (configOriginal.location.maximumBasementFloor <= 0) {
+                                configOriginal.location.maximumBasementFloor = 1;
+                            }
+                            configOriginal.location.maximumBasementFloor = parseInt(configOriginal.location.maximumBasementFloor);
+                            checkLocationConfigChanged();
+                        }" />
+                    </span>
+                </div>
+                <div style="font-size: .95rem; padding: .25rem 0">
+                    Maximum tile: 
+                    <span v-if="!editingLocationConfig">{{ configOriginal.location.maximumTile }}</span>
+                    <span v-if="editingLocationConfig">
+                        <input style="width: 4rem;" type="number" class="input" v-model="configOriginal.location.maximumTile" v-on:input="() => {
+                            if (configOriginal.location.maximumTile <= 0) {
+                                configOriginal.location.maximumTile = 1;
+                            }
+                            configOriginal.location.maximumTile = parseInt(configOriginal.location.maximumTile);
+                            checkLocationConfigChanged();
+                        }" />
                     </span>
                 </div>
             </div>
@@ -486,7 +571,9 @@ export default {
       editingWarrantyMonthConfig: false,
       isWarrantyMonthChanged: false,
       editingNumOfAddItemConfig: false,
-      isNumOfAddItemChanged: false
+      isNumOfAddItemChanged: false,
+      editingLocationConfig: false,
+      isLocationConfigChanged: false,
     };
   },
   watch: {
@@ -677,7 +764,6 @@ export default {
     },
     checkNextMaintainDateConfigChanged() {
       this.isNextMaintainYearChanged = false;
-
       const nextMaintainYearConfigOriginal = this.configOriginal
         .nextMaintainYear;
       const nextMaintainYearConfigCopy = this.configCopy.nextMaintainYear;
@@ -733,6 +819,13 @@ export default {
           }
         }
       }
+    },
+    checkLocationConfigChanged() {
+        this.isLocationConfigChanged = 
+            (this.configOriginal.location.maximumBlock != this.configCopy.location.maximumBlock
+            || this.configOriginal.location.maximumFloor != this.configCopy.location.maximumFloor
+            || this.configOriginal.location.maximumBasementFloor != this.configCopy.location.maximumBasementFloor
+            || this.configOriginal.location.maximumTile != this.configCopy.location.maximumTile);
     },
     showAlert(msg) {
       alert(msg);

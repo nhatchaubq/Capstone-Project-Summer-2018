@@ -28,5 +28,11 @@
     },
     "numOfAddItem": {
         "maximumValue": 50
+    },
+    "location": {
+        "maximumBlock": 5,
+        "maximumFloor": 150,
+        "maximumBasementFloor": 9,
+        "maximumTile": 50
     }
 }
