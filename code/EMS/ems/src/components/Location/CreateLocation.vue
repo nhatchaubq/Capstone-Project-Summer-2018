@@ -146,7 +146,7 @@
         <div v-if="currentStep == Steps.CreateBlocks">
           <div class="form-field" style="margin-top: .8rem; margin-bottom: 0;">
             <div class="form-field-title">
-                Creating blocks for location {{ newLocation.name }}
+                Creating blocks for location {{ newLocation.name }} <span style="font-style: italic">(maximum {{ config.location.maximumBlock }} block<span v-if="config.location.maximumBlock > 1">s</span>)</span>
             </div>
             <div style="margin-top: 1rem;">
               <div style="margin-bottom: 1rem;" :key="'toCreateBlock' + index" v-for="(block, index) in toCreateBlocks">
@@ -168,7 +168,7 @@
                 </span>
               </div>
             </div>
-            <div v-if="!createNewBlockFlag" style="padding-top: 0; padding-bottom: 0; margin-bottom: 0;">
+            <div v-if="!createNewBlockFlag && toCreateBlocks.length < config.location.maximumBlock" style="padding-top: 0; padding-bottom: 0; margin-bottom: 0;">
               <a @click="createNewBlockFlag = true"><i class="fa fa-plus-circle"></i> Add new block</a>
             </div>
           </div>
@@ -241,7 +241,7 @@
                   <div class="form-field" style="padding-bottom: 0; margin-bottom: 0;">
                       <!-- creating block floor -->
                       <div class="form-field-title" v-if="!editingFloor">
-                          Please provide some information that help create floors for Block {{ toCreateBlocks[currentToCreateBlockIndex].name }}.                        
+                          Please provide some information that help create floors for Block {{ toCreateBlocks[currentToCreateBlockIndex].name }} <span style="font-style: italic;">(maximum {{ config.location.maximumFloor }} floor<span v-if="config.location.maximumFloor">s</span>, {{ config.location.maximumBasementFloor }} basement floor<span v-if="config.location.maximumBasementFloor > 1">s</span>)</span>.                        
                       </div>
                       <!-- editing block floor -->
                       <div class="form-field-title" v-else>
@@ -252,13 +252,13 @@
                     <div class="form-field-title">
                         <span style="position: relative; top: .5rem">Block {{ toCreateBlocks[currentToCreateBlockIndex].name }} has </span>
                           <span>
-                            <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="1" max="300" step="1" v-model.number="toCreateBlocks[currentToCreateBlockIndex].totalFloor" v-on:input="() => {
+                            <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="1" :max="config.location.maximumFloor" step="1" v-model.number="toCreateBlocks[currentToCreateBlockIndex].totalFloor" v-on:input="() => {
                               currentToCreateFloorIndex = -1;
                               currentToCreateTileIndex = -1;
                               if (!toCreateBlocks[currentToCreateBlockIndex].totalFloor || toCreateBlocks[currentToCreateBlockIndex].totalFloor < 0) {
-                                toCreateBlocks[currentToCreateBlockIndex].totalFloor = 1
-                              } else if (toCreateBlocks[currentToCreateBlockIndex].totalFloor > 300) {
-                                toCreateBlocks[currentToCreateBlockIndex].totalFloor = 300;
+                                toCreateBlocks[currentToCreateBlockIndex].totalFloor = 1;
+                              } else if (toCreateBlocks[currentToCreateBlockIndex].totalFloor > config.location.maximumFloor) {
+                                toCreateBlocks[currentToCreateBlockIndex].totalFloor = config.location.maximumFloor;
                               }
                               toCreateBlocks[currentToCreateBlockIndex].totalFloor = parseInt(toCreateBlocks[currentToCreateBlockIndex].totalFloor);
                               createFloors(currentToCreateBlockIndex);
@@ -267,13 +267,13 @@
                         <span style="position: relative; top: .5rem">floor<span v-if="toCreateBlocks[currentToCreateBlockIndex].totalFloor > 1">s</span>,</span>
                         <span style="position: relative; top: .5rem"> and has </span>
                           <span>
-                            <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="0" v-model.number="toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor" v-on:input="() => {
+                            <input class="input" style="width: 4rem; text-align: right; margin: 0 .5rem" type="number" min="0" :max="config.location.maximumBasementFloor" v-model.number="toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor" v-on:input="() => {
                               currentToCreateFloorIndex = -1;
                               currentToCreateTileIndex = -1;
                               if (!toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor || toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor < 0) {
                                 toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor = 0;
-                              } else if (toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor > 300) {
-                                toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor = 300;
+                              } else if (toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor > config.location.maximumBasementFloor) {
+                                toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor = config.location.maximumBasementFloor;
                               }
                               toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor = parseInt(toCreateBlocks[currentToCreateBlockIndex].totalBasementFloor);
                               createBasementFloors(currentToCreateBlockIndex);
@@ -371,7 +371,7 @@
               <div class="col-6" style="padding-left: 0; padding-right: 0">
                   <div class="form-field" style="padding-right: 0">
                       <div class="form-field-title" style="margin: .5rem 0 !important">
-                          Please click on visual floors below to setup tiles for each floor.
+                          Please click on visual floors below to setup tiles for each floor <span style="font-style: italic;">(maximum {{ config.location.maximumTile }} tile<span v-if="config.location.maximumTile > 1">s</span>)</span>.
                       </div>
                       <div class="row" style="margin: .5rem 0 !important">
                           <!-- display floors -->
@@ -403,11 +403,11 @@
                           <div v-if="currentToCreateFloorIndex >= 0" style="width: 75%; margin-left: 5%; padding: 0 !important;">
                               <div style="margin: 0 !important;" class="row">
                                   <span style="position: relative; top: .5rem">Floor {{ toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].name }} has:</span>
-                                  <input style="margin: 0 .5rem; text-align: right;" class="input col-2" type="number" min='1' max="1000" step="1" v-model.number="toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles" v-on:input="() => {
+                                  <input style="margin: 0 .5rem; text-align: right;" class="input col-2" type="number" min='1' :max="config.location.maximumTile" step="1" v-model.number="toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles" v-on:input="() => {
                                     if (!toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles || toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles < 0) {
                                       toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles = 1;
-                                    } else if (toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles > 1000) {
-                                      toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles = 1000;
+                                    } else if (toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles > config.location.maximumTile) {
+                                      toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles = config.location.maximumTile;
                                     }
                                     toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles = parseInt(toCreateBlocks[currentToCreateBlockIndex].floors[currentToCreateFloorIndex].totalTiles);
                                     createTiles();
@@ -463,6 +463,7 @@
 </template>
 
 <script>
+import { sync } from 'vuex-pathify';
 import Server from "@/config/config.js";
 import { gmapApi } from "vue2-google-maps";
 import Simplert from "vue2-simplert";
@@ -488,7 +489,8 @@ export default {
         }
       }
       return value;
-    }
+    },
+    config: sync('config'),
   },
   data() {
     return {
